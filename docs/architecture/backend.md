@@ -33,23 +33,28 @@ apps/api/
 
 Separação clara, sem cerimônia:
 
-| Camada             | Onde vive                                                        | Responsabilidade                                                                                      |
-| ------------------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Controller**     | `*.controller.ts`                                                | HTTP: rota, validação de entrada (pipe), documentação OpenAPI, status code. Nenhuma regra de negócio. |
-| **Application**    | `*.service.ts`                                                   | Casos de uso: orquestra domínio e repositórios, define transações, lança `AppError`.                  |
-| **Domain**         | arquivos sem sufixo de framework (`health-report.ts`, `post.ts`) | Regras puras: funções e tipos sem dependência de Nest, banco ou HTTP. Fáceis de testar.               |
-| **Repository**     | `*.repository.ts`                                                | Acesso a dados com Drizzle. Recebe e devolve tipos do domínio, esconde SQL do serviço.                |
-| **Infrastructure** | `src/infrastructure/` e `*.client.ts`                            | Clientes técnicos (banco, Redis, provedores externos).                                                |
+Todo módulo segue a mesma estrutura de pastas. Na raiz fica apenas o `<nome>.module.ts`, que compõe as peças; todo o resto vive na pasta da sua camada, com o teste ao lado do arquivo testado:
+
+| Pasta             | Camada         | Responsabilidade                                                                                      |
+| ----------------- | -------------- | ----------------------------------------------------------------------------------------------------- |
+| `controllers/`    | Controller     | HTTP: rota, validação de entrada (pipe), documentação OpenAPI, status code. Nenhuma regra de negócio. |
+| `services/`       | Application    | Casos de uso: orquestra domínio e repositórios, define transações, lança `AppError`.                  |
+| `domain/`         | Domain         | Regras puras: funções e tipos sem dependência de Nest, banco ou HTTP. Fáceis de testar.               |
+| `repositories/`   | Repository     | Acesso a dados com Drizzle. Recebe e devolve tipos do domínio, esconde SQL do serviço.                |
+| `infrastructure/` | Infrastructure | Adaptadores técnicos do módulo (hash de senha, cache no Redis, probes).                               |
+| `guards/`         | HTTP           | Guards do Nest que o módulo oferece.                                                                  |
+
+Crie só as pastas que o módulo usa. Integrações técnicas compartilhadas por vários módulos (banco, Redis, e-mail) ficam em `src/infrastructure/`, fora dos módulos.
 
 O módulo `health` mostra a ideia em escala pequena:
 
 ```text
 modules/health/
-├── health.controller.ts     Controller: GET /health/live e /health/ready
-├── health.service.ts        Application: executa os probes e decide 200 ou 503
-├── health-report.ts         Domain: agrega o status (função pura, testada)
-├── dependency-probe.ts      Infra: mede latência com timeout
-└── health.module.ts
+├── health.module.ts
+├── controllers/health.controller.ts        GET /health/live e /health/ready
+├── services/health.service.ts              Executa os probes e decide 200 ou 503
+├── domain/health-report.ts                 Agrega o status (função pura, testada)
+└── infrastructure/dependency-probe.ts      Mede latência com timeout
 ```
 
 ### O que evitamos
@@ -64,18 +69,46 @@ O módulo `users` é o exemplo de referência de um módulo de domínio completo
 
 ```text
 modules/users/
-├── users.module.ts          Exporta UsersService para outros módulos
-├── users.controller.ts      GET/PATCH /users/me, GET /users/:handle
-├── users.service.ts         Casos de uso; traduz violações de unicidade em AppError
-├── users.repository.ts      Drizzle; aceita um executor para participar de transações
-└── user.ts                  Domínio: handles reservados, mapeamento para perfil público/privado
+├── users.module.ts                         Exporta UsersService para outros módulos
+├── controllers/users.controller.ts         GET/PATCH /users/me, GET /users/:handle
+├── services/users.service.ts               Casos de uso; traduz violações de unicidade em AppError
+├── repositories/users.repository.ts        Drizzle; aceita um executor para participar de transações
+└── domain/user.ts                          Handles reservados, mapeamento para perfil público/privado
 ```
 
 Os schemas de entrada ficam em `@ponto/validation` porque os formulários de web e mobile usam os mesmos.
 
-O módulo `auth` mostra um módulo maior, ainda sem subpastas: dois controllers (`auth`, `sessions`), três serviços (`AuthService`, `SessionsService`, `AccountVerificationService`), três repositórios, o guard global e as peças puras (`opaque-token.ts`, `account-emails.ts`). O desenho está em [auth.md](auth.md).
+O módulo `auth` é o maior até agora:
 
-Quando um módulo ficar grande, ele pode ser dividido em subpastas (`domain/`, `application/`, `http/`, `infrastructure/`) sem mudar as regras acima.
+```text
+modules/auth/
+├── auth.module.ts
+├── controllers/      auth.controller.ts, sessions.controller.ts
+├── services/         auth.service.ts, sessions.service.ts, account-verification.service.ts
+├── repositories/     credentials, sessions e verification-tokens
+├── domain/           opaque-token.ts, account-emails.ts, account-links.ts
+├── infrastructure/   password-hasher.ts, session-cache.ts
+└── guards/           session-auth.guard.ts
+```
+
+O desenho está em [auth.md](auth.md).
+
+## Estilo de código
+
+Três regras valem em todo o monorepo e são verificadas pelo ESLint (`pnpm lint`, com correção automática da primeira via `pnpm lint:fix`):
+
+- **Linha em branco antes e depois de todo `if`.**
+- **Funções com dois ou mais parâmetros recebem um único objeto.** Os campos ficam nomeados na chamada (`revoke({ userId, sessionId })`) e a ordem dos argumentos deixa de importar. Ficam de fora as assinaturas impostas pelo framework: construtores (injeção de dependência), handlers de controller com parâmetros decorados, callbacks passados diretamente a outras funções (`.map((item, index) => ...)`) e métodos de interfaces do Nest, como `catch(exception, host)` do filtro de exceções, que usa `eslint-disable` com justificativa.
+- **`await` não é usado como argumento.** O resultado vai primeiro para uma variável com nome e só então é usado:
+
+  ```ts
+  // avoid
+  return toPrivateProfile(await this.usersService.getById(auth.userId))
+
+  // prefer
+  const user = await this.usersService.getById(auth.userId)
+  return toPrivateProfile(user)
+  ```
 
 ## Regras de fronteira entre módulos
 

@@ -32,6 +32,9 @@ Use `User`, `Post`, `getUserById()`. Nunca `Usuario`, `Publicacao`, `buscarUsuar
 - **Nomes.** Arquivos em `kebab-case` (`health-report.ts`, `use-api-readiness.ts`), exceto componentes React, que usam `PascalCase` (`ApiStatusBadge.tsx`). Arquivos de rota do Next.js e do Expo Router seguem a convenção do framework (`page.tsx`, `_layout.tsx`). Classes, componentes e tipos em `PascalCase`, funções e variáveis em `camelCase`, hooks começando com `use`, constantes reais em `SCREAMING_SNAKE_CASE`, booleanos com `is`/`has`/`can`.
 - **Durações sempre com unidade no nome** (`SESSION_LAST_USED_WRITE_INTERVAL_MS`, `PASSWORD_RESET_TTL_MINUTES`) e definidas em `packages/config/src/time.ts` ou `apps/api/src/config/durations.ts`, usando as conversões (`minutesToMs(5)`, não `5 * 60 * 1000`).
 - **Imports na API:** `./arquivo.js` só para a mesma pasta; o resto usa `#src/...`. Web e mobile usam `@/...`.
+- **Funções com dois ou mais parâmetros recebem um único objeto** (`revoke({ userId, sessionId })`). Exceções e detalhes em [backend.md](docs/architecture/backend.md#estilo-de-código).
+- **Nada de `await` como argumento:** guarde o resultado numa variável e use a variável.
+- **Módulos organizados em pastas por camada** (`controllers/`, `services/`, `domain/`, `repositories/`, `infrastructure/`, `guards/`); na raiz do módulo, só o `<nome>.module.ts`.
 - **Linha em branco antes e depois de todo `if`** (exceto quando ele abre ou fecha um bloco). O ESLint cobra e corrige com `pnpm lint:fix`.
 - **Comentários** só quando o _porquê_ não é óbvio. Código autoexplicativo vem primeiro.
 - **Sem código morto**, sem `TODO` solto. Trabalho futuro vai para uma issue ou para a documentação.
