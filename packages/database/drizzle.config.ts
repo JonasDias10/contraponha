@@ -4,14 +4,13 @@ import { resolve } from "node:path"
 import { defineConfig } from "drizzle-kit"
 
 const rootEnvFile = resolve(process.cwd(), "../../.env")
-if (existsSync(rootEnvFile)) {
-  process.loadEnvFile(rootEnvFile)
-}
+
+if (existsSync(rootEnvFile)) process.loadEnvFile(rootEnvFile)
 
 const databaseUrl = process.env.DATABASE_URL
-if (!databaseUrl) {
+
+if (!databaseUrl)
   throw new Error("DATABASE_URL is required to run drizzle-kit. Copy .env.example to .env.")
-}
 
 export default defineConfig({
   dialect: "postgresql",

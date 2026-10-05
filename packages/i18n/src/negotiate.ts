@@ -1,6 +1,7 @@
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type Locale } from "./locales.js"
 
 export interface NegotiateLocaleOptions {
+  acceptLanguage: string | null | undefined
   supported?: readonly Locale[]
   fallback?: Locale
 }
@@ -23,27 +24,31 @@ function parseAcceptLanguage(header: string): WeightedTag[] {
     .sort((a, b) => b.quality - a.quality)
 }
 
-function matchTag(tag: string, supported: readonly Locale[]): Locale | undefined {
+interface MatchTagParams {
+  tag: string
+  supported: readonly Locale[]
+}
+
+function matchTag({ tag, supported }: MatchTagParams): Locale | undefined {
   const exact = supported.find((locale) => locale.toLowerCase() === tag)
-  if (exact) {
-    return exact
-  }
+
+  if (exact) return exact
+
   const language = tag.split("-")[0]
   return supported.find((locale) => locale.toLowerCase().split("-")[0] === language)
 }
 
-export function negotiateLocale(
-  acceptLanguage: string | null | undefined,
-  { supported = SUPPORTED_LOCALES, fallback = DEFAULT_LOCALE }: NegotiateLocaleOptions = {},
-): Locale {
-  if (!acceptLanguage) {
-    return fallback
-  }
+export function negotiateLocale({
+  acceptLanguage,
+  supported = SUPPORTED_LOCALES,
+  fallback = DEFAULT_LOCALE,
+}: NegotiateLocaleOptions): Locale {
+  if (!acceptLanguage) return fallback
+
   for (const { tag } of parseAcceptLanguage(acceptLanguage)) {
-    const match = matchTag(tag, supported)
-    if (match) {
-      return match
-    }
+    const match = matchTag({ tag, supported })
+
+    if (match) return match
   }
   return fallback
 }

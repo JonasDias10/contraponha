@@ -23,7 +23,16 @@
     "test:e2e": {
       "dependsOn": ["^build"],
       "cache": false,
-      "passThroughEnv": ["NODE_ENV", "PORT", "DATABASE_URL", "REDIS_URL", "LOG_LEVEL"]
+      "passThroughEnv": [
+        "NODE_ENV",
+        "PORT",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "LOG_LEVEL",
+        "WEB_APP_URL",
+        "SMTP_*",
+        "EMAIL_FROM"
+      ]
     },
     "dev": {
       "dependsOn": ["^build"],

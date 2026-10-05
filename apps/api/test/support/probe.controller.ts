@@ -1,12 +1,18 @@
 import { Body, Controller, Get, Post } from "@nestjs/common"
 import { z } from "zod"
 
-import { ZodValidationPipe } from "../../src/common/validation/zod-validation.pipe.js"
+import { Public } from "#src/common/auth/public.decorator.js"
+import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 
 const createProbeSchema = z.object({
   title: z.string().trim().min(1).max(280),
 })
 
+interface ProbeResult {
+  ok: true
+}
+
+@Public()
 @Controller("probe")
 export class ProbeController {
   @Post()
@@ -22,7 +28,7 @@ export class ProbeController {
   }
 
   @Get("limited")
-  limited(): { ok: true } {
+  limited(): ProbeResult {
     return { ok: true }
   }
 }

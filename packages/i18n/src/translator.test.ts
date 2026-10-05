@@ -4,16 +4,18 @@ import { createTranslator } from "./translator.js"
 
 describe("createTranslator", () => {
   it("translates keys using the requested locale", () => {
-    expect(createTranslator("pt-BR")("common.errors.notFound")).toBe(
+    expect(createTranslator({ locale: "pt-BR" })("common.errors.notFound")).toBe(
       "O recurso solicitado não foi encontrado.",
     )
-    expect(createTranslator("en")("common.errors.notFound")).toBe(
+
+    expect(createTranslator({ locale: "en" })("common.errors.notFound")).toBe(
       "The requested resource was not found.",
     )
   })
 
   it("falls back to the fallback locale when a key is not translated", () => {
-    const t = createTranslator("es", {
+    const t = createTranslator({
+      locale: "es",
       catalogs: {
         "pt-BR": { common: { errors: { notFound: "Não encontrado" } } },
         es: { common: { errors: {} } },
@@ -24,7 +26,8 @@ describe("createTranslator", () => {
   })
 
   it("interpolates params and keeps unknown placeholders intact", () => {
-    const t = createTranslator("pt-BR", {
+    const t = createTranslator({
+      locale: "pt-BR",
       catalogs: {
         "pt-BR": { common: { errors: { notFound: "{resource} não encontrado {other}" } } },
       },

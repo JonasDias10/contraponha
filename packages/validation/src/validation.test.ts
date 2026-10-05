@@ -9,10 +9,10 @@ describe("toValidationIssues", () => {
       profile: z.object({ name: z.string().min(3) }),
       tags: z.array(z.string()),
     })
+
     const { error } = schema.safeParse({ profile: { name: "ab" }, tags: [1] })
-    if (!error) {
-      throw new Error("Expected validation to fail")
-    }
+
+    if (!error) throw new Error("Expected validation to fail")
 
     expect(toValidationIssues(error)).toEqual([
       { path: "profile.name", code: "too_small" },
@@ -24,13 +24,17 @@ describe("toValidationIssues", () => {
 describe("isValidRequestId", () => {
   it("accepts UUIDs and opaque trace identifiers", () => {
     expect(isValidRequestId("3f1c2d4e-8b7a-4c6d-9e0f-1a2b3c4d5e6f")).toBe(true)
+
     expect(isValidRequestId("trace:abc123.def_456")).toBe(true)
   })
 
   it("rejects values that could pollute logs or headers", () => {
     expect(isValidRequestId("short")).toBe(false)
+
     expect(isValidRequestId("abc123\ninjected-log-line")).toBe(false)
+
     expect(isValidRequestId("x".repeat(129))).toBe(false)
+
     expect(isValidRequestId(undefined)).toBe(false)
   })
 })

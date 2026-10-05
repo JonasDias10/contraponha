@@ -1,7 +1,7 @@
 import { API_BASE_PATH } from "@ponto/config"
 import type { Locale } from "@ponto/i18n"
 import { apiErrorResponseSchema } from "@ponto/validation"
-import type { z } from "zod"
+import { z } from "zod"
 
 import { ApiError, ApiResponseFormatError } from "./errors.js"
 
@@ -9,7 +9,7 @@ export interface HttpClientOptions {
   baseUrl: string
   locale?: Locale
   fetch?: typeof fetch
-  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>
+  getSessionToken?: () => string | null | undefined | Promise<string | null | undefined>
 }
 
 export interface RequestOptions<TSchema extends z.ZodType> {
@@ -20,15 +20,17 @@ export interface RequestOptions<TSchema extends z.ZodType> {
   signal?: AbortSignal
 }
 
+export const emptyResponseSchema = z.null()
+
 export type HttpClient = <TSchema extends z.ZodType>(
   options: RequestOptions<TSchema>,
 ) => Promise<z.output<TSchema>>
 
 async function readJson(response: Response): Promise<unknown> {
   const text = await response.text()
-  if (text.length === 0) {
-    return null
-  }
+
+  if (text.length === 0) return null
+
   try {
     return JSON.parse(text) as unknown
   } catch {
@@ -40,16 +42,18 @@ export function createHttpClient({
   baseUrl,
   locale,
   fetch: fetchImpl = globalThis.fetch,
-  getHeaders,
+  getSessionToken,
 }: HttpClientOptions): HttpClient {
   const apiUrl = `${baseUrl.replace(/\/+$/, "")}${API_BASE_PATH}`
 
   return async ({ method, path, schema, body, signal }) => {
+    const sessionToken = await getSessionToken?.()
+
     const headers: Record<string, string> = {
       accept: "application/json",
       ...(locale ? { "accept-language": locale } : {}),
       ...(body === undefined ? {} : { "content-type": "application/json" }),
-      ...(await getHeaders?.()),
+      ...(sessionToken ? { authorization: `Bearer ${sessionToken}` } : {}),
     }
 
     const response = await fetchImpl(`${apiUrl}${path}`, {
@@ -58,20 +62,21 @@ export function createHttpClient({
       body: body === undefined ? undefined : JSON.stringify(body),
       signal,
     })
+
     const payload = await readJson(response)
 
     if (!response.ok) {
       const parsedError = apiErrorResponseSchema.safeParse(payload)
-      if (!parsedError.success) {
-        throw new ApiResponseFormatError(response.status, path)
-      }
+
+      if (!parsedError.success) throw new ApiResponseFormatError(response.status, path)
+
       throw new ApiError(response.status, parsedError.data.error)
     }
 
     const parsed = schema.safeParse(payload)
-    if (!parsed.success) {
-      throw new ApiResponseFormatError(response.status, path)
-    }
+
+    if (!parsed.success) throw new ApiResponseFormatError(response.status, path)
+
     return parsed.data
   }
 }

@@ -1,8 +1,9 @@
-import { createTranslator, negotiateLocale, type Locale, type Translate } from "@ponto/i18n"
+import { createTranslator, negotiateLocale, type LocaleTranslator } from "@ponto/i18n"
 import { useLocales } from "expo-localization"
 
-export function useTranslator(): { locale: Locale; t: Translate } {
+export function useTranslator(): LocaleTranslator {
   const deviceLocales = useLocales()
-  const locale = negotiateLocale(deviceLocales.map(({ languageTag }) => languageTag).join(","))
-  return { locale, t: createTranslator(locale) }
+  const acceptLanguage = deviceLocales.map(({ languageTag }) => languageTag).join(",")
+  const locale = negotiateLocale({ acceptLanguage })
+  return { locale, t: createTranslator({ locale }) }
 }

@@ -4,37 +4,56 @@ import type { MessageKey, MessageParams, PartialMessages } from "./types.js"
 
 export type Translate = (key: MessageKey, params?: MessageParams) => string
 
+export interface LocaleTranslator {
+  locale: Locale
+  t: Translate
+}
+
 export interface TranslatorOptions {
+  locale: Locale
   fallbackLocale?: Locale
   catalogs?: Partial<Record<Locale, PartialMessages>>
 }
 
-function lookup(catalog: PartialMessages | undefined, key: string): string | undefined {
+interface LookupParams {
+  catalog: PartialMessages | undefined
+  key: string
+}
+
+function lookup({ catalog, key }: LookupParams): string | undefined {
   let node: unknown = catalog
   for (const segment of key.split(".")) {
-    if (typeof node !== "object" || node === null) {
-      return undefined
-    }
+    if (typeof node !== "object" || node === null) return undefined
+
     node = (node as Record<string, unknown>)[segment]
   }
   return typeof node === "string" ? node : undefined
 }
 
-function interpolate(template: string, params: MessageParams | undefined): string {
-  if (!params) {
-    return template
-  }
+interface InterpolateParams {
+  template: string
+  params: MessageParams | undefined
+}
+
+function interpolate({ template, params }: InterpolateParams): string {
+  if (!params) return template
+
   return template.replace(/\{(\w+)\}/g, (placeholder, name: string) =>
     name in params ? String(params[name]) : placeholder,
   )
 }
 
-export function createTranslator(
-  locale: Locale,
-  { fallbackLocale = DEFAULT_LOCALE, catalogs = defaultCatalogs }: TranslatorOptions = {},
-): Translate {
+export function createTranslator({
+  locale,
+  fallbackLocale = DEFAULT_LOCALE,
+  catalogs = defaultCatalogs,
+}: TranslatorOptions): Translate {
   return (key, params) => {
-    const template = lookup(catalogs[locale], key) ?? lookup(catalogs[fallbackLocale], key) ?? key
-    return interpolate(template, params)
+    const template =
+      lookup({ catalog: catalogs[locale], key }) ??
+      lookup({ catalog: catalogs[fallbackLocale], key }) ??
+      key
+
+    return interpolate({ template, params })
   }
 }

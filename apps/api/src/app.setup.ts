@@ -4,13 +4,21 @@ import { API_DEFAULT_VERSION, API_GLOBAL_PREFIX, REQUEST_ID_HEADER } from "@pont
 import helmet from "helmet"
 import { Logger } from "nestjs-pino"
 
-import { setupSwagger } from "./common/openapi/swagger.js"
-import type { AppConfig } from "./config/app-config.js"
+import { setupSwagger } from "#src/common/openapi/swagger.js"
+import type { AppConfig } from "#src/config/app-config.js"
 
-export function configureApp(app: NestExpressApplication, config: AppConfig): void {
+export interface ConfigureAppOptions {
+  app: NestExpressApplication
+  config: AppConfig
+}
+
+export function configureApp({ app, config }: ConfigureAppOptions): void {
   app.useLogger(app.get(Logger))
+
   app.set("trust proxy", config.http.trustProxy)
+
   app.disable("x-powered-by")
+
   app.use(helmet())
 
   if (config.http.corsOrigins.length > 0) {
@@ -22,9 +30,8 @@ export function configureApp(app: NestExpressApplication, config: AppConfig): vo
   }
 
   app.setGlobalPrefix(API_GLOBAL_PREFIX)
+
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: API_DEFAULT_VERSION })
 
-  if (config.swagger.enabled) {
-    setupSwagger(app)
-  }
+  if (config.swagger.enabled) setupSwagger(app)
 }

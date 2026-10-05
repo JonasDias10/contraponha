@@ -4,7 +4,7 @@ O Ponto é uma plataforma social brasileira feita para conversas que valem a pen
 
 Este repositório contém a fundação técnica do produto: a API, o app web, o app mobile (iOS e Android), os pacotes compartilhados e a infraestrutura de desenvolvimento.
 
-> **Estado atual:** fundação arquitetural. A API sobe, valida a configuração, conversa com PostgreSQL e Redis, expõe health checks versionados e já tem padrão de erros, logs, i18n e testes. Web e mobile já consomem a API pelo cliente tipado e exibem uma tela inicial traduzida com o status da API. As funcionalidades da rede social (contas, posts, feed etc.) começam na próxima etapa.
+> **Estado atual:** fundação arquitetural. A API tem contas e autenticação completas (cadastro, login, sessões revogáveis, verificação de e-mail, redefinição e troca de senha, perfil), além de padrão de erros, logs, i18n e testes. Web e mobile consomem a API pelo cliente tipado e exibem uma tela inicial traduzida com o status da API; as telas de conta vêm a seguir. Posts, feed e o restante da rede social são as próximas etapas.
 
 ## Filosofia
 
@@ -23,6 +23,8 @@ Este repositório contém a fundação técnica do produto: a API, o app web, o 
 | Mobile           | Expo SDK 57 (React Native 0.86), Expo Router  |
 | Banco de dados   | PostgreSQL 18 com Drizzle ORM                 |
 | Cache e filas    | Redis 8 (ioredis)                             |
+| Autenticação     | Sessões opacas (Bearer), argon2id             |
+| E-mail           | SMTP (nodemailer), Mailpit em desenvolvimento |
 | Validação        | Zod 4, compartilhado entre API e clientes     |
 | Logs             | Pino (JSON estruturado, `nestjs-pino`)        |
 | Monorepo         | pnpm workspaces + Turborepo                   |
@@ -67,7 +69,7 @@ cp .env.example .env
 cp apps/web/.env.example apps/web/.env
 cp apps/mobile/.env.example apps/mobile/.env
 
-# 3. PostgreSQL e Redis
+# 3. PostgreSQL, Redis e Mailpit
 docker compose up -d
 
 # 4. Migrations
@@ -86,6 +88,7 @@ Com tudo no ar:
 - Liveness: <http://localhost:3000/api/v1/health/live>
 - Readiness (PostgreSQL + Redis): <http://localhost:3000/api/v1/health/ready>
 - Documentação OpenAPI: <http://localhost:3000/api/docs>
+- E-mails enviados em desenvolvimento (Mailpit): <http://localhost:8025>
 
 O passo a passo completo, com solução de problemas, está em [docs/development/setup.md](docs/development/setup.md).
 
@@ -104,23 +107,24 @@ Segredos nunca são versionados. O arquivo `.env` está no `.gitignore`.
 
 Todos os comandos rodam a partir da raiz.
 
-| Comando             | O que faz                                                        |
-| ------------------- | ---------------------------------------------------------------- |
-| `pnpm dev`          | Sobe API e web em modo watch (compila os pacotes antes)          |
-| `pnpm dev:api`      | Só a API                                                         |
-| `pnpm dev:web`      | Só o web (porta 3001)                                            |
-| `pnpm dev:mobile`   | Expo CLI do mobile (`i` abre iOS, `a` abre Android)              |
-| `pnpm build`        | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android) |
-| `pnpm test`         | Testes unitários (não precisam de Docker)                        |
-| `pnpm test:e2e`     | Testes de integração da API contra PostgreSQL e Redis reais      |
-| `pnpm lint`         | ESLint com regras que usam informação de tipos                   |
-| `pnpm typecheck`    | Verificação de tipos em todo o monorepo                          |
-| `pnpm format`       | Formata o código com Prettier                                    |
-| `pnpm format:check` | Verifica a formatação (usado no CI)                              |
-| `pnpm db:generate`  | Gera uma migration a partir do schema Drizzle (`--name <nome>`)  |
-| `pnpm db:migrate`   | Aplica as migrations pendentes                                   |
-| `pnpm db:studio`    | Abre o Drizzle Studio                                            |
-| `pnpm clean`        | Remove artefatos de build e cache                                |
+| Comando             | O que faz                                                                        |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `pnpm dev`          | Sobe API e web em modo watch (compila os pacotes antes)                          |
+| `pnpm dev:api`      | Só a API                                                                         |
+| `pnpm dev:web`      | Só o web (porta 3001)                                                            |
+| `pnpm dev:mobile`   | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                              |
+| `pnpm build`        | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                 |
+| `pnpm test`         | Testes unitários (não precisam de Docker)                                        |
+| `pnpm test:e2e`     | Testes de integração da API contra PostgreSQL e Redis reais (banco `ponto_test`) |
+| `pnpm lint`         | ESLint com regras que usam informação de tipos                                   |
+| `pnpm lint:fix`     | ESLint corrigindo automaticamente o que for possível                             |
+| `pnpm typecheck`    | Verificação de tipos em todo o monorepo                                          |
+| `pnpm format`       | Formata o código com Prettier                                                    |
+| `pnpm format:check` | Verifica a formatação (usado no CI)                                              |
+| `pnpm db:generate`  | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                  |
+| `pnpm db:migrate`   | Aplica as migrations pendentes                                                   |
+| `pnpm db:studio`    | Abre o Drizzle Studio                                                            |
+| `pnpm clean`        | Remove artefatos de build e cache                                                |
 
 ## Estrutura do monorepo
 
@@ -143,13 +147,14 @@ ponto/
 │   ├── architecture/         Visão geral, backend e i18n
 │   └── development/          Setup e fluxo de desenvolvimento
 ├── .github/workflows/        CI
-└── docker-compose.yml        PostgreSQL e Redis para desenvolvimento
+└── docker-compose.yml        PostgreSQL, Redis e Mailpit para desenvolvimento
 ```
 
 ## Documentação
 
 - [Visão geral da arquitetura](docs/architecture/overview.md): monorepo, monolito modular, escolhas de stack, LGPD e evolução.
 - [Backend](docs/architecture/backend.md): camadas, módulos, erros, logs, segurança e convenções.
+- [Autenticação e contas](docs/architecture/auth.md): sessões, senhas, e-mails de conta e proteções contra abuso.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
 - [Frontends](docs/architecture/frontends.md): web e mobile, e como usam os pacotes compartilhados.
 - [Setup de desenvolvimento](docs/development/setup.md): ambiente local, testes e banco de dados.

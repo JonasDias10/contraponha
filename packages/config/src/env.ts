@@ -5,17 +5,24 @@ export type EnvSource = Record<string, string | undefined>
 export class EnvValidationError extends Error {
   constructor(readonly issues: readonly string[]) {
     super(`Invalid environment configuration:\n${issues.map((issue) => `  - ${issue}`).join("\n")}`)
+
     this.name = "EnvValidationError"
   }
 }
 
-export function parseEnv<TSchema extends z.ZodType>(
-  schema: TSchema,
-  source: EnvSource,
-): z.output<TSchema> {
+export interface ParseEnvOptions<TSchema extends z.ZodType> {
+  schema: TSchema
+  source: EnvSource
+}
+
+export function parseEnv<TSchema extends z.ZodType>({
+  schema,
+  source,
+}: ParseEnvOptions<TSchema>): z.output<TSchema> {
   const normalized = Object.fromEntries(
     Object.entries(source).map(([key, value]) => [key, value === "" ? undefined : value]),
   )
+
   const result = schema.safeParse(normalized)
 
   if (!result.success) {

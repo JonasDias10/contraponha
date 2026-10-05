@@ -9,7 +9,9 @@ describe("health endpoints", () => {
   let app: NestExpressApplication
 
   beforeAll(async () => {
-    app = await createTestApp()
+    const testApp = await createTestApp()
+
+    app = testApp.app
   })
 
   afterAll(async () => {
@@ -27,7 +29,9 @@ describe("health endpoints", () => {
     const report = readinessReportSchema.parse(response.body)
 
     expect(report.status).toBe("up")
+
     expect(report.checks.database?.status).toBe("up")
+
     expect(report.checks.redis?.status).toBe("up")
   })
 
@@ -40,7 +44,9 @@ describe("readiness with an unreachable dependency", () => {
   let app: NestExpressApplication
 
   beforeAll(async () => {
-    app = await createTestApp({ REDIS_URL: "redis://127.0.0.1:1" })
+    const testApp = await createTestApp({ REDIS_URL: "redis://127.0.0.1:1" })
+
+    app = testApp.app
   })
 
   afterAll(async () => {
@@ -51,7 +57,9 @@ describe("readiness with an unreachable dependency", () => {
     const response = await request(app.getHttpServer()).get("/api/v1/health/ready").expect(503)
 
     expect(response.body.error.code).toBe("SERVICE_UNAVAILABLE")
+
     expect(response.body.error.details.checks.database.status).toBe("up")
+
     expect(response.body.error.details.checks.redis.status).toBe("down")
   })
 })

@@ -1,12 +1,11 @@
 import { randomUUID } from "node:crypto"
-import type { IncomingMessage, ServerResponse } from "node:http"
 
 import { API_BASE_PATH, REQUEST_ID_HEADER } from "@ponto/config"
 import { isValidRequestId } from "@ponto/validation"
 import type { Params } from "nestjs-pino"
 import { stdTimeFunctions } from "pino"
 
-import type { AppConfig } from "../../config/app-config.js"
+import type { AppConfig } from "#src/config/app-config.js"
 
 const REDACTED_PATHS = [
   "password",
@@ -28,15 +27,18 @@ const REDACTED_PATHS = [
 
 const HEALTH_PATH_PREFIX = `${API_BASE_PATH}/health`
 
-export function resolveRequestId(req: IncomingMessage, res: ServerResponse): string {
-  const incoming = req.headers[REQUEST_ID_HEADER]
-  const requestId = isValidRequestId(incoming) ? incoming : randomUUID()
-  res.setHeader(REQUEST_ID_HEADER, requestId)
-  return requestId
-}
-
 function stripQueryString(url: string | undefined): string | undefined {
   return url?.split("?")[0]
+}
+
+interface SerializableRequest {
+  id: unknown
+  method: string
+  url?: string
+}
+
+interface SerializableResponse {
+  statusCode: number
 }
 
 export function buildLoggerParams(config: AppConfig): Params {
@@ -47,23 +49,29 @@ export function buildLoggerParams(config: AppConfig): Params {
       timestamp: stdTimeFunctions.isoTime,
       formatters: { level: (label) => ({ level: label }) },
       redact: { paths: REDACTED_PATHS, censor: "[REDACTED]" },
-      genReqId: resolveRequestId,
+      genReqId: (req, res) => {
+        const incoming = req.headers[REQUEST_ID_HEADER]
+        const requestId = isValidRequestId(incoming) ? incoming : randomUUID()
+
+        res.setHeader(REQUEST_ID_HEADER, requestId)
+
+        return requestId
+      },
       customAttributeKeys: { reqId: "requestId" },
       quietReqLogger: true,
       autoLogging: { ignore: (req) => req.url?.startsWith(HEALTH_PATH_PREFIX) ?? false },
       customLogLevel: (_req, res, error) => {
-        if (error || res.statusCode >= 500) {
-          return "error"
-        }
+        if (error || res.statusCode >= 500) return "error"
+
         return res.statusCode >= 400 ? "warn" : "info"
       },
       serializers: {
-        req: (req: { id: unknown; method: string; url?: string }) => ({
+        req: (req: SerializableRequest) => ({
           id: req.id,
           method: req.method,
           path: stripQueryString(req.url),
         }),
-        res: (res: { statusCode: number }) => ({ statusCode: res.statusCode }),
+        res: (res: SerializableResponse) => ({ statusCode: res.statusCode }),
       },
       transport: config.log.pretty
         ? { target: "pino-pretty", options: { singleLine: true, translateTime: "SYS:HH:MM:ss.l" } }

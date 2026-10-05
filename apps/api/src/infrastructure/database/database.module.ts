@@ -1,7 +1,7 @@
 import { Global, Inject, Logger, Module, type OnApplicationShutdown } from "@nestjs/common"
 import { createDatabaseConnection, type DatabaseConnection } from "@ponto/database"
 
-import { APP_CONFIG, type AppConfig } from "../../config/app-config.js"
+import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 
 export const DATABASE = Symbol("DATABASE")
 const DATABASE_CONNECTION = Symbol("DATABASE_CONNECTION")

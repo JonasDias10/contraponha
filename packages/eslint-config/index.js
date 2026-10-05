@@ -1,5 +1,6 @@
 import js from "@eslint/js"
 import nextPlugin from "@next/eslint-plugin-next"
+import stylistic from "@stylistic/eslint-plugin"
 import prettier from "eslint-config-prettier"
 import reactHooks from "eslint-plugin-react-hooks"
 import globals from "globals"
@@ -9,6 +10,41 @@ import tseslint from "typescript-eslint"
  * @typedef {{ tsconfigRootDir: string, ignores?: string[] }} ConfigOptions
  * @typedef {import('eslint').Linter.Config} Config
  */
+
+const OBJECT_PARAMS_MESSAGE =
+  "Functions with two or more parameters must take a single object parameter instead."
+
+const OBJECT_PARAMS_RESTRICTIONS = [
+  "FunctionDeclaration[params.length>1]",
+  "VariableDeclarator > :matches(ArrowFunctionExpression, FunctionExpression)[params.length>1]",
+  "PropertyDefinition > ArrowFunctionExpression[params.length>1]",
+  "MethodDefinition[kind='method'] > FunctionExpression[params.length>1]:not(:has(Decorator))",
+  "TSMethodSignature[params.length>1]",
+  "TSDeclareFunction[params.length>1]",
+].map((selector) => ({ selector, message: OBJECT_PARAMS_MESSAGE }))
+
+const INLINE_AWAIT_MESSAGE =
+  "Store the awaited result in a variable first, then pass that variable along."
+
+const INLINE_AWAIT_RESTRICTIONS = [
+  "CallExpression > AwaitExpression.arguments",
+  "NewExpression > AwaitExpression.arguments",
+  "MemberExpression > AwaitExpression.object",
+  "SpreadElement > AwaitExpression",
+  "Property > AwaitExpression.value",
+  "ArrayExpression > AwaitExpression",
+].map((selector) => ({ selector, message: INLINE_AWAIT_MESSAGE }))
+
+const NAMED_SIGNATURE_TYPE_MESSAGE =
+  "Declare parameter and return types as named interfaces or types outside the function signature."
+
+const NAMED_SIGNATURE_TYPE_RESTRICTIONS = [
+  ":function > ObjectPattern > TSTypeAnnotation > TSTypeLiteral",
+  ":function > AssignmentPattern > ObjectPattern > TSTypeAnnotation > TSTypeLiteral",
+  ":function > Identifier > TSTypeAnnotation > TSTypeLiteral",
+  ":function > TSTypeAnnotation > TSTypeLiteral",
+  ":function > TSTypeAnnotation > TSTypeReference > TSTypeParameterInstantiation > TSTypeLiteral",
+].map((selector) => ({ selector, message: NAMED_SIGNATURE_TYPE_MESSAGE }))
 
 /**
  * @param {ConfigOptions & { runtimeGlobals: Record<string, boolean>, extra?: Config[] }} options
@@ -32,6 +68,7 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     {
+      plugins: { "@stylistic": stylistic },
       languageOptions: {
         globals: runtimeGlobals,
         parserOptions: {
@@ -54,6 +91,21 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
         "@typescript-eslint/no-floating-promises": "error",
         "no-console": "error",
         eqeqeq: ["error", "always"],
+        "no-restricted-syntax": [
+          "error",
+          ...OBJECT_PARAMS_RESTRICTIONS,
+          ...INLINE_AWAIT_RESTRICTIONS,
+          ...NAMED_SIGNATURE_TYPE_RESTRICTIONS,
+        ],
+        "@stylistic/padding-line-between-statements": [
+          "error",
+          { blankLine: "always", prev: "*", next: "if" },
+          { blankLine: "always", prev: "if", next: "*" },
+          { blankLine: "always", prev: "*", next: ["expression", "multiline-expression"] },
+          { blankLine: "always", prev: ["expression", "multiline-expression"], next: "*" },
+          { blankLine: "always", prev: "*", next: ["multiline-const", "multiline-let"] },
+          { blankLine: "always", prev: ["multiline-const", "multiline-let"], next: "*" },
+        ],
       },
     },
     ...extra,
@@ -69,6 +121,11 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
       ...tseslint.configs.disableTypeChecked,
     },
     prettier,
+    {
+      rules: {
+        curly: ["error", "multi-or-nest", "consistent"],
+      },
+    },
   )
 }
 

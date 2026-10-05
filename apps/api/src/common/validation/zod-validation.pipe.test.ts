@@ -2,7 +2,7 @@ import { ApiErrorCode } from "@ponto/types"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-import { AppError } from "../errors/app-error.js"
+import { AppError } from "#src/common/errors/app-error.js"
 import { ZodValidationPipe } from "./zod-validation.pipe.js"
 
 const pipe = new ZodValidationPipe(z.object({ title: z.string().trim().min(1) }))
@@ -21,6 +21,7 @@ describe("ZodValidationPipe", () => {
     }
 
     expect(caught).toBeInstanceOf(AppError)
+
     expect(caught).toMatchObject({
       code: ApiErrorCode.VALIDATION_FAILED,
       status: 400,

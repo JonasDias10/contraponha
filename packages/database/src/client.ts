@@ -1,9 +1,14 @@
+import { DATABASE_CONNECTION_TIMEOUT_MS, DATABASE_STATEMENT_TIMEOUT_MS } from "@ponto/config"
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
 import pg from "pg"
 
 import * as schema from "./schema/index.js"
 
 export type Database = NodePgDatabase<typeof schema>
+
+export type DatabaseTransaction = Parameters<Parameters<Database["transaction"]>[0]>[0]
+
+export type DatabaseExecutor = Database | DatabaseTransaction
 
 export interface DatabaseOptions {
   url: string
@@ -23,8 +28,8 @@ export function createDatabaseConnection({
   url,
   applicationName = "ponto",
   maxConnections = 10,
-  connectionTimeoutMs = 5_000,
-  statementTimeoutMs = 15_000,
+  connectionTimeoutMs = DATABASE_CONNECTION_TIMEOUT_MS,
+  statementTimeoutMs = DATABASE_STATEMENT_TIMEOUT_MS,
   onPoolError,
 }: DatabaseOptions): DatabaseConnection {
   const pool = new pg.Pool({

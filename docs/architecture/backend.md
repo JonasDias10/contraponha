@@ -12,14 +12,18 @@ apps/api/
 │   ├── app.setup.ts            Middlewares globais (Helmet, CORS, prefixo, versionamento, Swagger)
 │   ├── config/                 Schema de env (Zod), AppConfig tipado, ConfigModule
 │   ├── common/                 Peças transversais sem regra de domínio
+│   │   ├── auth/               @Public(), @CurrentAuth() e o tipo AuthContext
 │   │   ├── errors/             AppError, catálogo de erros, filtro global
 │   │   ├── validation/         ZodValidationPipe
 │   │   ├── logging/            Configuração do Pino e request id
-│   │   └── openapi/            Swagger e conversão Zod -> OpenAPI
-│   ├── infrastructure/         Integrações técnicas (PostgreSQL, Redis)
+│   │   ├── openapi/            Swagger e conversão Zod -> OpenAPI
+│   │   └── rate-limit/         Limitadores padrão e estrito (@SensitiveRateLimit)
+│   ├── infrastructure/         Integrações técnicas (PostgreSQL, Redis, e-mail)
 │   └── modules/                Módulos de domínio
-│       ├── health/             Primeiro módulo funcional
-│       └── auth/, users/, ...  Planejados (README com a fronteira de cada um)
+│       ├── health/             Liveness e readiness
+│       ├── users/              Conta e perfil
+│       ├── auth/               Credenciais, sessões, verificação de e-mail e senha
+│       └── posts/, feed/, ...  Planejados (README com a fronteira de cada um)
 ├── test/                       Testes e2e (Postgres e Redis reais)
 ├── vitest.config.ts            Testes unitários (src/**/*.test.ts)
 └── vitest.e2e.config.ts        Testes e2e (test/**/*.e2e.test.ts)
@@ -29,23 +33,28 @@ apps/api/
 
 Separação clara, sem cerimônia:
 
-| Camada             | Onde vive                                                        | Responsabilidade                                                                                      |
-| ------------------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Controller**     | `*.controller.ts`                                                | HTTP: rota, validação de entrada (pipe), documentação OpenAPI, status code. Nenhuma regra de negócio. |
-| **Application**    | `*.service.ts`                                                   | Casos de uso: orquestra domínio e repositórios, define transações, lança `AppError`.                  |
-| **Domain**         | arquivos sem sufixo de framework (`health-report.ts`, `post.ts`) | Regras puras: funções e tipos sem dependência de Nest, banco ou HTTP. Fáceis de testar.               |
-| **Repository**     | `*.repository.ts`                                                | Acesso a dados com Drizzle. Recebe e devolve tipos do domínio, esconde SQL do serviço.                |
-| **Infrastructure** | `src/infrastructure/` e `*.client.ts`                            | Clientes técnicos (banco, Redis, provedores externos).                                                |
+Todo módulo segue a mesma estrutura de pastas. Na raiz fica apenas o `<nome>.module.ts`, que compõe as peças; todo o resto vive na pasta da sua camada, com o teste ao lado do arquivo testado:
+
+| Pasta             | Camada         | Responsabilidade                                                                                      |
+| ----------------- | -------------- | ----------------------------------------------------------------------------------------------------- |
+| `controllers/`    | Controller     | HTTP: rota, validação de entrada (pipe), documentação OpenAPI, status code. Nenhuma regra de negócio. |
+| `services/`       | Application    | Casos de uso: orquestra domínio e repositórios, define transações, lança `AppError`.                  |
+| `domain/`         | Domain         | Regras puras: funções e tipos sem dependência de Nest, banco ou HTTP. Fáceis de testar.               |
+| `repositories/`   | Repository     | Acesso a dados com Drizzle. Recebe e devolve tipos do domínio, esconde SQL do serviço.                |
+| `infrastructure/` | Infrastructure | Adaptadores técnicos do módulo (hash de senha, cache no Redis, probes).                               |
+| `guards/`         | HTTP           | Guards do Nest que o módulo oferece.                                                                  |
+
+Crie só as pastas que o módulo usa. Integrações técnicas compartilhadas por vários módulos (banco, Redis, e-mail) ficam em `src/infrastructure/`, fora dos módulos.
 
 O módulo `health` mostra a ideia em escala pequena:
 
 ```text
 modules/health/
-├── health.controller.ts     Controller: GET /health/live e /health/ready
-├── health.service.ts        Application: executa os probes e decide 200 ou 503
-├── health-report.ts         Domain: agrega o status (função pura, testada)
-├── dependency-probe.ts      Infra: mede latência com timeout
-└── health.module.ts
+├── health.module.ts
+├── controllers/health.controller.ts        GET /health/live e /health/ready
+├── services/health.service.ts              Executa os probes e decide 200 ou 503
+├── domain/health-report.ts                 Agrega o status (função pura, testada)
+└── infrastructure/dependency-probe.ts      Mede latência com timeout
 ```
 
 ### O que evitamos
@@ -54,31 +63,103 @@ modules/health/
 - **Camadas vazias.** Se um caso de uso é só "buscar por id", o serviço chama o repositório e pronto. Não existe `UseCase` + `Interactor` + `Presenter` para isso.
 - **Factories e herança desnecessárias.** Composição e funções puras primeiro.
 
-### Como um módulo cresce
+### Módulos de domínio
 
-Exemplo de como `users` deve ficar quando for implementado:
+O módulo `users` é o exemplo de referência de um módulo de domínio completo:
 
 ```text
 modules/users/
-├── users.module.ts
-├── users.controller.ts
-├── users.service.ts
-├── users.repository.ts
-├── user.ts                  Tipos e regras de domínio
-├── users.schemas.ts         Schemas Zod de entrada (ou em @ponto/validation, se os clientes usarem)
-└── users.service.test.ts
+├── users.module.ts                         Exporta UsersService para outros módulos
+├── controllers/users.controller.ts         GET/PATCH /users/me, GET /users/:handle
+├── services/users.service.ts               Casos de uso; traduz violações de unicidade em AppError
+├── repositories/users.repository.ts        Drizzle; aceita um executor para participar de transações
+└── domain/user.ts                          Handles reservados, mapeamento para perfil público/privado
 ```
 
-Quando um módulo ficar grande, ele pode ser dividido em subpastas (`domain/`, `application/`, `http/`, `infrastructure/`) sem mudar as regras acima.
+Os schemas de entrada ficam em `@ponto/validation` porque os formulários de web e mobile usam os mesmos.
+
+O módulo `auth` é o maior até agora:
+
+```text
+modules/auth/
+├── auth.module.ts
+├── controllers/      auth.controller.ts, sessions.controller.ts
+├── services/         auth.service.ts, sessions.service.ts, account-verification.service.ts
+├── repositories/     credentials, sessions e verification-tokens
+├── domain/           opaque-token.ts, account-emails.ts, account-links.ts
+├── infrastructure/   password-hasher.ts, session-cache.ts
+└── guards/           session-auth.guard.ts
+```
+
+O desenho está em [auth.md](auth.md).
+
+## Estilo de código
+
+As regras abaixo valem em todo o monorepo e são verificadas pelo ESLint (`pnpm lint`, com correção automática da primeira via `pnpm lint:fix`):
+
+- **`if` sem chaves por padrão** (`if (!user) return`). Chaves só quando a instrução ocupa várias linhas, e de forma consistente em `if/else`.
+- **Linha em branco antes e depois de todo `if`, de chamadas soltas (`await this.x()`, `this.deliver(...)`) e de declarações que ocupam várias linhas.** Sequências de `const` de uma linha cada podem ficar juntas.
+
+  ```ts
+  const token = await this.issueToken({
+    userId: user.id,
+    purpose: "password_reset",
+    ttlMs: minutesToMs(PASSWORD_RESET_TTL_MINUTES),
+  })
+
+  const link = this.buildLink({ path: PASSWORD_RESET_PATH, token })
+  ```
+
+- **Funções com dois ou mais parâmetros recebem um único objeto.** Os campos ficam nomeados na chamada (`revoke({ userId, sessionId })`) e a ordem dos argumentos deixa de importar. Ficam de fora as assinaturas impostas pelo framework: construtores (injeção de dependência), handlers de controller com parâmetros decorados, callbacks passados diretamente a outras funções (`.map((item, index) => ...)`) e métodos de interfaces do Nest, como `catch(exception, host)` do filtro de exceções, que usa `eslint-disable` com justificativa.
+- **Tipos de parâmetro e de retorno são declarados fora da assinatura**, como `interface` (ou `type`, quando for preciso, por exemplo para ser atribuível a um tipo com assinatura de índice). O nome segue o padrão `<Ação><Assunto>Params` para parâmetros (`IssueSessionParams`, `UpsertPasswordHashParams`). A interface é exportada quando a função ou o método público também é. Formatos usados por mais de um app ou pacote vão para o pacote compartilhado (`SessionListResponse` em `@ponto/types`, `LocaleTranslator` em `@ponto/i18n`).
+
+  ```ts
+  // avoid
+  async set({ tokenHash, session }: { tokenHash: string; session: CachedSession }): Promise<void>
+
+  // prefer
+  export interface SetCachedSessionParams {
+    tokenHash: string
+    session: CachedSession
+  }
+
+  async set({ tokenHash, session }: SetCachedSessionParams): Promise<void>
+  ```
+
+- **`await` não é usado como argumento.** O resultado vai primeiro para uma variável com nome e só então é usado:
+
+  ```ts
+  // avoid
+  return toPrivateProfile(await this.usersService.getById(auth.userId))
+
+  // prefer
+  const user = await this.usersService.getById(auth.userId)
+  return toPrivateProfile(user)
+  ```
 
 ## Regras de fronteira entre módulos
 
 1. **Cada tabela tem um único módulo dono.** As tabelas ficam em `packages/database/src/schema/<modulo>.ts`, mas só o repositório do módulo dono as consulta.
-2. **Módulos conversam por serviços exportados.** `posts` não importa `UsersRepository`; ele importa `UsersModule` e usa `UsersService`.
-3. **Sem dependência circular.** Se dois módulos precisam um do outro, a regra provavelmente pertence a um terceiro módulo ou deve virar evento.
-4. **`common/` não conhece domínio.** Se algo em `common/` começa a citar `posts` ou `users`, ele pertence ao módulo.
+2. **Módulos conversam por serviços exportados.** `auth` não importa `UsersRepository`; ele importa `UsersModule` e usa `UsersService`.
+3. **Transações atravessam módulos pelo executor.** Repositórios aceitam um `DatabaseExecutor` opcional (conexão ou transação). O cadastro, por exemplo, abre uma transação no `AuthService` e passa `tx` para `UsersService.create` e para o repositório de credenciais.
+4. **Sem dependência circular.** Se dois módulos precisam um do outro, a regra provavelmente pertence a um terceiro módulo ou deve virar evento.
+5. **`common/` não conhece domínio.** Se algo em `common/` começa a citar `posts` ou `users`, ele pertence ao módulo.
 
 Essas regras são o que permite extrair um módulo para um serviço separado no futuro.
+
+## Imports
+
+A API usa **subpath imports** do Node (campo `imports` do `package.json`) em vez de caminhos relativos longos:
+
+```ts
+import { AppError } from "#src/common/errors/app-error.js" // instead of "../../common/errors/app-error.js"
+import { SessionsService } from "./sessions.service.js" // same folder: relative
+```
+
+- `#src/*` aponta para `src/*` no TypeScript e nos testes (condição `source`, configurada em `customConditions` dos tsconfigs e em `ssr.resolve.conditions` do Vitest) e para `build/*` no Node em runtime. Nenhuma ferramenta de reescrita de caminhos é necessária no build.
+- Regra: arquivos da **mesma pasta** usam `./arquivo.js`; qualquer outro arquivo de `src/` usa `#src/...`. Os testes em `test/` importam o código da API por `#src/...` e os próprios helpers por `./support/...`.
+- O prefixo é `#src/` porque o Node 22 não aceita `#/` sozinho.
+- Web e mobile usam o alias `@/` (resolvido pelo Next.js e pelo Metro). Os pacotes em `packages/` continuam com imports relativos: são pequenos e as declarações `.d.ts` publicadas ficam mais simples assim.
 
 ## Versionamento da API
 
@@ -192,21 +273,35 @@ Mensagens de log são sempre em inglês e **não** passam por i18n.
 
 ## Segurança
 
-| Item                    | Implementação                                                                                                                                   |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Headers de segurança    | `helmet()` com CSP padrão; `X-Powered-By` desativado.                                                                                           |
-| CORS                    | Desligado por padrão. Liberado apenas para as origens de `CORS_ORIGINS`.                                                                        |
-| Rate limiting           | `@nestjs/throttler` global por IP (`RATE_LIMIT_*`). Health checks são isentos. Use `@Throttle()` para limites específicos (por exemplo, login). |
-| Proxy reverso           | `TRUST_PROXY` define quantos proxies são confiáveis, para obter o IP real com segurança.                                                        |
-| Validação e sanitização | Zod em toda entrada; campos desconhecidos descartados.                                                                                          |
-| Erros                   | Nunca expõem stack trace ou mensagem interna.                                                                                                   |
-| Segredos                | Apenas via variáveis de ambiente; `.env` fora do git.                                                                                           |
-| Logs                    | Redação de dados sensíveis (veja acima).                                                                                                        |
-| Swagger                 | Desligado em produção por padrão (`SWAGGER_ENABLED`).                                                                                           |
+| Item                    | Implementação                                                                                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Headers de segurança    | `helmet()` com CSP padrão; `X-Powered-By` desativado.                                                                                                           |
+| CORS                    | Desligado por padrão. Liberado apenas para as origens de `CORS_ORIGINS`.                                                                                        |
+| Autenticação            | Guard global de sessão (Bearer). Rotas abertas precisam de `@Public()`. Detalhes em [auth.md](auth.md).                                                         |
+| Rate limiting           | `@nestjs/throttler` global por IP (`RATE_LIMIT_*`) e um limitador estrito (`AUTH_RATE_LIMIT_*`) ativado com `@SensitiveRateLimit()`. Health checks são isentos. |
+| Proxy reverso           | `TRUST_PROXY` define quantos proxies são confiáveis, para obter o IP real com segurança.                                                                        |
+| Validação e sanitização | Zod em toda entrada; campos desconhecidos descartados.                                                                                                          |
+| Erros                   | Nunca expõem stack trace ou mensagem interna.                                                                                                                   |
+| Segredos                | Apenas via variáveis de ambiente; `.env` fora do git.                                                                                                           |
+| Logs                    | Redação de dados sensíveis (veja acima).                                                                                                                        |
+| Swagger                 | Desligado em produção por padrão (`SWAGGER_ENABLED`).                                                                                                           |
 
 **Rate limiting com várias instâncias:** hoje o contador fica em memória, o que é correto para uma instância. Ao escalar horizontalmente, troque o storage do `ThrottlerModule` por um baseado em Redis; o cliente Redis já está disponível via injeção (`REDIS`).
 
-**Autenticação (próxima etapa):** o módulo `auth` fornecerá um guard global com decorator `@Public()` para rotas abertas. A ordem dos guards será: rate limit, depois autenticação, depois autorização. Os códigos `UNAUTHORIZED` e `FORBIDDEN` e suas mensagens já existem.
+**Ordem dos guards:** rate limit, depois sessão. Assim, tentativas de força bruta são barradas antes de qualquer consulta ao banco. Autorização (papéis, moderação) entrará depois da sessão.
+
+**Protegido por padrão:** uma rota nova sem `@Public()` exige sessão. Esquecer o decorator gera um 401 visível no primeiro teste, nunca uma rota aberta por engano.
+
+## Durações
+
+Nenhum número de tempo fica solto no código. Toda duração tem nome com a unidade no sufixo (`_MS`, `_SECONDS`, `_MINUTES`, `_HOURS`, `_DAYS`) e mora num arquivo compartilhado:
+
+| Arquivo                            | Conteúdo                                                                                                                                                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/config/src/time.ts`      | Conversões (`secondsToMs`, `minutesToMs`, `hoursToMs`, `daysToMs`, `msToSeconds`) e durações usadas por mais de um app ou pacote (`API_READINESS_TIMEOUT_MS`, timeouts padrão do PostgreSQL) |
+| `apps/api/src/config/durations.ts` | Durações da API: timeouts de health e Redis, cache e atualização de sessão, validade dos links de conta                                                                                      |
+
+Durações configuráveis por ambiente seguem a mesma regra no nome da variável (`RATE_LIMIT_TTL_SECONDS`, `SESSION_TTL_DAYS`) e são convertidas para milissegundos uma única vez, em `loadAppConfig()`. Dentro do código, campos e parâmetros também carregam a unidade (`ttlMs`, `timeoutMs`).
 
 ## Configuração
 
@@ -217,10 +312,11 @@ Mensagens de log são sempre em inglês e **não** passam por i18n.
 
 Para adicionar uma variável: inclua no schema, exponha no `AppConfig`, documente no `.env.example` e, se for usada no CI, no workflow.
 
-## Infraestrutura (PostgreSQL e Redis)
+## Infraestrutura (PostgreSQL, Redis e e-mail)
 
 - `DatabaseModule` (global) expõe a instância Drizzle pelo token `DATABASE` e fecha o pool no shutdown.
 - `RedisModule` (global) expõe o cliente `ioredis` pelo token `REDIS` e fecha a conexão no shutdown.
+- `EmailModule` (global) expõe `EmailSender`, implementado por `SmtpEmailSender` (nodemailer). Qualquer provedor com SMTP serve; em desenvolvimento, o Mailpit do docker-compose recebe tudo. É uma das poucas abstrações com classe abstrata, porque há duas implementações reais (SMTP e o capturador dos testes) e o provedor muda por ambiente.
 - A API **sobe mesmo se PostgreSQL ou Redis estiverem fora**: o pool conecta sob demanda e o Redis reconecta sozinho. Quem decide se a instância recebe tráfego é o readiness check.
 
 ## Health checks
@@ -233,7 +329,10 @@ Para adicionar uma variável: inclua no schema, exponha no `AppConfig`, document
 ## Testes
 
 - **Unitários** (`src/**/*.test.ts`, `pnpm test`): funções puras e peças isoladas (config, pipe de validação, agregação de health). Não precisam de Docker.
-- **E2E** (`test/**/*.e2e.test.ts`, `pnpm test:e2e`): sobem o `AppModule` completo com PostgreSQL e Redis reais e fazem requisições HTTP. Cobrem envelope de erro, i18n, request id, rate limiting, headers de segurança, OpenAPI e health.
+- **E2E** (`test/**/*.e2e.test.ts`, `pnpm test:e2e`): sobem o `AppModule` completo com PostgreSQL e Redis reais e fazem requisições HTTP. Cobrem envelope de erro, i18n, request id, rate limiting, headers de segurança, OpenAPI, health, e todos os fluxos de auth e users.
+  - Rodam num banco separado, `<nome>_test` (por exemplo, `ponto_test`). O `test/global-setup.ts` cria o banco se não existir, aplica as migrations com o migrator programático e limpa as tabelas antes da execução.
+  - O `EmailSender` é trocado por `CapturingEmailSender`, que guarda as mensagens em memória; os testes leem os links de verificação e redefinição a partir dele.
+  - Cada teste cria contas com e-mail e handle aleatórios (`test/support/accounts.ts`), então os testes não dependem de ordem.
 
 Testes de serviços com banco devem usar o PostgreSQL real, não mocks: mocks não detectam migrations quebradas nem SQL inválido.
 

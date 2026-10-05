@@ -2,7 +2,12 @@ import { describe, expect, it, vi } from "vitest"
 
 import { ApiError, ApiResponseFormatError, createApiClient } from "./index.js"
 
-function jsonResponse(status: number, body: unknown): Response {
+interface JsonResponseParams {
+  status: number
+  body: unknown
+}
+
+function jsonResponse({ status, body }: JsonResponseParams): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json" },
@@ -12,7 +17,11 @@ function jsonResponse(status: number, body: unknown): Response {
 describe("createApiClient", () => {
   it("calls the versioned endpoint with locale headers and returns the parsed body", async () => {
     const report = { status: "up", uptimeSeconds: 12, timestamp: "2026-10-05T12:00:00.000Z" }
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(200, report))
+
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(jsonResponse({ status: 200, body: report }))
+
     const client = createApiClient({
       baseUrl: "https://api.ponto.test/",
       locale: "en",
@@ -22,7 +31,9 @@ describe("createApiClient", () => {
     await expect(client.health.liveness()).resolves.toEqual(report)
 
     const [url, init] = fetchMock.mock.calls[0] ?? []
+
     expect(url).toBe("https://api.ponto.test/api/v1/health/live")
+
     expect(init?.headers).toMatchObject({ "accept-language": "en" })
   })
 
@@ -35,14 +46,16 @@ describe("createApiClient", () => {
         requestId: "req-12345678",
       },
     }
+
     const client = createApiClient({
       baseUrl: "https://api.ponto.test",
-      fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(503, body)),
+      fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({ status: 503, body })),
     })
 
     const error: unknown = await client.health.readiness().catch((caught: unknown) => caught)
 
     expect(error).toBeInstanceOf(ApiError)
+
     expect(error).toMatchObject({
       status: 503,
       code: "SERVICE_UNAVAILABLE",
@@ -53,7 +66,9 @@ describe("createApiClient", () => {
   it("rejects responses that do not match the contract", async () => {
     const client = createApiClient({
       baseUrl: "https://api.ponto.test",
-      fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(200, { status: "maybe" })),
+      fetch: vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(jsonResponse({ status: 200, body: { status: "maybe" } })),
     })
 
     await expect(client.health.liveness()).rejects.toBeInstanceOf(ApiResponseFormatError)
@@ -69,7 +84,9 @@ describe("createApiClient", () => {
     it("is true when the API reports itself ready", async () => {
       const client = createApiClient({
         baseUrl: "https://api.ponto.test",
-        fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(200, readyReport)),
+        fetch: vi
+          .fn<typeof fetch>()
+          .mockResolvedValue(jsonResponse({ status: 200, body: readyReport })),
       })
 
       await expect(client.health.isReady()).resolves.toBe(true)
@@ -79,29 +96,77 @@ describe("createApiClient", () => {
       const degraded = createApiClient({
         baseUrl: "https://api.ponto.test",
         fetch: vi.fn<typeof fetch>().mockResolvedValue(
-          jsonResponse(503, {
-            error: { code: "SERVICE_UNAVAILABLE", message: "x", details: null, requestId: null },
+          jsonResponse({
+            status: 503,
+            body: {
+              error: { code: "SERVICE_UNAVAILABLE", message: "x", details: null, requestId: null },
+            },
           }),
         ),
       })
+
       const unreachable = createApiClient({
         baseUrl: "https://api.ponto.test",
         fetch: vi.fn<typeof fetch>().mockRejectedValue(new TypeError("fetch failed")),
       })
 
       await expect(degraded.health.isReady()).resolves.toBe(false)
+
       await expect(unreachable.health.isReady()).resolves.toBe(false)
     })
 
     it("propagates cancellation instead of reporting the API as down", async () => {
       const controller = new AbortController()
+
       controller.abort()
+
       const client = createApiClient({
         baseUrl: "https://api.ponto.test",
         fetch: vi.fn<typeof fetch>().mockRejectedValue(new DOMException("Aborted", "AbortError")),
       })
 
       await expect(client.health.isReady(controller.signal)).rejects.toThrow("Aborted")
+    })
+  })
+
+  describe("authenticated requests", () => {
+    it("sends the session token as a bearer credential", async () => {
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }))
+
+      const client = createApiClient({
+        baseUrl: "https://api.ponto.test",
+        fetch: fetchMock,
+        getSessionToken: () => "session-token-value",
+      })
+
+      await expect(client.auth.logout()).resolves.toBeUndefined()
+
+      const [url, init] = fetchMock.mock.calls[0] ?? []
+
+      expect(url).toBe("https://api.ponto.test/api/v1/auth/logout")
+
+      expect(init).toMatchObject({
+        method: "POST",
+        headers: { authorization: "Bearer session-token-value" },
+      })
+    })
+
+    it("omits the authorization header when there is no session", async () => {
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 202 }))
+
+      const client = createApiClient({
+        baseUrl: "https://api.ponto.test",
+        fetch: fetchMock,
+        getSessionToken: () => null,
+      })
+
+      await client.auth.requestPasswordReset({ email: "ana@example.com" })
+
+      const [, init] = fetchMock.mock.calls[0] ?? []
+
+      expect(init?.headers).not.toHaveProperty("authorization")
+
+      expect(init?.body).toBe(JSON.stringify({ email: "ana@example.com" }))
     })
   })
 })

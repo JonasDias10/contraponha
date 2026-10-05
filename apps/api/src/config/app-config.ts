@@ -1,4 +1,4 @@
-import { parseEnv, type EnvSource } from "@ponto/config"
+import { daysToMs, parseEnv, secondsToMs, type EnvSource } from "@ponto/config"
 import type { Locale } from "@ponto/i18n"
 
 import { envSchema, type Env } from "./env.schema.js"
@@ -36,10 +36,28 @@ export interface AppConfig {
   swagger: {
     enabled: boolean
   }
+  webAppUrl: string
+  auth: {
+    sessionTtlMs: number
+    rateLimit: {
+      ttlMs: number
+      limit: number
+    }
+  }
+  email: {
+    from: string
+    smtp: {
+      host: string
+      port: number
+      secure: boolean
+      user: string | undefined
+      password: string | undefined
+    }
+  }
 }
 
 export function loadAppConfig(source: EnvSource): AppConfig {
-  const env = parseEnv(envSchema, source)
+  const env = parseEnv({ schema: envSchema, source })
   const isProduction = env.NODE_ENV === "production"
 
   return {
@@ -63,7 +81,7 @@ export function loadAppConfig(source: EnvSource): AppConfig {
       url: env.REDIS_URL,
     },
     rateLimit: {
-      ttlMs: env.RATE_LIMIT_TTL_SECONDS * 1000,
+      ttlMs: secondsToMs(env.RATE_LIMIT_TTL_SECONDS),
       limit: env.RATE_LIMIT_MAX_REQUESTS,
     },
     i18n: {
@@ -72,6 +90,24 @@ export function loadAppConfig(source: EnvSource): AppConfig {
     },
     swagger: {
       enabled: env.SWAGGER_ENABLED ?? !isProduction,
+    },
+    webAppUrl: env.WEB_APP_URL.replace(/\/+$/, ""),
+    auth: {
+      sessionTtlMs: daysToMs(env.SESSION_TTL_DAYS),
+      rateLimit: {
+        ttlMs: secondsToMs(env.AUTH_RATE_LIMIT_TTL_SECONDS),
+        limit: env.AUTH_RATE_LIMIT_MAX_REQUESTS,
+      },
+    },
+    email: {
+      from: env.EMAIL_FROM,
+      smtp: {
+        host: env.SMTP_HOST,
+        port: env.SMTP_PORT,
+        secure: env.SMTP_SECURE,
+        user: env.SMTP_USER,
+        password: env.SMTP_PASSWORD,
+      },
     },
   }
 }

@@ -21,6 +21,7 @@
     "clean": "rm -rf build .turbo"
   },
   "dependencies": {
+    "@ponto/i18n": "workspace:*",
     "@ponto/types": "workspace:*",
     "zod": "^4.6.5"
   },

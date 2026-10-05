@@ -1,7 +1,8 @@
 {
   "extends": "@ponto/tsconfig/nestjs.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "customConditions": ["source"]
   },
   "include": ["src", "test", "*.ts"]
 }

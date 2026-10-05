@@ -46,6 +46,9 @@ jobs:
       NODE_ENV: test
       DATABASE_URL: postgres://ponto:ponto@localhost:5432/ponto
       REDIS_URL: redis://localhost:6379
+      WEB_APP_URL: http://localhost:3001
+      SMTP_HOST: localhost
+      EMAIL_FROM: Ponto <no-reply@ponto.test>
       API_URL: http://localhost:3000
       EXPO_PUBLIC_API_URL: http://localhost:3000
       TURBO_TELEMETRY_DISABLED: 1
