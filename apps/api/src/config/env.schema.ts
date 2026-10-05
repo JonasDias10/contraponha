@@ -23,6 +23,18 @@ export const envSchema = z
     RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(120),
     SWAGGER_ENABLED: envBoolean.optional(),
 
+    WEB_APP_URL: z.url({ protocol: /^https?$/ }),
+    SESSION_TTL_DAYS: z.coerce.number().int().positive().max(365).default(30),
+    AUTH_RATE_LIMIT_TTL_SECONDS: z.coerce.number().int().positive().default(900),
+    AUTH_RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(10),
+
+    SMTP_HOST: z.string().min(1),
+    SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+    SMTP_SECURE: envBoolean.default(false),
+    SMTP_USER: z.string().min(1).optional(),
+    SMTP_PASSWORD: z.string().min(1).optional(),
+    EMAIL_FROM: z.string().min(3),
+
     DEFAULT_LOCALE: localeSchema.default(DEFAULT_LOCALE),
     SUPPORTED_LOCALES: envList.pipe(z.array(localeSchema).min(1)).default([...SUPPORTED_LOCALES]),
   })

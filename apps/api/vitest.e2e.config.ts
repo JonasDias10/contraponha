@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [swc.vite()],
   test: {
     include: ["test/**/*.e2e.test.ts"],
+    globalSetup: ["test/global-setup.ts"],
     setupFiles: ["test/setup-env.ts"],
     testTimeout: 15_000,
     hookTimeout: 30_000,

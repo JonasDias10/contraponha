@@ -11,7 +11,7 @@ describe("HTTP foundation", () => {
   let app: NestExpressApplication
 
   beforeAll(async () => {
-    app = await createTestApp({ RATE_LIMIT_MAX_REQUESTS: "3", RATE_LIMIT_TTL_SECONDS: "60" })
+    ;({ app } = await createTestApp({ RATE_LIMIT_MAX_REQUESTS: "3", RATE_LIMIT_TTL_SECONDS: "60" }))
   })
 
   afterAll(async () => {

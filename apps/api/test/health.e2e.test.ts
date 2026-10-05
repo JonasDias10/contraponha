@@ -9,7 +9,7 @@ describe("health endpoints", () => {
   let app: NestExpressApplication
 
   beforeAll(async () => {
-    app = await createTestApp()
+    ;({ app } = await createTestApp())
   })
 
   afterAll(async () => {
@@ -40,7 +40,7 @@ describe("readiness with an unreachable dependency", () => {
   let app: NestExpressApplication
 
   beforeAll(async () => {
-    app = await createTestApp({ REDIS_URL: "redis://127.0.0.1:1" })
+    ;({ app } = await createTestApp({ REDIS_URL: "redis://127.0.0.1:1" }))
   })
 
   afterAll(async () => {

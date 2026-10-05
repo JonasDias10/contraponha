@@ -48,6 +48,22 @@ export const ERROR_CATALOG: Record<ApiErrorCode, ErrorDefinition> = {
     status: HttpStatus.SERVICE_UNAVAILABLE,
     messageKey: "common.errors.serviceUnavailable",
   },
+  [ApiErrorCode.INVALID_CREDENTIALS]: {
+    status: HttpStatus.UNAUTHORIZED,
+    messageKey: "auth.errors.invalidCredentials",
+  },
+  [ApiErrorCode.INVALID_TOKEN]: {
+    status: HttpStatus.BAD_REQUEST,
+    messageKey: "auth.errors.invalidToken",
+  },
+  [ApiErrorCode.EMAIL_ALREADY_IN_USE]: {
+    status: HttpStatus.CONFLICT,
+    messageKey: "auth.errors.emailAlreadyInUse",
+  },
+  [ApiErrorCode.HANDLE_UNAVAILABLE]: {
+    status: HttpStatus.CONFLICT,
+    messageKey: "users.errors.handleUnavailable",
+  },
 }
 
 const CODE_BY_STATUS: Partial<Record<number, ApiErrorCode>> = {
@@ -63,8 +79,10 @@ const CODE_BY_STATUS: Partial<Record<number, ApiErrorCode>> = {
 
 export function errorCodeFromStatus(status: number): ApiErrorCode {
   const code = CODE_BY_STATUS[status]
+
   if (code) {
     return code
   }
+
   return status >= 500 ? ApiErrorCode.INTERNAL_ERROR : ApiErrorCode.BAD_REQUEST
 }

@@ -36,6 +36,24 @@ export interface AppConfig {
   swagger: {
     enabled: boolean
   }
+  webAppUrl: string
+  auth: {
+    sessionTtlMs: number
+    rateLimit: {
+      ttlMs: number
+      limit: number
+    }
+  }
+  email: {
+    from: string
+    smtp: {
+      host: string
+      port: number
+      secure: boolean
+      user: string | undefined
+      password: string | undefined
+    }
+  }
 }
 
 export function loadAppConfig(source: EnvSource): AppConfig {
@@ -72,6 +90,24 @@ export function loadAppConfig(source: EnvSource): AppConfig {
     },
     swagger: {
       enabled: env.SWAGGER_ENABLED ?? !isProduction,
+    },
+    webAppUrl: env.WEB_APP_URL.replace(/\/+$/, ""),
+    auth: {
+      sessionTtlMs: env.SESSION_TTL_DAYS * 24 * 60 * 60 * 1000,
+      rateLimit: {
+        ttlMs: env.AUTH_RATE_LIMIT_TTL_SECONDS * 1000,
+        limit: env.AUTH_RATE_LIMIT_MAX_REQUESTS,
+      },
+    },
+    email: {
+      from: env.EMAIL_FROM,
+      smtp: {
+        host: env.SMTP_HOST,
+        port: env.SMTP_PORT,
+        secure: env.SMTP_SECURE,
+        user: env.SMTP_USER,
+        password: env.SMTP_PASSWORD,
+      },
     },
   }
 }

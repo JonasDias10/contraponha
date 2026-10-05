@@ -6,6 +6,9 @@ import { loadAppConfig } from "./app-config.js"
 const requiredEnv = {
   DATABASE_URL: "postgres://ponto:ponto@localhost:5432/ponto",
   REDIS_URL: "redis://localhost:6379",
+  WEB_APP_URL: "http://localhost:3001/",
+  SMTP_HOST: "localhost",
+  EMAIL_FROM: "Ponto <no-reply@ponto.test>",
 }
 
 describe("loadAppConfig", () => {
@@ -18,6 +21,8 @@ describe("loadAppConfig", () => {
     expect(config.i18n).toEqual({ defaultLocale: "pt-BR", supportedLocales: ["pt-BR", "en", "es"] })
     expect(config.swagger.enabled).toBe(true)
     expect(config.log.pretty).toBe(true)
+    expect(config.webAppUrl).toBe("http://localhost:3001")
+    expect(config.auth.sessionTtlMs).toBe(30 * 24 * 60 * 60 * 1000)
   })
 
   it("disables developer conveniences in production unless explicitly enabled", () => {

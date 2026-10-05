@@ -13,10 +13,12 @@ import {
   readinessReportSchema,
 } from "@ponto/validation"
 
+import { Public } from "../../common/auth/public.decorator.js"
 import { toOpenApiSchema } from "../../common/openapi/swagger.js"
 import { HealthService } from "./health.service.js"
 
 @ApiTags("health")
+@Public()
 @SkipThrottle()
 @Controller("health")
 export class HealthController {
