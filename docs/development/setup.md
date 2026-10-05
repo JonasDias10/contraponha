@@ -77,6 +77,7 @@ Se as portas já estiverem em uso, altere `POSTGRES_PORT`/`REDIS_PORT` no `.env`
 pnpm db:migrate                         # aplica migrations pendentes
 pnpm db:generate --name add_users_table # gera migration a partir do schema
 pnpm db:studio                          # interface web para inspecionar dados
+pnpm db:reconcile-counters              # recalcula contadores (seguidores, reações, comentários)
 ```
 
 Fluxo para alterar o schema:

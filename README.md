@@ -107,24 +107,25 @@ Segredos nunca são versionados. O arquivo `.env` está no `.gitignore`.
 
 Todos os comandos rodam a partir da raiz.
 
-| Comando             | O que faz                                                                        |
-| ------------------- | -------------------------------------------------------------------------------- |
-| `pnpm dev`          | Sobe API e web em modo watch (compila os pacotes antes)                          |
-| `pnpm dev:api`      | Só a API                                                                         |
-| `pnpm dev:web`      | Só o web (porta 3001)                                                            |
-| `pnpm dev:mobile`   | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                              |
-| `pnpm build`        | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                 |
-| `pnpm test`         | Testes unitários (não precisam de Docker)                                        |
-| `pnpm test:e2e`     | Testes de integração da API contra PostgreSQL e Redis reais (banco `ponto_test`) |
-| `pnpm lint`         | ESLint com regras que usam informação de tipos                                   |
-| `pnpm lint:fix`     | ESLint corrigindo automaticamente o que for possível                             |
-| `pnpm typecheck`    | Verificação de tipos em todo o monorepo                                          |
-| `pnpm format`       | Formata o código com Prettier                                                    |
-| `pnpm format:check` | Verifica a formatação (usado no CI)                                              |
-| `pnpm db:generate`  | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                  |
-| `pnpm db:migrate`   | Aplica as migrations pendentes                                                   |
-| `pnpm db:studio`    | Abre o Drizzle Studio                                                            |
-| `pnpm clean`        | Remove artefatos de build e cache                                                |
+| Comando                      | O que faz                                                                        |
+| ---------------------------- | -------------------------------------------------------------------------------- |
+| `pnpm dev`                   | Sobe API e web em modo watch (compila os pacotes antes)                          |
+| `pnpm dev:api`               | Só a API                                                                         |
+| `pnpm dev:web`               | Só o web (porta 3001)                                                            |
+| `pnpm dev:mobile`            | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                              |
+| `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                 |
+| `pnpm test`                  | Testes unitários (não precisam de Docker)                                        |
+| `pnpm test:e2e`              | Testes de integração da API contra PostgreSQL e Redis reais (banco `ponto_test`) |
+| `pnpm lint`                  | ESLint com regras que usam informação de tipos                                   |
+| `pnpm lint:fix`              | ESLint corrigindo automaticamente o que for possível                             |
+| `pnpm typecheck`             | Verificação de tipos em todo o monorepo                                          |
+| `pnpm format`                | Formata o código com Prettier                                                    |
+| `pnpm format:check`          | Verifica a formatação (usado no CI)                                              |
+| `pnpm db:generate`           | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                  |
+| `pnpm db:migrate`            | Aplica as migrations pendentes                                                   |
+| `pnpm db:studio`             | Abre o Drizzle Studio                                                            |
+| `pnpm db:reconcile-counters` | Recalcula contadores denormalizados a partir das linhas de origem                |
+| `pnpm clean`                 | Remove artefatos de build e cache                                                |
 
 ## Estrutura do monorepo
 

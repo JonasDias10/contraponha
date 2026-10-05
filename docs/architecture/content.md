@@ -64,6 +64,26 @@ Como a consistência é garantida:
 - O contador só muda quando a linha realmente foi inserida ou removida (`ON CONFLICT DO NOTHING ... RETURNING`). Repetir a mesma reação, inclusive em paralelo, não incrementa duas vezes; há um teste e2e com 10 requisições simultâneas.
 - `CHECK` impede contadores negativos.
 
+### Concorrência
+
+- **Ordem de lock fixa.** Quando uma transação atualiza mais de uma linha de contador, ela trava as linhas sempre na mesma ordem: no follow, as duas linhas de `users` em ordem de id; em comentários, sempre o post antes do comentário. Sem isso, duas pessoas se seguindo no mesmo instante travavam o mesmo par de linhas em ordem inversa e geravam deadlock (medido: 7 de 8 tentativas falhavam com 500 antes da correção).
+- **Repetição automática.** Todas as transações passam por `runTransaction` (`@ponto/database`), que repete do início, com uma pausa curta e aleatória, quando o PostgreSQL aborta por deadlock (`40P01`) ou conflito de serialização (`40001`). É uma rede de segurança: com a ordem de lock correta, o teste de follows mútuos não registra nenhum deadlock.
+- **Limite conhecido: linha quente.** Cada incremento segura o lock da linha até o commit, então milhares de eventos por segundo no mesmo post ou na mesma conta entram em fila. Quando isso aparecer nas métricas, o próximo passo é tirar o contador da transação da requisição: incrementar no Redis (`INCRBY`) e gravar no PostgreSQL em lote a cada poucos segundos, com o número passando a ser eventualmente consistente. É o mesmo caminho que Instagram e Facebook seguiram (contador denormalizado, depois cache e escrita centralizada).
+
+### Reconciliação
+
+As linhas de `follows`, `reactions` e `comments` são a fonte da verdade; os contadores são derivados. `reconcileCounters` (`@ponto/database`) recalcula todos os contadores a partir dessas linhas e corrige os que divergirem:
+
+```bash
+pnpm db:reconcile-counters
+# {"startedAt":"...","finishedAt":"...","fixedRows":{"users":0,"posts":0,"comments":0}}
+```
+
+- Processa em lotes de 500 linhas por transação, para não segurar locks por muito tempo.
+- Cada lote trava suas linhas (`FOR UPDATE`, em ordem de id) **antes** de contar. Uma escrita concorrente ou já foi confirmada, e entra na contagem, ou está esperando o lock e aplica seu próprio incremento depois. Sem esse lock, a reconciliação poderia sobrescrever um incremento e criar o desvio que deveria corrigir.
+- O relatório mostra quantas linhas foram corrigidas por tabela. Em operação normal deve ser zero; um valor diferente de zero indica bug ou falha parcial e merece investigação.
+- Em produção, rode periodicamente (por exemplo, de hora em hora, via cron da plataforma). Quando houver fila de jobs, ele vira um job agendado.
+
 ## Modelo de dados
 
 | Tabela              | Dono        | Observações                                                                                                                                                   |
