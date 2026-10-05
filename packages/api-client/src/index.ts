@@ -1,3 +1,5 @@
 export { createApiClient, type ApiClient, type ApiClientOptions } from "./client.js"
 export { ApiError, ApiResponseFormatError } from "./errors.js"
+export type { AuthResource } from "./resources/auth.js"
 export type { HealthResource } from "./resources/health.js"
+export type { UsersResource } from "./resources/users.js"

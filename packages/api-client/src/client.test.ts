@@ -104,4 +104,39 @@ describe("createApiClient", () => {
       await expect(client.health.isReady(controller.signal)).rejects.toThrow("Aborted")
     })
   })
+
+  describe("authenticated requests", () => {
+    it("sends the session token as a bearer credential", async () => {
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }))
+      const client = createApiClient({
+        baseUrl: "https://api.ponto.test",
+        fetch: fetchMock,
+        getSessionToken: () => "session-token-value",
+      })
+
+      await expect(client.auth.logout()).resolves.toBeUndefined()
+
+      const [url, init] = fetchMock.mock.calls[0] ?? []
+      expect(url).toBe("https://api.ponto.test/api/v1/auth/logout")
+      expect(init).toMatchObject({
+        method: "POST",
+        headers: { authorization: "Bearer session-token-value" },
+      })
+    })
+
+    it("omits the authorization header when there is no session", async () => {
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 202 }))
+      const client = createApiClient({
+        baseUrl: "https://api.ponto.test",
+        fetch: fetchMock,
+        getSessionToken: () => null,
+      })
+
+      await client.auth.requestPasswordReset({ email: "ana@example.com" })
+
+      const [, init] = fetchMock.mock.calls[0] ?? []
+      expect(init?.headers).not.toHaveProperty("authorization")
+      expect(init?.body).toBe(JSON.stringify({ email: "ana@example.com" }))
+    })
+  })
 })
