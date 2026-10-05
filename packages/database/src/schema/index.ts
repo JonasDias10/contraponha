@@ -1,2 +1,7 @@
 export * from "./auth.js"
+export * from "./comments.js"
+export * from "./content-columns.js"
+export * from "./follows.js"
+export * from "./posts.js"
+export * from "./reactions.js"
 export * from "./users.js"
