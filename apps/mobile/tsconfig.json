@@ -1,0 +1,12 @@
+{
+  "extends": ["@ponto/tsconfig/base.json", "expo/tsconfig.base"],
+  "compilerOptions": {
+    "declaration": false,
+    "declarationMap": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["expo/types"]
+  },
+  "include": ["src", ".expo/types/**/*.ts"]
+}

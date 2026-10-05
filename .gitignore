@@ -1,0 +1,22 @@
+node_modules
+build
+coverage
+.turbo
+.next
+.expo
+next-env.d.ts
+
+# Expo continuous native generation output
+apps/mobile/ios
+apps/mobile/android
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.log
+.idea
+.vscode/*
+!.vscode/extensions.json

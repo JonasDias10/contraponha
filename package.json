@@ -1,0 +1,33 @@
+{
+  "name": "ponto",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=@ponto/api --filter=@ponto/web",
+    "dev:api": "turbo run dev --filter=@ponto/api",
+    "dev:web": "turbo run dev --filter=@ponto/web",
+    "dev:mobile": "turbo run build --filter=@ponto/mobile^... && pnpm --filter @ponto/mobile dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @ponto/database db:generate",
+    "db:migrate": "pnpm --filter @ponto/database db:migrate",
+    "db:studio": "pnpm --filter @ponto/database db:studio",
+    "clean": "turbo run clean && rm -rf node_modules/.cache .turbo"
+  },
+  "devDependencies": {
+    "@ponto/eslint-config": "workspace:*",
+    "eslint": "^10.12.0",
+    "prettier": "^3.9.9",
+    "turbo": "^2.11.7",
+    "typescript": "~6.0.3"
+  }
+}

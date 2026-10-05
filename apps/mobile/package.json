@@ -1,0 +1,37 @@
+{
+  "name": "@ponto/mobile",
+  "version": "0.0.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "ios": "expo start --ios",
+    "android": "expo start --android",
+    "build": "expo export --platform ios --platform android --output-dir build --clear",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "doctor": "expo-doctor",
+    "clean": "rm -rf build .expo .turbo"
+  },
+  "dependencies": {
+    "@ponto/api-client": "workspace:*",
+    "@ponto/config": "workspace:*",
+    "@ponto/i18n": "workspace:*",
+    "expo": "~57.0.26",
+    "expo-constants": "~57.0.20",
+    "expo-linking": "~57.0.11",
+    "expo-localization": "~57.0.2",
+    "expo-router": "~57.0.24",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@ponto/tsconfig": "workspace:*",
+    "@types/react": "~19.2.18",
+    "typescript": "~6.0.3"
+  }
+}

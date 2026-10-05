@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+allowBuilds:
+  "@scarf/scarf": false
+  "@swc/core": true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - pino-pretty@13.2.0

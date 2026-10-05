@@ -1,0 +1,38 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": ["tsconfig.json", "eslint.config.mjs"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.test.ts", "!test/**"],
+      "outputs": ["build/**", ".next/**", "!.next/cache/**"],
+      "env": ["NEXT_PUBLIC_*", "EXPO_PUBLIC_*"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "passThroughEnv": ["NODE_ENV", "PORT", "DATABASE_URL", "REDIS_URL", "LOG_LEVEL"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["API_URL", "EXPO_PUBLIC_*"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

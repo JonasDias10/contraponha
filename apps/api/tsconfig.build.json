@@ -1,0 +1,9 @@
+{
+  "extends": "@ponto/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build"
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
+}

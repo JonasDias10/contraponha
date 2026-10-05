@@ -1,0 +1,8 @@
+build
+.next
+.expo
+next-env.d.ts
+coverage
+.turbo
+pnpm-lock.yaml
+packages/database/migrations/meta
