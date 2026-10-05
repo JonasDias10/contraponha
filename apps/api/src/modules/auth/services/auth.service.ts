@@ -26,6 +26,26 @@ export interface ClientInfo {
   acceptLanguage: string | undefined
 }
 
+interface StartSessionParams {
+  user: User
+  userAgent: string | undefined
+}
+
+export interface ChangePasswordParams {
+  auth: AuthContext
+  input: z.output<typeof changePasswordInputSchema>
+}
+
+export interface LoginParams {
+  input: z.output<typeof loginInputSchema>
+  userAgent: string | undefined
+}
+
+export interface RegisterParams {
+  input: z.output<typeof registerInputSchema>
+  client: ClientInfo
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -38,13 +58,7 @@ export class AuthService {
     private readonly accountVerification: AccountVerificationService,
   ) {}
 
-  async register({
-    input,
-    client,
-  }: {
-    input: z.output<typeof registerInputSchema>
-    client: ClientInfo
-  }): Promise<AuthResponse> {
+  async register({ input, client }: RegisterParams): Promise<AuthResponse> {
     const passwordHash = await this.passwordHasher.hash(input.password)
     const locale =
       input.locale ??
@@ -71,13 +85,7 @@ export class AuthService {
     return this.startSession({ user, userAgent: client.userAgent })
   }
 
-  async login({
-    input,
-    userAgent,
-  }: {
-    input: z.output<typeof loginInputSchema>
-    userAgent: string | undefined
-  }): Promise<AuthResponse> {
+  async login({ input, userAgent }: LoginParams): Promise<AuthResponse> {
     const user = await this.usersService.findByEmail(input.email)
     const passwordHash = user ? await this.credentials.findPasswordHash(user.id) : undefined
     const isValid = passwordHash
@@ -91,13 +99,7 @@ export class AuthService {
     return this.startSession({ user, userAgent })
   }
 
-  async changePassword({
-    auth,
-    input,
-  }: {
-    auth: AuthContext
-    input: z.output<typeof changePasswordInputSchema>
-  }): Promise<void> {
+  async changePassword({ auth, input }: ChangePasswordParams): Promise<void> {
     const currentHash = await this.credentials.findPasswordHash(auth.userId)
     const isValid = currentHash
       ? await this.passwordHasher.verify({
@@ -118,13 +120,7 @@ export class AuthService {
     await this.sessionsService.revokeOthers(auth)
   }
 
-  private async startSession({
-    user,
-    userAgent,
-  }: {
-    user: User
-    userAgent: string | undefined
-  }): Promise<AuthResponse> {
+  private async startSession({ user, userAgent }: StartSessionParams): Promise<AuthResponse> {
     const session = await this.sessionsService.issue({ userId: user.id, userAgent })
     return { user: toPrivateProfile(user), session }
   }

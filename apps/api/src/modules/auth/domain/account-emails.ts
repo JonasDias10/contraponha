@@ -26,13 +26,12 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;")
 }
 
-function buildAccountEmail({
-  recipient,
-  copy,
-}: {
+interface BuildAccountEmailParams {
   recipient: AccountEmailRecipient
   copy: EmailCopy
-}): EmailMessage {
+}
+
+function buildAccountEmail({ recipient, copy }: BuildAccountEmailParams): EmailMessage {
   const { to, name, locale, link } = recipient
   const t = createTranslator({ locale })
   const paragraphs = [
@@ -54,13 +53,15 @@ function buildAccountEmail({
   return { to, subject: t(copy.subject), text: paragraphs.join("\n\n"), html }
 }
 
+export interface BuildEmailVerificationEmailParams {
+  recipient: AccountEmailRecipient
+  ttlHours: number
+}
+
 export function buildEmailVerificationEmail({
   recipient,
   ttlHours,
-}: {
-  recipient: AccountEmailRecipient
-  ttlHours: number
-}): EmailMessage {
+}: BuildEmailVerificationEmailParams): EmailMessage {
   return buildAccountEmail({
     recipient,
     copy: {
@@ -73,13 +74,15 @@ export function buildEmailVerificationEmail({
   })
 }
 
+export interface BuildPasswordResetEmailParams {
+  recipient: AccountEmailRecipient
+  ttlMinutes: number
+}
+
 export function buildPasswordResetEmail({
   recipient,
   ttlMinutes,
-}: {
-  recipient: AccountEmailRecipient
-  ttlMinutes: number
-}): EmailMessage {
+}: BuildPasswordResetEmailParams): EmailMessage {
   return buildAccountEmail({
     recipient,
     copy: {

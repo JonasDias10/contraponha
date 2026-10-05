@@ -1,12 +1,14 @@
 import { HealthStatus, type DependencyHealth } from "@ponto/types"
 
+export interface ProbeDependencyParams {
+  check: () => Promise<unknown>
+  timeoutMs: number
+}
+
 export async function probeDependency({
   check,
   timeoutMs,
-}: {
-  check: () => Promise<unknown>
-  timeoutMs: number
-}): Promise<DependencyHealth> {
+}: ProbeDependencyParams): Promise<DependencyHealth> {
   const startedAt = performance.now()
   let timer: NodeJS.Timeout | undefined
   const timeout = new Promise<never>((_resolve, reject) => {

@@ -25,27 +25,36 @@ export function newAccountInput(overrides: Partial<AccountInput> = {}): AccountI
   }
 }
 
+export interface RegisteredAccount {
+  input: AccountInput
+  auth: AuthResponse
+}
+
+export type AuthorizationHeader = {
+  Authorization: string
+}
+
+export interface RegisterAccountParams {
+  server: App
+  overrides?: Partial<AccountInput>
+}
+
 export async function registerAccount({
   server,
   overrides = {},
-}: {
-  server: App
-  overrides?: Partial<AccountInput>
-}): Promise<{ input: AccountInput; auth: AuthResponse }> {
+}: RegisterAccountParams): Promise<RegisteredAccount> {
   const input = newAccountInput(overrides)
   const response = await request(server).post("/api/v1/auth/register").send(input).expect(201)
   return { input, auth: authResponseSchema.parse(response.body) }
 }
 
-export async function login({
-  server,
-  email,
-  password,
-}: {
+export interface LoginParams {
   server: App
   email: string
   password: string
-}): Promise<string> {
+}
+
+export async function login({ server, email, password }: LoginParams): Promise<string> {
   const response = await request(server)
     .post("/api/v1/auth/login")
     .send({ email, password })
@@ -53,6 +62,6 @@ export async function login({
   return authResponseSchema.parse(response.body).session.token
 }
 
-export function bearer(token: string): { Authorization: string } {
+export function bearer(token: string): AuthorizationHeader {
   return { Authorization: `Bearer ${token}` }
 }

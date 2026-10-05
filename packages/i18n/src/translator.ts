@@ -4,19 +4,23 @@ import type { MessageKey, MessageParams, PartialMessages } from "./types.js"
 
 export type Translate = (key: MessageKey, params?: MessageParams) => string
 
+export interface LocaleTranslator {
+  locale: Locale
+  t: Translate
+}
+
 export interface TranslatorOptions {
   locale: Locale
   fallbackLocale?: Locale
   catalogs?: Partial<Record<Locale, PartialMessages>>
 }
 
-function lookup({
-  catalog,
-  key,
-}: {
+interface LookupParams {
   catalog: PartialMessages | undefined
   key: string
-}): string | undefined {
+}
+
+function lookup({ catalog, key }: LookupParams): string | undefined {
   let node: unknown = catalog
   for (const segment of key.split(".")) {
     if (typeof node !== "object" || node === null) {
@@ -28,13 +32,12 @@ function lookup({
   return typeof node === "string" ? node : undefined
 }
 
-function interpolate({
-  template,
-  params,
-}: {
+interface InterpolateParams {
   template: string
   params: MessageParams | undefined
-}): string {
+}
+
+function interpolate({ template, params }: InterpolateParams): string {
   if (!params) {
     return template
   }

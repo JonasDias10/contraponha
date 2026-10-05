@@ -8,6 +8,10 @@ const createProbeSchema = z.object({
   title: z.string().trim().min(1).max(280),
 })
 
+interface ProbeResult {
+  ok: true
+}
+
 @Public()
 @Controller("probe")
 export class ProbeController {
@@ -24,7 +28,7 @@ export class ProbeController {
   }
 
   @Get("limited")
-  limited(): { ok: true } {
+  limited(): ProbeResult {
     return { ok: true }
   }
 }

@@ -26,6 +26,27 @@ import { UsersService } from "#src/modules/users/services/users.service.js"
 
 import { SessionsService } from "./sessions.service.js"
 
+interface ToRecipientParams {
+  user: User
+  link: string
+}
+
+interface BuildAccountLinkParams {
+  path: string
+  token: string
+}
+
+interface IssueVerificationTokenParams {
+  userId: string
+  purpose: VerificationTokenPurpose
+  ttlMs: number
+}
+
+export interface ResetPasswordParams {
+  token: string
+  newPassword: string
+}
+
 @Injectable()
 export class AccountVerificationService {
   private readonly logger = new Logger(AccountVerificationService.name)
@@ -97,13 +118,7 @@ export class AccountVerificationService {
     )
   }
 
-  async resetPassword({
-    token,
-    newPassword,
-  }: {
-    token: string
-    newPassword: string
-  }): Promise<void> {
+  async resetPassword({ token, newPassword }: ResetPasswordParams): Promise<void> {
     const passwordHash = await this.passwordHasher.hash(newPassword)
     const revokedTokenHashes = await this.db.transaction(async (tx) => {
       const userId = await this.verificationTokens.consume({
@@ -127,11 +142,7 @@ export class AccountVerificationService {
     userId,
     purpose,
     ttlMs,
-  }: {
-    userId: string
-    purpose: VerificationTokenPurpose
-    ttlMs: number
-  }): Promise<string> {
+  }: IssueVerificationTokenParams): Promise<string> {
     const token = generateOpaqueToken()
     await this.verificationTokens.replace({
       data: {
@@ -144,13 +155,13 @@ export class AccountVerificationService {
     return token
   }
 
-  private buildLink({ path, token }: { path: string; token: string }): string {
+  private buildLink({ path, token }: BuildAccountLinkParams): string {
     const url = new URL(path, this.config.webAppUrl)
     url.searchParams.set("token", token)
     return url.toString()
   }
 
-  private toRecipient({ user, link }: { user: User; link: string }): AccountEmailRecipient {
+  private toRecipient({ user, link }: ToRecipientParams): AccountEmailRecipient {
     return { to: user.email, name: user.displayName, locale: userLocale(user), link }
   }
 

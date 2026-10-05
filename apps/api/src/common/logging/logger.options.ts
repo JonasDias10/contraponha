@@ -31,6 +31,16 @@ function stripQueryString(url: string | undefined): string | undefined {
   return url?.split("?")[0]
 }
 
+interface SerializableRequest {
+  id: unknown
+  method: string
+  url?: string
+}
+
+interface SerializableResponse {
+  statusCode: number
+}
+
 export function buildLoggerParams(config: AppConfig): Params {
   return {
     pinoHttp: {
@@ -56,12 +66,12 @@ export function buildLoggerParams(config: AppConfig): Params {
         return res.statusCode >= 400 ? "warn" : "info"
       },
       serializers: {
-        req: (req: { id: unknown; method: string; url?: string }) => ({
+        req: (req: SerializableRequest) => ({
           id: req.id,
           method: req.method,
           path: stripQueryString(req.url),
         }),
-        res: (res: { statusCode: number }) => ({ statusCode: res.statusCode }),
+        res: (res: SerializableResponse) => ({ statusCode: res.statusCode }),
       },
       transport: config.log.pretty
         ? { target: "pino-pretty", options: { singleLine: true, translateTime: "SYS:HH:MM:ss.l" } }

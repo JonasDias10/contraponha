@@ -24,13 +24,12 @@ function parseAcceptLanguage(header: string): WeightedTag[] {
     .sort((a, b) => b.quality - a.quality)
 }
 
-function matchTag({
-  tag,
-  supported,
-}: {
+interface MatchTagParams {
   tag: string
   supported: readonly Locale[]
-}): Locale | undefined {
+}
+
+function matchTag({ tag, supported }: MatchTagParams): Locale | undefined {
   const exact = supported.find((locale) => locale.toLowerCase() === tag)
 
   if (exact) {

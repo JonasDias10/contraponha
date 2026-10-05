@@ -4,6 +4,12 @@ import { eq } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 
+export interface UpsertPasswordHashParams {
+  userId: string
+  passwordHash: string
+  executor?: DatabaseExecutor
+}
+
 @Injectable()
 export class CredentialsRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
@@ -20,11 +26,7 @@ export class CredentialsRepository {
     userId,
     passwordHash,
     executor = this.db,
-  }: {
-    userId: string
-    passwordHash: string
-    executor?: DatabaseExecutor
-  }): Promise<void> {
+  }: UpsertPasswordHashParams): Promise<void> {
     await executor
       .insert(passwordCredentials)
       .values({ userId, passwordHash })

@@ -15,17 +15,37 @@ function isActive(now: Date): SQL | undefined {
   return and(isNull(sessions.revokedAt), gt(sessions.expiresAt, now))
 }
 
+interface RevokeSessionsWhereParams {
+  scope: SQL | undefined
+  executor?: DatabaseExecutor
+}
+
+export interface RevokeAllSessionsParams {
+  userId: string
+  exceptSessionId?: string
+  executor?: DatabaseExecutor
+}
+
+export interface RevokeSessionParams {
+  userId: string
+  sessionId: string
+}
+
+export interface TouchSessionParams {
+  sessionId: string
+  lastUsedAt: Date
+}
+
+export interface CreateSessionParams {
+  data: CreateSessionData
+  executor?: DatabaseExecutor
+}
+
 @Injectable()
 export class SessionsRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  async create({
-    data,
-    executor = this.db,
-  }: {
-    data: CreateSessionData
-    executor?: DatabaseExecutor
-  }): Promise<SessionRow> {
+  async create({ data, executor = this.db }: CreateSessionParams): Promise<SessionRow> {
     const [session] = await executor.insert(sessions).values(data).returning()
 
     if (!session) {
@@ -51,11 +71,11 @@ export class SessionsRepository {
       .orderBy(desc(sessions.lastUsedAt))
   }
 
-  async touch({ sessionId, lastUsedAt }: { sessionId: string; lastUsedAt: Date }): Promise<void> {
+  async touch({ sessionId, lastUsedAt }: TouchSessionParams): Promise<void> {
     await this.db.update(sessions).set({ lastUsedAt }).where(eq(sessions.id, sessionId))
   }
 
-  revoke({ userId, sessionId }: { userId: string; sessionId: string }): Promise<string[]> {
+  revoke({ userId, sessionId }: RevokeSessionParams): Promise<string[]> {
     return this.revokeWhere({
       scope: and(eq(sessions.userId, userId), eq(sessions.id, sessionId)),
     })
@@ -65,11 +85,7 @@ export class SessionsRepository {
     userId,
     exceptSessionId,
     executor,
-  }: {
-    userId: string
-    exceptSessionId?: string
-    executor?: DatabaseExecutor
-  }): Promise<string[]> {
+  }: RevokeAllSessionsParams): Promise<string[]> {
     const scope = exceptSessionId
       ? and(eq(sessions.userId, userId), ne(sessions.id, exceptSessionId))
       : eq(sessions.userId, userId)
@@ -79,10 +95,7 @@ export class SessionsRepository {
   private async revokeWhere({
     scope,
     executor = this.db,
-  }: {
-    scope: SQL | undefined
-    executor?: DatabaseExecutor
-  }): Promise<string[]> {
+  }: RevokeSessionsWhereParams): Promise<string[]> {
     const revoked = await executor
       .update(sessions)
       .set({ revokedAt: new Date() })

@@ -6,7 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { SessionSummary } from "@ponto/types"
+import type { SessionListResponse } from "@ponto/types"
 import { sessionListSchema } from "@ponto/validation"
 import { z } from "zod"
 
@@ -29,7 +29,7 @@ export class SessionsController {
   @Get()
   @ApiOperation({ summary: "List active sessions of the authenticated user" })
   @ApiOkResponse({ schema: toOpenApiSchema(sessionListSchema) })
-  async list(@CurrentAuth() auth: AuthContext): Promise<{ sessions: SessionSummary[] }> {
+  async list(@CurrentAuth() auth: AuthContext): Promise<SessionListResponse> {
     const sessions = await this.sessionsService.list(auth)
     return { sessions }
   }

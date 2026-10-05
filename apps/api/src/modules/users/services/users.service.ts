@@ -20,6 +20,21 @@ const ERROR_BY_CONSTRAINT: Record<string, ApiErrorCode> = {
   [USERS_HANDLE_UNIQUE]: ApiErrorCode.HANDLE_UNAVAILABLE,
 }
 
+export interface MarkEmailVerifiedParams {
+  id: string
+  executor?: DatabaseExecutor
+}
+
+export interface UpdateProfileParams {
+  id: string
+  data: UpdateUserData
+}
+
+export interface CreateUserParams {
+  data: CreateUserData
+  executor?: DatabaseExecutor
+}
+
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
@@ -48,13 +63,7 @@ export class UsersService {
     return this.usersRepository.findByEmail(email)
   }
 
-  async create({
-    data,
-    executor,
-  }: {
-    data: CreateUserData
-    executor?: DatabaseExecutor
-  }): Promise<User> {
+  async create({ data, executor }: CreateUserParams): Promise<User> {
     if (isReservedHandle(data.handle)) {
       throw new AppError(ApiErrorCode.HANDLE_UNAVAILABLE, { details: { field: "handle" } })
     }
@@ -72,7 +81,7 @@ export class UsersService {
     }
   }
 
-  async updateProfile({ id, data }: { id: string; data: UpdateUserData }): Promise<User> {
+  async updateProfile({ id, data }: UpdateProfileParams): Promise<User> {
     const user = await this.usersRepository.update({ id, data })
 
     if (!user) {
@@ -82,7 +91,7 @@ export class UsersService {
     return user
   }
 
-  markEmailVerified({ id, executor }: { id: string; executor?: DatabaseExecutor }): Promise<void> {
+  markEmailVerified({ id, executor }: MarkEmailVerifiedParams): Promise<void> {
     return this.usersRepository.markEmailVerified({ id, executor })
   }
 }

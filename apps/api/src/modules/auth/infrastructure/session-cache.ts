@@ -16,6 +16,11 @@ function cacheKey(tokenHash: string): string {
   return `session:${tokenHash}`
 }
 
+export interface SetCachedSessionParams {
+  tokenHash: string
+  session: CachedSession
+}
+
 @Injectable()
 export class SessionCache {
   constructor(@Inject(REDIS) private readonly redis: Redis) {}
@@ -25,7 +30,7 @@ export class SessionCache {
     return value ? (JSON.parse(value) as CachedSession) : undefined
   }
 
-  async set({ tokenHash, session }: { tokenHash: string; session: CachedSession }): Promise<void> {
+  async set({ tokenHash, session }: SetCachedSessionParams): Promise<void> {
     const secondsUntilExpiry = msToSeconds(Date.parse(session.expiresAt) - Date.now())
     const ttl = Math.min(secondsUntilExpiry, SESSION_CACHE_MAX_TTL_SECONDS)
 

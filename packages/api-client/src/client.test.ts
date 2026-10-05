@@ -2,7 +2,12 @@ import { describe, expect, it, vi } from "vitest"
 
 import { ApiError, ApiResponseFormatError, createApiClient } from "./index.js"
 
-function jsonResponse({ status, body }: { status: number; body: unknown }): Response {
+interface JsonResponseParams {
+  status: number
+  body: unknown
+}
+
+function jsonResponse({ status, body }: JsonResponseParams): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json" },

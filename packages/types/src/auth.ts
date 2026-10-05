@@ -10,6 +10,10 @@ export interface AuthResponse {
   session: IssuedSession
 }
 
+export interface SessionListResponse {
+  sessions: SessionSummary[]
+}
+
 export interface SessionSummary {
   id: string
   userAgent: string | null

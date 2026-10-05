@@ -21,13 +21,12 @@ function toCachedSession(session: SessionRow): CachedSession {
   }
 }
 
-function toSessionSummary({
-  session,
-  currentSessionId,
-}: {
+interface ToSessionSummaryParams {
   session: SessionRow
   currentSessionId: string
-}): SessionSummary {
+}
+
+function toSessionSummary({ session, currentSessionId }: ToSessionSummaryParams): SessionSummary {
   return {
     id: session.id,
     userAgent: session.userAgent,
@@ -36,6 +35,27 @@ function toSessionSummary({
     expiresAt: session.expiresAt.toISOString(),
     isCurrent: session.id === currentSessionId,
   }
+}
+
+interface RecordSessionUsageParams {
+  tokenHash: string
+  session: CachedSession
+}
+
+export interface RevokeAllUserSessionsParams {
+  userId: string
+  executor?: DatabaseExecutor
+}
+
+export interface RevokeUserSessionParams {
+  userId: string
+  sessionId: string
+}
+
+export interface IssueSessionParams {
+  userId: string
+  userAgent: string | undefined
+  executor?: DatabaseExecutor
 }
 
 @Injectable()
@@ -48,15 +68,7 @@ export class SessionsService {
     private readonly sessionCache: SessionCache,
   ) {}
 
-  async issue({
-    userId,
-    userAgent,
-    executor,
-  }: {
-    userId: string
-    userAgent: string | undefined
-    executor?: DatabaseExecutor
-  }): Promise<IssuedSession> {
+  async issue({ userId, userAgent, executor }: IssueSessionParams): Promise<IssuedSession> {
     const token = generateOpaqueToken()
     const session = await this.sessionsRepository.create({
       data: {
@@ -89,7 +101,7 @@ export class SessionsService {
     )
   }
 
-  async revoke({ userId, sessionId }: { userId: string; sessionId: string }): Promise<void> {
+  async revoke({ userId, sessionId }: RevokeUserSessionParams): Promise<void> {
     const revoked = await this.sessionsRepository.revoke({ userId, sessionId })
 
     if (revoked.length === 0) {
@@ -107,13 +119,7 @@ export class SessionsService {
     await this.sessionCache.delete(revoked)
   }
 
-  revokeAll({
-    userId,
-    executor,
-  }: {
-    userId: string
-    executor?: DatabaseExecutor
-  }): Promise<string[]> {
+  revokeAll({ userId, executor }: RevokeAllUserSessionsParams): Promise<string[]> {
     return this.sessionsRepository.revokeAllForUser({ userId, executor })
   }
 
@@ -139,7 +145,7 @@ export class SessionsService {
     return entry
   }
 
-  private recordUsage({ tokenHash, session }: { tokenHash: string; session: CachedSession }): void {
+  private recordUsage({ tokenHash, session }: RecordSessionUsageParams): void {
     const now = new Date()
 
     if (now.getTime() - Date.parse(session.lastUsedAt) < SESSION_LAST_USED_WRITE_INTERVAL_MS) {

@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common"
 import { hash, verify } from "@node-rs/argon2"
 
+export interface VerifyPasswordParams {
+  passwordHash: string
+  password: string
+}
+
 @Injectable()
 export class PasswordHasher {
   private readonly decoyHash = hash("decoy password used to equalize login timing")
@@ -9,7 +14,7 @@ export class PasswordHasher {
     return hash(password)
   }
 
-  verify({ passwordHash, password }: { passwordHash: string; password: string }): Promise<boolean> {
+  verify({ passwordHash, password }: VerifyPasswordParams): Promise<boolean> {
     return verify(passwordHash, password)
   }
 

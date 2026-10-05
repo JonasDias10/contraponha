@@ -35,6 +35,17 @@ const INLINE_AWAIT_RESTRICTIONS = [
   "ArrayExpression > AwaitExpression",
 ].map((selector) => ({ selector, message: INLINE_AWAIT_MESSAGE }))
 
+const NAMED_SIGNATURE_TYPE_MESSAGE =
+  "Declare parameter and return types as named interfaces or types outside the function signature."
+
+const NAMED_SIGNATURE_TYPE_RESTRICTIONS = [
+  ":function > ObjectPattern > TSTypeAnnotation > TSTypeLiteral",
+  ":function > AssignmentPattern > ObjectPattern > TSTypeAnnotation > TSTypeLiteral",
+  ":function > Identifier > TSTypeAnnotation > TSTypeLiteral",
+  ":function > TSTypeAnnotation > TSTypeLiteral",
+  ":function > TSTypeAnnotation > TSTypeReference > TSTypeParameterInstantiation > TSTypeLiteral",
+].map((selector) => ({ selector, message: NAMED_SIGNATURE_TYPE_MESSAGE }))
+
 /**
  * @param {ConfigOptions & { runtimeGlobals: Record<string, boolean>, extra?: Config[] }} options
  * @returns {Config[]}
@@ -84,6 +95,7 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
           "error",
           ...OBJECT_PARAMS_RESTRICTIONS,
           ...INLINE_AWAIT_RESTRICTIONS,
+          ...NAMED_SIGNATURE_TYPE_RESTRICTIONS,
         ],
         "@stylistic/padding-line-between-statements": [
           "error",

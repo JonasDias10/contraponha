@@ -1,4 +1,4 @@
-import type { AuthResponse, SessionSummary } from "@ponto/types"
+import type { AuthResponse, SessionListResponse, SessionSummary } from "@ponto/types"
 import { z } from "zod"
 
 import {
@@ -79,4 +79,4 @@ export const sessionSummarySchema = z.object({
 
 export const sessionListSchema = z.object({
   sessions: z.array(sessionSummarySchema),
-})
+}) satisfies z.ZodType<SessionListResponse>

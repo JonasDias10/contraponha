@@ -26,16 +26,14 @@ export interface AuthResource {
   resetPassword(input: ResetPasswordInput): Promise<void>
 }
 
+interface SendParams {
+  method: "POST" | "PUT" | "DELETE"
+  path: string
+  body?: unknown
+}
+
 export function createAuthResource(request: HttpClient): AuthResource {
-  const send = async ({
-    method,
-    path,
-    body,
-  }: {
-    method: "POST" | "PUT" | "DELETE"
-    path: string
-    body?: unknown
-  }): Promise<void> => {
+  const send = async ({ method, path, body }: SendParams): Promise<void> => {
     await request({ method, path, body, schema: emptyResponseSchema })
   }
 

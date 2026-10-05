@@ -16,17 +16,22 @@ export interface IssueVerificationTokenData {
   expiresAt: Date
 }
 
+export interface ConsumeVerificationTokenParams {
+  tokenHash: string
+  purpose: VerificationTokenPurpose
+  executor?: DatabaseExecutor
+}
+
+export interface ReplaceVerificationTokenParams {
+  data: IssueVerificationTokenData
+  executor?: DatabaseExecutor
+}
+
 @Injectable()
 export class VerificationTokensRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  async replace({
-    data,
-    executor = this.db,
-  }: {
-    data: IssueVerificationTokenData
-    executor?: DatabaseExecutor
-  }): Promise<void> {
+  async replace({ data, executor = this.db }: ReplaceVerificationTokenParams): Promise<void> {
     await executor
       .update(verificationTokens)
       .set({ consumedAt: new Date() })
@@ -44,11 +49,7 @@ export class VerificationTokensRepository {
     tokenHash,
     purpose,
     executor = this.db,
-  }: {
-    tokenHash: string
-    purpose: VerificationTokenPurpose
-    executor?: DatabaseExecutor
-  }): Promise<string | undefined> {
+  }: ConsumeVerificationTokenParams): Promise<string | undefined> {
     const now = new Date()
     const [token] = await executor
       .update(verificationTokens)
