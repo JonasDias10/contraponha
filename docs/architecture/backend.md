@@ -87,6 +87,20 @@ Quando um módulo ficar grande, ele pode ser dividido em subpastas (`domain/`, `
 
 Essas regras são o que permite extrair um módulo para um serviço separado no futuro.
 
+## Imports
+
+A API usa **subpath imports** do Node (campo `imports` do `package.json`) em vez de caminhos relativos longos:
+
+```ts
+import { AppError } from "#src/common/errors/app-error.js" // instead of "../../common/errors/app-error.js"
+import { SessionsService } from "./sessions.service.js" // same folder: relative
+```
+
+- `#src/*` aponta para `src/*` no TypeScript e nos testes (condição `source`, configurada em `customConditions` dos tsconfigs e em `ssr.resolve.conditions` do Vitest) e para `build/*` no Node em runtime. Nenhuma ferramenta de reescrita de caminhos é necessária no build.
+- Regra: arquivos da **mesma pasta** usam `./arquivo.js`; qualquer outro arquivo de `src/` usa `#src/...`. Os testes em `test/` importam o código da API por `#src/...` e os próprios helpers por `./support/...`.
+- O prefixo é `#src/` porque o Node 22 não aceita `#/` sozinho.
+- Web e mobile usam o alias `@/` (resolvido pelo Next.js e pelo Metro). Os pacotes em `packages/` continuam com imports relativos: são pequenos e as declarações `.d.ts` publicadas ficam mais simples assim.
+
 ## Versionamento da API
 
 Todas as rotas ficam sob `/api/v{n}`. O prefixo (`api`) e a versão padrão (`1`) são constantes em `@ponto/config`, usadas pela API e pelo `@ponto/api-client`, então não podem divergir.
@@ -217,6 +231,17 @@ Mensagens de log são sempre em inglês e **não** passam por i18n.
 **Ordem dos guards:** rate limit, depois sessão. Assim, tentativas de força bruta são barradas antes de qualquer consulta ao banco. Autorização (papéis, moderação) entrará depois da sessão.
 
 **Protegido por padrão:** uma rota nova sem `@Public()` exige sessão. Esquecer o decorator gera um 401 visível no primeiro teste, nunca uma rota aberta por engano.
+
+## Durações
+
+Nenhum número de tempo fica solto no código. Toda duração tem nome com a unidade no sufixo (`_MS`, `_SECONDS`, `_MINUTES`, `_HOURS`, `_DAYS`) e mora num arquivo compartilhado:
+
+| Arquivo                            | Conteúdo                                                                                                                                                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/config/src/time.ts`      | Conversões (`secondsToMs`, `minutesToMs`, `hoursToMs`, `daysToMs`, `msToSeconds`) e durações usadas por mais de um app ou pacote (`API_READINESS_TIMEOUT_MS`, timeouts padrão do PostgreSQL) |
+| `apps/api/src/config/durations.ts` | Durações da API: timeouts de health e Redis, cache e atualização de sessão, validade dos links de conta                                                                                      |
+
+Durações configuráveis por ambiente seguem a mesma regra no nome da variável (`RATE_LIMIT_TTL_SECONDS`, `SESSION_TTL_DAYS`) e são convertidas para milissegundos uma única vez, em `loadAppConfig()`. Dentro do código, campos e parâmetros também carregam a unidade (`ttlMs`, `timeoutMs`).
 
 ## Configuração
 

@@ -70,16 +70,16 @@ Nesta etapa existe apenas o cliente configurado, com encerramento gracioso e ver
 
 ## Pacotes compartilhados
 
-| Pacote                 | Responsabilidade                                                                | Quem consome                    |
-| ---------------------- | ------------------------------------------------------------------------------- | ------------------------------- |
-| `@ponto/types`         | Tipos de contrato (envelope de erro, códigos, relatórios de health)             | todos                           |
-| `@ponto/validation`    | Schemas Zod dos contratos e utilitários de validação                            | API, api-client, apps           |
-| `@ponto/i18n`          | Idiomas suportados, catálogos, negociação de idioma, `t()`                      | API, apps                       |
-| `@ponto/config`        | Constantes HTTP globais (prefixo, versão, header de request id) e parser de env | API, api-client, database, apps |
-| `@ponto/api-client`    | Cliente HTTP tipado da API                                                      | web, mobile                     |
-| `@ponto/database`      | Conexão, schema e migrations                                                    | somente a API                   |
-| `@ponto/tsconfig`      | Bases de configuração do TypeScript                                             | todos                           |
-| `@ponto/eslint-config` | Regras de lint                                                                  | todos                           |
+| Pacote                 | Responsabilidade                                                                                                              | Quem consome                    |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `@ponto/types`         | Tipos de contrato (envelope de erro, códigos, relatórios de health)                                                           | todos                           |
+| `@ponto/validation`    | Schemas Zod dos contratos e utilitários de validação                                                                          | API, api-client, apps           |
+| `@ponto/i18n`          | Idiomas suportados, catálogos, negociação de idioma, `t()`                                                                    | API, apps                       |
+| `@ponto/config`        | Constantes HTTP globais (prefixo, versão, header de request id), parser de env, conversões de tempo e durações compartilhadas | API, api-client, database, apps |
+| `@ponto/api-client`    | Cliente HTTP tipado da API                                                                                                    | web, mobile                     |
+| `@ponto/database`      | Conexão, schema e migrations                                                                                                  | somente a API                   |
+| `@ponto/tsconfig`      | Bases de configuração do TypeScript                                                                                           | todos                           |
+| `@ponto/eslint-config` | Regras de lint                                                                                                                | todos                           |
 
 Regras para manter os pacotes saudáveis:
 
