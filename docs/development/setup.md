@@ -51,7 +51,7 @@ Os valores padrão já funcionam com o `docker-compose.yml`. O `.env` da raiz é
 
 Em produção, as variáveis vêm do ambiente de execução, nunca de arquivo versionado.
 
-## 3. PostgreSQL e Redis
+## 3. PostgreSQL, Redis e Mailpit
 
 ```bash
 docker compose up -d       # sobe os dois serviços em segundo plano
@@ -61,10 +61,13 @@ docker compose down        # parar (os dados ficam nos volumes)
 docker compose down -v     # parar e apagar os dados
 ```
 
-| Serviço    | Imagem               | Porta local | Credenciais padrão               |
-| ---------- | -------------------- | ----------- | -------------------------------- |
-| PostgreSQL | `postgres:18-alpine` | 5432        | `ponto` / `ponto`, banco `ponto` |
-| Redis      | `redis:8-alpine`     | 6379        | sem senha (apenas local)         |
+| Serviço    | Imagem               | Porta local             | Credenciais padrão               |
+| ---------- | -------------------- | ----------------------- | -------------------------------- |
+| PostgreSQL | `postgres:18-alpine` | 5432                    | `ponto` / `ponto`, banco `ponto` |
+| Redis      | `redis:8-alpine`     | 6379                    | sem senha (apenas local)         |
+| Mailpit    | `axllent/mailpit`    | 1025 (SMTP), 8025 (web) | sem autenticação                 |
+
+O Mailpit recebe todos os e-mails enviados pela API em desenvolvimento (verificação de conta, redefinição de senha). Para ler, abra <http://localhost:8025>. Nada sai para a internet.
 
 Se as portas já estiverem em uso, altere `POSTGRES_PORT`/`REDIS_PORT` no `.env` e ajuste `DATABASE_URL`/`REDIS_URL`.
 
@@ -88,7 +91,9 @@ Regras:
 - Nunca altere o banco manualmente nem edite uma migration já aplicada em outro ambiente. Crie uma nova.
 - Nomes de tabelas e colunas em inglês, `snake_case`, tabelas no plural (`users`, `post_reactions`). No TypeScript, use `camelCase`; o Drizzle converte.
 
-Nesta etapa ainda não há tabelas de domínio. `pnpm db:migrate` apenas cria o schema `drizzle` com a tabela de controle de migrations.
+As tabelas atuais são `users`, `password_credentials`, `sessions` e `verification_tokens`. A estrutura e as regras de cada uma estão em [docs/architecture/auth.md](../architecture/auth.md).
+
+O schema usa `uuidv7()`, função nativa do **PostgreSQL 18**. A imagem do docker-compose e o CI já usam essa versão.
 
 ## 5. Rodar a API e o web
 
@@ -140,7 +145,7 @@ pnpm --filter @ponto/i18n build
 
 ```bash
 pnpm test        # unitários, sem dependências externas
-pnpm test:e2e    # e2e da API, exige `docker compose up -d`
+pnpm test:e2e    # e2e da API, exige `docker compose up -d`; usa o banco ponto_test (criado e migrado automaticamente)
 ```
 
 Para um pacote específico ou em modo watch:

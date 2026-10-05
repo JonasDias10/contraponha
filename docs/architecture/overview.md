@@ -115,15 +115,15 @@ Para adicionar outro app (um painel administrativo, por exemplo):
 
 O Ponto tratará dados pessoais de brasileiros, então a LGPD orienta a arquitetura desde o início. Nesta etapa nada disso está implementado, mas as decisões abaixo evitam bloqueios futuros:
 
-| Requisito                           | Preparação atual / plano                                                                                                                             |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Exclusão e anonimização             | Um módulo é dono de cada tabela; o módulo `users` orquestrará exclusão/anonimização chamando os donos. Chaves estrangeiras explícitas no PostgreSQL. |
-| Exportação de dados (portabilidade) | Mesma regra de propriedade: cada módulo saberá exportar os dados que guarda.                                                                         |
-| Auditoria e ações administrativas   | O módulo `moderation` terá trilha de auditoria própria, append-only.                                                                                 |
-| Consentimentos                      | Serão registrados com versão do termo e data, em módulo próprio, quando houver coleta.                                                               |
-| Retenção                            | Políticas por tipo de dado, executadas por jobs assíncronos (Redis).                                                                                 |
-| Controle de acesso                  | Guards na camada HTTP a partir do módulo `auth`; nenhuma rota administrativa sem autorização explícita.                                              |
-| Logs                                | Logs não registram corpo de requisição, query string, senhas, tokens, cookies nem headers de autorização.                                            |
+| Requisito                           | Preparação atual / plano                                                                                                                                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Exclusão e anonimização             | Um módulo é dono de cada tabela; o módulo `users` orquestrará exclusão/anonimização chamando os donos. Chaves estrangeiras explícitas no PostgreSQL; credenciais, sessões e tokens já são apagados em cascata com a conta. |
+| Exportação de dados (portabilidade) | Mesma regra de propriedade: cada módulo saberá exportar os dados que guarda.                                                                                                                                               |
+| Auditoria e ações administrativas   | O módulo `moderation` terá trilha de auditoria própria, append-only.                                                                                                                                                       |
+| Consentimentos                      | Serão registrados com versão do termo e data, em módulo próprio, quando houver coleta.                                                                                                                                     |
+| Retenção                            | Políticas por tipo de dado, executadas por jobs assíncronos (Redis).                                                                                                                                                       |
+| Controle de acesso                  | Guard global de sessão: toda rota exige autenticação, salvo `@Public()`. Sessões revogáveis na hora. Autorização por papéis virá com a moderação.                                                                          |
+| Logs                                | Logs não registram corpo de requisição, query string, senhas, tokens, cookies nem headers de autorização.                                                                                                                  |
 
 Esses requisitos serão tratados em módulos próprios quando as funcionalidades que coletam dados forem implementadas.
 
@@ -131,7 +131,7 @@ Esses requisitos serão tratados em módulos próprios quando as funcionalidades
 
 A produção deverá priorizar armazenamento e processamento no Brasil. Para que isso seja uma escolha de deploy, e não uma reescrita:
 
-- Banco e cache são acessados por URLs padrão (`DATABASE_URL`, `REDIS_URL`), compatíveis com qualquer PostgreSQL ou Redis gerenciado ou próprio.
+- Banco e cache são acessados por URLs padrão (`DATABASE_URL`, `REDIS_URL`), compatíveis com qualquer Redis e com PostgreSQL 18 ou superior (o schema usa `uuidv7()` nativo), gerenciado ou próprio.
 - Nenhum SDK de nuvem foi introduzido. Serviços externos futuros (armazenamento de mídia, e-mail, push) ficarão atrás de interfaces da própria aplicação, por exemplo um serviço de storage compatível com S3, que existe em vários provedores com região no Brasil.
 - A API é um processo Node sem estado local; pode rodar em VM, container ou plataforma gerenciada.
 
@@ -139,4 +139,4 @@ A produção deverá priorizar armazenamento e processamento no Brasil. Para que
 
 - **`infra/docker/` não foi criado.** Nesta etapa o único artefato de infraestrutura é o `docker-compose.yml` de desenvolvimento, que fica na raiz para que `docker compose up -d` funcione sem argumentos. A pasta `infra/` será criada junto com o primeiro artefato de deploy (Dockerfile da API, IaC).
 - **Módulos futuros têm apenas um `README.md`.** Em vez de pastas com código vazio, cada módulo planejado em `apps/api/src/modules/` descreve sua responsabilidade e dependências. O código nasce quando a funcionalidade nascer.
-- **Sem tabelas de domínio.** O pipeline de migrations está configurado e testado, mas a primeira tabela real virá com `auth`/`users`, para não fixarmos um modelo de dados antes da hora.
+- **Domínio começa por contas.** As primeiras tabelas são de `users` e `auth` ([auth.md](auth.md)). Posts, comentários e o restante entram em etapas próprias, para não fixarmos o modelo de conteúdo antes da hora.

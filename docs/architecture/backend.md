@@ -12,14 +12,18 @@ apps/api/
 │   ├── app.setup.ts            Middlewares globais (Helmet, CORS, prefixo, versionamento, Swagger)
 │   ├── config/                 Schema de env (Zod), AppConfig tipado, ConfigModule
 │   ├── common/                 Peças transversais sem regra de domínio
+│   │   ├── auth/               @Public(), @CurrentAuth() e o tipo AuthContext
 │   │   ├── errors/             AppError, catálogo de erros, filtro global
 │   │   ├── validation/         ZodValidationPipe
 │   │   ├── logging/            Configuração do Pino e request id
-│   │   └── openapi/            Swagger e conversão Zod -> OpenAPI
-│   ├── infrastructure/         Integrações técnicas (PostgreSQL, Redis)
+│   │   ├── openapi/            Swagger e conversão Zod -> OpenAPI
+│   │   └── rate-limit/         Limitadores padrão e estrito (@SensitiveRateLimit)
+│   ├── infrastructure/         Integrações técnicas (PostgreSQL, Redis, e-mail)
 │   └── modules/                Módulos de domínio
-│       ├── health/             Primeiro módulo funcional
-│       └── auth/, users/, ...  Planejados (README com a fronteira de cada um)
+│       ├── health/             Liveness e readiness
+│       ├── users/              Conta e perfil
+│       ├── auth/               Credenciais, sessões, verificação de e-mail e senha
+│       └── posts/, feed/, ...  Planejados (README com a fronteira de cada um)
 ├── test/                       Testes e2e (Postgres e Redis reais)
 ├── vitest.config.ts            Testes unitários (src/**/*.test.ts)
 └── vitest.e2e.config.ts        Testes e2e (test/**/*.e2e.test.ts)
@@ -54,29 +58,32 @@ modules/health/
 - **Camadas vazias.** Se um caso de uso é só "buscar por id", o serviço chama o repositório e pronto. Não existe `UseCase` + `Interactor` + `Presenter` para isso.
 - **Factories e herança desnecessárias.** Composição e funções puras primeiro.
 
-### Como um módulo cresce
+### Módulos de domínio
 
-Exemplo de como `users` deve ficar quando for implementado:
+O módulo `users` é o exemplo de referência de um módulo de domínio completo:
 
 ```text
 modules/users/
-├── users.module.ts
-├── users.controller.ts
-├── users.service.ts
-├── users.repository.ts
-├── user.ts                  Tipos e regras de domínio
-├── users.schemas.ts         Schemas Zod de entrada (ou em @ponto/validation, se os clientes usarem)
-└── users.service.test.ts
+├── users.module.ts          Exporta UsersService para outros módulos
+├── users.controller.ts      GET/PATCH /users/me, GET /users/:handle
+├── users.service.ts         Casos de uso; traduz violações de unicidade em AppError
+├── users.repository.ts      Drizzle; aceita um executor para participar de transações
+└── user.ts                  Domínio: handles reservados, mapeamento para perfil público/privado
 ```
+
+Os schemas de entrada ficam em `@ponto/validation` porque os formulários de web e mobile usam os mesmos.
+
+O módulo `auth` mostra um módulo maior, ainda sem subpastas: dois controllers (`auth`, `sessions`), três serviços (`AuthService`, `SessionsService`, `AccountVerificationService`), três repositórios, o guard global e as peças puras (`opaque-token.ts`, `account-emails.ts`). O desenho está em [auth.md](auth.md).
 
 Quando um módulo ficar grande, ele pode ser dividido em subpastas (`domain/`, `application/`, `http/`, `infrastructure/`) sem mudar as regras acima.
 
 ## Regras de fronteira entre módulos
 
 1. **Cada tabela tem um único módulo dono.** As tabelas ficam em `packages/database/src/schema/<modulo>.ts`, mas só o repositório do módulo dono as consulta.
-2. **Módulos conversam por serviços exportados.** `posts` não importa `UsersRepository`; ele importa `UsersModule` e usa `UsersService`.
-3. **Sem dependência circular.** Se dois módulos precisam um do outro, a regra provavelmente pertence a um terceiro módulo ou deve virar evento.
-4. **`common/` não conhece domínio.** Se algo em `common/` começa a citar `posts` ou `users`, ele pertence ao módulo.
+2. **Módulos conversam por serviços exportados.** `auth` não importa `UsersRepository`; ele importa `UsersModule` e usa `UsersService`.
+3. **Transações atravessam módulos pelo executor.** Repositórios aceitam um `DatabaseExecutor` opcional (conexão ou transação). O cadastro, por exemplo, abre uma transação no `AuthService` e passa `tx` para `UsersService.create` e para o repositório de credenciais.
+4. **Sem dependência circular.** Se dois módulos precisam um do outro, a regra provavelmente pertence a um terceiro módulo ou deve virar evento.
+5. **`common/` não conhece domínio.** Se algo em `common/` começa a citar `posts` ou `users`, ele pertence ao módulo.
 
 Essas regras são o que permite extrair um módulo para um serviço separado no futuro.
 
@@ -192,21 +199,24 @@ Mensagens de log são sempre em inglês e **não** passam por i18n.
 
 ## Segurança
 
-| Item                    | Implementação                                                                                                                                   |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Headers de segurança    | `helmet()` com CSP padrão; `X-Powered-By` desativado.                                                                                           |
-| CORS                    | Desligado por padrão. Liberado apenas para as origens de `CORS_ORIGINS`.                                                                        |
-| Rate limiting           | `@nestjs/throttler` global por IP (`RATE_LIMIT_*`). Health checks são isentos. Use `@Throttle()` para limites específicos (por exemplo, login). |
-| Proxy reverso           | `TRUST_PROXY` define quantos proxies são confiáveis, para obter o IP real com segurança.                                                        |
-| Validação e sanitização | Zod em toda entrada; campos desconhecidos descartados.                                                                                          |
-| Erros                   | Nunca expõem stack trace ou mensagem interna.                                                                                                   |
-| Segredos                | Apenas via variáveis de ambiente; `.env` fora do git.                                                                                           |
-| Logs                    | Redação de dados sensíveis (veja acima).                                                                                                        |
-| Swagger                 | Desligado em produção por padrão (`SWAGGER_ENABLED`).                                                                                           |
+| Item                    | Implementação                                                                                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Headers de segurança    | `helmet()` com CSP padrão; `X-Powered-By` desativado.                                                                                                           |
+| CORS                    | Desligado por padrão. Liberado apenas para as origens de `CORS_ORIGINS`.                                                                                        |
+| Autenticação            | Guard global de sessão (Bearer). Rotas abertas precisam de `@Public()`. Detalhes em [auth.md](auth.md).                                                         |
+| Rate limiting           | `@nestjs/throttler` global por IP (`RATE_LIMIT_*`) e um limitador estrito (`AUTH_RATE_LIMIT_*`) ativado com `@SensitiveRateLimit()`. Health checks são isentos. |
+| Proxy reverso           | `TRUST_PROXY` define quantos proxies são confiáveis, para obter o IP real com segurança.                                                                        |
+| Validação e sanitização | Zod em toda entrada; campos desconhecidos descartados.                                                                                                          |
+| Erros                   | Nunca expõem stack trace ou mensagem interna.                                                                                                                   |
+| Segredos                | Apenas via variáveis de ambiente; `.env` fora do git.                                                                                                           |
+| Logs                    | Redação de dados sensíveis (veja acima).                                                                                                                        |
+| Swagger                 | Desligado em produção por padrão (`SWAGGER_ENABLED`).                                                                                                           |
 
 **Rate limiting com várias instâncias:** hoje o contador fica em memória, o que é correto para uma instância. Ao escalar horizontalmente, troque o storage do `ThrottlerModule` por um baseado em Redis; o cliente Redis já está disponível via injeção (`REDIS`).
 
-**Autenticação (próxima etapa):** o módulo `auth` fornecerá um guard global com decorator `@Public()` para rotas abertas. A ordem dos guards será: rate limit, depois autenticação, depois autorização. Os códigos `UNAUTHORIZED` e `FORBIDDEN` e suas mensagens já existem.
+**Ordem dos guards:** rate limit, depois sessão. Assim, tentativas de força bruta são barradas antes de qualquer consulta ao banco. Autorização (papéis, moderação) entrará depois da sessão.
+
+**Protegido por padrão:** uma rota nova sem `@Public()` exige sessão. Esquecer o decorator gera um 401 visível no primeiro teste, nunca uma rota aberta por engano.
 
 ## Configuração
 
@@ -217,10 +227,11 @@ Mensagens de log são sempre em inglês e **não** passam por i18n.
 
 Para adicionar uma variável: inclua no schema, exponha no `AppConfig`, documente no `.env.example` e, se for usada no CI, no workflow.
 
-## Infraestrutura (PostgreSQL e Redis)
+## Infraestrutura (PostgreSQL, Redis e e-mail)
 
 - `DatabaseModule` (global) expõe a instância Drizzle pelo token `DATABASE` e fecha o pool no shutdown.
 - `RedisModule` (global) expõe o cliente `ioredis` pelo token `REDIS` e fecha a conexão no shutdown.
+- `EmailModule` (global) expõe `EmailSender`, implementado por `SmtpEmailSender` (nodemailer). Qualquer provedor com SMTP serve; em desenvolvimento, o Mailpit do docker-compose recebe tudo. É uma das poucas abstrações com classe abstrata, porque há duas implementações reais (SMTP e o capturador dos testes) e o provedor muda por ambiente.
 - A API **sobe mesmo se PostgreSQL ou Redis estiverem fora**: o pool conecta sob demanda e o Redis reconecta sozinho. Quem decide se a instância recebe tráfego é o readiness check.
 
 ## Health checks
@@ -233,7 +244,10 @@ Para adicionar uma variável: inclua no schema, exponha no `AppConfig`, document
 ## Testes
 
 - **Unitários** (`src/**/*.test.ts`, `pnpm test`): funções puras e peças isoladas (config, pipe de validação, agregação de health). Não precisam de Docker.
-- **E2E** (`test/**/*.e2e.test.ts`, `pnpm test:e2e`): sobem o `AppModule` completo com PostgreSQL e Redis reais e fazem requisições HTTP. Cobrem envelope de erro, i18n, request id, rate limiting, headers de segurança, OpenAPI e health.
+- **E2E** (`test/**/*.e2e.test.ts`, `pnpm test:e2e`): sobem o `AppModule` completo com PostgreSQL e Redis reais e fazem requisições HTTP. Cobrem envelope de erro, i18n, request id, rate limiting, headers de segurança, OpenAPI, health, e todos os fluxos de auth e users.
+  - Rodam num banco separado, `<nome>_test` (por exemplo, `ponto_test`). O `test/global-setup.ts` cria o banco se não existir, aplica as migrations com o migrator programático e limpa as tabelas antes da execução.
+  - O `EmailSender` é trocado por `CapturingEmailSender`, que guarda as mensagens em memória; os testes leem os links de verificação e redefinição a partir dele.
+  - Cada teste cria contas com e-mail e handle aleatórios (`test/support/accounts.ts`), então os testes não dependem de ordem.
 
 Testes de serviços com banco devem usar o PostgreSQL real, não mocks: mocks não detectam migrations quebradas nem SQL inválido.
 
