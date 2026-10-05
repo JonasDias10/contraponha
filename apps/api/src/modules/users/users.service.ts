@@ -7,7 +7,7 @@ import {
 import type { DatabaseExecutor } from "@ponto/database"
 import { ApiErrorCode } from "@ponto/types"
 
-import { AppError } from "../../common/errors/app-error.js"
+import { AppError } from "#src/common/errors/app-error.js"
 import { isReservedHandle, type User } from "./user.js"
 import { UsersRepository, type CreateUserData, type UpdateUserData } from "./users.repository.js"
 

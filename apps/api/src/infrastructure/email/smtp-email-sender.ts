@@ -1,7 +1,7 @@
 import { Inject, Injectable, type OnApplicationShutdown } from "@nestjs/common"
 import nodemailer, { type Transporter } from "nodemailer"
 
-import { APP_CONFIG, type AppConfig } from "../../config/app-config.js"
+import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { EmailSender, type EmailMessage } from "./email-sender.js"
 
 @Injectable()

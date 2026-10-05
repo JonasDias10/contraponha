@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common"
 import { users, type Database, type DatabaseExecutor, type NewUserRow } from "@ponto/database"
 import { eq } from "drizzle-orm"
 
-import { DATABASE } from "../../infrastructure/database/database.module.js"
+import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import type { User } from "./user.js"
 
 export type CreateUserData = Pick<NewUserRow, "email" | "handle" | "displayName" | "locale">

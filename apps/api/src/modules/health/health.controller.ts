@@ -13,8 +13,8 @@ import {
   readinessReportSchema,
 } from "@ponto/validation"
 
-import { Public } from "../../common/auth/public.decorator.js"
-import { toOpenApiSchema } from "../../common/openapi/swagger.js"
+import { Public } from "#src/common/auth/public.decorator.js"
+import { toOpenApiSchema } from "#src/common/openapi/swagger.js"
 import { HealthService } from "./health.service.js"
 
 @ApiTags("health")

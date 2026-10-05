@@ -10,13 +10,13 @@ import type { SessionSummary } from "@ponto/types"
 import { sessionListSchema } from "@ponto/validation"
 import { z } from "zod"
 
-import { CurrentAuth, type AuthContext } from "../../common/auth/auth-context.js"
+import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
 import {
   ApiStandardErrors,
   SESSION_SECURITY_SCHEME,
   toOpenApiSchema,
-} from "../../common/openapi/swagger.js"
-import { ZodValidationPipe } from "../../common/validation/zod-validation.pipe.js"
+} from "#src/common/openapi/swagger.js"
+import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { SessionsService } from "./sessions.service.js"
 
 @ApiTags("auth")

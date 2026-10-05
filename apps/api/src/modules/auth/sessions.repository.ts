@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common"
 import { sessions, type Database, type DatabaseExecutor, type SessionRow } from "@ponto/database"
 import { and, desc, eq, gt, isNull, ne } from "drizzle-orm"
 
-import { DATABASE } from "../../infrastructure/database/database.module.js"
+import { DATABASE } from "#src/infrastructure/database/database.module.js"
 
 export interface CreateSessionData {
   userId: string

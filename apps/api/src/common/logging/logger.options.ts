@@ -6,7 +6,7 @@ import { isValidRequestId } from "@ponto/validation"
 import type { Params } from "nestjs-pino"
 import { stdTimeFunctions } from "pino"
 
-import type { AppConfig } from "../../config/app-config.js"
+import type { AppConfig } from "#src/config/app-config.js"
 
 const REDACTED_PATHS = [
   "password",

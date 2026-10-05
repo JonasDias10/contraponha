@@ -3,7 +3,7 @@ import { ApiErrorCode } from "@ponto/types"
 import { toValidationIssues } from "@ponto/validation"
 import type { z } from "zod"
 
-import { AppError } from "../errors/app-error.js"
+import { AppError } from "#src/common/errors/app-error.js"
 
 @Injectable()
 export class ZodValidationPipe<TSchema extends z.ZodType> implements PipeTransform<

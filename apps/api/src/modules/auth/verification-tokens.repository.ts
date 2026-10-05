@@ -7,7 +7,7 @@ import {
 } from "@ponto/database"
 import { and, eq, gt, isNull } from "drizzle-orm"
 
-import { DATABASE } from "../../infrastructure/database/database.module.js"
+import { DATABASE } from "#src/infrastructure/database/database.module.js"
 
 export interface IssueVerificationTokenData {
   userId: string

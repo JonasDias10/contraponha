@@ -1,7 +1,7 @@
 import { SetMetadata, type ExecutionContext } from "@nestjs/common"
 import type { ThrottlerOptions } from "@nestjs/throttler"
 
-import type { AppConfig } from "../../config/app-config.js"
+import type { AppConfig } from "#src/config/app-config.js"
 
 const SENSITIVE_RATE_LIMIT_KEY = "rateLimit:sensitive"
 

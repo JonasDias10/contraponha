@@ -2,12 +2,12 @@ import { Inject, Injectable, Logger } from "@nestjs/common"
 import type { Database, VerificationTokenPurpose } from "@ponto/database"
 import { ApiErrorCode } from "@ponto/types"
 
-import { AppError } from "../../common/errors/app-error.js"
-import { APP_CONFIG, type AppConfig } from "../../config/app-config.js"
-import { DATABASE } from "../../infrastructure/database/database.module.js"
-import { EmailSender, type EmailMessage } from "../../infrastructure/email/email-sender.js"
-import { userLocale, type User } from "../users/user.js"
-import { UsersService } from "../users/users.service.js"
+import { AppError } from "#src/common/errors/app-error.js"
+import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
+import { DATABASE } from "#src/infrastructure/database/database.module.js"
+import { EmailSender, type EmailMessage } from "#src/infrastructure/email/email-sender.js"
+import { userLocale, type User } from "#src/modules/users/user.js"
+import { UsersService } from "#src/modules/users/users.service.js"
 import {
   buildEmailVerificationEmail,
   buildPasswordResetEmail,

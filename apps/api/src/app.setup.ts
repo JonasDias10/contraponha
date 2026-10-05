@@ -4,8 +4,8 @@ import { API_DEFAULT_VERSION, API_GLOBAL_PREFIX, REQUEST_ID_HEADER } from "@pont
 import helmet from "helmet"
 import { Logger } from "nestjs-pino"
 
-import { setupSwagger } from "./common/openapi/swagger.js"
-import type { AppConfig } from "./config/app-config.js"
+import { setupSwagger } from "#src/common/openapi/swagger.js"
+import type { AppConfig } from "#src/config/app-config.js"
 
 export function configureApp(app: NestExpressApplication, config: AppConfig): void {
   app.useLogger(app.get(Logger))

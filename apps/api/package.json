@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#src/*": {
+      "source": "./src/*",
+      "default": "./build/*"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc-watch -p tsconfig.build.json --noClear --onSuccess \"node --enable-source-maps --env-file-if-exists=../../.env build/main.js\"",

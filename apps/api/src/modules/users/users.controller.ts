@@ -9,15 +9,15 @@ import {
 } from "@ponto/validation"
 import type { z } from "zod"
 
-import { CurrentAuth, type AuthContext } from "../../common/auth/auth-context.js"
-import { Public } from "../../common/auth/public.decorator.js"
+import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
+import { Public } from "#src/common/auth/public.decorator.js"
 import {
   ApiStandardErrors,
   ApiZodBody,
   SESSION_SECURITY_SCHEME,
   toOpenApiSchema,
-} from "../../common/openapi/swagger.js"
-import { ZodValidationPipe } from "../../common/validation/zod-validation.pipe.js"
+} from "#src/common/openapi/swagger.js"
+import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { toPrivateProfile, toPublicProfile } from "./user.js"
 import { UsersService } from "./users.service.js"
 

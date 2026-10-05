@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common"
 import type { Redis } from "ioredis"
 
-import { REDIS } from "../../infrastructure/redis/redis.module.js"
+import { REDIS } from "#src/infrastructure/redis/redis.module.js"
 
 const MAX_CACHE_TTL_SECONDS = 15 * 60
 

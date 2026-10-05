@@ -20,17 +20,17 @@ import {
 } from "@ponto/validation"
 import type { z } from "zod"
 
-import { CurrentAuth, type AuthContext } from "../../common/auth/auth-context.js"
-import { Public } from "../../common/auth/public.decorator.js"
+import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
+import { Public } from "#src/common/auth/public.decorator.js"
 import {
   ApiStandardErrors,
   ApiZodBody,
   SESSION_SECURITY_SCHEME,
   toOpenApiSchema,
-} from "../../common/openapi/swagger.js"
-import { SensitiveRateLimit } from "../../common/rate-limit/rate-limit.js"
-import { ZodValidationPipe } from "../../common/validation/zod-validation.pipe.js"
-import { UsersService } from "../users/users.service.js"
+} from "#src/common/openapi/swagger.js"
+import { SensitiveRateLimit } from "#src/common/rate-limit/rate-limit.js"
+import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
+import { UsersService } from "#src/modules/users/users.service.js"
 import { AccountVerificationService } from "./account-verification.service.js"
 import { AuthService } from "./auth.service.js"
 import { SessionsService } from "./sessions.service.js"

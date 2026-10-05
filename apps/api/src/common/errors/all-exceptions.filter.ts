@@ -10,7 +10,7 @@ import { createTranslator, negotiateLocale } from "@ponto/i18n"
 import { ApiErrorCode, type ApiErrorResponse } from "@ponto/types"
 import type { Request, Response } from "express"
 
-import { APP_CONFIG, type AppConfig } from "../../config/app-config.js"
+import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { AppError } from "./app-error.js"
 import { ERROR_CATALOG, errorCodeFromStatus } from "./error-catalog.js"
 

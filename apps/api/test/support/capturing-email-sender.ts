@@ -1,4 +1,4 @@
-import { EmailSender, type EmailMessage } from "../../src/infrastructure/email/email-sender.js"
+import { EmailSender, type EmailMessage } from "#src/infrastructure/email/email-sender.js"
 
 export class CapturingEmailSender extends EmailSender {
   readonly messages: EmailMessage[] = []

@@ -4,7 +4,7 @@ import { EnvValidationError } from "@ponto/config"
 
 import { AppModule } from "./app.module.js"
 import { configureApp } from "./app.setup.js"
-import { loadAppConfig, type AppConfig } from "./config/app-config.js"
+import { loadAppConfig, type AppConfig } from "#src/config/app-config.js"
 
 function loadConfigOrExit(): AppConfig {
   try {

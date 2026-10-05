@@ -3,9 +3,9 @@ import { pingDatabase, type Database } from "@ponto/database"
 import { ApiErrorCode, HealthStatus, type LivenessReport, type ReadinessReport } from "@ponto/types"
 import type { Redis } from "ioredis"
 
-import { AppError } from "../../common/errors/app-error.js"
-import { DATABASE } from "../../infrastructure/database/database.module.js"
-import { REDIS } from "../../infrastructure/redis/redis.module.js"
+import { AppError } from "#src/common/errors/app-error.js"
+import { DATABASE } from "#src/infrastructure/database/database.module.js"
+import { REDIS } from "#src/infrastructure/redis/redis.module.js"
 import { probeDependency } from "./dependency-probe.js"
 import { buildLivenessReport, buildReadinessReport } from "./health-report.js"
 
