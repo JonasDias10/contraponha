@@ -167,7 +167,15 @@ pnpm format        # Prettier (aspas duplas, sem ponto e vírgula)
 pnpm format:check  # o que o CI executa
 ```
 
-O CI (`.github/workflows/ci.yml`) roda, nesta ordem: install, format:check, lint, typecheck, test, build (incluindo o bundle do mobile), migrations e e2e. Qualquer falha reprova o pipeline.
+O CI (`.github/workflows/ci.yml`) roda três jobs em paralelo, e qualquer falha reprova o pipeline:
+
+| Job       | O que faz                                                             |
+| --------- | --------------------------------------------------------------------- |
+| `quality` | `format:check`, `lint` e `typecheck`                                  |
+| `test`    | testes unitários, migrations e e2e (único job com PostgreSQL e Redis) |
+| `build`   | build de pacotes, API, web e bundles do mobile                        |
+
+A preparação comum (pnpm, Node, install e cache) fica na ação `.github/actions/setup`. Cada job guarda o cache do Turborepo (`.turbo/cache`) via `actions/cache`, então pacotes que não mudaram não são reprocessados nas execuções seguintes. Arquivos que afetam todos os pacotes (configs de TypeScript e ESLint) estão em `globalDependencies` no `turbo.json` e invalidam o cache inteiro quando mudam.
 
 ## Problemas comuns
 
