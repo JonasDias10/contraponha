@@ -169,4 +169,40 @@ describe("createApiClient", () => {
       expect(init?.body).toBe(JSON.stringify({ email: "ana@example.com" }))
     })
   })
+
+  describe("content resources", () => {
+    it("builds paginated URLs and skips missing query values", async () => {
+      const fetchMock = vi
+        .fn<typeof fetch>()
+        .mockImplementation(() =>
+          Promise.resolve(jsonResponse({ status: 200, body: { items: [], nextCursor: null } })),
+        )
+
+      const client = createApiClient({ baseUrl: "https://api.ponto.test", fetch: fetchMock })
+
+      await client.posts.listByUser({ handle: "ana", query: { limit: 10 } })
+
+      await client.follows.listFollowers({ handle: "ana", query: { cursor: "abc", limit: 5 } })
+
+      const urls = fetchMock.mock.calls.map(([url]) => url)
+
+      expect(urls).toEqual([
+        "https://api.ponto.test/api/v1/users/ana/posts?limit=10",
+        "https://api.ponto.test/api/v1/users/ana/followers?cursor=abc&limit=5",
+      ])
+    })
+
+    it("targets the right collection when reacting", async () => {
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }))
+      const client = createApiClient({ baseUrl: "https://api.ponto.test", fetch: fetchMock })
+
+      await client.reactions.add({ targetType: "comment", targetId: "c1", kind: "agree" })
+
+      const [url, init] = fetchMock.mock.calls[0] ?? []
+
+      expect(url).toBe("https://api.ponto.test/api/v1/comments/c1/reactions/agree")
+
+      expect(init?.method).toBe("PUT")
+    })
+  })
 })
