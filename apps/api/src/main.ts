@@ -14,6 +14,7 @@ function loadConfigOrExit(): AppConfig {
       process.stderr.write(`${error.message}\n`)
       process.exit(1)
     }
+
     throw error
   }
 }

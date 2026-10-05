@@ -1,5 +1,6 @@
 import js from "@eslint/js"
 import nextPlugin from "@next/eslint-plugin-next"
+import stylistic from "@stylistic/eslint-plugin"
 import prettier from "eslint-config-prettier"
 import reactHooks from "eslint-plugin-react-hooks"
 import globals from "globals"
@@ -32,6 +33,7 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     {
+      plugins: { "@stylistic": stylistic },
       languageOptions: {
         globals: runtimeGlobals,
         parserOptions: {
@@ -54,6 +56,11 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
         "@typescript-eslint/no-floating-promises": "error",
         "no-console": "error",
         eqeqeq: ["error", "always"],
+        "@stylistic/padding-line-between-statements": [
+          "error",
+          { blankLine: "always", prev: "*", next: "if" },
+          { blankLine: "always", prev: "if", next: "*" },
+        ],
       },
     },
     ...extra,

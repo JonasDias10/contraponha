@@ -25,6 +25,7 @@ export function createHealthResource(request: HttpClient): HealthResource {
         if (signal?.aborted) {
           throw error
         }
+
         return false
       }
     },

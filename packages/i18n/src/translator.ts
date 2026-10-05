@@ -15,6 +15,7 @@ function lookup(catalog: PartialMessages | undefined, key: string): string | und
     if (typeof node !== "object" || node === null) {
       return undefined
     }
+
     node = (node as Record<string, unknown>)[segment]
   }
   return typeof node === "string" ? node : undefined
@@ -24,6 +25,7 @@ function interpolate(template: string, params: MessageParams | undefined): strin
   if (!params) {
     return template
   }
+
   return template.replace(/\{(\w+)\}/g, (placeholder, name: string) =>
     name in params ? String(params[name]) : placeholder,
   )

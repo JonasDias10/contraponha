@@ -30,6 +30,7 @@ Use `User`, `Post`, `getUserById()`. Nunca `Usuario`, `Publicacao`, `buscarUsuar
 
 - **TypeScript estrito.** Sem `any` (use `unknown` e refine), sem `!` de non-null assertion, tipos de retorno explícitos em funções exportadas, `import type` para imports só de tipo.
 - **Nomes.** Arquivos em `kebab-case` (`health-report.ts`, `use-api-readiness.ts`), exceto componentes React, que usam `PascalCase` (`ApiStatusBadge.tsx`). Arquivos de rota do Next.js e do Expo Router seguem a convenção do framework (`page.tsx`, `_layout.tsx`). Classes, componentes e tipos em `PascalCase`, funções e variáveis em `camelCase`, hooks começando com `use`, constantes reais em `SCREAMING_SNAKE_CASE`, booleanos com `is`/`has`/`can`.
+- **Linha em branco antes e depois de todo `if`** (exceto quando ele abre ou fecha um bloco). O ESLint cobra e corrige com `pnpm lint:fix`.
 - **Comentários** só quando o _porquê_ não é óbvio. Código autoexplicativo vem primeiro.
 - **Sem código morto**, sem `TODO` solto. Trabalho futuro vai para uma issue ou para a documentação.
 - **Funções pequenas e puras** sempre que possível; efeitos colaterais nas bordas (controllers, repositórios, clientes).

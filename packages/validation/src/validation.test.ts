@@ -10,6 +10,7 @@ describe("toValidationIssues", () => {
       tags: z.array(z.string()),
     })
     const { error } = schema.safeParse({ profile: { name: "ab" }, tags: [1] })
+
     if (!error) {
       throw new Error("Expected validation to fail")
     }

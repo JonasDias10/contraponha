@@ -24,10 +24,12 @@ function normalize(exception: unknown): NormalizedError {
   if (exception instanceof AppError) {
     return { code: exception.code, status: exception.status, details: exception.details }
   }
+
   if (exception instanceof HttpException) {
     const status = exception.getStatus()
     return { code: errorCodeFromStatus(status), status, details: null }
   }
+
   return {
     code: ApiErrorCode.INTERNAL_ERROR,
     status: ERROR_CATALOG[ApiErrorCode.INTERNAL_ERROR].status,

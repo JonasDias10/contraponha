@@ -25,9 +25,11 @@ function parseAcceptLanguage(header: string): WeightedTag[] {
 
 function matchTag(tag: string, supported: readonly Locale[]): Locale | undefined {
   const exact = supported.find((locale) => locale.toLowerCase() === tag)
+
   if (exact) {
     return exact
   }
+
   const language = tag.split("-")[0]
   return supported.find((locale) => locale.toLowerCase().split("-")[0] === language)
 }
@@ -39,8 +41,10 @@ export function negotiateLocale(
   if (!acceptLanguage) {
     return fallback
   }
+
   for (const { tag } of parseAcceptLanguage(acceptLanguage)) {
     const match = matchTag(tag, supported)
+
     if (match) {
       return match
     }

@@ -55,6 +55,7 @@ export function buildLoggerParams(config: AppConfig): Params {
         if (error || res.statusCode >= 500) {
           return "error"
         }
+
         return res.statusCode >= 400 ? "warn" : "info"
       },
       serializers: {
