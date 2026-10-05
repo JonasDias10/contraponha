@@ -14,7 +14,7 @@ Os dois clientes do Ponto compartilham contrato, traduções e cliente HTTP com 
 
 Regra prática: se a mesma lógica aparece no web e no mobile, ela sobe para um pacote. Exemplo atual: "a API está disponível?" é `health.isReady()` no `@ponto/api-client`, e não um `try/catch` repetido em cada app.
 
-Componentes visuais **não** são compartilhados. Web usa HTML + Tailwind e mobile usa componentes nativos + `StyleSheet`. Um pacote de UI compartilhado só faz sentido se, no futuro, adotarmos uma solução que renderize nos dois (por exemplo, React Native Web), e essa decisão ainda não foi tomada. O que é compartilhado visualmente são os **tokens de cor**, hoje definidos em `globals.css` (web) e `src/lib/theme.ts` (mobile) com os mesmos valores.
+Componentes visuais **não** são compartilhados. Web usa HTML + Tailwind e mobile usa componentes nativos + `StyleSheet`. Um pacote de UI compartilhado só faz sentido se, no futuro, adotarmos uma solução que renderize nos dois (por exemplo, React Native Web), e essa decisão ainda não foi tomada. O que é compartilhado visualmente são os **tokens semânticos** (cores, fontes, raios e elevação), hoje definidos em `globals.css` (web) e `src/lib/theme.ts` (mobile) com os mesmos valores. Valores, regras de uso e justificativas estão em [docs/design/design-system.md](../design/design-system.md).
 
 ## apps/web (Next.js)
 
