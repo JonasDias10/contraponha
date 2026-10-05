@@ -526,6 +526,9 @@ importers:
 
   packages/validation:
     dependencies:
+      '@ponto/config':
+        specifier: workspace:*
+        version: link:../config
       '@ponto/i18n':
         specifier: workspace:*
         version: link:../i18n

@@ -1,0 +1,2 @@
+export const POST_BODY_MAX_LENGTH = 5_000
+export const COMMENT_BODY_MAX_LENGTH = 2_000
