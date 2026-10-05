@@ -23,7 +23,11 @@ apps/api/
 │       ├── health/             Liveness e readiness
 │       ├── users/              Conta e perfil
 │       ├── auth/               Credenciais, sessões, verificação de e-mail e senha
-│       └── posts/, feed/, ...  Planejados (README com a fronteira de cada um)
+│       ├── posts/              Posts, edição com histórico, listagem por autor
+│       ├── comments/           Comentários e respostas (1 nível)
+│       ├── reactions/          Reações em posts e comentários
+│       ├── follows/            Seguir, seguidores e seguindo
+│       └── feed/, search/, ... Planejados (README com a fronteira de cada um)
 ├── test/                       Testes e2e (Postgres e Redis reais)
 ├── vitest.config.ts            Testes unitários (src/**/*.test.ts)
 └── vitest.e2e.config.ts        Testes e2e (test/**/*.e2e.test.ts)

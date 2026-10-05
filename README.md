@@ -4,7 +4,7 @@ O Ponto é uma plataforma social brasileira feita para conversas que valem a pen
 
 Este repositório contém a fundação técnica do produto: a API, o app web, o app mobile (iOS e Android), os pacotes compartilhados e a infraestrutura de desenvolvimento.
 
-> **Estado atual:** fundação arquitetural. A API tem contas e autenticação completas (cadastro, login, sessões revogáveis, verificação de e-mail, redefinição e troca de senha, perfil), além de padrão de erros, logs, i18n e testes. Web e mobile consomem a API pelo cliente tipado e exibem uma tela inicial traduzida com o status da API; as telas de conta vêm a seguir. Posts, feed e o restante da rede social são as próximas etapas.
+> **Estado atual:** fundação arquitetural. A API tem contas e autenticação completas (cadastro, login, sessões revogáveis, verificação de e-mail, redefinição e troca de senha, perfil), além de padrão de erros, logs, i18n e testes. O núcleo social também está pronto na API: posts (com janela de edição de 30 minutos e histórico), comentários com respostas, reações de qualidade e de concordância, e follows. Web e mobile consomem a API pelo cliente tipado e exibem uma tela inicial traduzida com o status da API; as telas de conta e de conteúdo vêm a seguir. Feed, moderação, busca e notificações são as próximas etapas.
 
 ## Filosofia
 
@@ -155,6 +155,7 @@ ponto/
 - [Visão geral da arquitetura](docs/architecture/overview.md): monorepo, monolito modular, escolhas de stack, LGPD e evolução.
 - [Backend](docs/architecture/backend.md): camadas, módulos, erros, logs, segurança e convenções.
 - [Autenticação e contas](docs/architecture/auth.md): sessões, senhas, e-mails de conta e proteções contra abuso.
+- [Conteúdo e relações](docs/architecture/content.md): posts, comentários, reações, follows, contadores e paginação.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
 - [Frontends](docs/architecture/frontends.md): web e mobile, e como usam os pacotes compartilhados.
 - [Setup de desenvolvimento](docs/development/setup.md): ambiente local, testes e banco de dados.
