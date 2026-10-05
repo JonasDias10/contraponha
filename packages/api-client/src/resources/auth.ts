@@ -50,6 +50,7 @@ export function createAuthResource(request: HttpClient): AuthResource {
         path: "/auth/sessions",
         schema: sessionListSchema,
       })
+
       return sessions
     },
     revokeSession: (sessionId) =>

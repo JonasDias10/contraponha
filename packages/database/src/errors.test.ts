@@ -8,6 +8,7 @@ describe("getUniqueViolationConstraint", () => {
       code: "23505",
       constraint: "users_email_unique",
     })
+
     const drizzleError = new Error("Failed query", { cause: pgError })
 
     expect(getUniqueViolationConstraint(drizzleError)).toBe("users_email_unique")
@@ -17,6 +18,7 @@ describe("getUniqueViolationConstraint", () => {
     const fkError = Object.assign(new Error("fk"), { code: "23503", constraint: "x" })
 
     expect(getUniqueViolationConstraint(fkError)).toBeUndefined()
+
     expect(getUniqueViolationConstraint(new Error("boom"))).toBeUndefined()
   })
 })

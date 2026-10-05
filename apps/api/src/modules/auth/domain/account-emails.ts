@@ -34,6 +34,7 @@ interface BuildAccountEmailParams {
 function buildAccountEmail({ recipient, copy }: BuildAccountEmailParams): EmailMessage {
   const { to, name, locale, link } = recipient
   const t = createTranslator({ locale })
+
   const paragraphs = [
     t("emails.greeting", { name }),
     t(copy.body),
@@ -42,6 +43,7 @@ function buildAccountEmail({ recipient, copy }: BuildAccountEmailParams): EmailM
     t(copy.ignore),
     t("emails.signature"),
   ]
+
   const html = paragraphs
     .map((paragraph) =>
       paragraph === link

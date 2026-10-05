@@ -15,8 +15,11 @@ describe("account emails", () => {
     })
 
     expect(email.subject).toBe("Confirm your email on Ponto")
+
     expect(email.text).toContain("Hi, Ana!")
+
     expect(email.text).toContain("valid for 24 hours")
+
     expect(email.html).toContain('<a href="https://ponto.test/v?token=abc">')
   })
 
@@ -32,7 +35,9 @@ describe("account emails", () => {
     })
 
     expect(email.subject).toBe("Redefinição de senha do Ponto")
+
     expect(email.html).not.toContain("<img")
+
     expect(email.html).toContain("&lt;img")
   })
 })

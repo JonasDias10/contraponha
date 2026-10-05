@@ -48,9 +48,7 @@ export class SessionsRepository {
   async create({ data, executor = this.db }: CreateSessionParams): Promise<SessionRow> {
     const [session] = await executor.insert(sessions).values(data).returning()
 
-    if (!session) {
-      throw new Error("Insert into sessions returned no row")
-    }
+    if (!session) throw new Error("Insert into sessions returned no row")
 
     return session
   }
@@ -60,6 +58,7 @@ export class SessionsRepository {
       .select()
       .from(sessions)
       .where(and(eq(sessions.tokenHash, tokenHash), isActive(new Date())))
+
     return session
   }
 
@@ -89,6 +88,7 @@ export class SessionsRepository {
     const scope = exceptSessionId
       ? and(eq(sessions.userId, userId), ne(sessions.id, exceptSessionId))
       : eq(sessions.userId, userId)
+
     return this.revokeWhere({ scope, executor })
   }
 
@@ -101,6 +101,7 @@ export class SessionsRepository {
       .set({ revokedAt: new Date() })
       .where(and(scope, isActive(new Date())))
       .returning({ tokenHash: sessions.tokenHash })
+
     return revoked.map(({ tokenHash }) => tokenHash)
   }
 }

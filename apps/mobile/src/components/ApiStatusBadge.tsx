@@ -10,6 +10,7 @@ interface ApiStatusBadgeProps {
 
 export function ApiStatusBadge({ readiness, label }: ApiStatusBadgeProps): React.JSX.Element {
   const palette = usePalette()
+
   const dotColor = {
     checking: palette.muted,
     online: palette.success,

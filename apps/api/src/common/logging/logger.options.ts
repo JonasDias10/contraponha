@@ -52,16 +52,16 @@ export function buildLoggerParams(config: AppConfig): Params {
       genReqId: (req, res) => {
         const incoming = req.headers[REQUEST_ID_HEADER]
         const requestId = isValidRequestId(incoming) ? incoming : randomUUID()
+
         res.setHeader(REQUEST_ID_HEADER, requestId)
+
         return requestId
       },
       customAttributeKeys: { reqId: "requestId" },
       quietReqLogger: true,
       autoLogging: { ignore: (req) => req.url?.startsWith(HEALTH_PATH_PREFIX) ?? false },
       customLogLevel: (_req, res, error) => {
-        if (error || res.statusCode >= 500) {
-          return "error"
-        }
+        if (error || res.statusCode >= 500) return "error"
 
         return res.statusCode >= 400 ? "warn" : "info"
       },

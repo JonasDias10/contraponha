@@ -59,6 +59,7 @@ export async function login({ server, email, password }: LoginParams): Promise<s
     .post("/api/v1/auth/login")
     .send({ email, password })
     .expect(200)
+
   return authResponseSchema.parse(response.body).session.token
 }
 

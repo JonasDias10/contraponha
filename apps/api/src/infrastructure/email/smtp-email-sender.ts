@@ -11,8 +11,11 @@ export class SmtpEmailSender extends EmailSender implements OnApplicationShutdow
 
   constructor(@Inject(APP_CONFIG) config: AppConfig) {
     super()
+
     const { host, port, secure, user, password } = config.email.smtp
+
     this.from = config.email.from
+
     this.transporter = nodemailer.createTransport({
       host,
       port,

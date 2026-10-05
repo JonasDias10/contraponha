@@ -106,6 +106,7 @@ export class AuthController {
   @ApiAcceptedResponse()
   async resendEmailVerification(@CurrentAuth() auth: AuthContext): Promise<void> {
     const user = await this.usersService.getById(auth.userId)
+
     await this.accountVerification.sendEmailVerification(user)
   }
 

@@ -21,7 +21,9 @@ export class PasswordHasher {
   // Runs a full verification when the account does not exist, so response time does not reveal it.
   async verifyAgainstDecoy(password: string): Promise<false> {
     const decoyHash = await this.decoyHash
+
     await verify(decoyHash, password)
+
     return false
   }
 }

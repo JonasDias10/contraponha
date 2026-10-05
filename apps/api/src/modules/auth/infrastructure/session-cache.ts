@@ -34,14 +34,10 @@ export class SessionCache {
     const secondsUntilExpiry = msToSeconds(Date.parse(session.expiresAt) - Date.now())
     const ttl = Math.min(secondsUntilExpiry, SESSION_CACHE_MAX_TTL_SECONDS)
 
-    if (ttl > 0) {
-      await this.redis.set(cacheKey(tokenHash), JSON.stringify(session), "EX", ttl)
-    }
+    if (ttl > 0) await this.redis.set(cacheKey(tokenHash), JSON.stringify(session), "EX", ttl)
   }
 
   async delete(tokenHashes: readonly string[]): Promise<void> {
-    if (tokenHashes.length > 0) {
-      await this.redis.del(...tokenHashes.map(cacheKey))
-    }
+    if (tokenHashes.length > 0) await this.redis.del(...tokenHashes.map(cacheKey))
   }
 }

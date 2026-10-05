@@ -21,6 +21,7 @@ describe("ZodValidationPipe", () => {
     }
 
     expect(caught).toBeInstanceOf(AppError)
+
     expect(caught).toMatchObject({
       code: ApiErrorCode.VALIDATION_FAILED,
       status: 400,

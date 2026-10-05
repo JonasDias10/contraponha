@@ -80,9 +80,7 @@ const CODE_BY_STATUS: Partial<Record<number, ApiErrorCode>> = {
 export function errorCodeFromStatus(status: number): ApiErrorCode {
   const code = CODE_BY_STATUS[status]
 
-  if (code) {
-    return code
-  }
+  if (code) return code
 
   return status >= 500 ? ApiErrorCode.INTERNAL_ERROR : ApiErrorCode.BAD_REQUEST
 }

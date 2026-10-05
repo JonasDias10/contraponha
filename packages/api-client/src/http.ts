@@ -29,9 +29,7 @@ export type HttpClient = <TSchema extends z.ZodType>(
 async function readJson(response: Response): Promise<unknown> {
   const text = await response.text()
 
-  if (text.length === 0) {
-    return null
-  }
+  if (text.length === 0) return null
 
   try {
     return JSON.parse(text) as unknown
@@ -50,6 +48,7 @@ export function createHttpClient({
 
   return async ({ method, path, schema, body, signal }) => {
     const sessionToken = await getSessionToken?.()
+
     const headers: Record<string, string> = {
       accept: "application/json",
       ...(locale ? { "accept-language": locale } : {}),
@@ -63,23 +62,20 @@ export function createHttpClient({
       body: body === undefined ? undefined : JSON.stringify(body),
       signal,
     })
+
     const payload = await readJson(response)
 
     if (!response.ok) {
       const parsedError = apiErrorResponseSchema.safeParse(payload)
 
-      if (!parsedError.success) {
-        throw new ApiResponseFormatError(response.status, path)
-      }
+      if (!parsedError.success) throw new ApiResponseFormatError(response.status, path)
 
       throw new ApiError(response.status, parsedError.data.error)
     }
 
     const parsed = schema.safeParse(payload)
 
-    if (!parsed.success) {
-      throw new ApiResponseFormatError(response.status, path)
-    }
+    if (!parsed.success) throw new ApiResponseFormatError(response.status, path)
 
     return parsed.data
   }

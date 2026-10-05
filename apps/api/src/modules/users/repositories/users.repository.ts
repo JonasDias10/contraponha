@@ -45,9 +45,7 @@ export class UsersRepository {
   async create({ data, executor = this.db }: CreateUserParams): Promise<User> {
     const [user] = await executor.insert(users).values(data).returning()
 
-    if (!user) {
-      throw new Error("Insert into users returned no row")
-    }
+    if (!user) throw new Error("Insert into users returned no row")
 
     return user
   }

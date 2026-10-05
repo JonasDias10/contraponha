@@ -70,6 +70,7 @@ export class SessionsService {
 
   async issue({ userId, userAgent, executor }: IssueSessionParams): Promise<IssuedSession> {
     const token = generateOpaqueToken()
+
     const session = await this.sessionsRepository.create({
       data: {
         userId,
@@ -79,6 +80,7 @@ export class SessionsService {
       },
       executor,
     })
+
     return { token, expiresAt: session.expiresAt.toISOString() }
   }
 
@@ -86,11 +88,10 @@ export class SessionsService {
     const tokenHash = hashOpaqueToken(token)
     const session = await this.findActiveSession(tokenHash)
 
-    if (!session) {
-      return undefined
-    }
+    if (!session) return undefined
 
     this.recordUsage({ tokenHash, session })
+
     return { userId: session.userId, sessionId: session.sessionId }
   }
 
@@ -104,9 +105,7 @@ export class SessionsService {
   async revoke({ userId, sessionId }: RevokeUserSessionParams): Promise<void> {
     const revoked = await this.sessionsRepository.revoke({ userId, sessionId })
 
-    if (revoked.length === 0) {
-      throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
-    }
+    if (revoked.length === 0) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
 
     await this.sessionCache.delete(revoked)
   }
@@ -116,6 +115,7 @@ export class SessionsService {
       userId: auth.userId,
       exceptSessionId: auth.sessionId,
     })
+
     await this.sessionCache.delete(revoked)
   }
 
@@ -130,29 +130,26 @@ export class SessionsService {
   private async findActiveSession(tokenHash: string): Promise<CachedSession | undefined> {
     const cached = await this.sessionCache.get(tokenHash)
 
-    if (cached) {
-      return Date.parse(cached.expiresAt) > Date.now() ? cached : undefined
-    }
+    if (cached) return Date.parse(cached.expiresAt) > Date.now() ? cached : undefined
 
     const session = await this.sessionsRepository.findActiveByTokenHash(tokenHash)
 
-    if (!session) {
-      return undefined
-    }
+    if (!session) return undefined
 
     const entry = toCachedSession(session)
+
     await this.sessionCache.set({ tokenHash, session: entry })
+
     return entry
   }
 
   private recordUsage({ tokenHash, session }: RecordSessionUsageParams): void {
     const now = new Date()
 
-    if (now.getTime() - Date.parse(session.lastUsedAt) < SESSION_LAST_USED_WRITE_INTERVAL_MS) {
-      return
-    }
+    if (now.getTime() - Date.parse(session.lastUsedAt) < SESSION_LAST_USED_WRITE_INTERVAL_MS) return
 
     const updated = { ...session, lastUsedAt: now.toISOString() }
+
     Promise.all([
       this.sessionsRepository.touch({ sessionId: session.sessionId, lastUsedAt: now }),
       this.sessionCache.set({ tokenHash, session: updated }),

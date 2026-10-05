@@ -32,9 +32,7 @@ interface MatchTagParams {
 function matchTag({ tag, supported }: MatchTagParams): Locale | undefined {
   const exact = supported.find((locale) => locale.toLowerCase() === tag)
 
-  if (exact) {
-    return exact
-  }
+  if (exact) return exact
 
   const language = tag.split("-")[0]
   return supported.find((locale) => locale.toLowerCase().split("-")[0] === language)
@@ -45,16 +43,12 @@ export function negotiateLocale({
   supported = SUPPORTED_LOCALES,
   fallback = DEFAULT_LOCALE,
 }: NegotiateLocaleOptions): Locale {
-  if (!acceptLanguage) {
-    return fallback
-  }
+  if (!acceptLanguage) return fallback
 
   for (const { tag } of parseAcceptLanguage(acceptLanguage)) {
     const match = matchTag({ tag, supported })
 
-    if (match) {
-      return match
-    }
+    if (match) return match
   }
   return fallback
 }

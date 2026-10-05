@@ -7,6 +7,7 @@ describe("createTranslator", () => {
     expect(createTranslator({ locale: "pt-BR" })("common.errors.notFound")).toBe(
       "O recurso solicitado não foi encontrado.",
     )
+
     expect(createTranslator({ locale: "en" })("common.errors.notFound")).toBe(
       "The requested resource was not found.",
     )

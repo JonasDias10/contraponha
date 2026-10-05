@@ -63,16 +63,16 @@ export class AccountVerificationService {
   ) {}
 
   async sendEmailVerification(user: User): Promise<void> {
-    if (user.emailVerifiedAt) {
-      return
-    }
+    if (user.emailVerifiedAt) return
 
     const token = await this.issueToken({
       userId: user.id,
       purpose: "email_verification",
       ttlMs: hoursToMs(EMAIL_VERIFICATION_TTL_HOURS),
     })
+
     const link = this.buildLink({ path: EMAIL_VERIFICATION_PATH, token })
+
     this.deliver(
       buildEmailVerificationEmail({
         recipient: this.toRecipient({ user, link }),
@@ -89,9 +89,7 @@ export class AccountVerificationService {
         executor: tx,
       })
 
-      if (!userId) {
-        throw new AppError(ApiErrorCode.INVALID_TOKEN)
-      }
+      if (!userId) throw new AppError(ApiErrorCode.INVALID_TOKEN)
 
       await this.usersService.markEmailVerified({ id: userId, executor: tx })
     })
@@ -100,16 +98,16 @@ export class AccountVerificationService {
   async requestPasswordReset(email: string): Promise<void> {
     const user = await this.usersService.findByEmail(email)
 
-    if (!user) {
-      return
-    }
+    if (!user) return
 
     const token = await this.issueToken({
       userId: user.id,
       purpose: "password_reset",
       ttlMs: minutesToMs(PASSWORD_RESET_TTL_MINUTES),
     })
+
     const link = this.buildLink({ path: PASSWORD_RESET_PATH, token })
+
     this.deliver(
       buildPasswordResetEmail({
         recipient: this.toRecipient({ user, link }),
@@ -120,6 +118,7 @@ export class AccountVerificationService {
 
   async resetPassword({ token, newPassword }: ResetPasswordParams): Promise<void> {
     const passwordHash = await this.passwordHasher.hash(newPassword)
+
     const revokedTokenHashes = await this.db.transaction(async (tx) => {
       const userId = await this.verificationTokens.consume({
         tokenHash: hashOpaqueToken(token),
@@ -127,14 +126,15 @@ export class AccountVerificationService {
         executor: tx,
       })
 
-      if (!userId) {
-        throw new AppError(ApiErrorCode.INVALID_TOKEN)
-      }
+      if (!userId) throw new AppError(ApiErrorCode.INVALID_TOKEN)
 
       await this.credentials.upsertPasswordHash({ userId, passwordHash, executor: tx })
+
       await this.usersService.markEmailVerified({ id: userId, executor: tx })
+
       return this.sessionsService.revokeAll({ userId, executor: tx })
     })
+
     await this.sessionsService.evictFromCache(revokedTokenHashes)
   }
 
@@ -144,6 +144,7 @@ export class AccountVerificationService {
     ttlMs,
   }: IssueVerificationTokenParams): Promise<string> {
     const token = generateOpaqueToken()
+
     await this.verificationTokens.replace({
       data: {
         userId,
@@ -152,12 +153,15 @@ export class AccountVerificationService {
         expiresAt: new Date(Date.now() + ttlMs),
       },
     })
+
     return token
   }
 
   private buildLink({ path, token }: BuildAccountLinkParams): string {
     const url = new URL(path, this.config.webAppUrl)
+
     url.searchParams.set("token", token)
+
     return url.toString()
   }
 

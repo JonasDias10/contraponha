@@ -5,6 +5,7 @@ export class CapturingEmailSender extends EmailSender {
 
   send(message: EmailMessage): Promise<void> {
     this.messages.push(message)
+
     return Promise.resolve()
   }
 
@@ -15,9 +16,7 @@ export class CapturingEmailSender extends EmailSender {
   tokenSentTo(recipient: string): string {
     const token = this.lastTo(recipient)?.text.match(/[?&]token=([A-Za-z0-9_-]+)/)?.[1]
 
-    if (!token) {
-      throw new Error(`No email with a token was sent to ${recipient}`)
-    }
+    if (!token) throw new Error(`No email with a token was sent to ${recipient}`)
 
     return token
   }

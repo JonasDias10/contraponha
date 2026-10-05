@@ -101,6 +101,10 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
           "error",
           { blankLine: "always", prev: "*", next: "if" },
           { blankLine: "always", prev: "if", next: "*" },
+          { blankLine: "always", prev: "*", next: ["expression", "multiline-expression"] },
+          { blankLine: "always", prev: ["expression", "multiline-expression"], next: "*" },
+          { blankLine: "always", prev: "*", next: ["multiline-const", "multiline-let"] },
+          { blankLine: "always", prev: ["multiline-const", "multiline-let"], next: "*" },
         ],
       },
     },
@@ -117,6 +121,11 @@ function createConfig({ tsconfigRootDir, ignores = [], runtimeGlobals, extra = [
       ...tseslint.configs.disableTypeChecked,
     },
     prettier,
+    {
+      rules: {
+        curly: ["error", "multi-or-nest", "consistent"],
+      },
+    },
   )
 }
 

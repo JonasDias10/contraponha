@@ -60,6 +60,7 @@ export class AuthService {
 
   async register({ input, client }: RegisterParams): Promise<AuthResponse> {
     const passwordHash = await this.passwordHasher.hash(input.password)
+
     const locale =
       input.locale ??
       negotiateLocale({
@@ -73,34 +74,37 @@ export class AuthService {
         data: { email: input.email, handle: input.handle, displayName: input.displayName, locale },
         executor: tx,
       })
+
       await this.credentials.upsertPasswordHash({
         userId: created.id,
         passwordHash,
         executor: tx,
       })
+
       return created
     })
 
     await this.accountVerification.sendEmailVerification(user)
+
     return this.startSession({ user, userAgent: client.userAgent })
   }
 
   async login({ input, userAgent }: LoginParams): Promise<AuthResponse> {
     const user = await this.usersService.findByEmail(input.email)
     const passwordHash = user ? await this.credentials.findPasswordHash(user.id) : undefined
+
     const isValid = passwordHash
       ? await this.passwordHasher.verify({ passwordHash, password: input.password })
       : await this.passwordHasher.verifyAgainstDecoy(input.password)
 
-    if (!user || !isValid) {
-      throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
-    }
+    if (!user || !isValid) throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
 
     return this.startSession({ user, userAgent })
   }
 
   async changePassword({ auth, input }: ChangePasswordParams): Promise<void> {
     const currentHash = await this.credentials.findPasswordHash(auth.userId)
+
     const isValid = currentHash
       ? await this.passwordHasher.verify({
           passwordHash: currentHash,
@@ -108,15 +112,15 @@ export class AuthService {
         })
       : false
 
-    if (!isValid) {
-      throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
-    }
+    if (!isValid) throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
 
     const newPasswordHash = await this.passwordHasher.hash(input.newPassword)
+
     await this.credentials.upsertPasswordHash({
       userId: auth.userId,
       passwordHash: newPasswordHash,
     })
+
     await this.sessionsService.revokeOthers(auth)
   }
 

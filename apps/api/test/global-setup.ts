@@ -14,25 +14,25 @@ declare module "vitest" {
 function toTestDatabaseUrl(databaseUrl: string): string {
   const url = new URL(databaseUrl)
   const name = url.pathname.slice(1)
+
   url.pathname = name.endsWith("_test") ? `/${name}` : `/${name}_test`
+
   return url.toString()
 }
 
 export default async function setup(project: TestProject): Promise<void> {
   const rootEnvFile = resolve(import.meta.dirname, "../../../.env")
 
-  if (existsSync(rootEnvFile)) {
-    process.loadEnvFile(rootEnvFile)
-  }
+  if (existsSync(rootEnvFile)) process.loadEnvFile(rootEnvFile)
 
   const databaseUrl = process.env.DATABASE_URL
 
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL is required to run e2e tests")
-  }
+  if (!databaseUrl) throw new Error("DATABASE_URL is required to run e2e tests")
 
   const testDatabaseUrl = toTestDatabaseUrl(databaseUrl)
+
   await ensureDatabaseExists(testDatabaseUrl)
+
   await runMigrations(testDatabaseUrl)
 
   const connection = createDatabaseConnection({ url: testDatabaseUrl, maxConnections: 1 })

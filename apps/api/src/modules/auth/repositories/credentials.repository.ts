@@ -19,6 +19,7 @@ export class CredentialsRepository {
       .select({ passwordHash: passwordCredentials.passwordHash })
       .from(passwordCredentials)
       .where(eq(passwordCredentials.userId, userId))
+
     return credential?.passwordHash
   }
 

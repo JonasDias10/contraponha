@@ -37,10 +37,12 @@ export class HealthService {
         timeoutMs: HEALTH_DEPENDENCY_TIMEOUT_MS,
       }),
     ])
+
     const report = buildReadinessReport({ checks: { database, redis }, now: new Date() })
 
     if (report.status === HealthStatus.DOWN) {
       this.logger.warn({ checks: report.checks }, "Readiness check failed")
+
       throw new AppError(ApiErrorCode.SERVICE_UNAVAILABLE, { details: report })
     }
 

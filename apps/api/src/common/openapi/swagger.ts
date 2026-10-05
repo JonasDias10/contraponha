@@ -55,5 +55,6 @@ export function setupSwagger(app: INestApplication): void {
       })
       .build(),
   )
+
   SwaggerModule.setup(SWAGGER_PATH, app, document)
 }

@@ -20,11 +20,10 @@ export function createHealthResource(request: HttpClient): HealthResource {
     isReady: async (signal) => {
       try {
         await readiness(signal)
+
         return true
       } catch (error) {
-        if (signal?.aborted) {
-          throw error
-        }
+        if (signal?.aborted) throw error
 
         return false
       }

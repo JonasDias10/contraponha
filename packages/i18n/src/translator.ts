@@ -23,9 +23,7 @@ interface LookupParams {
 function lookup({ catalog, key }: LookupParams): string | undefined {
   let node: unknown = catalog
   for (const segment of key.split(".")) {
-    if (typeof node !== "object" || node === null) {
-      return undefined
-    }
+    if (typeof node !== "object" || node === null) return undefined
 
     node = (node as Record<string, unknown>)[segment]
   }
@@ -38,9 +36,7 @@ interface InterpolateParams {
 }
 
 function interpolate({ template, params }: InterpolateParams): string {
-  if (!params) {
-    return template
-  }
+  if (!params) return template
 
   return template.replace(/\{(\w+)\}/g, (placeholder, name: string) =>
     name in params ? String(params[name]) : placeholder,
@@ -57,6 +53,7 @@ export function createTranslator({
       lookup({ catalog: catalogs[locale], key }) ??
       lookup({ catalog: catalogs[fallbackLocale], key }) ??
       key
+
     return interpolate({ template, params })
   }
 }

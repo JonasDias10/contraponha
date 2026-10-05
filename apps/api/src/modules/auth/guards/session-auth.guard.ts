@@ -12,9 +12,7 @@ const BEARER_PREFIX = "bearer "
 function extractBearerToken(request: AuthenticatedRequest): string | undefined {
   const header = request.headers.authorization
 
-  if (!header?.toLowerCase().startsWith(BEARER_PREFIX)) {
-    return undefined
-  }
+  if (!header?.toLowerCase().startsWith(BEARER_PREFIX)) return undefined
 
   return header.slice(BEARER_PREFIX.length).trim() || undefined
 }
@@ -32,19 +30,16 @@ export class SessionAuthGuard implements CanActivate {
       context.getClass(),
     ])
 
-    if (isPublic) {
-      return true
-    }
+    if (isPublic) return true
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>()
     const token = extractBearerToken(request)
     const auth = token ? await this.sessionsService.authenticate(token) : undefined
 
-    if (!auth) {
-      throw new AppError(ApiErrorCode.UNAUTHORIZED)
-    }
+    if (!auth) throw new AppError(ApiErrorCode.UNAUTHORIZED)
 
     request.auth = auth
+
     return true
   }
 }

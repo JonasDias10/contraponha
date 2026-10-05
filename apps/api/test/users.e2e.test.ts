@@ -11,7 +11,10 @@ describe("users", () => {
   let server: App
 
   beforeAll(async () => {
-    ;({ app } = await createTestApp())
+    const testApp = await createTestApp()
+
+    app = testApp.app
+
     server = app.getHttpServer()
   })
 
@@ -38,6 +41,7 @@ describe("users", () => {
 
     it("clears the bio with a blank value and ignores fields that cannot be edited here", async () => {
       const { auth } = await registerAccount({ server })
+
       await request(server)
         .patch("/api/v1/users/me")
         .set(bearer(auth.session.token))
@@ -92,6 +96,7 @@ describe("users", () => {
       const malformed = await request(server).get("/api/v1/users/not.valid").expect(400)
 
       expect(missing.body.error.code).toBe("RESOURCE_NOT_FOUND")
+
       expect(malformed.body.error.code).toBe("VALIDATION_FAILED")
     })
   })

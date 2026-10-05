@@ -16,8 +16,11 @@ export class AppError extends Error {
     { details = null, cause }: AppErrorOptions = {},
   ) {
     super(code, { cause })
+
     this.name = "AppError"
+
     this.status = ERROR_CATALOG[code].status
+
     this.details = details
   }
 }

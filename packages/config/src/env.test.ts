@@ -44,8 +44,11 @@ describe("parseEnv", () => {
       parseEnv({ schema, source: { PORT: "abc", FEATURE_ENABLED: "yes" } })
 
     expect(parse).toThrow(EnvValidationError)
+
     expect(parse).toThrow(/DATABASE_URL/)
+
     expect(parse).toThrow(/PORT/)
+
     expect(parse).toThrow(/FEATURE_ENABLED/)
   })
 })

@@ -16,12 +16,19 @@ describe("loadAppConfig", () => {
     const config = loadAppConfig(requiredEnv)
 
     expect(config.nodeEnv).toBe("development")
+
     expect(config.http.port).toBe(3000)
+
     expect(config.http.corsOrigins).toEqual([])
+
     expect(config.i18n).toEqual({ defaultLocale: "pt-BR", supportedLocales: ["pt-BR", "en", "es"] })
+
     expect(config.swagger.enabled).toBe(true)
+
     expect(config.log.pretty).toBe(true)
+
     expect(config.webAppUrl).toBe("http://localhost:3001")
+
     expect(config.auth.sessionTtlMs).toBe(daysToMs(30))
   })
 
@@ -29,11 +36,13 @@ describe("loadAppConfig", () => {
     const config = loadAppConfig({ ...requiredEnv, NODE_ENV: "production" })
 
     expect(config.swagger.enabled).toBe(false)
+
     expect(config.log.pretty).toBe(false)
   })
 
   it("fails fast when required variables are missing", () => {
     expect(() => loadAppConfig({})).toThrow(EnvValidationError)
+
     expect(() => loadAppConfig({})).toThrow(/DATABASE_URL[\s\S]*REDIS_URL/)
   })
 
@@ -47,6 +56,7 @@ describe("loadAppConfig", () => {
     expect(() =>
       loadAppConfig({ ...requiredEnv, DEFAULT_LOCALE: "es", SUPPORTED_LOCALES: "pt-BR,en" }),
     ).toThrow(/DEFAULT_LOCALE/)
+
     expect(() => loadAppConfig({ ...requiredEnv, SUPPORTED_LOCALES: "pt-BR,fr" })).toThrow(
       /SUPPORTED_LOCALES/,
     )

@@ -42,6 +42,7 @@ export class VerificationTokensRepository {
           isNull(verificationTokens.consumedAt),
         ),
       )
+
     await executor.insert(verificationTokens).values(data)
   }
 
@@ -51,6 +52,7 @@ export class VerificationTokensRepository {
     executor = this.db,
   }: ConsumeVerificationTokenParams): Promise<string | undefined> {
     const now = new Date()
+
     const [token] = await executor
       .update(verificationTokens)
       .set({ consumedAt: now })
@@ -63,6 +65,7 @@ export class VerificationTokensRepository {
         ),
       )
       .returning({ userId: verificationTokens.userId })
+
     return token?.userId
   }
 }

@@ -8,9 +8,7 @@ interface PostgresError {
 function findPostgresError(error: unknown): PostgresError | undefined {
   let current: unknown = error
   while (typeof current === "object" && current !== null) {
-    if ("code" in current && typeof current.code === "string") {
-      return current as PostgresError
-    }
+    if ("code" in current && typeof current.code === "string") return current as PostgresError
 
     current = "cause" in current ? current.cause : undefined
   }

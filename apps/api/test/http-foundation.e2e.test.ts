@@ -11,7 +11,12 @@ describe("HTTP foundation", () => {
   let app: NestExpressApplication
 
   beforeAll(async () => {
-    ;({ app } = await createTestApp({ RATE_LIMIT_MAX_REQUESTS: "3", RATE_LIMIT_TTL_SECONDS: "60" }))
+    const testApp = await createTestApp({
+      RATE_LIMIT_MAX_REQUESTS: "3",
+      RATE_LIMIT_TTL_SECONDS: "60",
+    })
+
+    app = testApp.app
   })
 
   afterAll(async () => {
@@ -48,8 +53,11 @@ describe("HTTP foundation", () => {
       const { error } = apiErrorResponseSchema.parse(response.body)
 
       expect(error.code).toBe("RESOURCE_NOT_FOUND")
+
       expect(error.message).toBe("O recurso solicitado não foi encontrado.")
+
       expect(error.requestId).toBe(response.headers["x-request-id"])
+
       expect(response.headers["content-language"]).toBe("pt-BR")
     })
 
@@ -60,6 +68,7 @@ describe("HTTP foundation", () => {
         .expect(404)
 
       expect(response.body.error.message).toBe("The requested resource was not found.")
+
       expect(response.headers["content-language"]).toBe("en")
     })
 
@@ -103,6 +112,7 @@ describe("HTTP foundation", () => {
           requestId: response.headers["x-request-id"],
         },
       })
+
       expect(JSON.stringify(response.body)).not.toContain("postgres://")
     })
   })
@@ -112,14 +122,15 @@ describe("HTTP foundation", () => {
       const response = await request(app.getHttpServer()).get("/api/v1/health/live")
 
       expect(response.headers["x-content-type-options"]).toBe("nosniff")
+
       expect(response.headers["x-powered-by"]).toBeUndefined()
     })
 
     it("rate limits regular endpoints", async () => {
       const server = app.getHttpServer()
-      for (let attempt = 0; attempt < 3; attempt += 1) {
+      for (let attempt = 0; attempt < 3; attempt += 1)
         await request(server).get("/api/v1/probe/limited").expect(200)
-      }
+
       const response = await request(server).get("/api/v1/probe/limited").expect(429)
 
       expect(response.body.error.code).toBe("RATE_LIMIT_EXCEEDED")

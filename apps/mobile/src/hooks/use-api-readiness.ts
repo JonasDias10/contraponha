@@ -18,15 +18,15 @@ export function useApiReadiness(locale: Locale): ApiReadiness {
       .health.isReady(controller.signal)
       .catch(() => false)
       .then((isReady) => {
-        if (isActive) {
-          setReadiness(isReady ? "online" : "offline")
-        }
+        if (isActive) setReadiness(isReady ? "online" : "offline")
       })
       .finally(() => clearTimeout(timer))
 
     return () => {
       isActive = false
+
       clearTimeout(timer)
+
       controller.abort()
     }
   }, [locale])

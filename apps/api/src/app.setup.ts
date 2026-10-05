@@ -14,8 +14,11 @@ export interface ConfigureAppOptions {
 
 export function configureApp({ app, config }: ConfigureAppOptions): void {
   app.useLogger(app.get(Logger))
+
   app.set("trust proxy", config.http.trustProxy)
+
   app.disable("x-powered-by")
+
   app.use(helmet())
 
   if (config.http.corsOrigins.length > 0) {
@@ -27,9 +30,8 @@ export function configureApp({ app, config }: ConfigureAppOptions): void {
   }
 
   app.setGlobalPrefix(API_GLOBAL_PREFIX)
+
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: API_DEFAULT_VERSION })
 
-  if (config.swagger.enabled) {
-    setupSwagger(app)
-  }
+  if (config.swagger.enabled) setupSwagger(app)
 }

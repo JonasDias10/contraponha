@@ -21,9 +21,8 @@ interface NormalizedError {
 }
 
 function normalize(exception: unknown): NormalizedError {
-  if (exception instanceof AppError) {
+  if (exception instanceof AppError)
     return { code: exception.code, status: exception.status, details: exception.details }
-  }
 
   if (exception instanceof HttpException) {
     const status = exception.getStatus()
@@ -51,20 +50,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = http.getResponse<Response>()
     const { code, status, details } = normalize(exception)
 
-    if (status >= 500 && code !== ApiErrorCode.SERVICE_UNAVAILABLE) {
+    if (status >= 500 && code !== ApiErrorCode.SERVICE_UNAVAILABLE)
       this.logger.error({ err: exception, code }, "Unhandled exception while processing request")
-    }
 
-    if (response.headersSent) {
-      return
-    }
+    if (response.headersSent) return
 
     const locale = negotiateLocale({
       acceptLanguage: request.headers["accept-language"],
       supported: this.config.i18n.supportedLocales,
       fallback: this.config.i18n.defaultLocale,
     })
+
     const t = createTranslator({ locale, fallbackLocale: this.config.i18n.defaultLocale })
+
     const body: ApiErrorResponse = {
       error: {
         code,

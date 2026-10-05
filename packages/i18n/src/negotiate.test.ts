@@ -9,6 +9,7 @@ describe("negotiateLocale", () => {
 
   it("honors quality weights and matches by language", () => {
     expect(negotiateLocale({ acceptLanguage: "fr;q=0.9, en-US;q=0.8, es;q=0.5" })).toBe("en")
+
     expect(negotiateLocale({ acceptLanguage: "pt" })).toBe("pt-BR")
   })
 

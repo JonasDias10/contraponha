@@ -42,9 +42,7 @@ export class UsersService {
   async getById(id: string): Promise<User> {
     const user = await this.usersRepository.findById(id)
 
-    if (!user) {
-      throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
-    }
+    if (!user) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
 
     return user
   }
@@ -52,9 +50,7 @@ export class UsersService {
   async getByHandle(handle: string): Promise<User> {
     const user = await this.usersRepository.findByHandle(handle)
 
-    if (!user) {
-      throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
-    }
+    if (!user) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
 
     return user
   }
@@ -64,18 +60,15 @@ export class UsersService {
   }
 
   async create({ data, executor }: CreateUserParams): Promise<User> {
-    if (isReservedHandle(data.handle)) {
+    if (isReservedHandle(data.handle))
       throw new AppError(ApiErrorCode.HANDLE_UNAVAILABLE, { details: { field: "handle" } })
-    }
 
     try {
       return await this.usersRepository.create({ data, executor })
     } catch (error) {
       const code = ERROR_BY_CONSTRAINT[getUniqueViolationConstraint(error) ?? ""]
 
-      if (code) {
-        throw new AppError(code, { cause: error })
-      }
+      if (code) throw new AppError(code, { cause: error })
 
       throw error
     }
@@ -84,9 +77,7 @@ export class UsersService {
   async updateProfile({ id, data }: UpdateProfileParams): Promise<User> {
     const user = await this.usersRepository.update({ id, data })
 
-    if (!user) {
-      throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
-    }
+    if (!user) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
 
     return user
   }

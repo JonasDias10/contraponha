@@ -12,6 +12,7 @@ function loadConfigOrExit(): AppConfig {
   } catch (error) {
     if (error instanceof EnvValidationError) {
       process.stderr.write(`${error.message}\n`)
+
       process.exit(1)
     }
 
@@ -21,11 +22,13 @@ function loadConfigOrExit(): AppConfig {
 
 async function bootstrap(): Promise<void> {
   const config = loadConfigOrExit()
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(config), {
     bufferLogs: true,
   })
 
   configureApp({ app, config })
+
   app.enableShutdownHooks()
 
   await app.listen(config.http.port, config.http.host)
