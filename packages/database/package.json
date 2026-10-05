@@ -22,7 +22,8 @@
     "clean": "rm -rf build .turbo",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "reconcile-counters": "node --env-file-if-exists=../../.env build/scripts/reconcile-counters.js"
   },
   "dependencies": {
     "@ponto/config": "workspace:*",
