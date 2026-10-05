@@ -20,7 +20,9 @@
     "test": "vitest run --passWithNoTests",
     "clean": "rm -rf build .turbo"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ponto/i18n": "workspace:*"
+  },
   "devDependencies": {
     "@ponto/tsconfig": "workspace:*",
     "typescript": "~6.0.3",
