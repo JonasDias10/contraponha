@@ -25,7 +25,7 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
   })
 
-  configureApp(app, config)
+  configureApp({ app, config })
   app.enableShutdownHooks()
 
   await app.listen(config.http.port, config.http.host)

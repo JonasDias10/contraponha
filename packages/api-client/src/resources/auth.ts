@@ -27,11 +27,15 @@ export interface AuthResource {
 }
 
 export function createAuthResource(request: HttpClient): AuthResource {
-  const send = async (
-    method: "POST" | "PUT" | "DELETE",
-    path: string,
-    body?: unknown,
-  ): Promise<void> => {
+  const send = async ({
+    method,
+    path,
+    body,
+  }: {
+    method: "POST" | "PUT" | "DELETE"
+    path: string
+    body?: unknown
+  }): Promise<void> => {
     await request({ method, path, body, schema: emptyResponseSchema })
   }
 
@@ -40,16 +44,25 @@ export function createAuthResource(request: HttpClient): AuthResource {
       request({ method: "POST", path: "/auth/register", body: input, schema: authResponseSchema }),
     login: (input) =>
       request({ method: "POST", path: "/auth/login", body: input, schema: authResponseSchema }),
-    logout: () => send("POST", "/auth/logout"),
-    changePassword: (input) => send("PUT", "/auth/password", input),
-    listSessions: async () =>
-      (await request({ method: "GET", path: "/auth/sessions", schema: sessionListSchema }))
-        .sessions,
-    revokeSession: (sessionId) => send("DELETE", `/auth/sessions/${encodeURIComponent(sessionId)}`),
-    revokeOtherSessions: () => send("DELETE", "/auth/sessions"),
-    resendEmailVerification: () => send("POST", "/auth/email-verification"),
-    confirmEmail: (input) => send("POST", "/auth/email-verification/confirm", input),
-    requestPasswordReset: (input) => send("POST", "/auth/password-reset", input),
-    resetPassword: (input) => send("POST", "/auth/password-reset/confirm", input),
+    logout: () => send({ method: "POST", path: "/auth/logout" }),
+    changePassword: (input) => send({ method: "PUT", path: "/auth/password", body: input }),
+    listSessions: async () => {
+      const { sessions } = await request({
+        method: "GET",
+        path: "/auth/sessions",
+        schema: sessionListSchema,
+      })
+      return sessions
+    },
+    revokeSession: (sessionId) =>
+      send({ method: "DELETE", path: `/auth/sessions/${encodeURIComponent(sessionId)}` }),
+    revokeOtherSessions: () => send({ method: "DELETE", path: "/auth/sessions" }),
+    resendEmailVerification: () => send({ method: "POST", path: "/auth/email-verification" }),
+    confirmEmail: (input) =>
+      send({ method: "POST", path: "/auth/email-verification/confirm", body: input }),
+    requestPasswordReset: (input) =>
+      send({ method: "POST", path: "/auth/password-reset", body: input }),
+    resetPassword: (input) =>
+      send({ method: "POST", path: "/auth/password-reset/confirm", body: input }),
   }
 }

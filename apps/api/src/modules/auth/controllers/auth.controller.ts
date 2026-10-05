@@ -57,7 +57,7 @@ export class AuthController {
     @Headers("user-agent") userAgent: string | undefined,
     @Headers("accept-language") acceptLanguage: string | undefined,
   ): Promise<AuthResponse> {
-    return this.authService.register(body, { userAgent, acceptLanguage })
+    return this.authService.register({ input: body, client: { userAgent, acceptLanguage } })
   }
 
   @Public()
@@ -71,7 +71,7 @@ export class AuthController {
     @Body(new ZodValidationPipe(loginInputSchema)) body: z.output<typeof loginInputSchema>,
     @Headers("user-agent") userAgent: string | undefined,
   ): Promise<AuthResponse> {
-    return this.authService.login(body, userAgent)
+    return this.authService.login({ input: body, userAgent })
   }
 
   @Post("logout")
@@ -80,7 +80,7 @@ export class AuthController {
   @ApiOperation({ summary: "End the current session" })
   @ApiNoContentResponse()
   logout(@CurrentAuth() auth: AuthContext): Promise<void> {
-    return this.sessionsService.revoke(auth.userId, auth.sessionId)
+    return this.sessionsService.revoke({ userId: auth.userId, sessionId: auth.sessionId })
   }
 
   @SensitiveRateLimit()
@@ -95,7 +95,7 @@ export class AuthController {
     @Body(new ZodValidationPipe(changePasswordInputSchema))
     body: z.output<typeof changePasswordInputSchema>,
   ): Promise<void> {
-    return this.authService.changePassword(auth, body)
+    return this.authService.changePassword({ auth, input: body })
   }
 
   @SensitiveRateLimit()
@@ -105,9 +105,8 @@ export class AuthController {
   @ApiOperation({ summary: "Send a new email verification link" })
   @ApiAcceptedResponse()
   async resendEmailVerification(@CurrentAuth() auth: AuthContext): Promise<void> {
-    await this.accountVerification.sendEmailVerification(
-      await this.usersService.getById(auth.userId),
-    )
+    const user = await this.usersService.getById(auth.userId)
+    await this.accountVerification.sendEmailVerification(user)
   }
 
   @Public()
@@ -151,6 +150,6 @@ export class AuthController {
     @Body(new ZodValidationPipe(resetPasswordInputSchema))
     body: z.output<typeof resetPasswordInputSchema>,
   ): Promise<void> {
-    return this.accountVerification.resetPassword(body.token, body.newPassword)
+    return this.accountVerification.resetPassword(body)
   }
 }

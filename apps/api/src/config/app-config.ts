@@ -57,7 +57,7 @@ export interface AppConfig {
 }
 
 export function loadAppConfig(source: EnvSource): AppConfig {
-  const env = parseEnv(envSchema, source)
+  const env = parseEnv({ schema: envSchema, source })
   const isProduction = env.NODE_ENV === "production"
 
   return {

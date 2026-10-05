@@ -5,11 +5,18 @@ import type { MessageKey, MessageParams, PartialMessages } from "./types.js"
 export type Translate = (key: MessageKey, params?: MessageParams) => string
 
 export interface TranslatorOptions {
+  locale: Locale
   fallbackLocale?: Locale
   catalogs?: Partial<Record<Locale, PartialMessages>>
 }
 
-function lookup(catalog: PartialMessages | undefined, key: string): string | undefined {
+function lookup({
+  catalog,
+  key,
+}: {
+  catalog: PartialMessages | undefined
+  key: string
+}): string | undefined {
   let node: unknown = catalog
   for (const segment of key.split(".")) {
     if (typeof node !== "object" || node === null) {
@@ -21,7 +28,13 @@ function lookup(catalog: PartialMessages | undefined, key: string): string | und
   return typeof node === "string" ? node : undefined
 }
 
-function interpolate(template: string, params: MessageParams | undefined): string {
+function interpolate({
+  template,
+  params,
+}: {
+  template: string
+  params: MessageParams | undefined
+}): string {
   if (!params) {
     return template
   }
@@ -31,12 +44,16 @@ function interpolate(template: string, params: MessageParams | undefined): strin
   )
 }
 
-export function createTranslator(
-  locale: Locale,
-  { fallbackLocale = DEFAULT_LOCALE, catalogs = defaultCatalogs }: TranslatorOptions = {},
-): Translate {
+export function createTranslator({
+  locale,
+  fallbackLocale = DEFAULT_LOCALE,
+  catalogs = defaultCatalogs,
+}: TranslatorOptions): Translate {
   return (key, params) => {
-    const template = lookup(catalogs[locale], key) ?? lookup(catalogs[fallbackLocale], key) ?? key
-    return interpolate(template, params)
+    const template =
+      lookup({ catalog: catalogs[locale], key }) ??
+      lookup({ catalog: catalogs[fallbackLocale], key }) ??
+      key
+    return interpolate({ template, params })
   }
 }

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { ApiError, ApiResponseFormatError, createApiClient } from "./index.js"
 
-function jsonResponse(status: number, body: unknown): Response {
+function jsonResponse({ status, body }: { status: number; body: unknown }): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json" },
@@ -12,7 +12,9 @@ function jsonResponse(status: number, body: unknown): Response {
 describe("createApiClient", () => {
   it("calls the versioned endpoint with locale headers and returns the parsed body", async () => {
     const report = { status: "up", uptimeSeconds: 12, timestamp: "2026-10-05T12:00:00.000Z" }
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(200, report))
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(jsonResponse({ status: 200, body: report }))
     const client = createApiClient({
       baseUrl: "https://api.ponto.test/",
       locale: "en",
@@ -37,7 +39,7 @@ describe("createApiClient", () => {
     }
     const client = createApiClient({
       baseUrl: "https://api.ponto.test",
-      fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(503, body)),
+      fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({ status: 503, body })),
     })
 
     const error: unknown = await client.health.readiness().catch((caught: unknown) => caught)
@@ -53,7 +55,9 @@ describe("createApiClient", () => {
   it("rejects responses that do not match the contract", async () => {
     const client = createApiClient({
       baseUrl: "https://api.ponto.test",
-      fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(200, { status: "maybe" })),
+      fetch: vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(jsonResponse({ status: 200, body: { status: "maybe" } })),
     })
 
     await expect(client.health.liveness()).rejects.toBeInstanceOf(ApiResponseFormatError)
@@ -69,7 +73,9 @@ describe("createApiClient", () => {
     it("is true when the API reports itself ready", async () => {
       const client = createApiClient({
         baseUrl: "https://api.ponto.test",
-        fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(200, readyReport)),
+        fetch: vi
+          .fn<typeof fetch>()
+          .mockResolvedValue(jsonResponse({ status: 200, body: readyReport })),
       })
 
       await expect(client.health.isReady()).resolves.toBe(true)
@@ -79,8 +85,11 @@ describe("createApiClient", () => {
       const degraded = createApiClient({
         baseUrl: "https://api.ponto.test",
         fetch: vi.fn<typeof fetch>().mockResolvedValue(
-          jsonResponse(503, {
-            error: { code: "SERVICE_UNAVAILABLE", message: "x", details: null, requestId: null },
+          jsonResponse({
+            status: 503,
+            body: {
+              error: { code: "SERVICE_UNAVAILABLE", message: "x", details: null, requestId: null },
+            },
           }),
         ),
       })

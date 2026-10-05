@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { sessions, type Database, type DatabaseExecutor, type SessionRow } from "@ponto/database"
-import { and, desc, eq, gt, isNull, ne } from "drizzle-orm"
+import { and, desc, eq, gt, isNull, ne, type SQL } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 
@@ -11,7 +11,7 @@ export interface CreateSessionData {
   expiresAt: Date
 }
 
-function isActive(now: Date) {
+function isActive(now: Date): SQL | undefined {
   return and(isNull(sessions.revokedAt), gt(sessions.expiresAt, now))
 }
 
@@ -19,7 +19,13 @@ function isActive(now: Date) {
 export class SessionsRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  async create(data: CreateSessionData, executor: DatabaseExecutor = this.db): Promise<SessionRow> {
+  async create({
+    data,
+    executor = this.db,
+  }: {
+    data: CreateSessionData
+    executor?: DatabaseExecutor
+  }): Promise<SessionRow> {
     const [session] = await executor.insert(sessions).values(data).returning()
 
     if (!session) {
@@ -45,28 +51,38 @@ export class SessionsRepository {
       .orderBy(desc(sessions.lastUsedAt))
   }
 
-  async touch(sessionId: string, lastUsedAt: Date): Promise<void> {
+  async touch({ sessionId, lastUsedAt }: { sessionId: string; lastUsedAt: Date }): Promise<void> {
     await this.db.update(sessions).set({ lastUsedAt }).where(eq(sessions.id, sessionId))
   }
 
-  async revoke(userId: string, sessionId: string): Promise<string[]> {
-    return this.revokeWhere(and(eq(sessions.userId, userId), eq(sessions.id, sessionId)))
+  revoke({ userId, sessionId }: { userId: string; sessionId: string }): Promise<string[]> {
+    return this.revokeWhere({
+      scope: and(eq(sessions.userId, userId), eq(sessions.id, sessionId)),
+    })
   }
 
-  async revokeAllForUser(
-    userId: string,
-    { exceptSessionId, executor }: { exceptSessionId?: string; executor?: DatabaseExecutor } = {},
-  ): Promise<string[]> {
+  revokeAllForUser({
+    userId,
+    exceptSessionId,
+    executor,
+  }: {
+    userId: string
+    exceptSessionId?: string
+    executor?: DatabaseExecutor
+  }): Promise<string[]> {
     const scope = exceptSessionId
       ? and(eq(sessions.userId, userId), ne(sessions.id, exceptSessionId))
       : eq(sessions.userId, userId)
-    return this.revokeWhere(scope, executor)
+    return this.revokeWhere({ scope, executor })
   }
 
-  private async revokeWhere(
-    scope: ReturnType<typeof and>,
-    executor: DatabaseExecutor = this.db,
-  ): Promise<string[]> {
+  private async revokeWhere({
+    scope,
+    executor = this.db,
+  }: {
+    scope: SQL | undefined
+    executor?: DatabaseExecutor
+  }): Promise<string[]> {
     const revoked = await executor
       .update(sessions)
       .set({ revokedAt: new Date() })

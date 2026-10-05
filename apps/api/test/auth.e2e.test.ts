@@ -25,7 +25,7 @@ describe("auth", () => {
 
   describe("registration", () => {
     it("creates the account, starts a session and emails a verification link", async () => {
-      const { input, auth } = await registerAccount(server)
+      const { input, auth } = await registerAccount({ server })
 
       expect(auth.user).toMatchObject({
         email: input.email,
@@ -54,7 +54,7 @@ describe("auth", () => {
     })
 
     it("normalizes email and handle before checking uniqueness", async () => {
-      const { input } = await registerAccount(server)
+      const { input } = await registerAccount({ server })
 
       const sameEmail = await request(server)
         .post("/api/v1/auth/register")
@@ -96,7 +96,7 @@ describe("auth", () => {
     })
 
     it("stores only hashes of passwords and session tokens", async () => {
-      const { input, auth } = await registerAccount(server)
+      const { input, auth } = await registerAccount({ server })
       const connection = createDatabaseConnection({ url: inject("testDatabaseUrl") })
       try {
         const [user] = await connection.db.select().from(users).where(eq(users.email, input.email))
@@ -126,15 +126,19 @@ describe("auth", () => {
 
   describe("login and logout", () => {
     it("logs in with the normalized email", async () => {
-      const { input } = await registerAccount(server)
+      const { input } = await registerAccount({ server })
 
-      const token = await login(server, `  ${input.email.toUpperCase()} `, input.password)
+      const token = await login({
+        server,
+        email: `  ${input.email.toUpperCase()} `,
+        password: input.password,
+      })
 
       await request(server).get("/api/v1/users/me").set(bearer(token)).expect(200)
     })
 
     it("gives the same answer for a wrong password and an unknown email", async () => {
-      const { input } = await registerAccount(server)
+      const { input } = await registerAccount({ server })
 
       const wrongPassword = await request(server)
         .post("/api/v1/auth/login")
@@ -164,7 +168,7 @@ describe("auth", () => {
     })
 
     it("invalidates the token immediately on logout, even after it was cached", async () => {
-      const { auth } = await registerAccount(server)
+      const { auth } = await registerAccount({ server })
       const token = auth.session.token
       await request(server).get("/api/v1/users/me").set(bearer(token)).expect(200)
 
@@ -176,8 +180,8 @@ describe("auth", () => {
 
   describe("session management", () => {
     it("lists sessions and revokes the others", async () => {
-      const { input, auth } = await registerAccount(server)
-      const secondToken = await login(server, input.email, input.password)
+      const { input, auth } = await registerAccount({ server })
+      const secondToken = await login({ server, email: input.email, password: input.password })
       await request(server).get("/api/v1/users/me").set(bearer(secondToken)).expect(200)
 
       const listResponse = await request(server)
@@ -199,9 +203,13 @@ describe("auth", () => {
     })
 
     it("revokes a single session and does not touch other people's sessions", async () => {
-      const owner = await registerAccount(server)
-      const stranger = await registerAccount(server)
-      const otherToken = await login(server, owner.input.email, owner.input.password)
+      const owner = await registerAccount({ server })
+      const stranger = await registerAccount({ server })
+      const otherToken = await login({
+        server,
+        email: owner.input.email,
+        password: owner.input.password,
+      })
       const listResponse = await request(server)
         .get("/api/v1/auth/sessions")
         .set(bearer(owner.auth.session.token))
@@ -230,7 +238,7 @@ describe("auth", () => {
 
   describe("email verification", () => {
     it("verifies the email once with the emailed token", async () => {
-      const { input, auth } = await registerAccount(server)
+      const { input, auth } = await registerAccount({ server })
       const token = emails.tokenSentTo(input.email)
 
       await request(server)
@@ -251,7 +259,7 @@ describe("auth", () => {
     })
 
     it("invalidates the previous link when a new one is requested", async () => {
-      const { input, auth } = await registerAccount(server)
+      const { input, auth } = await registerAccount({ server })
       const firstToken = emails.tokenSentTo(input.email)
 
       await request(server)
@@ -285,7 +293,7 @@ describe("auth", () => {
     })
 
     it("sets a new password with a single-use token and ends every session", async () => {
-      const { input, auth } = await registerAccount(server)
+      const { input, auth } = await registerAccount({ server })
       await request(server)
         .post("/api/v1/auth/password-reset")
         .send({ email: input.email })
@@ -303,7 +311,7 @@ describe("auth", () => {
         .post("/api/v1/auth/login")
         .send({ email: input.email, password: input.password })
         .expect(401)
-      await login(server, input.email, newPassword)
+      await login({ server, email: input.email, password: newPassword })
       const reuse = await request(server)
         .post("/api/v1/auth/password-reset/confirm")
         .send({ token, newPassword: "yet another passphrase" })
@@ -314,8 +322,8 @@ describe("auth", () => {
 
   describe("password change", () => {
     it("requires the current password and ends the other sessions", async () => {
-      const { input, auth } = await registerAccount(server)
-      const otherToken = await login(server, input.email, input.password)
+      const { input, auth } = await registerAccount({ server })
+      const otherToken = await login({ server, email: input.email, password: input.password })
       const currentToken = auth.session.token
 
       const wrong = await request(server)
@@ -333,7 +341,7 @@ describe("auth", () => {
 
       await request(server).get("/api/v1/users/me").set(bearer(currentToken)).expect(200)
       await request(server).get("/api/v1/users/me").set(bearer(otherToken)).expect(401)
-      await login(server, input.email, "another good passphrase")
+      await login({ server, email: input.email, password: "another good passphrase" })
     })
   })
 })

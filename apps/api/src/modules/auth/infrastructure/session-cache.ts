@@ -25,7 +25,7 @@ export class SessionCache {
     return value ? (JSON.parse(value) as CachedSession) : undefined
   }
 
-  async set(tokenHash: string, session: CachedSession): Promise<void> {
+  async set({ tokenHash, session }: { tokenHash: string; session: CachedSession }): Promise<void> {
     const secondsUntilExpiry = msToSeconds(Date.parse(session.expiresAt) - Date.now())
     const ttl = Math.min(secondsUntilExpiry, SESSION_CACHE_MAX_TTL_SECONDS)
 

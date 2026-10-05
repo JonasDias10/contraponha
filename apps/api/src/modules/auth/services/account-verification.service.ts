@@ -4,26 +4,27 @@ import type { Database, VerificationTokenPurpose } from "@ponto/database"
 import { ApiErrorCode } from "@ponto/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
-import { EMAIL_VERIFICATION_TTL_HOURS, PASSWORD_RESET_TTL_MINUTES } from "#src/config/durations.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
+import { EMAIL_VERIFICATION_TTL_HOURS, PASSWORD_RESET_TTL_MINUTES } from "#src/config/durations.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { EmailSender, type EmailMessage } from "#src/infrastructure/email/email-sender.js"
-import { userLocale, type User } from "#src/modules/users/domain/user.js"
-import { UsersService } from "#src/modules/users/services/users.service.js"
 import {
   buildEmailVerificationEmail,
   buildPasswordResetEmail,
-  type AccountEmailInput,
+  type AccountEmailRecipient,
 } from "#src/modules/auth/domain/account-emails.js"
 import {
   EMAIL_VERIFICATION_PATH,
   PASSWORD_RESET_PATH,
 } from "#src/modules/auth/domain/account-links.js"
-import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
 import { generateOpaqueToken, hashOpaqueToken } from "#src/modules/auth/domain/opaque-token.js"
 import { PasswordHasher } from "#src/modules/auth/infrastructure/password-hasher.js"
-import { SessionsService } from "./sessions.service.js"
+import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
 import { VerificationTokensRepository } from "#src/modules/auth/repositories/verification-tokens.repository.js"
+import { userLocale, type User } from "#src/modules/users/domain/user.js"
+import { UsersService } from "#src/modules/users/services/users.service.js"
+
+import { SessionsService } from "./sessions.service.js"
 
 @Injectable()
 export class AccountVerificationService {
@@ -45,32 +46,33 @@ export class AccountVerificationService {
       return
     }
 
-    const token = await this.issueToken(
-      user.id,
-      "email_verification",
-      hoursToMs(EMAIL_VERIFICATION_TTL_HOURS),
-    )
+    const token = await this.issueToken({
+      userId: user.id,
+      purpose: "email_verification",
+      ttlMs: hoursToMs(EMAIL_VERIFICATION_TTL_HOURS),
+    })
+    const link = this.buildLink({ path: EMAIL_VERIFICATION_PATH, token })
     this.deliver(
-      buildEmailVerificationEmail(
-        this.recipient(user, this.link(EMAIL_VERIFICATION_PATH, token)),
-        EMAIL_VERIFICATION_TTL_HOURS,
-      ),
+      buildEmailVerificationEmail({
+        recipient: this.toRecipient({ user, link }),
+        ttlHours: EMAIL_VERIFICATION_TTL_HOURS,
+      }),
     )
   }
 
   async confirmEmail(token: string): Promise<void> {
     await this.db.transaction(async (tx) => {
-      const userId = await this.verificationTokens.consume(
-        hashOpaqueToken(token),
-        "email_verification",
-        tx,
-      )
+      const userId = await this.verificationTokens.consume({
+        tokenHash: hashOpaqueToken(token),
+        purpose: "email_verification",
+        executor: tx,
+      })
 
       if (!userId) {
         throw new AppError(ApiErrorCode.INVALID_TOKEN)
       }
 
-      await this.usersService.markEmailVerified(userId, tx)
+      await this.usersService.markEmailVerified({ id: userId, executor: tx })
     })
   }
 
@@ -81,61 +83,74 @@ export class AccountVerificationService {
       return
     }
 
-    const token = await this.issueToken(
-      user.id,
-      "password_reset",
-      minutesToMs(PASSWORD_RESET_TTL_MINUTES),
-    )
+    const token = await this.issueToken({
+      userId: user.id,
+      purpose: "password_reset",
+      ttlMs: minutesToMs(PASSWORD_RESET_TTL_MINUTES),
+    })
+    const link = this.buildLink({ path: PASSWORD_RESET_PATH, token })
     this.deliver(
-      buildPasswordResetEmail(
-        this.recipient(user, this.link(PASSWORD_RESET_PATH, token)),
-        PASSWORD_RESET_TTL_MINUTES,
-      ),
+      buildPasswordResetEmail({
+        recipient: this.toRecipient({ user, link }),
+        ttlMinutes: PASSWORD_RESET_TTL_MINUTES,
+      }),
     )
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<void> {
+  async resetPassword({
+    token,
+    newPassword,
+  }: {
+    token: string
+    newPassword: string
+  }): Promise<void> {
     const passwordHash = await this.passwordHasher.hash(newPassword)
     const revokedTokenHashes = await this.db.transaction(async (tx) => {
-      const userId = await this.verificationTokens.consume(
-        hashOpaqueToken(token),
-        "password_reset",
-        tx,
-      )
+      const userId = await this.verificationTokens.consume({
+        tokenHash: hashOpaqueToken(token),
+        purpose: "password_reset",
+        executor: tx,
+      })
 
       if (!userId) {
         throw new AppError(ApiErrorCode.INVALID_TOKEN)
       }
 
-      await this.credentials.upsertPasswordHash(userId, passwordHash, tx)
-      await this.usersService.markEmailVerified(userId, tx)
-      return this.sessionsService.revokeAll(userId, tx)
+      await this.credentials.upsertPasswordHash({ userId, passwordHash, executor: tx })
+      await this.usersService.markEmailVerified({ id: userId, executor: tx })
+      return this.sessionsService.revokeAll({ userId, executor: tx })
     })
     await this.sessionsService.evictFromCache(revokedTokenHashes)
   }
 
-  private async issueToken(
-    userId: string,
-    purpose: VerificationTokenPurpose,
-    ttlMs: number,
-  ): Promise<string> {
+  private async issueToken({
+    userId,
+    purpose,
+    ttlMs,
+  }: {
+    userId: string
+    purpose: VerificationTokenPurpose
+    ttlMs: number
+  }): Promise<string> {
     const token = generateOpaqueToken()
     await this.verificationTokens.replace({
-      userId,
-      purpose,
-      tokenHash: hashOpaqueToken(token),
-      expiresAt: new Date(Date.now() + ttlMs),
+      data: {
+        userId,
+        purpose,
+        tokenHash: hashOpaqueToken(token),
+        expiresAt: new Date(Date.now() + ttlMs),
+      },
     })
     return token
   }
 
-  private link(path: string, token: string): string {
+  private buildLink({ path, token }: { path: string; token: string }): string {
     const url = new URL(path, this.config.webAppUrl)
     url.searchParams.set("token", token)
     return url.toString()
   }
 
-  private recipient(user: User, link: string): AccountEmailInput {
+  private toRecipient({ user, link }: { user: User; link: string }): AccountEmailRecipient {
     return { to: user.email, name: user.displayName, locale: userLocale(user), link }
   }
 

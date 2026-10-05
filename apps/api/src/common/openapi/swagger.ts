@@ -13,15 +13,18 @@ import { z } from "zod"
 export const SWAGGER_PATH = `${API_GLOBAL_PREFIX}/docs`
 export const SESSION_SECURITY_SCHEME = "session"
 
-export function toOpenApiSchema(
-  schema: z.ZodType,
-  io: "input" | "output" = "output",
-): ApiResponseSchemaHost["schema"] {
-  return z.toJSONSchema(schema, { target: "openapi-3.0", io }) as ApiResponseSchemaHost["schema"]
+type OpenApiSchema = ApiResponseSchemaHost["schema"]
+
+export function toOpenApiSchema(schema: z.ZodType): OpenApiSchema {
+  return z.toJSONSchema(schema, { target: "openapi-3.0", io: "output" }) as OpenApiSchema
+}
+
+function toOpenApiInputSchema(schema: z.ZodType): OpenApiSchema {
+  return z.toJSONSchema(schema, { target: "openapi-3.0", io: "input" }) as OpenApiSchema
 }
 
 export function ApiZodBody(schema: z.ZodType): MethodDecorator {
-  return ApiBody({ schema: toOpenApiSchema(schema, "input") })
+  return ApiBody({ schema: toOpenApiInputSchema(schema) })
 }
 
 export function ApiStandardErrors(): ClassDecorator & MethodDecorator {

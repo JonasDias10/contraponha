@@ -9,10 +9,15 @@ export class EnvValidationError extends Error {
   }
 }
 
-export function parseEnv<TSchema extends z.ZodType>(
-  schema: TSchema,
-  source: EnvSource,
-): z.output<TSchema> {
+export interface ParseEnvOptions<TSchema extends z.ZodType> {
+  schema: TSchema
+  source: EnvSource
+}
+
+export function parseEnv<TSchema extends z.ZodType>({
+  schema,
+  source,
+}: ParseEnvOptions<TSchema>): z.output<TSchema> {
   const normalized = Object.fromEntries(
     Object.entries(source).map(([key, value]) => [key, value === "" ? undefined : value]),
   )

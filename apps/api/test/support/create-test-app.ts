@@ -34,7 +34,7 @@ export async function createTestApp(envOverrides: Record<string, string> = {}): 
     .compile()
 
   const app = moduleRef.createNestApplication<NestExpressApplication>({ bufferLogs: true })
-  configureApp(app, config)
+  configureApp({ app, config })
   await app.init()
   return { app, emails }
 }

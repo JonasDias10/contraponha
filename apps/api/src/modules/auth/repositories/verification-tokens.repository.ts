@@ -20,10 +20,13 @@ export interface IssueVerificationTokenData {
 export class VerificationTokensRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  async replace(
-    data: IssueVerificationTokenData,
-    executor: DatabaseExecutor = this.db,
-  ): Promise<void> {
+  async replace({
+    data,
+    executor = this.db,
+  }: {
+    data: IssueVerificationTokenData
+    executor?: DatabaseExecutor
+  }): Promise<void> {
     await executor
       .update(verificationTokens)
       .set({ consumedAt: new Date() })
@@ -37,11 +40,15 @@ export class VerificationTokensRepository {
     await executor.insert(verificationTokens).values(data)
   }
 
-  async consume(
-    tokenHash: string,
-    purpose: VerificationTokenPurpose,
-    executor: DatabaseExecutor = this.db,
-  ): Promise<string | undefined> {
+  async consume({
+    tokenHash,
+    purpose,
+    executor = this.db,
+  }: {
+    tokenHash: string
+    purpose: VerificationTokenPurpose
+    executor?: DatabaseExecutor
+  }): Promise<string | undefined> {
     const now = new Date()
     const [token] = await executor
       .update(verificationTokens)

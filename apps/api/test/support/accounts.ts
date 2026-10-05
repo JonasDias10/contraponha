@@ -25,16 +25,27 @@ export function newAccountInput(overrides: Partial<AccountInput> = {}): AccountI
   }
 }
 
-export async function registerAccount(
-  server: App,
-  overrides: Partial<AccountInput> = {},
-): Promise<{ input: AccountInput; auth: AuthResponse }> {
+export async function registerAccount({
+  server,
+  overrides = {},
+}: {
+  server: App
+  overrides?: Partial<AccountInput>
+}): Promise<{ input: AccountInput; auth: AuthResponse }> {
   const input = newAccountInput(overrides)
   const response = await request(server).post("/api/v1/auth/register").send(input).expect(201)
   return { input, auth: authResponseSchema.parse(response.body) }
 }
 
-export async function login(server: App, email: string, password: string): Promise<string> {
+export async function login({
+  server,
+  email,
+  password,
+}: {
+  server: App
+  email: string
+  password: string
+}): Promise<string> {
   const response = await request(server)
     .post("/api/v1/auth/login")
     .send({ email, password })

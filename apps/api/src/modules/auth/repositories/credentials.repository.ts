@@ -16,11 +16,15 @@ export class CredentialsRepository {
     return credential?.passwordHash
   }
 
-  async upsertPasswordHash(
-    userId: string,
-    passwordHash: string,
-    executor: DatabaseExecutor = this.db,
-  ): Promise<void> {
+  async upsertPasswordHash({
+    userId,
+    passwordHash,
+    executor = this.db,
+  }: {
+    userId: string
+    passwordHash: string
+    executor?: DatabaseExecutor
+  }): Promise<void> {
     await executor
       .insert(passwordCredentials)
       .values({ userId, passwordHash })

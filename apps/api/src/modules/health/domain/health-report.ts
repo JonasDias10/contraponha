@@ -5,7 +5,13 @@ import {
   type ReadinessReport,
 } from "@ponto/types"
 
-export function buildLivenessReport(uptimeSeconds: number, now: Date): LivenessReport {
+export function buildLivenessReport({
+  uptimeSeconds,
+  now,
+}: {
+  uptimeSeconds: number
+  now: Date
+}): LivenessReport {
   return {
     status: HealthStatus.UP,
     uptimeSeconds: Math.floor(uptimeSeconds),
@@ -13,10 +19,13 @@ export function buildLivenessReport(uptimeSeconds: number, now: Date): LivenessR
   }
 }
 
-export function buildReadinessReport(
-  checks: Record<string, DependencyHealth>,
-  now: Date,
-): ReadinessReport {
+export function buildReadinessReport({
+  checks,
+  now,
+}: {
+  checks: Record<string, DependencyHealth>
+  now: Date
+}): ReadinessReport {
   const isEverythingUp = Object.values(checks).every((check) => check.status === HealthStatus.UP)
 
   return {

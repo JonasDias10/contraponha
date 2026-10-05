@@ -3,6 +3,7 @@ import { useLocales } from "expo-localization"
 
 export function useTranslator(): { locale: Locale; t: Translate } {
   const deviceLocales = useLocales()
-  const locale = negotiateLocale(deviceLocales.map(({ languageTag }) => languageTag).join(","))
-  return { locale, t: createTranslator(locale) }
+  const acceptLanguage = deviceLocales.map(({ languageTag }) => languageTag).join(",")
+  const locale = negotiateLocale({ acceptLanguage })
+  return { locale, t: createTranslator({ locale }) }
 }

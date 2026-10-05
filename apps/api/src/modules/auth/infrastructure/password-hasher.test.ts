@@ -9,8 +9,10 @@ describe("PasswordHasher", () => {
     const passwordHash = await hasher.hash("correct horse battery staple")
 
     expect(passwordHash).toMatch(/^\$argon2id\$/)
-    await expect(hasher.verify(passwordHash, "correct horse battery staple")).resolves.toBe(true)
-    await expect(hasher.verify(passwordHash, "wrong password")).resolves.toBe(false)
+    await expect(
+      hasher.verify({ passwordHash, password: "correct horse battery staple" }),
+    ).resolves.toBe(true)
+    await expect(hasher.verify({ passwordHash, password: "wrong password" })).resolves.toBe(false)
   })
 
   it("salts every hash", async () => {

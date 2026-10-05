@@ -4,10 +4,15 @@ import { buildEmailVerificationEmail, buildPasswordResetEmail } from "./account-
 
 describe("account emails", () => {
   it("renders the verification email in the recipient's language", () => {
-    const email = buildEmailVerificationEmail(
-      { to: "ana@example.com", name: "Ana", locale: "en", link: "https://ponto.test/v?token=abc" },
-      24,
-    )
+    const email = buildEmailVerificationEmail({
+      recipient: {
+        to: "ana@example.com",
+        name: "Ana",
+        locale: "en",
+        link: "https://ponto.test/v?token=abc",
+      },
+      ttlHours: 24,
+    })
 
     expect(email.subject).toBe("Confirm your email on Ponto")
     expect(email.text).toContain("Hi, Ana!")
@@ -16,15 +21,15 @@ describe("account emails", () => {
   })
 
   it("escapes user-controlled content in HTML", () => {
-    const email = buildPasswordResetEmail(
-      {
+    const email = buildPasswordResetEmail({
+      recipient: {
         to: "x@example.com",
         name: '<img src=x onerror="alert(1)">',
         locale: "pt-BR",
         link: "https://ponto.test/r",
       },
-      30,
-    )
+      ttlMinutes: 30,
+    })
 
     expect(email.subject).toBe("Redefinição de senha do Ponto")
     expect(email.html).not.toContain("<img")

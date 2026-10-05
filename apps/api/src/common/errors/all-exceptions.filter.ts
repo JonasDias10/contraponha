@@ -43,6 +43,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
   constructor(@Inject(APP_CONFIG) private readonly config: AppConfig) {}
 
+  // Signature imposed by Nest's ExceptionFilter interface.
+  // eslint-disable-next-line no-restricted-syntax
   catch(exception: unknown, host: ArgumentsHost): void {
     const http = host.switchToHttp()
     const request = http.getRequest<Request>()
@@ -57,11 +59,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return
     }
 
-    const locale = negotiateLocale(request.headers["accept-language"], {
+    const locale = negotiateLocale({
+      acceptLanguage: request.headers["accept-language"],
       supported: this.config.i18n.supportedLocales,
       fallback: this.config.i18n.defaultLocale,
     })
-    const t = createTranslator(locale, { fallbackLocale: this.config.i18n.defaultLocale })
+    const t = createTranslator({ locale, fallbackLocale: this.config.i18n.defaultLocale })
     const body: ApiErrorResponse = {
       error: {
         code,

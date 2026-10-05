@@ -21,7 +21,7 @@ describe("users", () => {
 
   describe("own profile", () => {
     it("updates display name, bio and locale", async () => {
-      const { auth } = await registerAccount(server)
+      const { auth } = await registerAccount({ server })
 
       const response = await request(server)
         .patch("/api/v1/users/me")
@@ -37,7 +37,7 @@ describe("users", () => {
     })
 
     it("clears the bio with a blank value and ignores fields that cannot be edited here", async () => {
-      const { auth } = await registerAccount(server)
+      const { auth } = await registerAccount({ server })
       await request(server)
         .patch("/api/v1/users/me")
         .set(bearer(auth.session.token))
@@ -58,7 +58,7 @@ describe("users", () => {
     })
 
     it("rejects an empty update", async () => {
-      const { auth } = await registerAccount(server)
+      const { auth } = await registerAccount({ server })
 
       const response = await request(server)
         .patch("/api/v1/users/me")
@@ -72,7 +72,7 @@ describe("users", () => {
 
   describe("public profile", () => {
     it("is readable without a session and hides private fields", async () => {
-      const { auth } = await registerAccount(server)
+      const { auth } = await registerAccount({ server })
 
       const response = await request(server)
         .get(`/api/v1/users/${auth.user.handle.toUpperCase()}`)

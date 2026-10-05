@@ -21,7 +21,13 @@ function toCachedSession(session: SessionRow): CachedSession {
   }
 }
 
-function toSessionSummary(session: SessionRow, currentSessionId: string): SessionSummary {
+function toSessionSummary({
+  session,
+  currentSessionId,
+}: {
+  session: SessionRow
+  currentSessionId: string
+}): SessionSummary {
   return {
     id: session.id,
     userAgent: session.userAgent,
@@ -42,21 +48,25 @@ export class SessionsService {
     private readonly sessionCache: SessionCache,
   ) {}
 
-  async issue(
-    userId: string,
-    userAgent: string | undefined,
-    executor?: DatabaseExecutor,
-  ): Promise<IssuedSession> {
+  async issue({
+    userId,
+    userAgent,
+    executor,
+  }: {
+    userId: string
+    userAgent: string | undefined
+    executor?: DatabaseExecutor
+  }): Promise<IssuedSession> {
     const token = generateOpaqueToken()
-    const session = await this.sessionsRepository.create(
-      {
+    const session = await this.sessionsRepository.create({
+      data: {
         userId,
         tokenHash: hashOpaqueToken(token),
         userAgent: userAgent?.slice(0, USER_AGENT_MAX_LENGTH) ?? null,
         expiresAt: new Date(Date.now() + this.config.auth.sessionTtlMs),
       },
       executor,
-    )
+    })
     return { token, expiresAt: session.expiresAt.toISOString() }
   }
 
@@ -68,17 +78,19 @@ export class SessionsService {
       return undefined
     }
 
-    this.recordUsage(tokenHash, session)
+    this.recordUsage({ tokenHash, session })
     return { userId: session.userId, sessionId: session.sessionId }
   }
 
   async list(auth: AuthContext): Promise<SessionSummary[]> {
     const sessions = await this.sessionsRepository.listActiveByUser(auth.userId)
-    return sessions.map((session) => toSessionSummary(session, auth.sessionId))
+    return sessions.map((session) =>
+      toSessionSummary({ session, currentSessionId: auth.sessionId }),
+    )
   }
 
-  async revoke(userId: string, sessionId: string): Promise<void> {
-    const revoked = await this.sessionsRepository.revoke(userId, sessionId)
+  async revoke({ userId, sessionId }: { userId: string; sessionId: string }): Promise<void> {
+    const revoked = await this.sessionsRepository.revoke({ userId, sessionId })
 
     if (revoked.length === 0) {
       throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
@@ -88,14 +100,21 @@ export class SessionsService {
   }
 
   async revokeOthers(auth: AuthContext): Promise<void> {
-    const revoked = await this.sessionsRepository.revokeAllForUser(auth.userId, {
+    const revoked = await this.sessionsRepository.revokeAllForUser({
+      userId: auth.userId,
       exceptSessionId: auth.sessionId,
     })
     await this.sessionCache.delete(revoked)
   }
 
-  async revokeAll(userId: string, executor?: DatabaseExecutor): Promise<string[]> {
-    return this.sessionsRepository.revokeAllForUser(userId, { executor })
+  revokeAll({
+    userId,
+    executor,
+  }: {
+    userId: string
+    executor?: DatabaseExecutor
+  }): Promise<string[]> {
+    return this.sessionsRepository.revokeAllForUser({ userId, executor })
   }
 
   async evictFromCache(tokenHashes: readonly string[]): Promise<void> {
@@ -116,11 +135,11 @@ export class SessionsService {
     }
 
     const entry = toCachedSession(session)
-    await this.sessionCache.set(tokenHash, entry)
+    await this.sessionCache.set({ tokenHash, session: entry })
     return entry
   }
 
-  private recordUsage(tokenHash: string, session: CachedSession): void {
+  private recordUsage({ tokenHash, session }: { tokenHash: string; session: CachedSession }): void {
     const now = new Date()
 
     if (now.getTime() - Date.parse(session.lastUsedAt) < SESSION_LAST_USED_WRITE_INTERVAL_MS) {
@@ -129,8 +148,8 @@ export class SessionsService {
 
     const updated = { ...session, lastUsedAt: now.toISOString() }
     Promise.all([
-      this.sessionsRepository.touch(session.sessionId, now),
-      this.sessionCache.set(tokenHash, updated),
+      this.sessionsRepository.touch({ sessionId: session.sessionId, lastUsedAt: now }),
+      this.sessionCache.set({ tokenHash, session: updated }),
     ]).catch((error: unknown) => {
       this.logger.warn(
         { err: error, sessionId: session.sessionId },

@@ -48,13 +48,19 @@ export class UsersService {
     return this.usersRepository.findByEmail(email)
   }
 
-  async create(data: CreateUserData, executor?: DatabaseExecutor): Promise<User> {
+  async create({
+    data,
+    executor,
+  }: {
+    data: CreateUserData
+    executor?: DatabaseExecutor
+  }): Promise<User> {
     if (isReservedHandle(data.handle)) {
       throw new AppError(ApiErrorCode.HANDLE_UNAVAILABLE, { details: { field: "handle" } })
     }
 
     try {
-      return await this.usersRepository.create(data, executor)
+      return await this.usersRepository.create({ data, executor })
     } catch (error) {
       const code = ERROR_BY_CONSTRAINT[getUniqueViolationConstraint(error) ?? ""]
 
@@ -66,8 +72,8 @@ export class UsersService {
     }
   }
 
-  async updateProfile(id: string, data: UpdateUserData): Promise<User> {
-    const user = await this.usersRepository.update(id, data)
+  async updateProfile({ id, data }: { id: string; data: UpdateUserData }): Promise<User> {
+    const user = await this.usersRepository.update({ id, data })
 
     if (!user) {
       throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
@@ -76,7 +82,7 @@ export class UsersService {
     return user
   }
 
-  markEmailVerified(id: string, executor?: DatabaseExecutor): Promise<void> {
-    return this.usersRepository.markEmailVerified(id, executor)
+  markEmailVerified({ id, executor }: { id: string; executor?: DatabaseExecutor }): Promise<void> {
+    return this.usersRepository.markEmailVerified({ id, executor })
   }
 }

@@ -8,5 +8,5 @@ const webEnvSchema = z.object({
 export type WebEnv = z.output<typeof webEnvSchema>
 
 export function getWebEnv(): WebEnv {
-  return parseEnv(webEnvSchema, process.env)
+  return parseEnv({ schema: webEnvSchema, source: process.env })
 }

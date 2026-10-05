@@ -27,7 +27,13 @@ export class UsersRepository {
     return user
   }
 
-  async create(data: CreateUserData, executor: DatabaseExecutor = this.db): Promise<User> {
+  async create({
+    data,
+    executor = this.db,
+  }: {
+    data: CreateUserData
+    executor?: DatabaseExecutor
+  }): Promise<User> {
     const [user] = await executor.insert(users).values(data).returning()
 
     if (!user) {
@@ -37,12 +43,18 @@ export class UsersRepository {
     return user
   }
 
-  async update(id: string, data: UpdateUserData): Promise<User | undefined> {
+  async update({ id, data }: { id: string; data: UpdateUserData }): Promise<User | undefined> {
     const [user] = await this.db.update(users).set(data).where(eq(users.id, id)).returning()
     return user
   }
 
-  async markEmailVerified(id: string, executor: DatabaseExecutor = this.db): Promise<void> {
+  async markEmailVerified({
+    id,
+    executor = this.db,
+  }: {
+    id: string
+    executor?: DatabaseExecutor
+  }): Promise<void> {
     await executor.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.id, id))
   }
 }

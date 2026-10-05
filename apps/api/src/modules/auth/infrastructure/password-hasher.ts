@@ -9,13 +9,14 @@ export class PasswordHasher {
     return hash(password)
   }
 
-  verify(passwordHash: string, password: string): Promise<boolean> {
+  verify({ passwordHash, password }: { passwordHash: string; password: string }): Promise<boolean> {
     return verify(passwordHash, password)
   }
 
   // Runs a full verification when the account does not exist, so response time does not reveal it.
   async verifyAgainstDecoy(password: string): Promise<false> {
-    await verify(await this.decoyHash, password)
+    const decoyHash = await this.decoyHash
+    await verify(decoyHash, password)
     return false
   }
 }

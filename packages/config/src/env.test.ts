@@ -12,11 +12,14 @@ const schema = z.object({
 
 describe("parseEnv", () => {
   it("parses and coerces valid values", () => {
-    const env = parseEnv(schema, {
-      DATABASE_URL: "postgres://localhost:5432/ponto",
-      PORT: "4000",
-      FEATURE_ENABLED: "true",
-      ORIGINS: "https://a.example, https://b.example,",
+    const env = parseEnv({
+      schema,
+      source: {
+        DATABASE_URL: "postgres://localhost:5432/ponto",
+        PORT: "4000",
+        FEATURE_ENABLED: "true",
+        ORIGINS: "https://a.example, https://b.example,",
+      },
     })
 
     expect(env).toEqual({
@@ -28,13 +31,17 @@ describe("parseEnv", () => {
   })
 
   it("treats empty strings as missing so defaults apply", () => {
-    const env = parseEnv(schema, { DATABASE_URL: "postgres://localhost/ponto", PORT: "" })
+    const env = parseEnv({
+      schema,
+      source: { DATABASE_URL: "postgres://localhost/ponto", PORT: "" },
+    })
 
     expect(env.PORT).toBe(3000)
   })
 
   it("fails with a message naming every invalid variable", () => {
-    const parse = (): unknown => parseEnv(schema, { PORT: "abc", FEATURE_ENABLED: "yes" })
+    const parse = (): unknown =>
+      parseEnv({ schema, source: { PORT: "abc", FEATURE_ENABLED: "yes" } })
 
     expect(parse).toThrow(EnvValidationError)
     expect(parse).toThrow(/DATABASE_URL/)

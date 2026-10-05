@@ -23,15 +23,21 @@ export class HealthService {
   ) {}
 
   getLiveness(): LivenessReport {
-    return buildLivenessReport(process.uptime(), new Date())
+    return buildLivenessReport({ uptimeSeconds: process.uptime(), now: new Date() })
   }
 
   async getReadiness(): Promise<ReadinessReport> {
     const [database, redis] = await Promise.all([
-      probeDependency(() => pingDatabase(this.db), HEALTH_DEPENDENCY_TIMEOUT_MS),
-      probeDependency(() => this.redis.ping(), HEALTH_DEPENDENCY_TIMEOUT_MS),
+      probeDependency({
+        check: () => pingDatabase(this.db),
+        timeoutMs: HEALTH_DEPENDENCY_TIMEOUT_MS,
+      }),
+      probeDependency({
+        check: () => this.redis.ping(),
+        timeoutMs: HEALTH_DEPENDENCY_TIMEOUT_MS,
+      }),
     ])
-    const report = buildReadinessReport({ database, redis }, new Date())
+    const report = buildReadinessReport({ checks: { database, redis }, now: new Date() })
 
     if (report.status === HealthStatus.DOWN) {
       this.logger.warn({ checks: report.checks }, "Readiness check failed")

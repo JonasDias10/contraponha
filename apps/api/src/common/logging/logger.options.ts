@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto"
-import type { IncomingMessage, ServerResponse } from "node:http"
 
 import { API_BASE_PATH, REQUEST_ID_HEADER } from "@ponto/config"
 import { isValidRequestId } from "@ponto/validation"
@@ -28,13 +27,6 @@ const REDACTED_PATHS = [
 
 const HEALTH_PATH_PREFIX = `${API_BASE_PATH}/health`
 
-export function resolveRequestId(req: IncomingMessage, res: ServerResponse): string {
-  const incoming = req.headers[REQUEST_ID_HEADER]
-  const requestId = isValidRequestId(incoming) ? incoming : randomUUID()
-  res.setHeader(REQUEST_ID_HEADER, requestId)
-  return requestId
-}
-
 function stripQueryString(url: string | undefined): string | undefined {
   return url?.split("?")[0]
 }
@@ -47,7 +39,12 @@ export function buildLoggerParams(config: AppConfig): Params {
       timestamp: stdTimeFunctions.isoTime,
       formatters: { level: (label) => ({ level: label }) },
       redact: { paths: REDACTED_PATHS, censor: "[REDACTED]" },
-      genReqId: resolveRequestId,
+      genReqId: (req, res) => {
+        const incoming = req.headers[REQUEST_ID_HEADER]
+        const requestId = isValidRequestId(incoming) ? incoming : randomUUID()
+        res.setHeader(REQUEST_ID_HEADER, requestId)
+        return requestId
+      },
       customAttributeKeys: { reqId: "requestId" },
       quietReqLogger: true,
       autoLogging: { ignore: (req) => req.url?.startsWith(HEALTH_PATH_PREFIX) ?? false },

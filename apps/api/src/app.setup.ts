@@ -7,7 +7,12 @@ import { Logger } from "nestjs-pino"
 import { setupSwagger } from "#src/common/openapi/swagger.js"
 import type { AppConfig } from "#src/config/app-config.js"
 
-export function configureApp(app: NestExpressApplication, config: AppConfig): void {
+export interface ConfigureAppOptions {
+  app: NestExpressApplication
+  config: AppConfig
+}
+
+export function configureApp({ app, config }: ConfigureAppOptions): void {
   app.useLogger(app.get(Logger))
   app.set("trust proxy", config.http.trustProxy)
   app.disable("x-powered-by")

@@ -30,7 +30,8 @@ export class SessionsController {
   @ApiOperation({ summary: "List active sessions of the authenticated user" })
   @ApiOkResponse({ schema: toOpenApiSchema(sessionListSchema) })
   async list(@CurrentAuth() auth: AuthContext): Promise<{ sessions: SessionSummary[] }> {
-    return { sessions: await this.sessionsService.list(auth) }
+    const sessions = await this.sessionsService.list(auth)
+    return { sessions }
   }
 
   @Delete()
@@ -49,6 +50,6 @@ export class SessionsController {
     @CurrentAuth() auth: AuthContext,
     @Param("sessionId", new ZodValidationPipe(z.uuid())) sessionId: string,
   ): Promise<void> {
-    return this.sessionsService.revoke(auth.userId, sessionId)
+    return this.sessionsService.revoke({ userId: auth.userId, sessionId })
   }
 }

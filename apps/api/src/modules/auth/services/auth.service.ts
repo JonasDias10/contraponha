@@ -13,11 +13,12 @@ import type { AuthContext } from "#src/common/auth/auth-context.js"
 import { AppError } from "#src/common/errors/app-error.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
+import { PasswordHasher } from "#src/modules/auth/infrastructure/password-hasher.js"
+import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
 import { toPrivateProfile, type User } from "#src/modules/users/domain/user.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
+
 import { AccountVerificationService } from "./account-verification.service.js"
-import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
-import { PasswordHasher } from "#src/modules/auth/infrastructure/password-hasher.js"
 import { SessionsService } from "./sessions.service.js"
 
 export interface ClientInfo {
@@ -37,70 +38,94 @@ export class AuthService {
     private readonly accountVerification: AccountVerificationService,
   ) {}
 
-  async register(
-    input: z.output<typeof registerInputSchema>,
-    client: ClientInfo,
-  ): Promise<AuthResponse> {
+  async register({
+    input,
+    client,
+  }: {
+    input: z.output<typeof registerInputSchema>
+    client: ClientInfo
+  }): Promise<AuthResponse> {
     const passwordHash = await this.passwordHasher.hash(input.password)
     const locale =
       input.locale ??
-      negotiateLocale(client.acceptLanguage, {
+      negotiateLocale({
+        acceptLanguage: client.acceptLanguage,
         supported: this.config.i18n.supportedLocales,
         fallback: this.config.i18n.defaultLocale,
       })
 
     const user = await this.db.transaction(async (tx) => {
-      const created = await this.usersService.create(
-        { email: input.email, handle: input.handle, displayName: input.displayName, locale },
-        tx,
-      )
-      await this.credentials.upsertPasswordHash(created.id, passwordHash, tx)
+      const created = await this.usersService.create({
+        data: { email: input.email, handle: input.handle, displayName: input.displayName, locale },
+        executor: tx,
+      })
+      await this.credentials.upsertPasswordHash({
+        userId: created.id,
+        passwordHash,
+        executor: tx,
+      })
       return created
     })
 
     await this.accountVerification.sendEmailVerification(user)
-    return this.startSession(user, client.userAgent)
+    return this.startSession({ user, userAgent: client.userAgent })
   }
 
-  async login(
-    input: z.output<typeof loginInputSchema>,
-    userAgent: string | undefined,
-  ): Promise<AuthResponse> {
+  async login({
+    input,
+    userAgent,
+  }: {
+    input: z.output<typeof loginInputSchema>
+    userAgent: string | undefined
+  }): Promise<AuthResponse> {
     const user = await this.usersService.findByEmail(input.email)
     const passwordHash = user ? await this.credentials.findPasswordHash(user.id) : undefined
     const isValid = passwordHash
-      ? await this.passwordHasher.verify(passwordHash, input.password)
+      ? await this.passwordHasher.verify({ passwordHash, password: input.password })
       : await this.passwordHasher.verifyAgainstDecoy(input.password)
 
     if (!user || !isValid) {
       throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
     }
 
-    return this.startSession(user, userAgent)
+    return this.startSession({ user, userAgent })
   }
 
-  async changePassword(
-    auth: AuthContext,
-    input: z.output<typeof changePasswordInputSchema>,
-  ): Promise<void> {
+  async changePassword({
+    auth,
+    input,
+  }: {
+    auth: AuthContext
+    input: z.output<typeof changePasswordInputSchema>
+  }): Promise<void> {
     const currentHash = await this.credentials.findPasswordHash(auth.userId)
     const isValid = currentHash
-      ? await this.passwordHasher.verify(currentHash, input.currentPassword)
+      ? await this.passwordHasher.verify({
+          passwordHash: currentHash,
+          password: input.currentPassword,
+        })
       : false
 
     if (!isValid) {
       throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
     }
 
-    await this.credentials.upsertPasswordHash(
-      auth.userId,
-      await this.passwordHasher.hash(input.newPassword),
-    )
+    const newPasswordHash = await this.passwordHasher.hash(input.newPassword)
+    await this.credentials.upsertPasswordHash({
+      userId: auth.userId,
+      passwordHash: newPasswordHash,
+    })
     await this.sessionsService.revokeOthers(auth)
   }
 
-  private async startSession(user: User, userAgent: string | undefined): Promise<AuthResponse> {
-    const session = await this.sessionsService.issue(user.id, userAgent)
+  private async startSession({
+    user,
+    userAgent,
+  }: {
+    user: User
+    userAgent: string | undefined
+  }): Promise<AuthResponse> {
+    const session = await this.sessionsService.issue({ userId: user.id, userAgent })
     return { user: toPrivateProfile(user), session }
   }
 }

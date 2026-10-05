@@ -32,7 +32,8 @@ export class UsersController {
   @ApiOperation({ summary: "Profile of the authenticated user" })
   @ApiOkResponse({ schema: toOpenApiSchema(privateProfileSchema) })
   async getMe(@CurrentAuth() auth: AuthContext): Promise<PrivateProfile> {
-    return toPrivateProfile(await this.usersService.getById(auth.userId))
+    const user = await this.usersService.getById(auth.userId)
+    return toPrivateProfile(user)
   }
 
   @Patch("me")
@@ -45,7 +46,8 @@ export class UsersController {
     @Body(new ZodValidationPipe(updateProfileInputSchema))
     body: z.output<typeof updateProfileInputSchema>,
   ): Promise<PrivateProfile> {
-    return toPrivateProfile(await this.usersService.updateProfile(auth.userId, body))
+    const user = await this.usersService.updateProfile({ id: auth.userId, data: body })
+    return toPrivateProfile(user)
   }
 
   @Public()
@@ -55,6 +57,7 @@ export class UsersController {
   async getByHandle(
     @Param("handle", new ZodValidationPipe(handleSchema)) handle: string,
   ): Promise<PublicProfile> {
-    return toPublicProfile(await this.usersService.getByHandle(handle))
+    const user = await this.usersService.getByHandle(handle)
+    return toPublicProfile(user)
   }
 }
