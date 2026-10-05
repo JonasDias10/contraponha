@@ -30,10 +30,10 @@ import {
 } from "#src/common/openapi/swagger.js"
 import { SensitiveRateLimit } from "#src/common/rate-limit/rate-limit.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
-import { UsersService } from "#src/modules/users/users.service.js"
-import { AccountVerificationService } from "./account-verification.service.js"
-import { AuthService } from "./auth.service.js"
-import { SessionsService } from "./sessions.service.js"
+import { UsersService } from "#src/modules/users/services/users.service.js"
+import { AccountVerificationService } from "#src/modules/auth/services/account-verification.service.js"
+import { AuthService } from "#src/modules/auth/services/auth.service.js"
+import { SessionsService } from "#src/modules/auth/services/sessions.service.js"
 
 @ApiTags("auth")
 @ApiStandardErrors()

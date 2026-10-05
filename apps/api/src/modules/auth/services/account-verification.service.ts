@@ -8,19 +8,22 @@ import { EMAIL_VERIFICATION_TTL_HOURS, PASSWORD_RESET_TTL_MINUTES } from "#src/c
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { EmailSender, type EmailMessage } from "#src/infrastructure/email/email-sender.js"
-import { userLocale, type User } from "#src/modules/users/user.js"
-import { UsersService } from "#src/modules/users/users.service.js"
+import { userLocale, type User } from "#src/modules/users/domain/user.js"
+import { UsersService } from "#src/modules/users/services/users.service.js"
 import {
   buildEmailVerificationEmail,
   buildPasswordResetEmail,
   type AccountEmailInput,
-} from "./account-emails.js"
-import { EMAIL_VERIFICATION_PATH, PASSWORD_RESET_PATH } from "./account-links.js"
-import { CredentialsRepository } from "./credentials.repository.js"
-import { generateOpaqueToken, hashOpaqueToken } from "./opaque-token.js"
-import { PasswordHasher } from "./password-hasher.js"
+} from "#src/modules/auth/domain/account-emails.js"
+import {
+  EMAIL_VERIFICATION_PATH,
+  PASSWORD_RESET_PATH,
+} from "#src/modules/auth/domain/account-links.js"
+import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
+import { generateOpaqueToken, hashOpaqueToken } from "#src/modules/auth/domain/opaque-token.js"
+import { PasswordHasher } from "#src/modules/auth/infrastructure/password-hasher.js"
 import { SessionsService } from "./sessions.service.js"
-import { VerificationTokensRepository } from "./verification-tokens.repository.js"
+import { VerificationTokensRepository } from "#src/modules/auth/repositories/verification-tokens.repository.js"
 
 @Injectable()
 export class AccountVerificationService {

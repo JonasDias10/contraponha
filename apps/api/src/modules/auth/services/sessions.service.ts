@@ -6,9 +6,9 @@ import type { AuthContext } from "#src/common/auth/auth-context.js"
 import { AppError } from "#src/common/errors/app-error.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { SESSION_LAST_USED_WRITE_INTERVAL_MS } from "#src/config/durations.js"
-import { generateOpaqueToken, hashOpaqueToken } from "./opaque-token.js"
-import { SessionCache, type CachedSession } from "./session-cache.js"
-import { SessionsRepository } from "./sessions.repository.js"
+import { generateOpaqueToken, hashOpaqueToken } from "#src/modules/auth/domain/opaque-token.js"
+import { SessionCache, type CachedSession } from "#src/modules/auth/infrastructure/session-cache.js"
+import { SessionsRepository } from "#src/modules/auth/repositories/sessions.repository.js"
 
 const USER_AGENT_MAX_LENGTH = 255
 

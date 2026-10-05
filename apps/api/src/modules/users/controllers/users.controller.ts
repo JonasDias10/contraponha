@@ -18,8 +18,8 @@ import {
   toOpenApiSchema,
 } from "#src/common/openapi/swagger.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
-import { toPrivateProfile, toPublicProfile } from "./user.js"
-import { UsersService } from "./users.service.js"
+import { toPrivateProfile, toPublicProfile } from "#src/modules/users/domain/user.js"
+import { UsersService } from "#src/modules/users/services/users.service.js"
 
 @ApiTags("users")
 @ApiStandardErrors()

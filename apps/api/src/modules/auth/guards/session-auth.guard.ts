@@ -5,7 +5,7 @@ import { ApiErrorCode } from "@ponto/types"
 import type { AuthenticatedRequest } from "#src/common/auth/auth-context.js"
 import { IS_PUBLIC_KEY } from "#src/common/auth/public.decorator.js"
 import { AppError } from "#src/common/errors/app-error.js"
-import { SessionsService } from "./sessions.service.js"
+import { SessionsService } from "#src/modules/auth/services/sessions.service.js"
 
 const BEARER_PREFIX = "bearer "
 

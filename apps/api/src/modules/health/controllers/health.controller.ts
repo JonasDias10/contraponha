@@ -15,7 +15,7 @@ import {
 
 import { Public } from "#src/common/auth/public.decorator.js"
 import { toOpenApiSchema } from "#src/common/openapi/swagger.js"
-import { HealthService } from "./health.service.js"
+import { HealthService } from "#src/modules/health/services/health.service.js"
 
 @ApiTags("health")
 @Public()

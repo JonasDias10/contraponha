@@ -7,8 +7,11 @@ import { AppError } from "#src/common/errors/app-error.js"
 import { HEALTH_DEPENDENCY_TIMEOUT_MS } from "#src/config/durations.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { REDIS } from "#src/infrastructure/redis/redis.module.js"
-import { probeDependency } from "./dependency-probe.js"
-import { buildLivenessReport, buildReadinessReport } from "./health-report.js"
+import { probeDependency } from "#src/modules/health/infrastructure/dependency-probe.js"
+import {
+  buildLivenessReport,
+  buildReadinessReport,
+} from "#src/modules/health/domain/health-report.js"
 
 @Injectable()
 export class HealthService {

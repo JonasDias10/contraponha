@@ -8,8 +8,12 @@ import type { DatabaseExecutor } from "@ponto/database"
 import { ApiErrorCode } from "@ponto/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
-import { isReservedHandle, type User } from "./user.js"
-import { UsersRepository, type CreateUserData, type UpdateUserData } from "./users.repository.js"
+import { isReservedHandle, type User } from "#src/modules/users/domain/user.js"
+import {
+  UsersRepository,
+  type CreateUserData,
+  type UpdateUserData,
+} from "#src/modules/users/repositories/users.repository.js"
 
 const ERROR_BY_CONSTRAINT: Record<string, ApiErrorCode> = {
   [USERS_EMAIL_UNIQUE]: ApiErrorCode.EMAIL_ALREADY_IN_USE,

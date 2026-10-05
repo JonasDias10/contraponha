@@ -12,7 +12,7 @@ import { DatabaseModule } from "#src/infrastructure/database/database.module.js"
 import { EmailModule } from "#src/infrastructure/email/email.module.js"
 import { RedisModule } from "#src/infrastructure/redis/redis.module.js"
 import { AuthModule } from "#src/modules/auth/auth.module.js"
-import { SessionAuthGuard } from "#src/modules/auth/session-auth.guard.js"
+import { SessionAuthGuard } from "#src/modules/auth/guards/session-auth.guard.js"
 import { HealthModule } from "#src/modules/health/health.module.js"
 import { UsersModule } from "#src/modules/users/users.module.js"
 

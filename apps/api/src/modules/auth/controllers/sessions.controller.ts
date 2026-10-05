@@ -17,7 +17,7 @@ import {
   toOpenApiSchema,
 } from "#src/common/openapi/swagger.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
-import { SessionsService } from "./sessions.service.js"
+import { SessionsService } from "#src/modules/auth/services/sessions.service.js"
 
 @ApiTags("auth")
 @ApiStandardErrors()

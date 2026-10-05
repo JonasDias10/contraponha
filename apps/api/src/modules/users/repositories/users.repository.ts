@@ -3,7 +3,7 @@ import { users, type Database, type DatabaseExecutor, type NewUserRow } from "@p
 import { eq } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
-import type { User } from "./user.js"
+import type { User } from "#src/modules/users/domain/user.js"
 
 export type CreateUserData = Pick<NewUserRow, "email" | "handle" | "displayName" | "locale">
 export type UpdateUserData = Partial<Pick<NewUserRow, "displayName" | "bio" | "locale">>
