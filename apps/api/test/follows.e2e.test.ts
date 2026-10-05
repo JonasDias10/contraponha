@@ -65,6 +65,28 @@ describe("follows", () => {
     expect(statusAfter.body).toEqual({ isFollowing: false })
   })
 
+  it("handles people following each other at the same moment", async () => {
+    for (let round = 0; round < 10; round += 1) {
+      const first = await registerAccount({ server })
+      const second = await registerAccount({ server })
+
+      const responses = await Promise.all([
+        request(server)
+          .put(`/api/v1/users/${second.auth.user.handle}/follow`)
+          .set(bearer(first.auth.session.token)),
+        request(server)
+          .put(`/api/v1/users/${first.auth.user.handle}/follow`)
+          .set(bearer(second.auth.session.token)),
+      ])
+
+      const firstProfile = await getProfile({ server, handle: first.auth.user.handle })
+
+      expect(responses.map((response) => response.status)).toEqual([204, 204])
+
+      expect(firstProfile).toMatchObject({ followerCount: 1, followingCount: 1 })
+    }
+  })
+
   it("refuses self-follows and unknown users", async () => {
     const { auth } = await registerAccount({ server })
     const token = auth.session.token

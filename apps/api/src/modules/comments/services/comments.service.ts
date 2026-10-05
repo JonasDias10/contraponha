@@ -1,5 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common"
-import type { Database, DatabaseExecutor, ReactionKindValue } from "@ponto/database"
+import {
+  runTransaction,
+  type Database,
+  type DatabaseExecutor,
+  type ReactionKindValue,
+} from "@ponto/database"
 import { ApiErrorCode, type CommentView, type ContentRevisionList, type Page } from "@ponto/types"
 import { z } from "zod"
 
@@ -89,18 +94,21 @@ export class CommentsService {
 
     const rootId = await this.resolveThreadRoot({ postId, parentId })
 
-    const comment = await this.db.transaction(async (tx) => {
-      const created = await this.commentsRepository.create({
-        data: { postId, authorId, parentId: rootId, body },
-        executor: tx,
-      })
+    const comment = await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const created = await this.commentsRepository.create({
+          data: { postId, authorId, parentId: rootId, body },
+          executor: tx,
+        })
 
-      await this.postsService.adjustCommentCount({ postId, delta: 1, executor: tx })
+        await this.postsService.adjustCommentCount({ postId, delta: 1, executor: tx })
 
-      if (rootId)
-        await this.commentsRepository.incrementReplyCount({ id: rootId, delta: 1, executor: tx })
+        if (rootId)
+          await this.commentsRepository.incrementReplyCount({ id: rootId, delta: 1, executor: tx })
 
-      return created
+        return created
+      },
     })
 
     const author = await this.usersService.getById(authorId)
@@ -147,10 +155,13 @@ export class CommentsService {
     if (!isWithinEditWindow({ createdAt: comment.createdAt, now: new Date() }))
       throw new AppError(ApiErrorCode.EDIT_WINDOW_EXPIRED)
 
-    const updated = await this.db.transaction(async (tx) => {
-      await this.revisionsRepository.create({ commentId, body: comment.body, executor: tx })
+    const updated = await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        await this.revisionsRepository.create({ commentId, body: comment.body, executor: tx })
 
-      return this.commentsRepository.updateBody({ id: commentId, body, executor: tx })
+        return this.commentsRepository.updateBody({ id: commentId, body, executor: tx })
+      },
     })
 
     if (!updated) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
@@ -162,26 +173,29 @@ export class CommentsService {
   async delete({ commentId, userId }: DeleteCommentParams): Promise<void> {
     const comment = await this.getOwnedActiveComment({ commentId, userId })
 
-    await this.db.transaction(async (tx) => {
-      const isDeleted = await this.commentsRepository.softDelete({ id: commentId, executor: tx })
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const isDeleted = await this.commentsRepository.softDelete({ id: commentId, executor: tx })
 
-      if (!isDeleted) return
+        if (!isDeleted) return
 
-      await this.revisionsRepository.deleteByComment({ commentId, executor: tx })
+        await this.revisionsRepository.deleteByComment({ commentId, executor: tx })
 
-      await this.postsService.adjustCommentCount({
-        postId: comment.postId,
-        delta: -1,
-        executor: tx,
-      })
-
-      if (comment.parentId) {
-        await this.commentsRepository.incrementReplyCount({
-          id: comment.parentId,
+        await this.postsService.adjustCommentCount({
+          postId: comment.postId,
           delta: -1,
           executor: tx,
         })
-      }
+
+        if (comment.parentId) {
+          await this.commentsRepository.incrementReplyCount({
+            id: comment.parentId,
+            delta: -1,
+            executor: tx,
+          })
+        }
+      },
     })
   }
 

@@ -1,5 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common"
-import type { Database, DatabaseExecutor, ReactionKindValue } from "@ponto/database"
+import {
+  runTransaction,
+  type Database,
+  type DatabaseExecutor,
+  type ReactionKindValue,
+} from "@ponto/database"
 import { ApiErrorCode, type ContentRevisionList, type Page, type PostView } from "@ponto/types"
 import { z } from "zod"
 
@@ -107,10 +112,13 @@ export class PostsService {
     if (!isWithinEditWindow({ createdAt: post.createdAt, now: new Date() }))
       throw new AppError(ApiErrorCode.EDIT_WINDOW_EXPIRED)
 
-    const updated = await this.db.transaction(async (tx) => {
-      await this.revisionsRepository.create({ postId, body: post.body, executor: tx })
+    const updated = await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        await this.revisionsRepository.create({ postId, body: post.body, executor: tx })
 
-      return this.postsRepository.updateBody({ id: postId, body, executor: tx })
+        return this.postsRepository.updateBody({ id: postId, body, executor: tx })
+      },
     })
 
     if (!updated) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
@@ -122,10 +130,13 @@ export class PostsService {
   async delete({ postId, userId }: DeletePostParams): Promise<void> {
     await this.getOwnedActivePost({ postId, userId })
 
-    await this.db.transaction(async (tx) => {
-      await this.postsRepository.softDelete({ id: postId, executor: tx })
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        await this.postsRepository.softDelete({ id: postId, executor: tx })
 
-      await this.revisionsRepository.deleteByPost({ postId, executor: tx })
+        await this.revisionsRepository.deleteByPost({ postId, executor: tx })
+      },
     })
   }
 

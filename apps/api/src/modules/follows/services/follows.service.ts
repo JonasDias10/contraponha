@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import type { Database } from "@ponto/database"
+import { runTransaction, type Database } from "@ponto/database"
 import { ApiErrorCode, type FollowStatus, type Page, type PublicProfile } from "@ponto/types"
 import { z } from "zod"
 
@@ -49,42 +49,48 @@ export class FollowsService {
 
     if (followee.id === followerId) throw new AppError(ApiErrorCode.SELF_FOLLOW_NOT_ALLOWED)
 
-    await this.db.transaction(async (tx) => {
-      const isAdded = await this.followsRepository.add({
-        followerId,
-        followeeId: followee.id,
-        executor: tx,
-      })
-
-      if (isAdded) {
-        await this.usersService.adjustFollowCounts({
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const isAdded = await this.followsRepository.add({
           followerId,
           followeeId: followee.id,
-          delta: 1,
           executor: tx,
         })
-      }
+
+        if (isAdded) {
+          await this.usersService.adjustFollowCounts({
+            followerId,
+            followeeId: followee.id,
+            delta: 1,
+            executor: tx,
+          })
+        }
+      },
     })
   }
 
   async unfollow({ followerId, handle }: FollowByHandleParams): Promise<void> {
     const followee = await this.usersService.getByHandle(handle)
 
-    await this.db.transaction(async (tx) => {
-      const isRemoved = await this.followsRepository.remove({
-        followerId,
-        followeeId: followee.id,
-        executor: tx,
-      })
-
-      if (isRemoved) {
-        await this.usersService.adjustFollowCounts({
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const isRemoved = await this.followsRepository.remove({
           followerId,
           followeeId: followee.id,
-          delta: -1,
           executor: tx,
         })
-      }
+
+        if (isRemoved) {
+          await this.usersService.adjustFollowCounts({
+            followerId,
+            followeeId: followee.id,
+            delta: -1,
+            executor: tx,
+          })
+        }
+      },
     })
   }
 

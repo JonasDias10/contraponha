@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import type { Database, DatabaseExecutor } from "@ponto/database"
+import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
 import { ReactionTargetType, type ReactionKind, type ViewerReactionsResponse } from "@ponto/types"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -42,41 +42,47 @@ export class ReactionsService {
   async react({ target, userId, kind }: ReactParams): Promise<void> {
     await this.ensureTargetIsActive(target)
 
-    await this.db.transaction(async (tx) => {
-      const isAdded = await this.reactionsRepository.add({ target, userId, kind, executor: tx })
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const isAdded = await this.reactionsRepository.add({ target, userId, kind, executor: tx })
 
-      if (!isAdded) return
+        if (!isAdded) return
 
-      await this.adjustTargetCount({ target, kind, delta: 1, executor: tx })
+        await this.adjustTargetCount({ target, kind, delta: 1, executor: tx })
 
-      const counterpart = exclusiveCounterpart(kind)
+        const counterpart = exclusiveCounterpart(kind)
 
-      if (!counterpart) return
+        if (!counterpart) return
 
-      const isCounterpartRemoved = await this.reactionsRepository.remove({
-        target,
-        userId,
-        kind: counterpart,
-        executor: tx,
-      })
+        const isCounterpartRemoved = await this.reactionsRepository.remove({
+          target,
+          userId,
+          kind: counterpart,
+          executor: tx,
+        })
 
-      if (isCounterpartRemoved)
-        await this.adjustTargetCount({ target, kind: counterpart, delta: -1, executor: tx })
+        if (isCounterpartRemoved)
+          await this.adjustTargetCount({ target, kind: counterpart, delta: -1, executor: tx })
+      },
     })
   }
 
   async unreact({ target, userId, kind }: ReactParams): Promise<void> {
     await this.ensureTargetIsActive(target)
 
-    await this.db.transaction(async (tx) => {
-      const isRemoved = await this.reactionsRepository.remove({
-        target,
-        userId,
-        kind,
-        executor: tx,
-      })
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const isRemoved = await this.reactionsRepository.remove({
+          target,
+          userId,
+          kind,
+          executor: tx,
+        })
 
-      if (isRemoved) await this.adjustTargetCount({ target, kind, delta: -1, executor: tx })
+        if (isRemoved) await this.adjustTargetCount({ target, kind, delta: -1, executor: tx })
+      },
     })
   }
 

@@ -75,20 +75,20 @@ export class UsersRepository {
     await executor.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.id, id))
   }
 
+  // Rows are always updated in id order: two people following each other at the same time
+  // would otherwise lock the same pair of rows in opposite order and deadlock.
   async incrementFollowCounts({
     followerId,
     followeeId,
     delta,
     executor = this.db,
   }: IncrementFollowCountsParams): Promise<void> {
-    await executor
-      .update(users)
-      .set({ followingCount: sql`${users.followingCount} + ${delta}` })
-      .where(eq(users.id, followerId))
+    const updates = [
+      { id: followerId, set: { followingCount: sql`${users.followingCount} + ${delta}` } },
+      { id: followeeId, set: { followerCount: sql`${users.followerCount} + ${delta}` } },
+    ].toSorted((first, second) => (first.id < second.id ? -1 : 1))
 
-    await executor
-      .update(users)
-      .set({ followerCount: sql`${users.followerCount} + ${delta}` })
-      .where(eq(users.id, followeeId))
+    for (const update of updates)
+      await executor.update(users).set(update.set).where(eq(users.id, update.id))
   }
 }
