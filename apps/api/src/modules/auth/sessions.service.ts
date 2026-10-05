@@ -5,12 +5,12 @@ import { ApiErrorCode, type IssuedSession, type SessionSummary } from "@ponto/ty
 import type { AuthContext } from "#src/common/auth/auth-context.js"
 import { AppError } from "#src/common/errors/app-error.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
+import { SESSION_LAST_USED_WRITE_INTERVAL_MS } from "#src/config/durations.js"
 import { generateOpaqueToken, hashOpaqueToken } from "./opaque-token.js"
 import { SessionCache, type CachedSession } from "./session-cache.js"
 import { SessionsRepository } from "./sessions.repository.js"
 
 const USER_AGENT_MAX_LENGTH = 255
-const LAST_USED_WRITE_INTERVAL_MS = 5 * 60 * 1000
 
 function toCachedSession(session: SessionRow): CachedSession {
   return {
@@ -123,7 +123,7 @@ export class SessionsService {
   private recordUsage(tokenHash: string, session: CachedSession): void {
     const now = new Date()
 
-    if (now.getTime() - Date.parse(session.lastUsedAt) < LAST_USED_WRITE_INTERVAL_MS) {
+    if (now.getTime() - Date.parse(session.lastUsedAt) < SESSION_LAST_USED_WRITE_INTERVAL_MS) {
       return
     }
 

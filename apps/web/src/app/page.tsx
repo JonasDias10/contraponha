@@ -1,13 +1,13 @@
+import { API_READINESS_TIMEOUT_MS } from "@ponto/config"
+
 import { ApiStatusBadge } from "@/components/ApiStatusBadge"
 import { createServerApiClient } from "@/lib/api"
 import { getRequestTranslator } from "@/lib/i18n"
 
-const API_STATUS_TIMEOUT_MS = 3_000
-
 export default async function HomePage(): Promise<React.JSX.Element> {
   const { locale, t } = await getRequestTranslator()
   const isApiReady = await createServerApiClient(locale)
-    .health.isReady(AbortSignal.timeout(API_STATUS_TIMEOUT_MS))
+    .health.isReady(AbortSignal.timeout(API_READINESS_TIMEOUT_MS))
     .catch(() => false)
 
   return (

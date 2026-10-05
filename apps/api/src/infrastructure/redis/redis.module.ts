@@ -2,6 +2,7 @@ import { Global, Inject, Logger, Module, type OnApplicationShutdown } from "@nes
 import { Redis } from "ioredis"
 
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
+import { REDIS_COMMAND_TIMEOUT_MS } from "#src/config/durations.js"
 
 export const REDIS = Symbol("REDIS")
 
@@ -16,7 +17,7 @@ export const REDIS = Symbol("REDIS")
         const client = new Redis(config.redis.url, {
           connectionName: "ponto-api",
           maxRetriesPerRequest: 2,
-          commandTimeout: 2_000,
+          commandTimeout: REDIS_COMMAND_TIMEOUT_MS,
         })
         client.on("error", (error: Error) => logger.warn({ err: error }, "Redis connection error"))
         return client

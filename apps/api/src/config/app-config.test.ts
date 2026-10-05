@@ -1,4 +1,4 @@
-import { EnvValidationError } from "@ponto/config"
+import { daysToMs, EnvValidationError } from "@ponto/config"
 import { describe, expect, it } from "vitest"
 
 import { loadAppConfig } from "./app-config.js"
@@ -22,7 +22,7 @@ describe("loadAppConfig", () => {
     expect(config.swagger.enabled).toBe(true)
     expect(config.log.pretty).toBe(true)
     expect(config.webAppUrl).toBe("http://localhost:3001")
-    expect(config.auth.sessionTtlMs).toBe(30 * 24 * 60 * 60 * 1000)
+    expect(config.auth.sessionTtlMs).toBe(daysToMs(30))
   })
 
   it("disables developer conveniences in production unless explicitly enabled", () => {

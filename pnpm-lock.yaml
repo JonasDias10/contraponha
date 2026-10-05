@@ -435,6 +435,9 @@ importers:
 
   packages/database:
     dependencies:
+      '@ponto/config':
+        specifier: workspace:*
+        version: link:../config
       drizzle-orm:
         specifier: ^0.45.3
         version: 0.45.3(@types/pg@8.23.1)(pg@8.23.1)

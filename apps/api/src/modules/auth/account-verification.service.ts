@@ -1,8 +1,10 @@
 import { Inject, Injectable, Logger } from "@nestjs/common"
+import { hoursToMs, minutesToMs } from "@ponto/config"
 import type { Database, VerificationTokenPurpose } from "@ponto/database"
 import { ApiErrorCode } from "@ponto/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
+import { EMAIL_VERIFICATION_TTL_HOURS, PASSWORD_RESET_TTL_MINUTES } from "#src/config/durations.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { EmailSender, type EmailMessage } from "#src/infrastructure/email/email-sender.js"
@@ -13,12 +15,7 @@ import {
   buildPasswordResetEmail,
   type AccountEmailInput,
 } from "./account-emails.js"
-import {
-  EMAIL_VERIFICATION_PATH,
-  EMAIL_VERIFICATION_TTL_HOURS,
-  PASSWORD_RESET_PATH,
-  PASSWORD_RESET_TTL_MINUTES,
-} from "./account-tokens.js"
+import { EMAIL_VERIFICATION_PATH, PASSWORD_RESET_PATH } from "./account-links.js"
 import { CredentialsRepository } from "./credentials.repository.js"
 import { generateOpaqueToken, hashOpaqueToken } from "./opaque-token.js"
 import { PasswordHasher } from "./password-hasher.js"
@@ -48,7 +45,7 @@ export class AccountVerificationService {
     const token = await this.issueToken(
       user.id,
       "email_verification",
-      EMAIL_VERIFICATION_TTL_HOURS * 60 * 60 * 1000,
+      hoursToMs(EMAIL_VERIFICATION_TTL_HOURS),
     )
     this.deliver(
       buildEmailVerificationEmail(
@@ -84,7 +81,7 @@ export class AccountVerificationService {
     const token = await this.issueToken(
       user.id,
       "password_reset",
-      PASSWORD_RESET_TTL_MINUTES * 60 * 1000,
+      minutesToMs(PASSWORD_RESET_TTL_MINUTES),
     )
     this.deliver(
       buildPasswordResetEmail(

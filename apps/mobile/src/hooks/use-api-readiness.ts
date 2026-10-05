@@ -1,9 +1,8 @@
+import { API_READINESS_TIMEOUT_MS } from "@ponto/config"
 import type { Locale } from "@ponto/i18n"
 import { useEffect, useState } from "react"
 
 import { createMobileApiClient } from "@/lib/api"
-
-const API_STATUS_TIMEOUT_MS = 3_000
 
 export type ApiReadiness = "checking" | "online" | "offline"
 
@@ -12,7 +11,7 @@ export function useApiReadiness(locale: Locale): ApiReadiness {
 
   useEffect(() => {
     const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), API_STATUS_TIMEOUT_MS)
+    const timer = setTimeout(() => controller.abort(), API_READINESS_TIMEOUT_MS)
     let isActive = true
 
     void createMobileApiClient(locale)

@@ -1,4 +1,4 @@
-import { parseEnv, type EnvSource } from "@ponto/config"
+import { daysToMs, parseEnv, secondsToMs, type EnvSource } from "@ponto/config"
 import type { Locale } from "@ponto/i18n"
 
 import { envSchema, type Env } from "./env.schema.js"
@@ -81,7 +81,7 @@ export function loadAppConfig(source: EnvSource): AppConfig {
       url: env.REDIS_URL,
     },
     rateLimit: {
-      ttlMs: env.RATE_LIMIT_TTL_SECONDS * 1000,
+      ttlMs: secondsToMs(env.RATE_LIMIT_TTL_SECONDS),
       limit: env.RATE_LIMIT_MAX_REQUESTS,
     },
     i18n: {
@@ -93,9 +93,9 @@ export function loadAppConfig(source: EnvSource): AppConfig {
     },
     webAppUrl: env.WEB_APP_URL.replace(/\/+$/, ""),
     auth: {
-      sessionTtlMs: env.SESSION_TTL_DAYS * 24 * 60 * 60 * 1000,
+      sessionTtlMs: daysToMs(env.SESSION_TTL_DAYS),
       rateLimit: {
-        ttlMs: env.AUTH_RATE_LIMIT_TTL_SECONDS * 1000,
+        ttlMs: secondsToMs(env.AUTH_RATE_LIMIT_TTL_SECONDS),
         limit: env.AUTH_RATE_LIMIT_MAX_REQUESTS,
       },
     },

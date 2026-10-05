@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common"
+import { msToSeconds } from "@ponto/config"
 import type { Redis } from "ioredis"
 
+import { SESSION_CACHE_MAX_TTL_SECONDS } from "#src/config/durations.js"
 import { REDIS } from "#src/infrastructure/redis/redis.module.js"
-
-const MAX_CACHE_TTL_SECONDS = 15 * 60
 
 export interface CachedSession {
   sessionId: string
@@ -26,8 +26,8 @@ export class SessionCache {
   }
 
   async set(tokenHash: string, session: CachedSession): Promise<void> {
-    const secondsUntilExpiry = Math.floor((Date.parse(session.expiresAt) - Date.now()) / 1000)
-    const ttl = Math.min(secondsUntilExpiry, MAX_CACHE_TTL_SECONDS)
+    const secondsUntilExpiry = msToSeconds(Date.parse(session.expiresAt) - Date.now())
+    const ttl = Math.min(secondsUntilExpiry, SESSION_CACHE_MAX_TTL_SECONDS)
 
     if (ttl > 0) {
       await this.redis.set(cacheKey(tokenHash), JSON.stringify(session), "EX", ttl)

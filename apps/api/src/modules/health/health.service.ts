@@ -4,12 +4,11 @@ import { ApiErrorCode, HealthStatus, type LivenessReport, type ReadinessReport }
 import type { Redis } from "ioredis"
 
 import { AppError } from "#src/common/errors/app-error.js"
+import { HEALTH_DEPENDENCY_TIMEOUT_MS } from "#src/config/durations.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { REDIS } from "#src/infrastructure/redis/redis.module.js"
 import { probeDependency } from "./dependency-probe.js"
 import { buildLivenessReport, buildReadinessReport } from "./health-report.js"
-
-const DEPENDENCY_TIMEOUT_MS = 2_000
 
 @Injectable()
 export class HealthService {
@@ -26,8 +25,8 @@ export class HealthService {
 
   async getReadiness(): Promise<ReadinessReport> {
     const [database, redis] = await Promise.all([
-      probeDependency(() => pingDatabase(this.db), DEPENDENCY_TIMEOUT_MS),
-      probeDependency(() => this.redis.ping(), DEPENDENCY_TIMEOUT_MS),
+      probeDependency(() => pingDatabase(this.db), HEALTH_DEPENDENCY_TIMEOUT_MS),
+      probeDependency(() => this.redis.ping(), HEALTH_DEPENDENCY_TIMEOUT_MS),
     ])
     const report = buildReadinessReport({ database, redis }, new Date())
 
