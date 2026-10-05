@@ -87,6 +87,8 @@ describe("users", () => {
         handle: auth.user.handle,
         displayName: auth.user.displayName,
         bio: null,
+        followerCount: 0,
+        followingCount: 0,
         createdAt: auth.user.createdAt,
       })
     })

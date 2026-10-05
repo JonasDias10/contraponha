@@ -1,12 +1,19 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { users, type Database, type DatabaseExecutor, type NewUserRow } from "@ponto/database"
-import { eq } from "drizzle-orm"
+import { eq, inArray, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import type { User } from "#src/modules/users/domain/user.js"
 
 export type CreateUserData = Pick<NewUserRow, "email" | "handle" | "displayName" | "locale">
 export type UpdateUserData = Partial<Pick<NewUserRow, "displayName" | "bio" | "locale">>
+
+export interface IncrementFollowCountsParams {
+  followerId: string
+  followeeId: string
+  delta: 1 | -1
+  executor?: DatabaseExecutor
+}
 
 export interface MarkEmailVerifiedParams {
   id: string
@@ -30,6 +37,15 @@ export class UsersRepository {
   async findById(id: string): Promise<User | undefined> {
     const [user] = await this.db.select().from(users).where(eq(users.id, id))
     return user
+  }
+
+  findByIds(ids: readonly string[]): Promise<User[]> {
+    if (ids.length === 0) return Promise.resolve([])
+
+    return this.db
+      .select()
+      .from(users)
+      .where(inArray(users.id, [...ids]))
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -57,5 +73,22 @@ export class UsersRepository {
 
   async markEmailVerified({ id, executor = this.db }: MarkEmailVerifiedParams): Promise<void> {
     await executor.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.id, id))
+  }
+
+  async incrementFollowCounts({
+    followerId,
+    followeeId,
+    delta,
+    executor = this.db,
+  }: IncrementFollowCountsParams): Promise<void> {
+    await executor
+      .update(users)
+      .set({ followingCount: sql`${users.followingCount} + ${delta}` })
+      .where(eq(users.id, followerId))
+
+    await executor
+      .update(users)
+      .set({ followerCount: sql`${users.followerCount} + ${delta}` })
+      .where(eq(users.id, followeeId))
   }
 }

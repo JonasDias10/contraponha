@@ -12,6 +12,7 @@ import { isReservedHandle, type User } from "#src/modules/users/domain/user.js"
 import {
   UsersRepository,
   type CreateUserData,
+  type IncrementFollowCountsParams,
   type UpdateUserData,
 } from "#src/modules/users/repositories/users.repository.js"
 
@@ -24,6 +25,8 @@ export interface MarkEmailVerifiedParams {
   id: string
   executor?: DatabaseExecutor
 }
+
+export type AdjustFollowCountsParams = IncrementFollowCountsParams
 
 export interface UpdateProfileParams {
   id: string
@@ -84,5 +87,15 @@ export class UsersService {
 
   markEmailVerified({ id, executor }: MarkEmailVerifiedParams): Promise<void> {
     return this.usersRepository.markEmailVerified({ id, executor })
+  }
+
+  async findByIds(ids: readonly string[]): Promise<Map<string, User>> {
+    const uniqueIds = [...new Set(ids)]
+    const found = await this.usersRepository.findByIds(uniqueIds)
+    return new Map(found.map((user) => [user.id, user]))
+  }
+
+  adjustFollowCounts(params: AdjustFollowCountsParams): Promise<void> {
+    return this.usersRepository.incrementFollowCounts(params)
   }
 }
