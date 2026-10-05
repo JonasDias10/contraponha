@@ -36,7 +36,8 @@ Use `User`, `Post`, `getUserById()`. Nunca `Usuario`, `Publicacao`, `buscarUsuar
 - **Tipos de parâmetro e de retorno declarados fora da assinatura** (`async set({ tokenHash, session }: SetCachedSessionParams)`), nunca como literal inline.
 - **Nada de `await` como argumento:** guarde o resultado numa variável e use a variável.
 - **Módulos organizados em pastas por camada** (`controllers/`, `services/`, `domain/`, `repositories/`, `infrastructure/`, `guards/`); na raiz do módulo, só o `<nome>.module.ts`.
-- **Linha em branco antes e depois de todo `if`** (exceto quando ele abre ou fecha um bloco). O ESLint cobra e corrige com `pnpm lint:fix`.
+- **`if` sem chaves por padrão** (`if (!user) return`); chaves só quando a instrução ocupa várias linhas.
+- **Linhas em branco** antes e depois de todo `if`, de chamadas soltas e de declarações de várias linhas. O ESLint cobra e corrige com `pnpm lint:fix`.
 - **Comentários** só quando o _porquê_ não é óbvio. Código autoexplicativo vem primeiro.
 - **Sem código morto**, sem `TODO` solto. Trabalho futuro vai para uma issue ou para a documentação.
 - **Funções pequenas e puras** sempre que possível; efeitos colaterais nas bordas (controllers, repositórios, clientes).

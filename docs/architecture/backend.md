@@ -95,9 +95,21 @@ O desenho está em [auth.md](auth.md).
 
 ## Estilo de código
 
-Quatro regras valem em todo o monorepo e são verificadas pelo ESLint (`pnpm lint`, com correção automática da primeira via `pnpm lint:fix`):
+As regras abaixo valem em todo o monorepo e são verificadas pelo ESLint (`pnpm lint`, com correção automática da primeira via `pnpm lint:fix`):
 
-- **Linha em branco antes e depois de todo `if`.**
+- **`if` sem chaves por padrão** (`if (!user) return`). Chaves só quando a instrução ocupa várias linhas, e de forma consistente em `if/else`.
+- **Linha em branco antes e depois de todo `if`, de chamadas soltas (`await this.x()`, `this.deliver(...)`) e de declarações que ocupam várias linhas.** Sequências de `const` de uma linha cada podem ficar juntas.
+
+  ```ts
+  const token = await this.issueToken({
+    userId: user.id,
+    purpose: "password_reset",
+    ttlMs: minutesToMs(PASSWORD_RESET_TTL_MINUTES),
+  })
+
+  const link = this.buildLink({ path: PASSWORD_RESET_PATH, token })
+  ```
+
 - **Funções com dois ou mais parâmetros recebem um único objeto.** Os campos ficam nomeados na chamada (`revoke({ userId, sessionId })`) e a ordem dos argumentos deixa de importar. Ficam de fora as assinaturas impostas pelo framework: construtores (injeção de dependência), handlers de controller com parâmetros decorados, callbacks passados diretamente a outras funções (`.map((item, index) => ...)`) e métodos de interfaces do Nest, como `catch(exception, host)` do filtro de exceções, que usa `eslint-disable` com justificativa.
 - **Tipos de parâmetro e de retorno são declarados fora da assinatura**, como `interface` (ou `type`, quando for preciso, por exemplo para ser atribuível a um tipo com assinatura de índice). O nome segue o padrão `<Ação><Assunto>Params` para parâmetros (`IssueSessionParams`, `UpsertPasswordHashParams`). A interface é exportada quando a função ou o método público também é. Formatos usados por mais de um app ou pacote vão para o pacote compartilhado (`SessionListResponse` em `@ponto/types`, `LocaleTranslator` em `@ponto/i18n`).
 
