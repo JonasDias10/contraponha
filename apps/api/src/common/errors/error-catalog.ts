@@ -72,6 +72,14 @@ export const ERROR_CATALOG: Record<ApiErrorCode, ErrorDefinition> = {
     status: HttpStatus.BAD_REQUEST,
     messageKey: "follows.errors.selfFollow",
   },
+  [ApiErrorCode.MEDIA_INVALID]: {
+    status: HttpStatus.BAD_REQUEST,
+    messageKey: "media.errors.invalid",
+  },
+  [ApiErrorCode.DUPLICATE_REPORT]: {
+    status: HttpStatus.CONFLICT,
+    messageKey: "moderation.errors.duplicateReport",
+  },
 }
 
 const CODE_BY_STATUS: Partial<Record<number, ApiErrorCode>> = {

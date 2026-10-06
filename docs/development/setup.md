@@ -51,11 +51,11 @@ Os valores padrão já funcionam com o `docker-compose.yml`. O `.env` da raiz é
 
 Em produção, as variáveis vêm do ambiente de execução, nunca de arquivo versionado.
 
-## 3. PostgreSQL, Redis e Mailpit
+## 3. PostgreSQL, Redis, Mailpit e RustFS
 
 ```bash
-docker compose up -d       # sobe os dois serviços em segundo plano
-docker compose ps          # ambos devem aparecer como "healthy"
+docker compose up -d       # sobe os serviços em segundo plano
+docker compose ps          # todos devem aparecer como "healthy"
 docker compose logs -f     # acompanhar logs
 docker compose down        # parar (os dados ficam nos volumes)
 docker compose down -v     # parar e apagar os dados
@@ -66,10 +66,13 @@ docker compose down -v     # parar e apagar os dados
 | PostgreSQL | `postgres:18-alpine` | 5432                    | `ponto` / `ponto`, banco `ponto` |
 | Redis      | `redis:8-alpine`     | 6379                    | sem senha (apenas local)         |
 | Mailpit    | `axllent/mailpit`    | 1025 (SMTP), 8025 (web) | sem autenticação                 |
+| RustFS     | `rustfs/rustfs`      | 9000 (S3), 9001 (web)   | `ponto` / `ponto-local-secret`   |
 
 O Mailpit recebe todos os e-mails enviados pela API em desenvolvimento (verificação de conta, redefinição de senha). Para ler, abra <http://localhost:8025>. Nada sai para a internet.
 
-Se as portas já estiverem em uso, altere `POSTGRES_PORT`/`REDIS_PORT` no `.env` e ajuste `DATABASE_URL`/`REDIS_URL`.
+O RustFS é o storage compatível com S3 onde ficam as imagens dos posts. A API cria o bucket `ponto-media` na inicialização (só fora de produção). O console fica em <http://localhost:9001>.
+
+Se as portas já estiverem em uso, altere `POSTGRES_PORT`/`REDIS_PORT`/`STORAGE_PORT` no `.env` e ajuste `DATABASE_URL`/`REDIS_URL`/`STORAGE_ENDPOINT`/`MEDIA_PUBLIC_BASE_URL`.
 
 ## 4. Banco de dados
 

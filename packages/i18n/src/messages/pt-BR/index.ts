@@ -4,6 +4,20 @@ import { common } from "./common.js"
 import { content } from "./content.js"
 import { emails } from "./emails.js"
 import { follows } from "./follows.js"
+import { media } from "./media.js"
+import { moderation } from "./moderation.js"
+import { notifications } from "./notifications.js"
 import { users } from "./users.js"
 
-export const ptBR = { app, auth, common, content, emails, follows, users }
+export const ptBR = {
+  app,
+  auth,
+  common,
+  content,
+  emails,
+  follows,
+  media,
+  moderation,
+  notifications,
+  users,
+}

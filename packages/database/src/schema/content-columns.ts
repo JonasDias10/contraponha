@@ -1,5 +1,5 @@
 import { sql, type SQL } from "drizzle-orm"
-import { integer, text, timestamp, type AnyPgColumn } from "drizzle-orm/pg-core"
+import { customType, integer, pgEnum, text, timestamp, type AnyPgColumn } from "drizzle-orm/pg-core"
 
 export const REACTION_KINDS = ["good_argument", "insightful", "agree", "disagree"] as const
 
@@ -25,6 +25,12 @@ export function readReactionCounts(row: ReactionCountValues): Record<ReactionKin
   }
 }
 
+export const contentRemoval = pgEnum("content_removal", ["author", "moderation"])
+
+export const tsvector = customType<{ data: string }>({
+  dataType: () => "tsvector",
+})
+
 export const contentColumns = {
   body: text(),
   goodArgumentCount: integer().notNull().default(0),
@@ -34,6 +40,16 @@ export const contentColumns = {
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   editedAt: timestamp({ withTimezone: true }),
   deletedAt: timestamp({ withTimezone: true }),
+  removedBy: contentRemoval(),
+}
+
+export interface RemovalCheckParams {
+  deletedAt: AnyPgColumn
+  removedBy: AnyPgColumn
+}
+
+export function removalMatchesStateCheck({ deletedAt, removedBy }: RemovalCheckParams): SQL {
+  return sql`(${deletedAt} is null) = (${removedBy} is null)`
 }
 
 export interface ContentBodyCheckParams {

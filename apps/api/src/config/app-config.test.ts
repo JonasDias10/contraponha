@@ -9,6 +9,10 @@ const requiredEnv = {
   WEB_APP_URL: "http://localhost:3001/",
   SMTP_HOST: "localhost",
   EMAIL_FROM: "Ponto <no-reply@ponto.test>",
+  STORAGE_BUCKET: "ponto-media",
+  STORAGE_ACCESS_KEY_ID: "key",
+  STORAGE_SECRET_ACCESS_KEY: "secret",
+  MEDIA_PUBLIC_BASE_URL: "http://localhost:9000/ponto-media/",
 }
 
 describe("loadAppConfig", () => {
@@ -30,10 +34,18 @@ describe("loadAppConfig", () => {
     expect(config.webAppUrl).toBe("http://localhost:3001")
 
     expect(config.auth.sessionTtlMs).toBe(daysToMs(30))
+
+    expect(config.media.publicBaseUrl).toBe("http://localhost:9000/ponto-media")
   })
 
   it("disables developer conveniences in production unless explicitly enabled", () => {
-    const config = loadAppConfig({ ...requiredEnv, NODE_ENV: "production" })
+    const config = loadAppConfig({
+      ...requiredEnv,
+      NODE_ENV: "production",
+      STORAGE_AUTO_CREATE_BUCKET: "true",
+    })
+
+    expect(config.storage.autoCreateBucket).toBe(false)
 
     expect(config.swagger.enabled).toBe(false)
 

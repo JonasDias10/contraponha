@@ -1,5 +1,5 @@
 import { readReactionCounts, type PostRevisionRow, type PostRow } from "@ponto/database"
-import type { ContentRevision, PostView } from "@ponto/types"
+import type { ContentRevision, MediaView, PostView } from "@ponto/types"
 
 import { toPublicProfile, type User } from "#src/modules/users/domain/user.js"
 
@@ -14,9 +14,10 @@ export function isActivePost(post: Post): post is ActivePost {
 export interface ToPostViewParams {
   post: Post
   author: User | undefined
+  media: MediaView[]
 }
 
-export function toPostView({ post, author }: ToPostViewParams): PostView {
+export function toPostView({ post, author, media }: ToPostViewParams): PostView {
   const isDeleted = !isActivePost(post)
 
   return {
@@ -24,6 +25,8 @@ export function toPostView({ post, author }: ToPostViewParams): PostView {
     author: isDeleted || !author ? null : toPublicProfile(author),
     body: isDeleted ? null : post.body,
     isDeleted,
+    removedBy: post.removedBy,
+    media: isDeleted ? [] : media,
     commentCount: post.commentCount,
     reactionCounts: readReactionCounts(post),
     createdAt: post.createdAt.toISOString(),

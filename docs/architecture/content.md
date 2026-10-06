@@ -55,7 +55,7 @@ Por quê:
 
 - **Leitura O(1), sem N+1.** Listar 20 posts não dispara 20 contagens.
 - **Sem dependência circular.** Para mostrar as reações de um post, `posts` não precisa consultar `reactions`.
-- **Base para o ranking.** O futuro módulo `feed` lê sinais de engajamento direto das linhas.
+- **Base para o ranking.** O módulo `feed` lê sinais de engajamento direto das linhas (ver [discovery.md](discovery.md)).
 
 Como a consistência é garantida:
 
@@ -147,7 +147,7 @@ Todas sob `/api/v1`.
 | `GET /users/:handle/followers`                | não    | Seguidores, mais recentes primeiro            |
 | `GET /users/:handle/following`                | não    | Quem o usuário segue                          |
 
-`GET /reactions/mine` existe para que listas (e o futuro feed) busquem as reações da pessoa em lote, em vez de uma requisição por item.
+`GET /reactions/mine` existe para que listas (como o feed) busquem as reações da pessoa em lote, em vez de uma requisição por item.
 
 ## Códigos de erro novos
 
@@ -160,9 +160,6 @@ Edição ou exclusão por quem não é o autor responde `FORBIDDEN` (403).
 
 ## O que fica para depois
 
-- Feed e ranking (`feed`), que vão consumir os contadores e o grafo de follows.
-- Moderação: denúncias, remoção por moderadores, auditoria.
-- Busca.
-- Notificações de comentários, respostas, reações e novos seguidores.
-- Mídia em posts.
+Feed, busca e notificações estão em [discovery.md](discovery.md); mídia em [media.md](media.md); moderação em [moderation.md](moderation.md).
+
 - Bloqueio e silenciamento de usuários.

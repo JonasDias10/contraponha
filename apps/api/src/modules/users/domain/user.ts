@@ -50,5 +50,6 @@ export function toPrivateProfile(user: User): PrivateProfile {
     email: user.email,
     isEmailVerified: user.emailVerifiedAt !== null,
     locale: userLocale(user),
+    role: user.role,
   }
 }

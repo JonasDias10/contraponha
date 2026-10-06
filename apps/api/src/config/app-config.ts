@@ -44,6 +44,18 @@ export interface AppConfig {
       limit: number
     }
   }
+  storage: {
+    endpoint: string | undefined
+    region: string
+    bucket: string
+    accessKeyId: string
+    secretAccessKey: string
+    forcePathStyle: boolean
+    autoCreateBucket: boolean
+  }
+  media: {
+    publicBaseUrl: string
+  }
   email: {
     from: string
     smtp: {
@@ -98,6 +110,18 @@ export function loadAppConfig(source: EnvSource): AppConfig {
         ttlMs: secondsToMs(env.AUTH_RATE_LIMIT_TTL_SECONDS),
         limit: env.AUTH_RATE_LIMIT_MAX_REQUESTS,
       },
+    },
+    storage: {
+      endpoint: env.STORAGE_ENDPOINT,
+      region: env.STORAGE_REGION,
+      bucket: env.STORAGE_BUCKET,
+      accessKeyId: env.STORAGE_ACCESS_KEY_ID,
+      secretAccessKey: env.STORAGE_SECRET_ACCESS_KEY,
+      forcePathStyle: env.STORAGE_FORCE_PATH_STYLE,
+      autoCreateBucket: env.STORAGE_AUTO_CREATE_BUCKET && !isProduction,
+    },
+    media: {
+      publicBaseUrl: env.MEDIA_PUBLIC_BASE_URL.replace(/\/+$/, ""),
     },
     email: {
       from: env.EMAIL_FROM,

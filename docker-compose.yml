@@ -33,6 +33,18 @@ services:
       timeout: 5s
       retries: 10
 
+  storage:
+    image: rustfs/rustfs:1.0.1
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${STORAGE_ACCESS_KEY_ID:-ponto}
+      RUSTFS_SECRET_KEY: ${STORAGE_SECRET_ACCESS_KEY:-ponto-local-secret}
+    ports:
+      - "${STORAGE_PORT:-9000}:9000"
+      - "${STORAGE_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - storage-data:/data
+
   mailpit:
     image: axllent/mailpit:v1.31
     restart: unless-stopped
@@ -43,3 +55,4 @@ services:
 volumes:
   postgres-data:
   redis-data:
+  storage-data:

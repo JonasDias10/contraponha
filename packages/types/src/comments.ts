@@ -1,3 +1,4 @@
+import type { ContentRemoval } from "./posts.js"
 import type { ReactionCounts } from "./reactions.js"
 import type { PublicProfile } from "./users.js"
 
@@ -8,6 +9,7 @@ export interface CommentView {
   author: PublicProfile | null
   body: string | null
   isDeleted: boolean
+  removedBy: ContentRemoval | null
   replyCount: number
   reactionCounts: ReactionCounts
   createdAt: string

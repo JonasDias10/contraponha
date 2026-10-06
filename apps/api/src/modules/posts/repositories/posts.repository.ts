@@ -6,6 +6,7 @@ import {
   type DatabaseExecutor,
   type ReactionKindValue,
 } from "@ponto/database"
+import type { ContentRemoval } from "@ponto/types"
 import { and, desc, eq, isNull, lt, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -14,6 +15,11 @@ import type { Post } from "#src/modules/posts/domain/post.js"
 export interface CreatePostData {
   authorId: string
   body: string
+}
+
+export interface CreatePostParams {
+  data: CreatePostData
+  executor?: DatabaseExecutor
 }
 
 export interface ListPostsByAuthorParams {
@@ -30,6 +36,7 @@ export interface UpdatePostBodyParams {
 
 export interface SoftDeletePostParams {
   id: string
+  removedBy: ContentRemoval
   executor?: DatabaseExecutor
 }
 
@@ -50,8 +57,8 @@ export interface IncrementPostReactionCountParams {
 export class PostsRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  async create(data: CreatePostData): Promise<Post> {
-    const [post] = await this.db.insert(posts).values(data).returning()
+  async create({ data, executor = this.db }: CreatePostParams): Promise<Post> {
+    const [post] = await executor.insert(posts).values(data).returning()
 
     if (!post) throw new Error("Insert into posts returned no row")
 
@@ -92,10 +99,10 @@ export class PostsRepository {
     return post
   }
 
-  async softDelete({ id, executor = this.db }: SoftDeletePostParams): Promise<boolean> {
+  async softDelete({ id, removedBy, executor = this.db }: SoftDeletePostParams): Promise<boolean> {
     const deleted = await executor
       .update(posts)
-      .set({ body: null, deletedAt: new Date() })
+      .set({ body: null, deletedAt: new Date(), removedBy })
       .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
       .returning({ id: posts.id })
 

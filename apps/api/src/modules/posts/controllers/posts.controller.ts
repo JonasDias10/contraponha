@@ -44,7 +44,11 @@ export class PostsController {
     @Body(new ZodValidationPipe(createPostInputSchema))
     body: z.output<typeof createPostInputSchema>,
   ): Promise<PostView> {
-    return this.postsService.create({ authorId: auth.userId, body: body.body })
+    return this.postsService.create({
+      authorId: auth.userId,
+      body: body.body,
+      mediaIds: body.mediaIds ?? [],
+    })
   }
 
   @Public()

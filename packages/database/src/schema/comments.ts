@@ -11,7 +11,12 @@ import {
   type AnyPgColumn,
 } from "drizzle-orm/pg-core"
 
-import { contentBodyCheck, contentColumns, reactionCountsCheck } from "./content-columns.js"
+import {
+  contentBodyCheck,
+  contentColumns,
+  reactionCountsCheck,
+  removalMatchesStateCheck,
+} from "./content-columns.js"
 import { posts } from "./posts.js"
 import { users } from "./users.js"
 
@@ -34,6 +39,7 @@ export const comments = pgTable(
   (table) => [
     index("comments_post_id_id_idx").on(table.postId, table.id),
     index("comments_parent_id_id_idx").on(table.parentId, table.id),
+    check("comments_removal_matches_state", removalMatchesStateCheck(table)),
     check(
       "comments_body_matches_state",
       contentBodyCheck({

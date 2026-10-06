@@ -35,6 +35,15 @@ export const envSchema = z
     SMTP_PASSWORD: z.string().min(1).optional(),
     EMAIL_FROM: z.string().min(3),
 
+    STORAGE_ENDPOINT: z.url().optional(),
+    STORAGE_REGION: z.string().min(1).default("us-east-1"),
+    STORAGE_BUCKET: z.string().min(3),
+    STORAGE_ACCESS_KEY_ID: z.string().min(1),
+    STORAGE_SECRET_ACCESS_KEY: z.string().min(1),
+    STORAGE_FORCE_PATH_STYLE: envBoolean.default(false),
+    STORAGE_AUTO_CREATE_BUCKET: envBoolean.default(false),
+    MEDIA_PUBLIC_BASE_URL: z.url({ protocol: /^https?$/ }),
+
     DEFAULT_LOCALE: localeSchema.default(DEFAULT_LOCALE),
     SUPPORTED_LOCALES: envList.pipe(z.array(localeSchema).min(1)).default([...SUPPORTED_LOCALES]),
   })

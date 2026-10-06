@@ -17,9 +17,12 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
-    "clean": "rm -rf build .turbo"
+    "clean": "rm -rf build .turbo",
+    "users:set-role": "node --env-file-if-exists=../../.env build/scripts/set-user-role.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1146.0",
+    "@aws-sdk/s3-request-presigner": "^3.1146.0",
     "@nestjs/common": "^12.1.2",
     "@nestjs/core": "^12.1.2",
     "@nestjs/platform-express": "^12.1.2",

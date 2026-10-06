@@ -4,6 +4,7 @@ import { ReactionTargetType, type ReactionKind, type ViewerReactionsResponse } f
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { CommentsService } from "#src/modules/comments/services/comments.service.js"
+import { NotificationsService } from "#src/modules/notifications/services/notifications.service.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
 import { exclusiveCounterpart } from "#src/modules/reactions/domain/reaction-rules.js"
 import {
@@ -37,10 +38,11 @@ export class ReactionsService {
     private readonly reactionsRepository: ReactionsRepository,
     private readonly postsService: PostsService,
     private readonly commentsService: CommentsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async react({ target, userId, kind }: ReactParams): Promise<void> {
-    await this.ensureTargetIsActive(target)
+    const targetAuthorId = await this.ensureTargetIsActive(target)
 
     await runTransaction({
       db: this.db,
@@ -50,6 +52,15 @@ export class ReactionsService {
         if (!isAdded) return
 
         await this.adjustTargetCount({ target, kind, delta: 1, executor: tx })
+
+        await this.notificationsService.notify({
+          recipientId: targetAuthorId,
+          actorId: userId,
+          ...(target.type === ReactionTargetType.POST
+            ? { type: "post_reacted", postId: target.id }
+            : { type: "comment_reacted", commentId: target.id }),
+          executor: tx,
+        })
 
         const counterpart = exclusiveCounterpart(kind)
 
@@ -101,14 +112,15 @@ export class ReactionsService {
     }
   }
 
-  private async ensureTargetIsActive(target: ReactionTarget): Promise<void> {
+  // Returns the author of the target, who is notified of new reactions.
+  private async ensureTargetIsActive(target: ReactionTarget): Promise<string> {
     if (target.type === ReactionTargetType.POST) {
-      await this.postsService.getActivePost(target.id)
-
-      return
+      const post = await this.postsService.getActivePost(target.id)
+      return post.authorId
     }
 
-    await this.commentsService.getActiveComment(target.id)
+    const comment = await this.commentsService.getActiveComment(target.id)
+    return comment.authorId
   }
 
   private adjustTargetCount({
