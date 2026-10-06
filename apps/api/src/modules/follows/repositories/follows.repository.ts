@@ -1,9 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { follows, type Database, type DatabaseExecutor } from "@ponto/database"
-import { and, desc, eq, sql, type SQL } from "drizzle-orm"
+import { type SQL, and, desc, eq, or, sql } from "drizzle-orm"
 import type { PgColumn } from "drizzle-orm/pg-core"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
+
+export interface FollowPair {
+  followerId: string
+  followeeId: string
+}
 
 export interface FollowPairParams {
   followerId: string
@@ -64,6 +69,13 @@ export class FollowsRepository {
       .returning({ followerId: follows.followerId })
 
     return removed.length > 0
+  }
+
+  listPairsInvolving(userId: string): Promise<FollowPair[]> {
+    return this.db
+      .select({ followerId: follows.followerId, followeeId: follows.followeeId })
+      .from(follows)
+      .where(or(eq(follows.followerId, userId), eq(follows.followeeId, userId)))
   }
 
   async exists({ followerId, followeeId }: FollowPairParams): Promise<boolean> {

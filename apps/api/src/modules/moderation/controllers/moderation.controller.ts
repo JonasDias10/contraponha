@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -17,9 +18,17 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import { UserRole, type ModerationActionView, type Page, type ReportView } from "@ponto/types"
+import {
+  UserRole,
+  type ContextNoteView,
+  type ModerationActionView,
+  type Page,
+  type ReportView,
+} from "@ponto/types"
 import {
   changeRoleInputSchema,
+  contextNoteInputSchema,
+  contextNoteViewSchema,
   handleSchema,
   moderationActionPageSchema,
   paginationQuerySchema,
@@ -79,6 +88,7 @@ export class ModerationController {
       reportId,
       moderatorId: auth.userId,
       resolution: body.resolution,
+      rule: body.rule,
       note: body.note,
     })
   }
@@ -96,6 +106,7 @@ export class ModerationController {
     return this.moderationService.removePost({
       targetId: postId,
       moderatorId: auth.userId,
+      rule: body.rule,
       note: body.note,
     })
   }
@@ -113,8 +124,38 @@ export class ModerationController {
     return this.moderationService.removeComment({
       targetId: commentId,
       moderatorId: auth.userId,
+      rule: body.rule,
       note: body.note,
     })
+  }
+
+  @Put("posts/:postId/context")
+  @ApiOperation({ summary: "Add or replace the context note shown above a post" })
+  @ApiZodBody(contextNoteInputSchema)
+  @ApiOkResponse({ schema: toOpenApiSchema(contextNoteViewSchema) })
+  setContextNote(
+    @CurrentAuth() auth: AuthContext,
+    @UuidParam("postId") postId: string,
+    @Body(new ZodValidationPipe(contextNoteInputSchema))
+    body: z.output<typeof contextNoteInputSchema>,
+  ): Promise<ContextNoteView> {
+    return this.moderationService.setContextNote({
+      postId,
+      moderatorId: auth.userId,
+      body: body.body,
+      sources: body.sources ?? [],
+    })
+  }
+
+  @Delete("posts/:postId/context")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: "Retire the context note of a post" })
+  @ApiNoContentResponse()
+  removeContextNote(
+    @CurrentAuth() auth: AuthContext,
+    @UuidParam("postId") postId: string,
+  ): Promise<void> {
+    return this.moderationService.removeContextNote({ postId, moderatorId: auth.userId })
   }
 
   @Get("actions")

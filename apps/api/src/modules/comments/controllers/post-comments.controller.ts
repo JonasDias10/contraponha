@@ -8,14 +8,14 @@ import {
 } from "@nestjs/swagger"
 import type { CommentView, Page } from "@ponto/types"
 import {
+  commentListQuerySchema,
   commentPageSchema,
   commentViewSchema,
   createCommentInputSchema,
-  paginationQuerySchema,
 } from "@ponto/validation"
 import type { z } from "zod"
 
-import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
+import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"
 import {
   ApiStandardErrors,
@@ -35,10 +35,7 @@ export class PostCommentsController {
 
   @Post()
   @ApiBearerAuth(SESSION_SECURITY_SCHEME)
-  @ApiOperation({
-    summary: "Comment on a post or reply to a comment",
-    description: "Replying to a reply attaches the answer to the thread's top-level comment.",
-  })
+  @ApiOperation({ summary: "Contribute to a post, or reply to a contribution with parentId" })
   @ApiZodBody(createCommentInputSchema)
   @ApiCreatedResponse({ schema: toOpenApiSchema(commentViewSchema) })
   create(
@@ -51,19 +48,29 @@ export class PostCommentsController {
       postId,
       authorId: auth.userId,
       body: body.body,
+      sources: body.sources ?? [],
       parentId: body.parentId,
     })
   }
 
   @Public()
   @Get()
-  @ApiOperation({ summary: "Top-level comments of a post, oldest first" })
+  @ApiOperation({
+    summary: "Top-level contributions: most relevant (highlighted first) or most recent",
+  })
   @ApiOkResponse({ schema: toOpenApiSchema(commentPageSchema) })
   list(
+    @CurrentViewer() viewer: AuthContext | undefined,
     @UuidParam("postId") postId: string,
-    @Query(new ZodValidationPipe(paginationQuerySchema))
-    query: z.output<typeof paginationQuerySchema>,
+    @Query(new ZodValidationPipe(commentListQuerySchema))
+    query: z.output<typeof commentListQuerySchema>,
   ): Promise<Page<CommentView>> {
-    return this.commentsService.listForPost({ postId, cursor: query.cursor, limit: query.limit })
+    return this.commentsService.listForPost({
+      postId,
+      sort: query.sort,
+      cursor: query.cursor,
+      limit: query.limit,
+      viewerId: viewer?.userId,
+    })
   }
 }

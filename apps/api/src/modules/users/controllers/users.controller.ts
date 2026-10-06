@@ -1,16 +1,10 @@
-import { Body, Controller, Get, Param, Patch } from "@nestjs/common"
+import { Body, Controller, Get, Patch, Post } from "@nestjs/common"
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import type { PrivateProfile, PublicProfile } from "@ponto/types"
-import {
-  handleSchema,
-  privateProfileSchema,
-  publicProfileSchema,
-  updateProfileInputSchema,
-} from "@ponto/validation"
+import type { PrivateProfile } from "@ponto/types"
+import { privateProfileSchema, updateProfileInputSchema } from "@ponto/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
-import { Public } from "#src/common/auth/public.decorator.js"
 import {
   ApiStandardErrors,
   ApiZodBody,
@@ -18,7 +12,7 @@ import {
   toOpenApiSchema,
 } from "#src/common/openapi/swagger.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
-import { toPrivateProfile, toPublicProfile } from "#src/modules/users/domain/user.js"
+import { toPrivateProfile } from "#src/modules/users/domain/user.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 @ApiTags("users")
@@ -50,14 +44,12 @@ export class UsersController {
     return toPrivateProfile(user)
   }
 
-  @Public()
-  @Get(":handle")
-  @ApiOperation({ summary: "Public profile by handle" })
-  @ApiOkResponse({ schema: toOpenApiSchema(publicProfileSchema) })
-  async getByHandle(
-    @Param("handle", new ZodValidationPipe(handleSchema)) handle: string,
-  ): Promise<PublicProfile> {
-    const user = await this.usersService.getByHandle(handle)
-    return toPublicProfile(user)
+  @Post("me/onboarding")
+  @ApiBearerAuth(SESSION_SECURITY_SCHEME)
+  @ApiOperation({ summary: "Mark onboarding (interests and people to follow) as done" })
+  @ApiOkResponse({ schema: toOpenApiSchema(privateProfileSchema) })
+  async completeOnboarding(@CurrentAuth() auth: AuthContext): Promise<PrivateProfile> {
+    const user = await this.usersService.markOnboarded(auth.userId)
+    return toPrivateProfile(user)
   }
 }

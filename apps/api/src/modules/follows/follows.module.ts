@@ -10,5 +10,6 @@ import { UsersModule } from "#src/modules/users/users.module.js"
   imports: [UsersModule, NotificationsModule],
   controllers: [FollowsController],
   providers: [FollowsRepository, FollowsService],
+  exports: [FollowsService],
 })
 export class FollowsModule {}

@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Patch, Query } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Put,
+  Query,
+} from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiNoContentResponse,
@@ -11,12 +21,13 @@ import {
   commentPageSchema,
   commentViewSchema,
   contentRevisionListSchema,
+  highlightCommentInputSchema,
   paginationQuerySchema,
   updateCommentInputSchema,
 } from "@ponto/validation"
 import type { z } from "zod"
 
-import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
+import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"
 import {
   ApiStandardErrors,
@@ -39,6 +50,7 @@ export class CommentsController {
   @ApiOperation({ summary: "Replies in a comment's thread, oldest first" })
   @ApiOkResponse({ schema: toOpenApiSchema(commentPageSchema) })
   listReplies(
+    @CurrentViewer() viewer: AuthContext | undefined,
     @UuidParam("commentId") commentId: string,
     @Query(new ZodValidationPipe(paginationQuerySchema))
     query: z.output<typeof paginationQuerySchema>,
@@ -47,6 +59,7 @@ export class CommentsController {
       commentId,
       cursor: query.cursor,
       limit: query.limit,
+      viewerId: viewer?.userId,
     })
   }
 
@@ -61,13 +74,43 @@ export class CommentsController {
     @Body(new ZodValidationPipe(updateCommentInputSchema))
     body: z.output<typeof updateCommentInputSchema>,
   ): Promise<CommentView> {
-    return this.commentsService.update({ commentId, userId: auth.userId, body: body.body })
+    return this.commentsService.update({ commentId, userId: auth.userId, input: body })
+  }
+
+  @Put(":commentId/highlight")
+  @ApiBearerAuth(SESSION_SECURITY_SCHEME)
+  @ApiOperation({ summary: "Highlight a contribution to your post (post author only)" })
+  @ApiZodBody(highlightCommentInputSchema)
+  @ApiOkResponse({ schema: toOpenApiSchema(commentViewSchema) })
+  highlight(
+    @CurrentAuth() auth: AuthContext,
+    @UuidParam("commentId") commentId: string,
+    @Body(new ZodValidationPipe(highlightCommentInputSchema))
+    body: z.output<typeof highlightCommentInputSchema>,
+  ): Promise<CommentView> {
+    return this.commentsService.highlight({
+      commentId,
+      userId: auth.userId,
+      note: body.note ?? null,
+    })
+  }
+
+  @Delete(":commentId/highlight")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth(SESSION_SECURITY_SCHEME)
+  @ApiOperation({ summary: "Remove the highlight (post author only)" })
+  @ApiNoContentResponse()
+  unhighlight(
+    @CurrentAuth() auth: AuthContext,
+    @UuidParam("commentId") commentId: string,
+  ): Promise<void> {
+    return this.commentsService.unhighlight({ commentId, userId: auth.userId })
   }
 
   @Delete(":commentId")
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth(SESSION_SECURITY_SCHEME)
-  @ApiOperation({ summary: "Remove a comment (author only); its content and history are erased" })
+  @ApiOperation({ summary: "Remove a comment (author only)" })
   @ApiNoContentResponse()
   delete(
     @CurrentAuth() auth: AuthContext,

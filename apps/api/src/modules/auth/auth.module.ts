@@ -27,6 +27,6 @@ import { VerificationTokensRepository } from "#src/modules/auth/repositories/ver
     SessionsService,
     VerificationTokensRepository,
   ],
-  exports: [SessionAuthGuard],
+  exports: [SessionAuthGuard, AuthService, AccountVerificationService, SessionsService],
 })
 export class AuthModule {}

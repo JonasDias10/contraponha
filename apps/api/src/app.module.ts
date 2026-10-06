@@ -12,7 +12,9 @@ import { DatabaseModule } from "#src/infrastructure/database/database.module.js"
 import { EmailModule } from "#src/infrastructure/email/email.module.js"
 import { RedisModule } from "#src/infrastructure/redis/redis.module.js"
 import { StorageModule } from "#src/infrastructure/storage/storage.module.js"
+import { AccountsModule } from "#src/modules/accounts/accounts.module.js"
 import { AuthModule } from "#src/modules/auth/auth.module.js"
+import { BookmarksModule } from "#src/modules/bookmarks/bookmarks.module.js"
 import { CommentsModule } from "#src/modules/comments/comments.module.js"
 import { FollowsModule } from "#src/modules/follows/follows.module.js"
 import { FeedModule } from "#src/modules/feed/feed.module.js"
@@ -21,9 +23,11 @@ import { ModerationModule } from "#src/modules/moderation/moderation.module.js"
 import { NotificationsModule } from "#src/modules/notifications/notifications.module.js"
 import { SessionAuthGuard } from "#src/modules/auth/guards/session-auth.guard.js"
 import { HealthModule } from "#src/modules/health/health.module.js"
+import { PeopleModule } from "#src/modules/people/people.module.js"
 import { PostsModule } from "#src/modules/posts/posts.module.js"
 import { ReactionsModule } from "#src/modules/reactions/reactions.module.js"
 import { SearchModule } from "#src/modules/search/search.module.js"
+import { TopicsModule } from "#src/modules/topics/topics.module.js"
 import { UsersModule } from "#src/modules/users/users.module.js"
 
 @Module({})
@@ -42,6 +46,7 @@ export class AppModule {
         HealthModule,
         UsersModule,
         AuthModule,
+        TopicsModule,
         PostsModule,
         CommentsModule,
         ReactionsModule,
@@ -51,6 +56,9 @@ export class AppModule {
         FeedModule,
         SearchModule,
         ModerationModule,
+        BookmarksModule,
+        PeopleModule,
+        AccountsModule,
       ],
       providers: [
         { provide: APP_GUARD, useClass: ThrottlerGuard },

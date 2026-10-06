@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { reports, type Database, type DatabaseExecutor } from "@ponto/database"
-import type { ReportReason, ReportStatus, ReportTargetType } from "@ponto/types"
-import { and, desc, eq, lt } from "drizzle-orm"
+import { comments, posts, reports, type Database, type DatabaseExecutor } from "@ponto/database"
+import type { ReportReason, ReportStatus, ReportSubject, ReportTargetType } from "@ponto/types"
+import { and, desc, eq, lt, or } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
-import type { Report } from "#src/modules/moderation/domain/moderation.js"
+import type { Report, ReportContextRow } from "#src/modules/moderation/domain/moderation.js"
 
 export const OPEN_REPORT_UNIQUE_CONSTRAINTS = [
   "reports_open_post_unique",
@@ -19,6 +19,7 @@ export interface CreateReportData {
   commentId: string | null
   targetUserId: string | null
   reason: ReportReason
+  subject: ReportSubject | null
   details: string | null
 }
 
@@ -26,6 +27,17 @@ export interface ListReportsParams {
   status: ReportStatus
   beforeId: string | undefined
   limit: number
+}
+
+export interface ReportTargetFilter {
+  postId: string | null
+  commentId: string | null
+  targetUserId: string | null
+}
+
+export interface ListOpenForTargetParams {
+  target: ReportTargetFilter
+  executor: DatabaseExecutor
 }
 
 export interface CloseReportParams {
@@ -52,13 +64,40 @@ export class ReportsRepository {
     return report
   }
 
-  listByStatus({ status, beforeId, limit }: ListReportsParams): Promise<Report[]> {
+  // Joins the reported post or comment (read only) so the queue shows what was reported.
+  listByStatus({ status, beforeId, limit }: ListReportsParams): Promise<ReportContextRow[]> {
     return this.db
-      .select()
+      .select({
+        report: reports,
+        postBody: posts.body,
+        postTitle: posts.title,
+        postAuthorId: posts.authorId,
+        commentBody: comments.body,
+        commentAuthorId: comments.authorId,
+      })
       .from(reports)
+      .leftJoin(posts, eq(posts.id, reports.postId))
+      .leftJoin(comments, eq(comments.id, reports.commentId))
       .where(and(eq(reports.status, status), beforeId ? lt(reports.id, beforeId) : undefined))
       .orderBy(desc(reports.id))
       .limit(limit)
+  }
+
+  listOpenForTarget({ target, executor }: ListOpenForTargetParams): Promise<Report[]> {
+    return executor
+      .select()
+      .from(reports)
+      .where(
+        and(
+          eq(reports.status, "open"),
+          or(
+            target.postId ? eq(reports.postId, target.postId) : undefined,
+            target.commentId ? eq(reports.commentId, target.commentId) : undefined,
+            target.targetUserId ? eq(reports.targetUserId, target.targetUserId) : undefined,
+          ),
+        ),
+      )
+      .for("update")
   }
 
   async close({

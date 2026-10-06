@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common"
 
 import { CommentsController } from "#src/modules/comments/controllers/comments.controller.js"
+import { UserContributionsController } from "#src/modules/comments/controllers/user-contributions.controller.js"
 import { PostCommentsController } from "#src/modules/comments/controllers/post-comments.controller.js"
 import { CommentRevisionsRepository } from "#src/modules/comments/repositories/comment-revisions.repository.js"
 import { CommentsRepository } from "#src/modules/comments/repositories/comments.repository.js"
@@ -11,7 +12,7 @@ import { UsersModule } from "#src/modules/users/users.module.js"
 
 @Module({
   imports: [PostsModule, UsersModule, NotificationsModule],
-  controllers: [PostCommentsController, CommentsController],
+  controllers: [PostCommentsController, CommentsController, UserContributionsController],
   providers: [CommentsRepository, CommentRevisionsRepository, CommentsService],
   exports: [CommentsService],
 })

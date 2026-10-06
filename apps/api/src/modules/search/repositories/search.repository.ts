@@ -1,10 +1,28 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { posts, users, type Database, type UserRow } from "@ponto/database"
-import { and, asc, desc, ilike, isNull, or, sql } from "drizzle-orm"
+import { comments, follows, posts, users, type Database, type UserRow } from "@ponto/database"
+import { SearchSort } from "@ponto/types"
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gt,
+  ilike,
+  inArray,
+  isNotNull,
+  isNull,
+  or,
+  sql,
+  type SQL,
+} from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
+import type { Comment } from "#src/modules/comments/domain/comment.js"
 import type { Post } from "#src/modules/posts/domain/post.js"
-import { escapeLikePattern } from "#src/modules/search/domain/search-pagination.js"
+import {
+  escapeLikePattern,
+  HEADLINE_OPTIONS,
+} from "#src/modules/search/domain/search-pagination.js"
 
 export interface SearchParams {
   query: string
@@ -12,7 +30,45 @@ export interface SearchParams {
   limit: number
 }
 
-// Read model: queries tables owned by users and posts for reads only.
+export interface ContentFilters {
+  sort: SearchSort
+  since: Date | null
+  hasSource: boolean
+  hasHighlights: boolean
+  followedBy: string | undefined
+}
+
+export interface ContentSearchParams extends SearchParams {
+  filters: ContentFilters
+}
+
+export interface PostSearchRow {
+  post: Post
+  highlight: string | null
+}
+
+export interface CommentSearchRow {
+  comment: Comment
+  highlight: string | null
+}
+
+function tsQueryFor(query: string): SQL {
+  return sql`websearch_to_tsquery('portuguese', ${query})`
+}
+
+interface AuthoredByFollowedParams {
+  authorColumn: typeof posts.authorId | typeof comments.authorId
+  userId: string
+}
+
+function authoredByFollowed({ authorColumn, userId }: AuthoredByFollowedParams): SQL {
+  return inArray(
+    authorColumn,
+    sql`(select ${follows.followeeId} from ${follows} where ${follows.followerId} = ${userId})`,
+  )
+}
+
+// Read model: queries tables owned by users, posts, comments and follows for reads only.
 @Injectable()
 export class SearchRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
@@ -25,11 +81,15 @@ export class SearchRepository {
       .select()
       .from(users)
       .where(
-        or(
-          sql`${users.handle} % ${query}`,
-          sql`${users.displayName} % ${query}`,
-          ilike(users.handle, `${pattern}%`),
-          ilike(users.displayName, `%${pattern}%`),
+        and(
+          isNull(users.deletedAt),
+          or(
+            sql`${users.handle} % ${query}`,
+            sql`${users.displayName} % ${query}`,
+            ilike(users.handle, `${pattern}%`),
+            ilike(users.displayName, `%${pattern}%`),
+            ilike(users.headline, `%${pattern}%`),
+          ),
         ),
       )
       .orderBy(desc(similarity), asc(users.id))
@@ -37,14 +97,82 @@ export class SearchRepository {
       .limit(limit)
   }
 
-  searchPosts({ query, offset, limit }: SearchParams): Promise<Post[]> {
-    const tsQuery = sql`websearch_to_tsquery('portuguese', ${query})`
+  // "Relevant" weighs text match by the quality reactions the post received; popularity
+  // and follower counts play no part.
+  searchPosts({ query, offset, limit, filters }: ContentSearchParams): Promise<PostSearchRow[]> {
+    const tsQuery = tsQueryFor(query)
+    const quality = sql`ln(2 + 3 * ${posts.goodArgumentCount} + 3 * ${posts.changedMyMindCount} + 2 * ${posts.insightfulCount})`
+    const document = sql`coalesce(${posts.title}, '') || ' — ' || coalesce(${posts.body}, '')`
 
     return this.db
-      .select()
+      .select({
+        post: posts,
+        highlight: sql<
+          string | null
+        >`ts_headline('portuguese', ${document}, ${tsQuery}, ${HEADLINE_OPTIONS})`,
+      })
       .from(posts)
-      .where(and(isNull(posts.deletedAt), sql`${posts.searchVector} @@ ${tsQuery}`))
-      .orderBy(desc(sql`ts_rank(${posts.searchVector}, ${tsQuery})`), desc(posts.id))
+      .where(
+        and(
+          isNull(posts.deletedAt),
+          sql`${posts.searchVector} @@ ${tsQuery}`,
+          filters.since ? gt(posts.createdAt, filters.since) : undefined,
+          filters.hasSource ? sql`jsonb_array_length(${posts.sources}) > 0` : undefined,
+          filters.hasHighlights ? gt(posts.highlightedCommentCount, 0) : undefined,
+          filters.followedBy
+            ? authoredByFollowed({ authorColumn: posts.authorId, userId: filters.followedBy })
+            : undefined,
+        ),
+      )
+      .orderBy(
+        ...(filters.sort === SearchSort.RECENT
+          ? [desc(posts.id)]
+          : [desc(sql`ts_rank(${posts.searchVector}, ${tsQuery}) * ${quality}`), desc(posts.id)]),
+      )
+      .offset(offset)
+      .limit(limit)
+  }
+
+  searchComments({
+    query,
+    offset,
+    limit,
+    filters,
+  }: ContentSearchParams): Promise<CommentSearchRow[]> {
+    const tsQuery = tsQueryFor(query)
+    const quality = sql`ln(2 + 3 * ${comments.goodArgumentCount} + 3 * ${comments.changedMyMindCount} + 2 * ${comments.insightfulCount})`
+
+    return this.db
+      .select({
+        comment: comments,
+        highlight: sql<
+          string | null
+        >`ts_headline('portuguese', coalesce(${comments.body}, ''), ${tsQuery}, ${HEADLINE_OPTIONS})`,
+      })
+      .from(comments)
+      .innerJoin(posts, eq(posts.id, comments.postId))
+      .where(
+        and(
+          isNull(comments.deletedAt),
+          isNull(posts.deletedAt),
+          sql`${comments.searchVector} @@ ${tsQuery}`,
+          filters.since ? gt(comments.createdAt, filters.since) : undefined,
+          filters.hasSource ? sql`jsonb_array_length(${comments.sources}) > 0` : undefined,
+          filters.hasHighlights ? isNotNull(comments.highlightedAt) : undefined,
+          filters.followedBy
+            ? authoredByFollowed({ authorColumn: comments.authorId, userId: filters.followedBy })
+            : undefined,
+        ),
+      )
+      .orderBy(
+        ...(filters.sort === SearchSort.RECENT
+          ? [desc(comments.id)]
+          : [
+              sql`${comments.highlightedAt} desc nulls last`,
+              desc(sql`ts_rank(${comments.searchVector}, ${tsQuery}) * ${quality}`),
+              desc(comments.id),
+            ]),
+      )
       .offset(offset)
       .limit(limit)
   }

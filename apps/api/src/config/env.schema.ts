@@ -44,6 +44,8 @@ export const envSchema = z
     STORAGE_AUTO_CREATE_BUCKET: envBoolean.default(false),
     MEDIA_PUBLIC_BASE_URL: z.url({ protocol: /^https?$/ }),
 
+    BACKGROUND_JOBS_ENABLED: envBoolean.default(true),
+
     DEFAULT_LOCALE: localeSchema.default(DEFAULT_LOCALE),
     SUPPORTED_LOCALES: envList.pipe(z.array(localeSchema).min(1)).default([...SUPPORTED_LOCALES]),
   })

@@ -10,6 +10,11 @@ export interface UpsertPasswordHashParams {
   executor?: DatabaseExecutor
 }
 
+export interface DeleteCredentialsParams {
+  userId: string
+  executor: DatabaseExecutor
+}
+
 @Injectable()
 export class CredentialsRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
@@ -21,6 +26,10 @@ export class CredentialsRepository {
       .where(eq(passwordCredentials.userId, userId))
 
     return credential?.passwordHash
+  }
+
+  async deleteForUser({ userId, executor }: DeleteCredentialsParams): Promise<void> {
+    await executor.delete(passwordCredentials).where(eq(passwordCredentials.userId, userId))
   }
 
   async upsertPasswordHash({

@@ -4,17 +4,35 @@ import {
   REACTION_COUNT_FIELDS,
   type Database,
   type DatabaseExecutor,
+  type CommunityRuleValue,
+  type ContentSourceValue,
   type ReactionKindValue,
 } from "@ponto/database"
-import type { ContentRemoval } from "@ponto/types"
-import { and, desc, eq, isNull, lt, sql } from "drizzle-orm"
+import type { ContentRemoval, ReplyPolicy } from "@ponto/types"
+import { and, desc, eq, inArray, isNotNull, isNull, lt, ne, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import type { Post } from "#src/modules/posts/domain/post.js"
 
 export interface CreatePostData {
   authorId: string
+  title: string | null
   body: string
+  sources: ContentSourceValue[]
+  replyPolicy: ReplyPolicy
+}
+
+export interface UpdatePostData {
+  title: string | null
+  body: string
+  sources: ContentSourceValue[]
+  replyPolicy: ReplyPolicy
+}
+
+export interface PinPostParams {
+  id: string
+  authorId: string
+  executor: DatabaseExecutor
 }
 
 export interface CreatePostParams {
@@ -25,19 +43,27 @@ export interface CreatePostParams {
 export interface ListPostsByAuthorParams {
   authorId: string
   beforeId: string | undefined
+  excludeId: string | undefined
   limit: number
 }
 
-export interface UpdatePostBodyParams {
+export interface UpdatePostParams {
   id: string
-  body: string
+  data: UpdatePostData
   executor?: DatabaseExecutor
 }
 
 export interface SoftDeletePostParams {
   id: string
   removedBy: ContentRemoval
+  rule?: CommunityRuleValue
   executor?: DatabaseExecutor
+}
+
+export interface IncrementHighlightedCountParams {
+  id: string
+  delta: 1 | -1
+  executor: DatabaseExecutor
 }
 
 export interface IncrementCommentCountParams {
@@ -70,7 +96,25 @@ export class PostsRepository {
     return post
   }
 
-  listByAuthor({ authorId, beforeId, limit }: ListPostsByAuthorParams): Promise<Post[]> {
+  async findPinnedByAuthor(authorId: string): Promise<Post | undefined> {
+    const [post] = await this.db
+      .select()
+      .from(posts)
+      .where(and(eq(posts.authorId, authorId), isNotNull(posts.pinnedAt), isNull(posts.deletedAt)))
+
+    return post
+  }
+
+  findByIds(ids: readonly string[]): Promise<Post[]> {
+    if (ids.length === 0) return Promise.resolve([])
+
+    return this.db
+      .select()
+      .from(posts)
+      .where(inArray(posts.id, [...ids]))
+  }
+
+  listByAuthor({ authorId, beforeId, excludeId, limit }: ListPostsByAuthorParams): Promise<Post[]> {
     return this.db
       .select()
       .from(posts)
@@ -79,30 +123,63 @@ export class PostsRepository {
           eq(posts.authorId, authorId),
           isNull(posts.deletedAt),
           beforeId ? lt(posts.id, beforeId) : undefined,
+          excludeId ? ne(posts.id, excludeId) : undefined,
         ),
       )
       .orderBy(desc(posts.id))
       .limit(limit)
   }
 
-  async updateBody({
-    id,
-    body,
-    executor = this.db,
-  }: UpdatePostBodyParams): Promise<Post | undefined> {
+  async update({ id, data, executor = this.db }: UpdatePostParams): Promise<Post | undefined> {
     const [post] = await executor
       .update(posts)
-      .set({ body, editedAt: new Date() })
+      .set({ ...data, editedAt: new Date() })
       .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
       .returning()
 
     return post
   }
 
-  async softDelete({ id, removedBy, executor = this.db }: SoftDeletePostParams): Promise<boolean> {
+  // Only one post per author is pinned: the previous one is unpinned in the same statement order.
+  async pin({ id, authorId, executor }: PinPostParams): Promise<boolean> {
+    await executor
+      .update(posts)
+      .set({ pinnedAt: null })
+      .where(and(eq(posts.authorId, authorId), isNotNull(posts.pinnedAt), ne(posts.id, id)))
+
+    const pinned = await executor
+      .update(posts)
+      .set({ pinnedAt: new Date() })
+      .where(and(eq(posts.id, id), eq(posts.authorId, authorId), isNull(posts.deletedAt)))
+      .returning({ id: posts.id })
+
+    return pinned.length > 0
+  }
+
+  async unpin({ id, authorId, executor }: PinPostParams): Promise<void> {
+    await executor
+      .update(posts)
+      .set({ pinnedAt: null })
+      .where(and(eq(posts.id, id), eq(posts.authorId, authorId)))
+  }
+
+  async softDelete({
+    id,
+    removedBy,
+    rule,
+    executor = this.db,
+  }: SoftDeletePostParams): Promise<boolean> {
     const deleted = await executor
       .update(posts)
-      .set({ body: null, deletedAt: new Date(), removedBy })
+      .set({
+        title: null,
+        body: null,
+        sources: [],
+        pinnedAt: null,
+        deletedAt: new Date(),
+        removedBy,
+        removalRule: rule ?? null,
+      })
       .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
       .returning({ id: posts.id })
 
@@ -118,6 +195,24 @@ export class PostsRepository {
       .update(posts)
       .set({ commentCount: sql`${posts.commentCount} + ${delta}` })
       .where(eq(posts.id, id))
+  }
+
+  async incrementHighlightedCount({
+    id,
+    delta,
+    executor,
+  }: IncrementHighlightedCountParams): Promise<void> {
+    await executor
+      .update(posts)
+      .set({ highlightedCommentCount: sql`${posts.highlightedCommentCount} + ${delta}` })
+      .where(eq(posts.id, id))
+  }
+
+  listActiveByAuthor(authorId: string): Promise<Post[]> {
+    return this.db
+      .select()
+      .from(posts)
+      .where(and(eq(posts.authorId, authorId), isNull(posts.deletedAt)))
   }
 
   async incrementReactionCount({

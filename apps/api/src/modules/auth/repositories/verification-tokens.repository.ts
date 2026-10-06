@@ -27,6 +27,11 @@ export interface ReplaceVerificationTokenParams {
   executor?: DatabaseExecutor
 }
 
+export interface DeleteUserTokensParams {
+  userId: string
+  executor: DatabaseExecutor
+}
+
 @Injectable()
 export class VerificationTokensRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
@@ -67,5 +72,9 @@ export class VerificationTokensRepository {
       .returning({ userId: verificationTokens.userId })
 
     return token?.userId
+  }
+
+  async deleteForUser({ userId, executor }: DeleteUserTokensParams): Promise<void> {
+    await executor.delete(verificationTokens).where(eq(verificationTokens.userId, userId))
   }
 }

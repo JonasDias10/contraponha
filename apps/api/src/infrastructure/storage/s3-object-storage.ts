@@ -16,7 +16,10 @@ import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 
 import {
   ObjectStorage,
+  PUBLIC_OBJECT_PREFIX,
+  type CreateDownloadUrlParams,
   type CreateUploadUrlParams,
+  type PutObjectParams,
   type ReadObjectPrefixParams,
   type StoredObject,
   type UploadUrl,
@@ -75,6 +78,22 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
     return { url, headers: { "content-type": contentType } }
   }
 
+  async put({ key, body, contentType }: PutObjectParams): Promise<void> {
+    await this.client.send(
+      new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: body, ContentType: contentType }),
+    )
+  }
+
+  createDownloadUrl({ key, fileName, expiresInSeconds }: CreateDownloadUrlParams): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      ResponseContentDisposition: `attachment; filename="${fileName}"`,
+    })
+
+    return getSignedUrl(this.client, command, { expiresIn: expiresInSeconds })
+  }
+
   async head(key: string): Promise<StoredObject | undefined> {
     try {
       const object = await this.client.send(
@@ -114,16 +133,11 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
     return `${this.config.media.publicBaseUrl}/${key}`
   }
 
+  // The policy is reapplied on every start so it always matches PUBLIC_OBJECT_PREFIX.
   private async ensurePublicBucket(): Promise<void> {
-    try {
-      await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }))
+    const exists = await this.bucketExists()
 
-      return
-    } catch (error) {
-      if (!(error instanceof NotFound)) throw error
-    }
-
-    await this.client.send(new CreateBucketCommand({ Bucket: this.bucket }))
+    if (!exists) await this.client.send(new CreateBucketCommand({ Bucket: this.bucket }))
 
     const policy = {
       Version: "2012-10-17",
@@ -132,7 +146,7 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
           Effect: "Allow",
           Principal: "*",
           Action: ["s3:GetObject"],
-          Resource: [`arn:aws:s3:::${this.bucket}/*`],
+          Resource: [`arn:aws:s3:::${this.bucket}/${PUBLIC_OBJECT_PREFIX}*`],
         },
       ],
     }
@@ -141,6 +155,18 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
       new PutBucketPolicyCommand({ Bucket: this.bucket, Policy: JSON.stringify(policy) }),
     )
 
-    this.logger.log({ bucket: this.bucket }, "Created media bucket with public read access")
+    if (!exists) this.logger.log({ bucket: this.bucket }, "Created media bucket")
+  }
+
+  private async bucketExists(): Promise<boolean> {
+    try {
+      await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }))
+
+      return true
+    } catch (error) {
+      if (error instanceof NotFound) return false
+
+      throw error
+    }
   }
 }

@@ -1,6 +1,12 @@
 import { Injectable } from "@nestjs/common"
 import { getUniqueViolationConstraint } from "@ponto/database"
-import { ApiErrorCode, ReportTargetType, type ReportReason, type ReportView } from "@ponto/types"
+import {
+  ApiErrorCode,
+  ReportTargetType,
+  type ReportReason,
+  type ReportSubject,
+  type ReportView,
+} from "@ponto/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { CommentsService } from "#src/modules/comments/services/comments.service.js"
@@ -17,6 +23,7 @@ export interface CreateReportParams {
   targetType: ReportTargetType
   targetId: string
   reason: ReportReason
+  subject?: ReportSubject
   details?: string
 }
 
@@ -45,6 +52,7 @@ export class ReportsService {
     targetType,
     targetId,
     reason,
+    subject,
     details,
   }: CreateReportParams): Promise<ReportView> {
     const target = await this.resolveTarget({ targetType, targetId })
@@ -55,11 +63,23 @@ export class ReportsService {
         targetType,
         ...target,
         reason,
+        subject: subject ?? null,
         details: details ?? null,
       })
 
       const reporter = await this.usersService.getById(reporterId)
-      return toReportView({ report, reporter })
+
+      return toReportView({
+        row: {
+          report,
+          postBody: null,
+          postTitle: null,
+          postAuthorId: null,
+          commentBody: null,
+          commentAuthorId: null,
+        },
+        users: new Map([[reporter.id, reporter]]),
+      })
     } catch (error) {
       const constraint = getUniqueViolationConstraint(error)
 

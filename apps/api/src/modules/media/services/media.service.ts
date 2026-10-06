@@ -43,6 +43,11 @@ export interface DetachFromPostParams {
   executor?: DatabaseExecutor
 }
 
+export interface PurgeOwnerMediaParams {
+  ownerId: string
+  executor: DatabaseExecutor
+}
+
 @Injectable()
 export class MediaService {
   private readonly logger = new Logger(MediaService.name)
@@ -122,6 +127,12 @@ export class MediaService {
 
   // Runs after the database change is committed; a failure leaves an orphaned object
   // behind, which is logged rather than undoing the removal.
+  // Account deletion: forgets every upload the person made, attached or not, and returns
+  // the storage keys to delete after the transaction commits.
+  purgeOwner({ ownerId, executor }: PurgeOwnerMediaParams): Promise<string[]> {
+    return this.mediaRepository.deleteForOwner({ ownerId, executor })
+  }
+
   async deleteStoredObjects(storageKeys: readonly string[]): Promise<void> {
     try {
       await this.storage.delete(storageKeys)

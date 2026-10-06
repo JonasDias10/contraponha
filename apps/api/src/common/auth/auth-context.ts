@@ -18,3 +18,13 @@ export const CurrentAuth = createParamDecorator(
     return auth
   },
 )
+
+// On public routes the guard still attaches the session when a valid token is sent, so
+// responses can include the viewer's state (reactions, bookmarks, follows).
+export const CurrentViewer = createParamDecorator(
+  (_data: unknown, context: ExecutionContext): AuthContext | undefined => {
+    const { auth } = context.switchToHttp().getRequest<AuthenticatedRequest>()
+
+    return auth
+  },
+)

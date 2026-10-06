@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common"
+import { LEGAL_DOCUMENT_VERSIONS, LEGAL_DOCUMENTS } from "@ponto/config"
 import {
   getUniqueViolationConstraint,
   USERS_EMAIL_UNIQUE,
@@ -8,11 +9,16 @@ import type { DatabaseExecutor } from "@ponto/database"
 import { ApiErrorCode } from "@ponto/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
-import { isReservedHandle, type User } from "#src/modules/users/domain/user.js"
+import { isDeletedUser, isReservedHandle, type User } from "#src/modules/users/domain/user.js"
+import { ConsentsRepository } from "#src/modules/users/repositories/consents.repository.js"
 import {
   UsersRepository,
   type CreateUserData,
+  type AnonymizeParams,
+  type FindByHandlesParams,
   type IncrementFollowCountsParams,
+  type IncrementPostCountParams,
+  type ScheduleDeletionParams,
   type UpdateUserData,
   type UpdateUserRoleParams,
 } from "#src/modules/users/repositories/users.repository.js"
@@ -39,9 +45,29 @@ export interface CreateUserParams {
   executor?: DatabaseExecutor
 }
 
+export interface RecordLegalConsentsParams {
+  userId: string
+  executor: DatabaseExecutor
+}
+
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly consentsRepository: ConsentsRepository,
+  ) {}
+
+  // Records acceptance of the current version of every legal document.
+  recordLegalConsents({ userId, executor }: RecordLegalConsentsParams): Promise<void> {
+    return this.consentsRepository.record({
+      userId,
+      accepted: LEGAL_DOCUMENTS.map((document) => ({
+        document,
+        version: LEGAL_DOCUMENT_VERSIONS[document],
+      })),
+      executor,
+    })
+  }
 
   async getById(id: string): Promise<User> {
     const user = await this.usersRepository.findById(id)
@@ -54,9 +80,13 @@ export class UsersService {
   async getByHandle(handle: string): Promise<User> {
     const user = await this.usersRepository.findByHandle(handle)
 
-    if (!user) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
+    if (!user || isDeletedUser(user)) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
 
     return user
+  }
+
+  findByHandles(params: FindByHandlesParams): Promise<User[]> {
+    return this.usersRepository.findByHandles(params)
   }
 
   findByEmail(email: string): Promise<User | undefined> {
@@ -94,6 +124,30 @@ export class UsersService {
     const uniqueIds = [...new Set(ids)]
     const found = await this.usersRepository.findByIds(uniqueIds)
     return new Map(found.map((user) => [user.id, user]))
+  }
+
+  adjustPostCount(params: IncrementPostCountParams): Promise<void> {
+    return this.usersRepository.incrementPostCount(params)
+  }
+
+  markOnboarded(id: string): Promise<User> {
+    return this.updateProfile({ id, data: { onboardedAt: new Date() } })
+  }
+
+  async scheduleDeletion(params: ScheduleDeletionParams): Promise<User> {
+    const user = await this.usersRepository.scheduleDeletion(params)
+
+    if (!user) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
+
+    return user
+  }
+
+  listDueForDeletion(now: Date): Promise<User[]> {
+    return this.usersRepository.listDueForDeletion(now)
+  }
+
+  anonymize(params: AnonymizeParams): Promise<void> {
+    return this.usersRepository.anonymize(params)
   }
 
   adjustFollowCounts(params: AdjustFollowCountsParams): Promise<void> {

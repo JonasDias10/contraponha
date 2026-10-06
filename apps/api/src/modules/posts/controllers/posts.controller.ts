@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Patch, Post } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+  Put,
+} from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -7,7 +17,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { ContentRevisionList, PostView } from "@ponto/types"
+import { ReplyPolicy, type ContentRevisionList, type PostView } from "@ponto/types"
 import {
   contentRevisionListSchema,
   createPostInputSchema,
@@ -16,7 +26,7 @@ import {
 } from "@ponto/validation"
 import type { z } from "zod"
 
-import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
+import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"
 import {
   ApiStandardErrors,
@@ -46,7 +56,11 @@ export class PostsController {
   ): Promise<PostView> {
     return this.postsService.create({
       authorId: auth.userId,
+      title: body.title ?? null,
       body: body.body,
+      sources: body.sources ?? [],
+      topics: body.topics ?? [],
+      replyPolicy: body.replyPolicy ?? ReplyPolicy.EVERYONE,
       mediaIds: body.mediaIds ?? [],
     })
   }
@@ -55,8 +69,11 @@ export class PostsController {
   @Get(":postId")
   @ApiOperation({ summary: "Read a post; removed posts come back as a marker" })
   @ApiOkResponse({ schema: toOpenApiSchema(postViewSchema) })
-  get(@UuidParam("postId") postId: string): Promise<PostView> {
-    return this.postsService.getView(postId)
+  get(
+    @CurrentViewer() viewer: AuthContext | undefined,
+    @UuidParam("postId") postId: string,
+  ): Promise<PostView> {
+    return this.postsService.getView({ postId, viewerId: viewer?.userId })
   }
 
   @Patch(":postId")
@@ -70,7 +87,27 @@ export class PostsController {
     @Body(new ZodValidationPipe(updatePostInputSchema))
     body: z.output<typeof updatePostInputSchema>,
   ): Promise<PostView> {
-    return this.postsService.update({ postId, userId: auth.userId, body: body.body })
+    return this.postsService.update({ postId, userId: auth.userId, input: body })
+  }
+
+  @Put(":postId/pin")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth(SESSION_SECURITY_SCHEME)
+  @ApiOperation({
+    summary: "Pin a post to the top of the author's profile (replaces the previous one)",
+  })
+  @ApiNoContentResponse()
+  pin(@CurrentAuth() auth: AuthContext, @UuidParam("postId") postId: string): Promise<void> {
+    return this.postsService.pin({ postId, userId: auth.userId })
+  }
+
+  @Delete(":postId/pin")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth(SESSION_SECURITY_SCHEME)
+  @ApiOperation({ summary: "Unpin a post" })
+  @ApiNoContentResponse()
+  unpin(@CurrentAuth() auth: AuthContext, @UuidParam("postId") postId: string): Promise<void> {
+    return this.postsService.unpin({ postId, userId: auth.userId })
   }
 
   @Delete(":postId")

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { runTransaction, type Database } from "@ponto/database"
+import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
 import { ApiErrorCode, type FollowStatus, type Page, type PublicProfile } from "@ponto/types"
 import { z } from "zod"
 
@@ -28,6 +28,11 @@ export interface ListConnectionsByHandleParams {
   limit: number
 }
 
+export interface PurgeFollowsParams {
+  userId: string
+  executor: DatabaseExecutor
+}
+
 interface ConnectionWithUser {
   connection: FollowConnection
   user: User
@@ -45,6 +50,18 @@ export class FollowsService {
     private readonly usersService: UsersService,
     private readonly notificationsService: NotificationsService,
   ) {}
+
+  // Account deletion: removes every follow in both directions and keeps the other
+  // person's counters exact.
+  async purgeUser({ userId, executor }: PurgeFollowsParams): Promise<void> {
+    const pairs = await this.followsRepository.listPairsInvolving(userId)
+
+    for (const pair of pairs) {
+      const isRemoved = await this.followsRepository.remove({ ...pair, executor })
+
+      if (isRemoved) await this.usersService.adjustFollowCounts({ ...pair, delta: -1, executor })
+    }
+  }
 
   async follow({ followerId, handle }: FollowByHandleParams): Promise<void> {
     const followee = await this.usersService.getByHandle(handle)
