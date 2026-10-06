@@ -25,6 +25,8 @@ Este repositório contém a fundação técnica do produto: a API, o app web, o 
 | Cache e filas    | Redis 8 (ioredis)                             |
 | Autenticação     | Sessões opacas (Bearer), argon2id             |
 | E-mail           | SMTP (nodemailer), Mailpit em desenvolvimento |
+| Mídia            | Storage S3 (URLs pré-assinadas), RustFS local |
+| Busca            | PostgreSQL full-text (português) e `pg_trgm`  |
 | Validação        | Zod 4, compartilhado entre API e clientes     |
 | Logs             | Pino (JSON estruturado, `nestjs-pino`)        |
 | Monorepo         | pnpm workspaces + Turborepo                   |
@@ -42,8 +44,8 @@ Este repositório contém a fundação técnica do produto: a API, o app web, o 
 ┌──────────────────────── apps/api (NestJS) ────────────────────────┐
 │  /api/v1/...                                                      │
 │  common/  (erros, validação, logs, request id, OpenAPI)           │
-│  modules/ (health hoje; auth, users, posts, feed... depois)       │
-│  infrastructure/ (PostgreSQL via @ponto/database, Redis)          │
+│  modules/ (auth, users, posts, feed, search, moderation...)       │
+│  infrastructure/ (PostgreSQL, Redis, e-mail, storage S3)          │
 └───────────────────────────────────────────────────────────────────┘
         compartilhados: @ponto/types · @ponto/validation · @ponto/i18n · @ponto/config
 ```
@@ -69,7 +71,7 @@ cp .env.example .env
 cp apps/web/.env.example apps/web/.env
 cp apps/mobile/.env.example apps/mobile/.env
 
-# 3. PostgreSQL, Redis e Mailpit
+# 3. PostgreSQL, Redis, Mailpit e RustFS
 docker compose up -d
 
 # 4. Migrations
@@ -89,6 +91,7 @@ Com tudo no ar:
 - Readiness (PostgreSQL + Redis): <http://localhost:3000/api/v1/health/ready>
 - Documentação OpenAPI: <http://localhost:3000/api/docs>
 - E-mails enviados em desenvolvimento (Mailpit): <http://localhost:8025>
+- Console do storage de mídia (RustFS, `ponto` / `ponto-local-secret`): <http://localhost:9001>
 
 O passo a passo completo, com solução de problemas, está em [docs/development/setup.md](docs/development/setup.md).
 
@@ -107,25 +110,26 @@ Segredos nunca são versionados. O arquivo `.env` está no `.gitignore`.
 
 Todos os comandos rodam a partir da raiz.
 
-| Comando                      | O que faz                                                                        |
-| ---------------------------- | -------------------------------------------------------------------------------- |
-| `pnpm dev`                   | Sobe API e web em modo watch (compila os pacotes antes)                          |
-| `pnpm dev:api`               | Só a API                                                                         |
-| `pnpm dev:web`               | Só o web (porta 3001)                                                            |
-| `pnpm dev:mobile`            | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                              |
-| `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                 |
-| `pnpm test`                  | Testes unitários (não precisam de Docker)                                        |
-| `pnpm test:e2e`              | Testes de integração da API contra PostgreSQL e Redis reais (banco `ponto_test`) |
-| `pnpm lint`                  | ESLint com regras que usam informação de tipos                                   |
-| `pnpm lint:fix`              | ESLint corrigindo automaticamente o que for possível                             |
-| `pnpm typecheck`             | Verificação de tipos em todo o monorepo                                          |
-| `pnpm format`                | Formata o código com Prettier                                                    |
-| `pnpm format:check`          | Verifica a formatação (usado no CI)                                              |
-| `pnpm db:generate`           | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                  |
-| `pnpm db:migrate`            | Aplica as migrations pendentes                                                   |
-| `pnpm db:studio`             | Abre o Drizzle Studio                                                            |
-| `pnpm db:reconcile-counters` | Recalcula contadores denormalizados a partir das linhas de origem                |
-| `pnpm clean`                 | Remove artefatos de build e cache                                                |
+| Comando                      | O que faz                                                                           |
+| ---------------------------- | ----------------------------------------------------------------------------------- |
+| `pnpm dev`                   | Sobe API e web em modo watch (compila os pacotes antes)                             |
+| `pnpm dev:api`               | Só a API                                                                            |
+| `pnpm dev:web`               | Só o web (porta 3001)                                                               |
+| `pnpm dev:mobile`            | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                                 |
+| `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                    |
+| `pnpm test`                  | Testes unitários (não precisam de Docker)                                           |
+| `pnpm test:e2e`              | Testes de integração da API contra PostgreSQL, Redis e storage reais (`ponto_test`) |
+| `pnpm lint`                  | ESLint com regras que usam informação de tipos                                      |
+| `pnpm lint:fix`              | ESLint corrigindo automaticamente o que for possível                                |
+| `pnpm typecheck`             | Verificação de tipos em todo o monorepo                                             |
+| `pnpm format`                | Formata o código com Prettier                                                       |
+| `pnpm format:check`          | Verifica a formatação (usado no CI)                                                 |
+| `pnpm db:generate`           | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                     |
+| `pnpm db:migrate`            | Aplica as migrations pendentes                                                      |
+| `pnpm db:studio`             | Abre o Drizzle Studio                                                               |
+| `pnpm db:reconcile-counters` | Recalcula contadores denormalizados a partir das linhas de origem                   |
+| `pnpm users:set-role`        | Altera o papel de alguém (`--handle maria --role admin`), ex.: o primeiro admin     |
+| `pnpm clean`                 | Remove artefatos de build e cache                                                   |
 
 ## Estrutura do monorepo
 
@@ -145,10 +149,10 @@ ponto/
 │   ├── types/                Tipos de contrato da API (sem regras de negócio)
 │   └── validation/           Schemas Zod compartilhados
 ├── docs/
-│   ├── architecture/         Visão geral, backend e i18n
+│   ├── architecture/         Visão geral, backend, domínios e i18n
 │   └── development/          Setup e fluxo de desenvolvimento
 ├── .github/workflows/        CI
-└── docker-compose.yml        PostgreSQL, Redis e Mailpit para desenvolvimento
+└── docker-compose.yml        PostgreSQL, Redis, Mailpit e RustFS para desenvolvimento
 ```
 
 ## Documentação
@@ -157,6 +161,9 @@ ponto/
 - [Backend](docs/architecture/backend.md): camadas, módulos, erros, logs, segurança e convenções.
 - [Autenticação e contas](docs/architecture/auth.md): sessões, senhas, e-mails de conta e proteções contra abuso.
 - [Conteúdo e relações](docs/architecture/content.md): posts, comentários, reações, follows, contadores e paginação.
+- [Feed, busca e notificações](docs/architecture/discovery.md): ranking dos destaques, full-text search e regras de notificação.
+- [Mídia](docs/architecture/media.md): upload direto ao storage, validação de imagens e configuração S3.
+- [Moderação](docs/architecture/moderation.md): papéis, denúncias, remoção de conteúdo e auditoria.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
 - [Frontends](docs/architecture/frontends.md): web e mobile, e como usam os pacotes compartilhados.
 - [Setup de desenvolvimento](docs/development/setup.md): ambiente local, testes e banco de dados.

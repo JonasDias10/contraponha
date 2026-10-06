@@ -27,8 +27,13 @@ apps/api/
 │       ├── comments/           Comentários e respostas (1 nível)
 │       ├── reactions/          Reações em posts e comentários
 │       ├── follows/            Seguir, seguidores e seguindo
-│       └── feed/, search/, ... Planejados (README com a fronteira de cada um)
-├── test/                       Testes e2e (Postgres e Redis reais)
+│       ├── media/              Upload de imagens via storage S3
+│       ├── notifications/      Notificações de interações
+│       ├── feed/               Seguindo e Em destaque (modelo de leitura)
+│       ├── search/             Busca de pessoas e posts (modelo de leitura)
+│       └── moderation/         Denúncias, remoção de conteúdo, papéis e auditoria
+├── src/scripts/                Comandos de linha (ex.: set-user-role)
+├── test/                       Testes e2e (Postgres, Redis e storage reais)
 ├── vitest.config.ts            Testes unitários (src/**/*.test.ts)
 └── vitest.e2e.config.ts        Testes e2e (test/**/*.e2e.test.ts)
 ```
@@ -316,11 +321,12 @@ Durações configuráveis por ambiente seguem a mesma regra no nome da variável
 
 Para adicionar uma variável: inclua no schema, exponha no `AppConfig`, documente no `.env.example` e, se for usada no CI, no workflow.
 
-## Infraestrutura (PostgreSQL, Redis e e-mail)
+## Infraestrutura (PostgreSQL, Redis, e-mail e storage)
 
 - `DatabaseModule` (global) expõe a instância Drizzle pelo token `DATABASE` e fecha o pool no shutdown.
 - `RedisModule` (global) expõe o cliente `ioredis` pelo token `REDIS` e fecha a conexão no shutdown.
 - `EmailModule` (global) expõe `EmailSender`, implementado por `SmtpEmailSender` (nodemailer). Qualquer provedor com SMTP serve; em desenvolvimento, o Mailpit do docker-compose recebe tudo. É uma das poucas abstrações com classe abstrata, porque há duas implementações reais (SMTP e o capturador dos testes) e o provedor muda por ambiente.
+- `StorageModule` (global) expõe `ObjectStorage`, implementado por `S3ObjectStorage`: URLs de upload pré-assinadas, `HEAD`, leitura parcial e exclusão de objetos. Detalhes em [media.md](media.md).
 - A API **sobe mesmo se PostgreSQL ou Redis estiverem fora**: o pool conecta sob demanda e o Redis reconecta sozinho. Quem decide se a instância recebe tráfego é o readiness check.
 
 ## Health checks
@@ -333,7 +339,7 @@ Para adicionar uma variável: inclua no schema, exponha no `AppConfig`, document
 ## Testes
 
 - **Unitários** (`src/**/*.test.ts`, `pnpm test`): funções puras e peças isoladas (config, pipe de validação, agregação de health). Não precisam de Docker.
-- **E2E** (`test/**/*.e2e.test.ts`, `pnpm test:e2e`): sobem o `AppModule` completo com PostgreSQL e Redis reais e fazem requisições HTTP. Cobrem envelope de erro, i18n, request id, rate limiting, headers de segurança, OpenAPI, health, e todos os fluxos de auth e users.
+- **E2E** (`test/**/*.e2e.test.ts`, `pnpm test:e2e`): sobem o `AppModule` completo com PostgreSQL, Redis e storage S3 reais e fazem requisições HTTP. Cobrem envelope de erro, i18n, request id, rate limiting, headers de segurança, OpenAPI, health e os fluxos de todos os módulos de domínio.
   - Rodam num banco separado, `<nome>_test` (por exemplo, `ponto_test`). O `test/global-setup.ts` cria o banco se não existir, aplica as migrations com o migrator programático e limpa as tabelas antes da execução.
   - O `EmailSender` é trocado por `CapturingEmailSender`, que guarda as mensagens em memória; os testes leem os links de verificação e redefinição a partir dele.
   - Cada teste cria contas com e-mail e handle aleatórios (`test/support/accounts.ts`), então os testes não dependem de ordem.
