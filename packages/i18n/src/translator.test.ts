@@ -36,3 +36,26 @@ describe("createTranslator", () => {
     expect(t("common.errors.notFound", { resource: "Post" })).toBe("Post não encontrado {other}")
   })
 })
+
+describe("plurals", () => {
+  const catalogs = {
+    "pt-BR": {
+      web: {
+        comment: {
+          moreReplies: "Mais {count} respostas",
+          moreReplies_one: "Mais {count} resposta",
+        },
+      },
+    },
+  }
+
+  it("uses the singular form when the count calls for it", () => {
+    const t = createTranslator({ locale: "pt-BR", catalogs })
+
+    expect(t("web.comment.moreReplies", { count: 1 })).toBe("Mais 1 resposta")
+
+    expect(t("web.comment.moreReplies", { count: 3 })).toBe("Mais 3 respostas")
+
+    expect(t("web.comment.moreReplies", { count: 0 })).toBe("Mais 0 respostas")
+  })
+})

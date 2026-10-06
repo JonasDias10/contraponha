@@ -43,15 +43,38 @@ function interpolate({ template, params }: InterpolateParams): string {
   )
 }
 
+interface PluralKeysParams {
+  key: string
+  locale: Locale
+  count: MessageParams[string] | undefined
+}
+
+// With a numeric `count`, "key_one" (or another CLDR plural category) is used when the
+// catalog has it; the plain key is the general form.
+function pluralKeys({ key, locale, count }: PluralKeysParams): string[] {
+  // Zero reads as plural in everyday Portuguese, English and Spanish ("0 posts"), even where
+  // CLDR files it under "one".
+  if (typeof count !== "number" || count === 0) return [key]
+
+  const category = new Intl.PluralRules(locale).select(count)
+  return [`${key}_${category}`, key]
+}
+
 export function createTranslator({
   locale,
   fallbackLocale = DEFAULT_LOCALE,
   catalogs = defaultCatalogs,
 }: TranslatorOptions): Translate {
   return (key, params) => {
+    const candidates = pluralKeys({ key, locale, count: params?.count })
+
     const template =
-      lookup({ catalog: catalogs[locale], key }) ??
-      lookup({ catalog: catalogs[fallbackLocale], key }) ??
+      candidates
+        .map((candidate) => lookup({ catalog: catalogs[locale], key: candidate }))
+        .find(Boolean) ??
+      candidates
+        .map((candidate) => lookup({ catalog: catalogs[fallbackLocale], key: candidate }))
+        .find(Boolean) ??
       key
 
     return interpolate({ template, params })

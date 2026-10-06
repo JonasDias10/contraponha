@@ -25,3 +25,6 @@ export const TOPIC_NAME_MAX_LENGTH = 40
 
 export const REACTIONS_PER_TARGET_MAX = 2
 export const MENTIONS_PER_CONTENT_MAX = 10
+
+// Posts and contributions can be edited for this long after publishing.
+export const CONTENT_EDIT_WINDOW_MINUTES = 30
