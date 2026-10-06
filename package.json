@@ -22,6 +22,7 @@
     "db:generate": "pnpm --filter @ponto/database db:generate",
     "db:migrate": "pnpm --filter @ponto/database db:migrate",
     "db:studio": "pnpm --filter @ponto/database db:studio",
+    "users:set-role": "turbo run build --filter=@ponto/api && pnpm --filter @ponto/api users:set-role",
     "db:reconcile-counters": "turbo run build --filter=@ponto/database && pnpm --filter @ponto/database reconcile-counters",
     "clean": "turbo run clean && rm -rf node_modules/.cache .turbo"
   },

@@ -31,7 +31,9 @@
         "LOG_LEVEL",
         "WEB_APP_URL",
         "SMTP_*",
-        "EMAIL_FROM"
+        "EMAIL_FROM",
+        "STORAGE_*",
+        "MEDIA_PUBLIC_BASE_URL"
       ]
     },
     "dev": {

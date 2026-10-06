@@ -56,6 +56,13 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      storage:
+        image: rustfs/rustfs:1.0.1
+        env:
+          RUSTFS_ACCESS_KEY: ponto
+          RUSTFS_SECRET_KEY: ponto-ci-secret
+        ports:
+          - 9000:9000
       redis:
         image: redis:8-alpine
         ports:
@@ -73,6 +80,13 @@ jobs:
       WEB_APP_URL: http://localhost:3001
       SMTP_HOST: localhost
       EMAIL_FROM: Ponto <no-reply@ponto.test>
+      STORAGE_ENDPOINT: http://localhost:9000
+      STORAGE_BUCKET: ponto-media
+      STORAGE_ACCESS_KEY_ID: ponto
+      STORAGE_SECRET_ACCESS_KEY: ponto-ci-secret
+      STORAGE_FORCE_PATH_STYLE: "true"
+      STORAGE_AUTO_CREATE_BUCKET: "true"
+      MEDIA_PUBLIC_BASE_URL: http://localhost:9000/ponto-media
 
     steps:
       - uses: actions/checkout@v7
