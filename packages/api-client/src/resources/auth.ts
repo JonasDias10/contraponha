@@ -4,8 +4,10 @@ import {
   sessionListSchema,
   type ChangePasswordInput,
   type ConfirmEmailInput,
+  type ConfirmMagicLinkInput,
   type LoginInput,
   type RegisterInput,
+  type RequestMagicLinkInput,
   type RequestPasswordResetInput,
   type ResetPasswordInput,
 } from "@ponto/validation"
@@ -15,6 +17,8 @@ import { emptyResponseSchema, type HttpClient } from "../http.js"
 export interface AuthResource {
   register(input: RegisterInput): Promise<AuthResponse>
   login(input: LoginInput): Promise<AuthResponse>
+  requestMagicLink(input: RequestMagicLinkInput): Promise<void>
+  loginWithMagicLink(input: ConfirmMagicLinkInput): Promise<AuthResponse>
   logout(): Promise<void>
   changePassword(input: ChangePasswordInput): Promise<void>
   listSessions(): Promise<SessionSummary[]>
@@ -42,6 +46,14 @@ export function createAuthResource(request: HttpClient): AuthResource {
       request({ method: "POST", path: "/auth/register", body: input, schema: authResponseSchema }),
     login: (input) =>
       request({ method: "POST", path: "/auth/login", body: input, schema: authResponseSchema }),
+    requestMagicLink: (input) => send({ method: "POST", path: "/auth/magic-link", body: input }),
+    loginWithMagicLink: (input) =>
+      request({
+        method: "POST",
+        path: "/auth/magic-link/confirm",
+        body: input,
+        schema: authResponseSchema,
+      }),
     logout: () => send({ method: "POST", path: "/auth/logout" }),
     changePassword: (input) => send({ method: "PUT", path: "/auth/password", body: input }),
     listSessions: async () => {

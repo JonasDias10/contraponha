@@ -1,5 +1,6 @@
-import type { ContentRevisionList, Page, PostView } from "@ponto/types"
+import type { BookmarkCount, ContentRevisionList, Page, PostView } from "@ponto/types"
 import {
+  bookmarkCountSchema,
   contentRevisionListSchema,
   postPageSchema,
   postViewSchema,
@@ -27,9 +28,29 @@ export interface PostsResource {
   delete(postId: string): Promise<void>
   listRevisions(postId: string): Promise<ContentRevisionList>
   listByUser(request: ListUserPostsRequest): Promise<Page<PostView>>
+  pin(postId: string): Promise<void>
+  unpin(postId: string): Promise<void>
+  bookmark(postId: string): Promise<void>
+  removeBookmark(postId: string): Promise<void>
+  listBookmarks(query?: PaginationQuery): Promise<Page<PostView>>
+  countBookmarks(): Promise<BookmarkCount>
+}
+
+interface PostActionParams {
+  method: "PUT" | "DELETE"
+  postId: string
+  action: "pin" | "bookmark"
 }
 
 export function createPostsResource(request: HttpClient): PostsResource {
+  const act = async ({ method, postId, action }: PostActionParams): Promise<void> => {
+    await request({
+      method,
+      path: `/posts/${encodeURIComponent(postId)}/${action}`,
+      schema: emptyResponseSchema,
+    })
+  }
+
   return {
     create: (input) =>
       request({ method: "POST", path: "/posts", body: input, schema: postViewSchema }),
@@ -65,5 +86,17 @@ export function createPostsResource(request: HttpClient): PostsResource {
         path: withQuery({ path: `/users/${encodeURIComponent(handle)}/posts`, query }),
         schema: postPageSchema,
       }),
+    pin: (postId) => act({ method: "PUT", postId, action: "pin" }),
+    unpin: (postId) => act({ method: "DELETE", postId, action: "pin" }),
+    bookmark: (postId) => act({ method: "PUT", postId, action: "bookmark" }),
+    removeBookmark: (postId) => act({ method: "DELETE", postId, action: "bookmark" }),
+    listBookmarks: (query = {}) =>
+      request({
+        method: "GET",
+        path: withQuery({ path: "/bookmarks", query }),
+        schema: postPageSchema,
+      }),
+    countBookmarks: () =>
+      request({ method: "GET", path: "/bookmarks/count", schema: bookmarkCountSchema }),
   }
 }

@@ -1,4 +1,5 @@
 import { createHttpClient, type HttpClientOptions } from "./http.js"
+import { createAccountResource, type AccountResource } from "./resources/account.js"
 import { createAuthResource, type AuthResource } from "./resources/auth.js"
 import { createCommentsResource, type CommentsResource } from "./resources/comments.js"
 import { createFeedResource, type FeedResource } from "./resources/feed.js"
@@ -13,11 +14,13 @@ import {
 import { createPostsResource, type PostsResource } from "./resources/posts.js"
 import { createReactionsResource, type ReactionsResource } from "./resources/reactions.js"
 import { createSearchResource, type SearchResource } from "./resources/search.js"
+import { createTopicsResource, type TopicsResource } from "./resources/topics.js"
 import { createUsersResource, type UsersResource } from "./resources/users.js"
 
 export type ApiClientOptions = HttpClientOptions
 
 export interface ApiClient {
+  account: AccountResource
   auth: AuthResource
   comments: CommentsResource
   feed: FeedResource
@@ -29,6 +32,7 @@ export interface ApiClient {
   posts: PostsResource
   reactions: ReactionsResource
   search: SearchResource
+  topics: TopicsResource
   users: UsersResource
 }
 
@@ -36,6 +40,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
   const request = createHttpClient(options)
 
   return {
+    account: createAccountResource(request),
     auth: createAuthResource(request),
     comments: createCommentsResource(request),
     feed: createFeedResource(request),
@@ -47,6 +52,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     posts: createPostsResource(request),
     reactions: createReactionsResource(request),
     search: createSearchResource(request),
+    topics: createTopicsResource(request),
     users: createUsersResource(request),
   }
 }

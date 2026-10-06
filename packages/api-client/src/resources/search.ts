@@ -1,11 +1,26 @@
-import type { Page, PostView, PublicProfile } from "@ponto/types"
-import { postPageSchema, profilePageSchema, type SearchQuery } from "@ponto/validation"
+import type {
+  ContributionSearchResult,
+  Page,
+  PostSearchResult,
+  PublicProfile,
+  TopicList,
+} from "@ponto/types"
+import {
+  contributionSearchPageSchema,
+  postSearchPageSchema,
+  profilePageSchema,
+  topicListSchema,
+  type ContentSearchQuery,
+  type SearchQuery,
+} from "@ponto/validation"
 
 import { withQuery, type HttpClient } from "../http.js"
 
 export interface SearchResource {
   users(query: SearchQuery): Promise<Page<PublicProfile>>
-  posts(query: SearchQuery): Promise<Page<PostView>>
+  posts(query: ContentSearchQuery): Promise<Page<PostSearchResult>>
+  contributions(query: ContentSearchQuery): Promise<Page<ContributionSearchResult>>
+  topics(query: SearchQuery): Promise<TopicList>
 }
 
 export function createSearchResource(request: HttpClient): SearchResource {
@@ -20,7 +35,19 @@ export function createSearchResource(request: HttpClient): SearchResource {
       request({
         method: "GET",
         path: withQuery({ path: "/search/posts", query }),
-        schema: postPageSchema,
+        schema: postSearchPageSchema,
+      }),
+    contributions: (query) =>
+      request({
+        method: "GET",
+        path: withQuery({ path: "/search/contributions", query }),
+        schema: contributionSearchPageSchema,
+      }),
+    topics: (query) =>
+      request({
+        method: "GET",
+        path: withQuery({ path: "/search/topics", query }),
+        schema: topicListSchema,
       }),
   }
 }

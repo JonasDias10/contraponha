@@ -1,9 +1,12 @@
-import type { CommentView, ContentRevisionList, Page } from "@ponto/types"
+import type { CommentView, ContentRevisionList, ContributionView, Page } from "@ponto/types"
 import {
   commentPageSchema,
   commentViewSchema,
   contentRevisionListSchema,
+  contributionPageSchema,
+  type CommentListQuery,
   type CreateCommentInput,
+  type HighlightCommentInput,
   type PaginationQuery,
   type UpdateCommentInput,
 } from "@ponto/validation"
@@ -17,6 +20,17 @@ export interface CreateCommentRequest {
 
 export interface ListPostCommentsRequest {
   postId: string
+  query?: CommentListQuery
+}
+
+export interface HighlightCommentRequest {
+  commentId: string
+  input?: HighlightCommentInput
+}
+
+export interface ListContributionsRequest {
+  handle: string
+  onlyHighlighted?: boolean
   query?: PaginationQuery
 }
 
@@ -37,6 +51,9 @@ export interface CommentsResource {
   update(request: UpdateCommentRequest): Promise<CommentView>
   delete(commentId: string): Promise<void>
   listRevisions(commentId: string): Promise<ContentRevisionList>
+  highlight(request: HighlightCommentRequest): Promise<CommentView>
+  unhighlight(commentId: string): Promise<void>
+  listContributions(request: ListContributionsRequest): Promise<Page<ContributionView>>
 }
 
 export function createCommentsResource(request: HttpClient): CommentsResource {
@@ -79,6 +96,29 @@ export function createCommentsResource(request: HttpClient): CommentsResource {
         method: "GET",
         path: `/comments/${encodeURIComponent(commentId)}/revisions`,
         schema: contentRevisionListSchema,
+      }),
+    highlight: ({ commentId, input = {} }) =>
+      request({
+        method: "PUT",
+        path: `/comments/${encodeURIComponent(commentId)}/highlight`,
+        body: input,
+        schema: commentViewSchema,
+      }),
+    unhighlight: async (commentId) => {
+      await request({
+        method: "DELETE",
+        path: `/comments/${encodeURIComponent(commentId)}/highlight`,
+        schema: emptyResponseSchema,
+      })
+    },
+    listContributions: ({ handle, onlyHighlighted = false, query = {} }) =>
+      request({
+        method: "GET",
+        path: withQuery({
+          path: `/users/${encodeURIComponent(handle)}/${onlyHighlighted ? "highlighted-contributions" : "contributions"}`,
+          query,
+        }),
+        schema: contributionPageSchema,
       }),
   }
 }
