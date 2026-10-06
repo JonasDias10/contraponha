@@ -4,7 +4,7 @@ O Ponto é uma plataforma social brasileira feita para conversas que valem a pen
 
 Este repositório contém a fundação técnica do produto: a API, o app web, o app mobile (iOS e Android), os pacotes compartilhados e a infraestrutura de desenvolvimento.
 
-> **Estado atual:** fundação arquitetural. A API tem contas e autenticação completas (cadastro, login, sessões revogáveis, verificação de e-mail, redefinição e troca de senha, perfil), além de padrão de erros, logs, i18n e testes. Web e mobile consomem a API pelo cliente tipado e exibem uma tela inicial traduzida com o status da API; as telas de conta vêm a seguir. Posts, feed e o restante da rede social são as próximas etapas.
+> **Estado atual:** fundação arquitetural. A API tem contas e autenticação completas (cadastro, login, sessões revogáveis, verificação de e-mail, redefinição e troca de senha, perfil), além de padrão de erros, logs, i18n e testes. O núcleo social também está pronto na API: posts (com janela de edição de 30 minutos e histórico), comentários com respostas, reações de qualidade e de concordância, e follows. Web e mobile consomem a API pelo cliente tipado e exibem uma tela inicial traduzida com o status da API; as telas de conta e de conteúdo vêm a seguir. Feed, moderação, busca e notificações são as próximas etapas.
 
 ## Filosofia
 
@@ -107,24 +107,25 @@ Segredos nunca são versionados. O arquivo `.env` está no `.gitignore`.
 
 Todos os comandos rodam a partir da raiz.
 
-| Comando             | O que faz                                                                        |
-| ------------------- | -------------------------------------------------------------------------------- |
-| `pnpm dev`          | Sobe API e web em modo watch (compila os pacotes antes)                          |
-| `pnpm dev:api`      | Só a API                                                                         |
-| `pnpm dev:web`      | Só o web (porta 3001)                                                            |
-| `pnpm dev:mobile`   | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                              |
-| `pnpm build`        | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                 |
-| `pnpm test`         | Testes unitários (não precisam de Docker)                                        |
-| `pnpm test:e2e`     | Testes de integração da API contra PostgreSQL e Redis reais (banco `ponto_test`) |
-| `pnpm lint`         | ESLint com regras que usam informação de tipos                                   |
-| `pnpm lint:fix`     | ESLint corrigindo automaticamente o que for possível                             |
-| `pnpm typecheck`    | Verificação de tipos em todo o monorepo                                          |
-| `pnpm format`       | Formata o código com Prettier                                                    |
-| `pnpm format:check` | Verifica a formatação (usado no CI)                                              |
-| `pnpm db:generate`  | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                  |
-| `pnpm db:migrate`   | Aplica as migrations pendentes                                                   |
-| `pnpm db:studio`    | Abre o Drizzle Studio                                                            |
-| `pnpm clean`        | Remove artefatos de build e cache                                                |
+| Comando                      | O que faz                                                                        |
+| ---------------------------- | -------------------------------------------------------------------------------- |
+| `pnpm dev`                   | Sobe API e web em modo watch (compila os pacotes antes)                          |
+| `pnpm dev:api`               | Só a API                                                                         |
+| `pnpm dev:web`               | Só o web (porta 3001)                                                            |
+| `pnpm dev:mobile`            | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                              |
+| `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                 |
+| `pnpm test`                  | Testes unitários (não precisam de Docker)                                        |
+| `pnpm test:e2e`              | Testes de integração da API contra PostgreSQL e Redis reais (banco `ponto_test`) |
+| `pnpm lint`                  | ESLint com regras que usam informação de tipos                                   |
+| `pnpm lint:fix`              | ESLint corrigindo automaticamente o que for possível                             |
+| `pnpm typecheck`             | Verificação de tipos em todo o monorepo                                          |
+| `pnpm format`                | Formata o código com Prettier                                                    |
+| `pnpm format:check`          | Verifica a formatação (usado no CI)                                              |
+| `pnpm db:generate`           | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                  |
+| `pnpm db:migrate`            | Aplica as migrations pendentes                                                   |
+| `pnpm db:studio`             | Abre o Drizzle Studio                                                            |
+| `pnpm db:reconcile-counters` | Recalcula contadores denormalizados a partir das linhas de origem                |
+| `pnpm clean`                 | Remove artefatos de build e cache                                                |
 
 ## Estrutura do monorepo
 
@@ -155,6 +156,7 @@ ponto/
 - [Visão geral da arquitetura](docs/architecture/overview.md): monorepo, monolito modular, escolhas de stack, LGPD e evolução.
 - [Backend](docs/architecture/backend.md): camadas, módulos, erros, logs, segurança e convenções.
 - [Autenticação e contas](docs/architecture/auth.md): sessões, senhas, e-mails de conta e proteções contra abuso.
+- [Conteúdo e relações](docs/architecture/content.md): posts, comentários, reações, follows, contadores e paginação.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
 - [Frontends](docs/architecture/frontends.md): web e mobile, e como usam os pacotes compartilhados.
 - [Setup de desenvolvimento](docs/development/setup.md): ambiente local, testes e banco de dados.

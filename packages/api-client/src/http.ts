@@ -22,6 +22,21 @@ export interface RequestOptions<TSchema extends z.ZodType> {
 
 export const emptyResponseSchema = z.null()
 
+export interface WithQueryParams<TQuery extends object> {
+  path: string
+  query: TQuery
+}
+
+export function withQuery<TQuery extends object>({ path, query }: WithQueryParams<TQuery>): string {
+  const params = new URLSearchParams()
+
+  for (const [key, value] of Object.entries(query))
+    if (typeof value === "string" || typeof value === "number") params.set(key, String(value))
+
+  const search = params.toString()
+  return search ? `${path}?${search}` : path
+}
+
 export type HttpClient = <TSchema extends z.ZodType>(
   options: RequestOptions<TSchema>,
 ) => Promise<z.output<TSchema>>

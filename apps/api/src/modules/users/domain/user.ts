@@ -38,6 +38,8 @@ export function toPublicProfile(user: User): PublicProfile {
     handle: user.handle,
     displayName: user.displayName,
     bio: user.bio,
+    followerCount: user.followerCount,
+    followingCount: user.followingCount,
     createdAt: user.createdAt.toISOString(),
   }
 }

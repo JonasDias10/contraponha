@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common"
 import { hoursToMs, minutesToMs } from "@ponto/config"
-import type { Database, VerificationTokenPurpose } from "@ponto/database"
+import { runTransaction, type Database, type VerificationTokenPurpose } from "@ponto/database"
 import { ApiErrorCode } from "@ponto/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
@@ -82,16 +82,19 @@ export class AccountVerificationService {
   }
 
   async confirmEmail(token: string): Promise<void> {
-    await this.db.transaction(async (tx) => {
-      const userId = await this.verificationTokens.consume({
-        tokenHash: hashOpaqueToken(token),
-        purpose: "email_verification",
-        executor: tx,
-      })
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const userId = await this.verificationTokens.consume({
+          tokenHash: hashOpaqueToken(token),
+          purpose: "email_verification",
+          executor: tx,
+        })
 
-      if (!userId) throw new AppError(ApiErrorCode.INVALID_TOKEN)
+        if (!userId) throw new AppError(ApiErrorCode.INVALID_TOKEN)
 
-      await this.usersService.markEmailVerified({ id: userId, executor: tx })
+        await this.usersService.markEmailVerified({ id: userId, executor: tx })
+      },
     })
   }
 
@@ -119,20 +122,23 @@ export class AccountVerificationService {
   async resetPassword({ token, newPassword }: ResetPasswordParams): Promise<void> {
     const passwordHash = await this.passwordHasher.hash(newPassword)
 
-    const revokedTokenHashes = await this.db.transaction(async (tx) => {
-      const userId = await this.verificationTokens.consume({
-        tokenHash: hashOpaqueToken(token),
-        purpose: "password_reset",
-        executor: tx,
-      })
+    const revokedTokenHashes = await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const userId = await this.verificationTokens.consume({
+          tokenHash: hashOpaqueToken(token),
+          purpose: "password_reset",
+          executor: tx,
+        })
 
-      if (!userId) throw new AppError(ApiErrorCode.INVALID_TOKEN)
+        if (!userId) throw new AppError(ApiErrorCode.INVALID_TOKEN)
 
-      await this.credentials.upsertPasswordHash({ userId, passwordHash, executor: tx })
+        await this.credentials.upsertPasswordHash({ userId, passwordHash, executor: tx })
 
-      await this.usersService.markEmailVerified({ id: userId, executor: tx })
+        await this.usersService.markEmailVerified({ id: userId, executor: tx })
 
-      return this.sessionsService.revokeAll({ userId, executor: tx })
+        return this.sessionsService.revokeAll({ userId, executor: tx })
+      },
     })
 
     await this.sessionsService.evictFromCache(revokedTokenHashes)

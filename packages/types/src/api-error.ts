@@ -13,6 +13,8 @@ export const ApiErrorCode = {
   INVALID_TOKEN: "INVALID_TOKEN",
   EMAIL_ALREADY_IN_USE: "EMAIL_ALREADY_IN_USE",
   HANDLE_UNAVAILABLE: "HANDLE_UNAVAILABLE",
+  EDIT_WINDOW_EXPIRED: "EDIT_WINDOW_EXPIRED",
+  SELF_FOLLOW_NOT_ALLOWED: "SELF_FOLLOW_NOT_ALLOWED",
 } as const
 
 export type ApiErrorCode = (typeof ApiErrorCode)[keyof typeof ApiErrorCode]

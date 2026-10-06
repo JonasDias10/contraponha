@@ -5,6 +5,8 @@ export interface PublicProfile {
   handle: string
   displayName: string
   bio: string | null
+  followerCount: number
+  followingCount: number
   createdAt: string
 }
 

@@ -12,11 +12,35 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
 jobs:
-  verify:
-    name: Lint, typecheck, test and build
+  quality:
+    name: Format, lint and typecheck
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+        with:
+          cache-scope: quality
+
+      - name: Format
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+  test:
+    name: Unit and e2e tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     services:
       postgres:
@@ -49,40 +73,38 @@ jobs:
       WEB_APP_URL: http://localhost:3001
       SMTP_HOST: localhost
       EMAIL_FROM: Ponto <no-reply@ponto.test>
-      API_URL: http://localhost:3000
-      EXPO_PUBLIC_API_URL: http://localhost:3000
-      TURBO_TELEMETRY_DISABLED: 1
 
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v6
-
-      - uses: actions/setup-node@v7
+      - uses: ./.github/actions/setup
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - name: Install
-        run: pnpm install --frozen-lockfile
-
-      - name: Format
-        run: pnpm format:check
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
+          cache-scope: test
 
       - name: Unit tests
         run: pnpm test
-
-      - name: Build
-        run: pnpm build
 
       - name: Migrations
         run: pnpm db:migrate
 
       - name: E2E tests
         run: pnpm test:e2e
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      API_URL: http://localhost:3000
+      EXPO_PUBLIC_API_URL: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+        with:
+          cache-scope: build
+
+      - name: Build
+        run: pnpm build

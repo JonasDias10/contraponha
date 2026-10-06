@@ -1,0 +1,29 @@
+name: Setup
+description: Install pnpm, Node.js and dependencies, and restore the Turborepo cache for the calling job.
+
+inputs:
+  cache-scope:
+    description: Name that keeps each job's Turborepo cache separate.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+
+    - uses: actions/setup-node@v7
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    - name: Install
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Restore Turborepo cache
+      uses: actions/cache@v6
+      with:
+        path: .turbo/cache
+        key: ${{ runner.os }}-turbo-${{ inputs.cache-scope }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-${{ inputs.cache-scope }}-

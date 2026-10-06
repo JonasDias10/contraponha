@@ -64,6 +64,14 @@ export const ERROR_CATALOG: Record<ApiErrorCode, ErrorDefinition> = {
     status: HttpStatus.CONFLICT,
     messageKey: "users.errors.handleUnavailable",
   },
+  [ApiErrorCode.EDIT_WINDOW_EXPIRED]: {
+    status: HttpStatus.CONFLICT,
+    messageKey: "content.errors.editWindowExpired",
+  },
+  [ApiErrorCode.SELF_FOLLOW_NOT_ALLOWED]: {
+    status: HttpStatus.BAD_REQUEST,
+    messageKey: "follows.errors.selfFollow",
+  },
 }
 
 const CODE_BY_STATUS: Partial<Record<number, ApiErrorCode>> = {

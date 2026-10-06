@@ -139,4 +139,4 @@ A produção deverá priorizar armazenamento e processamento no Brasil. Para que
 
 - **`infra/docker/` não foi criado.** Nesta etapa o único artefato de infraestrutura é o `docker-compose.yml` de desenvolvimento, que fica na raiz para que `docker compose up -d` funcione sem argumentos. A pasta `infra/` será criada junto com o primeiro artefato de deploy (Dockerfile da API, IaC).
 - **Módulos futuros têm apenas um `README.md`.** Em vez de pastas com código vazio, cada módulo planejado em `apps/api/src/modules/` descreve sua responsabilidade e dependências. O código nasce quando a funcionalidade nascer.
-- **Domínio começa por contas.** As primeiras tabelas são de `users` e `auth` ([auth.md](auth.md)). Posts, comentários e o restante entram em etapas próprias, para não fixarmos o modelo de conteúdo antes da hora.
+- **Domínio em etapas.** Primeiro contas (`users`, `auth`, ver [auth.md](auth.md)), depois o núcleo social (`posts`, `comments`, `reactions`, `follows`, ver [content.md](content.md)). Feed, moderação, busca e notificações entram em etapas próprias.

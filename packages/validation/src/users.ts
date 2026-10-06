@@ -48,6 +48,8 @@ export const publicProfileSchema = z.object({
   handle: z.string(),
   displayName: z.string(),
   bio: z.string().nullable(),
+  followerCount: z.number().int().nonnegative(),
+  followingCount: z.number().int().nonnegative(),
   createdAt: z.iso.datetime(),
 }) satisfies z.ZodType<PublicProfile>
 

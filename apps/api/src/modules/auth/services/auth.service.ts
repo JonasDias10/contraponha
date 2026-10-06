@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import type { Database } from "@ponto/database"
+import { runTransaction, type Database } from "@ponto/database"
 import { negotiateLocale } from "@ponto/i18n"
 import { ApiErrorCode, type AuthResponse } from "@ponto/types"
 import type {
@@ -69,19 +69,27 @@ export class AuthService {
         fallback: this.config.i18n.defaultLocale,
       })
 
-    const user = await this.db.transaction(async (tx) => {
-      const created = await this.usersService.create({
-        data: { email: input.email, handle: input.handle, displayName: input.displayName, locale },
-        executor: tx,
-      })
+    const user = await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const created = await this.usersService.create({
+          data: {
+            email: input.email,
+            handle: input.handle,
+            displayName: input.displayName,
+            locale,
+          },
+          executor: tx,
+        })
 
-      await this.credentials.upsertPasswordHash({
-        userId: created.id,
-        passwordHash,
-        executor: tx,
-      })
+        await this.credentials.upsertPasswordHash({
+          userId: created.id,
+          passwordHash,
+          executor: tx,
+        })
 
-      return created
+        return created
+      },
     })
 
     await this.accountVerification.sendEmailVerification(user)
