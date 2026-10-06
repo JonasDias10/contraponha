@@ -36,8 +36,15 @@ export default async function setup(project: TestProject): Promise<void> {
   await runMigrations(testDatabaseUrl)
 
   const connection = createDatabaseConnection({ url: testDatabaseUrl, maxConnections: 1 })
+
+  // Everything hangs off users except topics: curated ones come from a migration and stay,
+  // but their counters and the topics created by previous runs must go.
   try {
     await connection.db.execute(sql`truncate table users cascade`)
+
+    await connection.db.execute(sql`delete from topics where not is_curated`)
+
+    await connection.db.execute(sql`update topics set post_count = 0, follower_count = 0`)
   } finally {
     await connection.close()
   }

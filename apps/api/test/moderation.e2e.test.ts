@@ -2,6 +2,7 @@ import type { NestExpressApplication } from "@nestjs/platform-express"
 import { UserRole, type ModerationActionView, type ReportView } from "@ponto/types"
 import {
   moderationActionPageSchema,
+  notificationPageSchema,
   privateProfileSchema,
   reportPageSchema,
   reportViewSchema,
@@ -144,7 +145,7 @@ describe("moderation", () => {
     await request(server)
       .post(`/api/v1/moderation/reports/${opened.id}/resolve`)
       .set(bearer(moderatorToken))
-      .send({ resolution: "remove_content", note: "Spam confirmado" })
+      .send({ resolution: "remove_content", rule: "spam", note: "Spam confirmado" })
       .expect(204)
 
     const removed = await getPost({ server, postId: post.id })
@@ -212,7 +213,7 @@ describe("moderation", () => {
     await request(server)
       .post(`/api/v1/moderation/reports/${opened.id}/resolve`)
       .set(bearer(moderatorToken))
-      .send({ resolution: "remove_content" })
+      .send({ resolution: "remove_content", rule: "harassment" })
       .expect(400)
   })
 
@@ -237,7 +238,7 @@ describe("moderation", () => {
     await request(server)
       .post(`/api/v1/moderation/comments/${comment.id}/remove`)
       .set(bearer(moderatorToken))
-      .send({})
+      .send({ rule: "personal_attack" })
       .expect(204)
 
     const comments = await listPostComments({ server, id: post.id })
@@ -282,5 +283,98 @@ describe("moderation", () => {
       .set(bearer(admin.auth.session.token))
       .send({ role: "member" })
       .expect(400)
+  })
+
+  it("tells the author and every reporter which rule was applied", async () => {
+    const author = await registerAccount({ server })
+    const firstReporter = await registerAccount({ server })
+    const secondReporter = await registerAccount({ server })
+    const reporters = [firstReporter, secondReporter]
+    const moderatorToken = await registerStaff({ server, role: UserRole.MODERATOR })
+    const post = await createPost({ server, token: author.auth.session.token })
+    const reports: ReportView[] = []
+
+    for (const reporter of reporters) {
+      const created = await report({
+        server,
+        token: reporter.auth.session.token,
+        targetType: "post",
+        targetId: post.id,
+      })
+
+      reports.push(created)
+    }
+
+    await request(server)
+      .post(`/api/v1/moderation/reports/${reports[0]?.id}/resolve`)
+      .set(bearer(moderatorToken))
+      .send({ resolution: "remove_content", rule: "misinformation" })
+      .expect(204)
+
+    const removed = await getPost({ server, postId: post.id })
+    const resolved = await listReports({ server, token: moderatorToken, status: "resolved" })
+
+    const authorInbox = await request(server)
+      .get("/api/v1/notifications")
+      .query({ filter: "moderation" })
+      .set(bearer(author.auth.session.token))
+
+    const reporterInbox = await request(server)
+      .get("/api/v1/notifications")
+      .set(bearer(secondReporter.auth.session.token))
+
+    expect(removed.removalRule).toBe("misinformation")
+
+    expect(resolved.map(({ id }) => id)).toEqual(
+      expect.arrayContaining(reports.map(({ id }) => id)),
+    )
+
+    expect(notificationPageSchema.parse(authorInbox.body).items[0]).toMatchObject({
+      type: "content_removed",
+      actors: [],
+      moderation: { rule: "misinformation", wasRemoved: true },
+    })
+
+    expect(notificationPageSchema.parse(reporterInbox.body).items[0]).toMatchObject({
+      type: "report_resolved",
+      moderation: { rule: "misinformation", wasRemoved: true },
+    })
+  })
+
+  it("adds and retires context notes above a post", async () => {
+    const author = await registerAccount({ server })
+    const moderatorToken = await registerStaff({ server, role: UserRole.MODERATOR })
+    const post = await createPost({ server, token: author.auth.session.token })
+
+    await request(server)
+      .put(`/api/v1/moderation/posts/${post.id}/context`)
+      .set(bearer(author.auth.session.token))
+      .send({ body: "Contexto" })
+      .expect(403)
+
+    await request(server)
+      .put(`/api/v1/moderation/posts/${post.id}/context`)
+      .set(bearer(moderatorToken))
+      .send({
+        body: "O estudo citado avaliou só escolas de tempo integral.",
+        sources: [{ url: "https://www.inep.gov.br/estudo" }],
+      })
+      .expect(200)
+
+    const withNote = await getPost({ server, postId: post.id })
+
+    await request(server)
+      .delete(`/api/v1/moderation/posts/${post.id}/context`)
+      .set(bearer(moderatorToken))
+      .expect(204)
+
+    const withoutNote = await getPost({ server, postId: post.id })
+
+    expect(withNote.contextNote).toMatchObject({
+      body: "O estudo citado avaliou só escolas de tempo integral.",
+      sources: [{ host: "inep.gov.br" }],
+    })
+
+    expect(withoutNote.contextNote).toBeNull()
   })
 })

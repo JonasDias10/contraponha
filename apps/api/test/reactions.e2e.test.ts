@@ -56,33 +56,60 @@ describe("reactions", () => {
     expect(reacted.reactionCounts.insightful).toBe(1)
   })
 
-  it("makes agree and disagree replace each other while quality reactions coexist", async () => {
-    const { auth } = await registerAccount({ server })
-    const token = auth.session.token
-    const post = await createPost({ server, token })
+  it("allows at most two reactions per person on the same target", async () => {
+    const author = await registerAccount({ server })
+    const reader = await registerAccount({ server })
+    const token = reader.auth.session.token
+    const post = await createPost({ server, token: author.auth.session.token })
     const base = `/api/v1/posts/${post.id}/reactions`
-
-    await request(server).put(`${base}/agree`).set(bearer(token)).expect(204)
 
     await request(server).put(`${base}/good_argument`).set(bearer(token)).expect(204)
 
-    await request(server).put(`${base}/disagree`).set(bearer(token)).expect(204)
+    await request(server).put(`${base}/needs_source`).set(bearer(token)).expect(204)
+
+    const third = await request(server).put(`${base}/insightful`).set(bearer(token)).expect(409)
+
+    await request(server).put(`${base}/good_argument`).set(bearer(token)).expect(204)
+
+    await request(server).delete(`${base}/needs_source`).set(bearer(token)).expect(204)
+
+    await request(server).put(`${base}/insightful`).set(bearer(token)).expect(204)
 
     const reacted = await getPost({ server, postId: post.id })
 
+    expect(third.body.error.code).toBe("REACTION_LIMIT_REACHED")
+
     expect(reacted.reactionCounts).toEqual({
       good_argument: 1,
-      insightful: 0,
-      agree: 0,
-      disagree: 1,
+      insightful: 1,
+      changed_my_mind: 0,
+      needs_source: 0,
     })
+  })
+
+  it("keeps the limit when several reactions arrive at the same time", async () => {
+    const { auth } = await registerAccount({ server })
+    const post = await createPost({ server, token: auth.session.token })
+    const base = `/api/v1/posts/${post.id}/reactions`
+    const kinds = ["good_argument", "insightful", "changed_my_mind", "needs_source"]
+
+    const responses = await Promise.all(
+      kinds.map((kind) => request(server).put(`${base}/${kind}`).set(bearer(auth.session.token))),
+    )
+
+    const reacted = await getPost({ server, postId: post.id })
+    const total = Object.values(reacted.reactionCounts).reduce((sum, count) => sum + count, 0)
+
+    expect(responses.filter(({ status }) => status === 204)).toHaveLength(2)
+
+    expect(total).toBe(2)
   })
 
   it("removes reactions idempotently", async () => {
     const { auth } = await registerAccount({ server })
     const token = auth.session.token
     const post = await createPost({ server, token })
-    const path = `/api/v1/posts/${post.id}/reactions/agree`
+    const path = `/api/v1/posts/${post.id}/reactions/changed_my_mind`
 
     await request(server).put(path).set(bearer(token)).expect(204)
 
@@ -92,7 +119,7 @@ describe("reactions", () => {
 
     const reacted = await getPost({ server, postId: post.id })
 
-    expect(reacted.reactionCounts.agree).toBe(0)
+    expect(reacted.reactionCounts.changed_my_mind).toBe(0)
   })
 
   it("works on comments and rejects unknown kinds and removed content", async () => {
@@ -118,11 +145,11 @@ describe("reactions", () => {
     await request(server).delete(`/api/v1/posts/${post.id}`).set(bearer(token)).expect(204)
 
     await request(server)
-      .put(`/api/v1/posts/${post.id}/reactions/agree`)
+      .put(`/api/v1/posts/${post.id}/reactions/changed_my_mind`)
       .set(bearer(token))
       .expect(404)
 
-    await request(server).put(`/api/v1/posts/${post.id}/reactions/agree`).expect(401)
+    await request(server).put(`/api/v1/posts/${post.id}/reactions/changed_my_mind`).expect(401)
   })
 
   it("lists the viewer's reactions for a batch of targets", async () => {
@@ -132,7 +159,7 @@ describe("reactions", () => {
     const untouched = await createPost({ server, token })
 
     await request(server)
-      .put(`/api/v1/posts/${reacted.id}/reactions/agree`)
+      .put(`/api/v1/posts/${reacted.id}/reactions/changed_my_mind`)
       .set(bearer(token))
       .expect(204)
 
@@ -150,7 +177,7 @@ describe("reactions", () => {
     const { reactions } = viewerReactionsResponseSchema.parse(response.body)
     const byTarget = new Map(reactions.map(({ targetId, kinds }) => [targetId, kinds.toSorted()]))
 
-    expect(byTarget.get(reacted.id)).toEqual(["agree", "good_argument"])
+    expect(byTarget.get(reacted.id)).toEqual(["changed_my_mind", "good_argument"])
 
     expect(byTarget.get(untouched.id)).toEqual([])
 

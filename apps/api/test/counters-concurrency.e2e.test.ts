@@ -1,5 +1,6 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
 import { sql } from "drizzle-orm"
+import { REACTIONS_PER_TARGET_MAX } from "@ponto/config"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
@@ -26,7 +27,7 @@ interface FindMismatchesParams {
   userIds: string[]
 }
 
-type ConflictingReactionRow = {
+type OverLimitReactionRow = {
   user_id: string
 }
 
@@ -86,12 +87,12 @@ function findMismatches({
           case k.kind
             when 'good_argument' then p.good_argument_count
             when 'insightful' then p.insightful_count
-            when 'agree' then p.agree_count
-            else p.disagree_count
+            when 'changed_my_mind' then p.changed_my_mind_count
+            else p.needs_source_count
           end,
           (select count(*) from reactions r where r.post_id = p.id and r.kind::text = k.kind)::int
         from posts p
-        cross join (values ('good_argument'), ('insightful'), ('agree'), ('disagree')) as k(kind)
+        cross join (values ('good_argument'), ('insightful'), ('changed_my_mind'), ('needs_source')) as k(kind)
         where p.id = ${postId}
         union all
         select 'comment.reply_count', c.id::text, c.reply_count,
@@ -102,12 +103,12 @@ function findMismatches({
           case k.kind
             when 'good_argument' then c.good_argument_count
             when 'insightful' then c.insightful_count
-            when 'agree' then c.agree_count
-            else c.disagree_count
+            when 'changed_my_mind' then c.changed_my_mind_count
+            else c.needs_source_count
           end,
           (select count(*) from reactions r where r.comment_id = c.id and r.kind::text = k.kind)::int
         from comments c
-        cross join (values ('good_argument'), ('insightful'), ('agree'), ('disagree')) as k(kind)
+        cross join (values ('good_argument'), ('insightful'), ('changed_my_mind'), ('needs_source')) as k(kind)
         where c.id = ${commentId}
         union all
         select 'user.follower_count', u.id::text, u.follower_count,
@@ -125,13 +126,13 @@ function findMismatches({
   })
 }
 
-function findConflictingReactions(postId: string): Promise<ConflictingReactionRow[]> {
+function findOverLimitReactions(postId: string): Promise<OverLimitReactionRow[]> {
   return withTestDatabase(async ({ db }) => {
-    const result = await db.execute<ConflictingReactionRow>(sql`
+    const result = await db.execute<OverLimitReactionRow>(sql`
       select user_id from reactions
-      where post_id = ${postId} and kind in ('agree', 'disagree')
+      where post_id = ${postId}
       group by user_id
-      having count(*) > 1
+      having count(*) > ${REACTIONS_PER_TARGET_MAX}
     `)
 
     return result.rows
@@ -154,7 +155,7 @@ describe("counters under concurrent writes", () => {
     await app.close()
   })
 
-  it("keeps every counter equal to its source rows and agree/disagree exclusive", async () => {
+  it("keeps every counter equal to its source rows and the per-person reaction limit", async () => {
     const people: RegisteredAccount[] = []
 
     for (let index = 0; index < PARTICIPANTS; index += 1) {
@@ -190,8 +191,8 @@ describe("counters under concurrent writes", () => {
       const commentReactions = `/api/v1/comments/${thread.id}/reactions`
 
       operations.push(
-        () => request(server).put(`${postReactions}/agree`).set(auth),
-        () => request(server).put(`${postReactions}/disagree`).set(auth),
+        () => request(server).put(`${postReactions}/changed_my_mind`).set(auth),
+        () => request(server).put(`${postReactions}/needs_source`).set(auth),
         () => request(server).put(`${postReactions}/good_argument`).set(auth),
         () => request(server).put(`${postReactions}/good_argument`).set(auth),
         () => request(server).delete(`${postReactions}/good_argument`).set(auth),
@@ -230,7 +231,8 @@ describe("counters under concurrent writes", () => {
       limit: MAX_IN_FLIGHT,
     })
 
-    const unexpected = responses.filter((response) => ![201, 204].includes(response.status))
+    // 409 is the reaction limit doing its job when a third kind arrives first.
+    const unexpected = responses.filter((response) => ![201, 204, 409].includes(response.status))
 
     const mismatches = await findMismatches({
       postId: post.id,
@@ -238,7 +240,7 @@ describe("counters under concurrent writes", () => {
       userIds: people.map(({ auth }) => auth.user.id),
     })
 
-    const conflicting = await findConflictingReactions(post.id)
+    const overLimit = await findOverLimitReactions(post.id)
 
     expect(operations.length).toBeGreaterThan(100)
 
@@ -246,6 +248,6 @@ describe("counters under concurrent writes", () => {
 
     expect(mismatches).toEqual([])
 
-    expect(conflicting).toEqual([])
+    expect(overLimit).toEqual([])
   })
 })

@@ -37,13 +37,15 @@ describe("posts", () => {
         body: "Olá, Ponto.",
         isDeleted: false,
         commentCount: 0,
-        reactionCounts: { good_argument: 0, insightful: 0, agree: 0, disagree: 0 },
+        reactionCounts: { good_argument: 0, insightful: 0, changed_my_mind: 0, needs_source: 0 },
         editedAt: null,
       })
 
       expect(post.author?.handle).toBe(auth.user.handle)
 
-      expect(fetched).toEqual(post)
+      expect(fetched).toEqual({ ...post, viewer: null })
+
+      expect(post.viewer).toEqual({ reactions: [], isBookmarked: false, canReply: true })
     })
 
     it("requires a session and a body within the size limit", async () => {
