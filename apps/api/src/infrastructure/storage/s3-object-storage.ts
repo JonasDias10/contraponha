@@ -5,6 +5,7 @@ import {
   HeadBucketCommand,
   HeadObjectCommand,
   NotFound,
+  PutBucketCorsCommand,
   PutBucketPolicyCommand,
   PutObjectCommand,
   S3Client,
@@ -153,6 +154,24 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
 
     await this.client.send(
       new PutBucketPolicyCommand({ Bucket: this.bucket, Policy: JSON.stringify(policy) }),
+    )
+
+    // Browsers upload straight to the bucket with presigned URLs, so the web app's origin
+    // must be allowed to PUT.
+    await this.client.send(
+      new PutBucketCorsCommand({
+        Bucket: this.bucket,
+        CORSConfiguration: {
+          CORSRules: [
+            {
+              AllowedOrigins: [this.config.webAppUrl, ...this.config.http.corsOrigins],
+              AllowedMethods: ["PUT", "GET"],
+              AllowedHeaders: ["content-type"],
+              MaxAgeSeconds: 3000,
+            },
+          ],
+        },
+      }),
     )
 
     if (!exists) this.logger.log({ bucket: this.bucket }, "Created media bucket")

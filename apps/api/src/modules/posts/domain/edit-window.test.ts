@@ -1,7 +1,5 @@
-import { minutesToMs } from "@ponto/config"
+import { CONTENT_EDIT_WINDOW_MINUTES, minutesToMs } from "@ponto/config"
 import { describe, expect, it } from "vitest"
-
-import { CONTENT_EDIT_WINDOW_MINUTES } from "#src/config/durations.js"
 
 import { isWithinEditWindow } from "./edit-window.js"
 
