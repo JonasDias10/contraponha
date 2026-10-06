@@ -13,4 +13,18 @@ export const emails = {
     expiry: "O link vale por {minutes} minutos e só pode ser usado uma vez.",
     ignore: "Se você não pediu a redefinição, ignore esta mensagem. Sua senha continua a mesma.",
   },
+  magicLink: {
+    subject: "Seu link para entrar no Ponto",
+    body: "Para entrar na sua conta sem senha, acesse o link abaixo:",
+    expiry: "O link vale por {minutes} minutos e só pode ser usado uma vez.",
+    ignore:
+      "Se você não pediu para entrar, ignore esta mensagem. Ninguém entra na sua conta sem este link.",
+  },
+  dataExportReady: {
+    subject: "Sua exportação de dados do Ponto está pronta",
+    body: "Os dados que você pediu estão prontos. Para baixar, entre na sua conta e acesse Configurações, em Seus dados:",
+    expiry: "O arquivo fica disponível por {days} dias.",
+    ignore:
+      "Se você não pediu esta exportação, troque sua senha e encerre as outras sessões em Configurações.",
+  },
 }

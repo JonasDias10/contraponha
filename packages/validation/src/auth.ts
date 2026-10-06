@@ -1,4 +1,5 @@
 import type { AuthResponse, SessionListResponse, SessionSummary } from "@ponto/types"
+import { ageInYears, MINIMUM_AGE_YEARS } from "@ponto/config"
 import { z } from "zod"
 
 import {
@@ -22,12 +23,29 @@ export const opaqueTokenSchema = z
   .max(128)
   .regex(/^[A-Za-z0-9_-]+$/)
 
+export const birthDateSchema = z.iso
+  .date()
+  .refine((birthDate) => ageInYears({ birthDate }) >= MINIMUM_AGE_YEARS, {
+    message: `You must be at least ${MINIMUM_AGE_YEARS} years old`,
+  })
+  .refine((birthDate) => ageInYears({ birthDate }) <= 120, { message: "Invalid birth date" })
+
 export const registerInputSchema = z.object({
   email: emailSchema,
   password: newPasswordSchema,
   handle: handleSchema,
   displayName: displayNameSchema,
+  birthDate: birthDateSchema,
+  acceptedTerms: z.literal(true),
   locale: localeSchema.optional(),
+})
+
+export const requestMagicLinkInputSchema = z.object({
+  email: emailSchema,
+})
+
+export const confirmMagicLinkInputSchema = z.object({
+  token: opaqueTokenSchema,
 })
 
 export const loginInputSchema = z.object({
@@ -59,6 +77,8 @@ export type ChangePasswordInput = z.input<typeof changePasswordInputSchema>
 export type ConfirmEmailInput = z.input<typeof confirmEmailInputSchema>
 export type RequestPasswordResetInput = z.input<typeof requestPasswordResetInputSchema>
 export type ResetPasswordInput = z.input<typeof resetPasswordInputSchema>
+export type RequestMagicLinkInput = z.input<typeof requestMagicLinkInputSchema>
+export type ConfirmMagicLinkInput = z.input<typeof confirmMagicLinkInputSchema>
 
 export const authResponseSchema = z.object({
   user: privateProfileSchema,

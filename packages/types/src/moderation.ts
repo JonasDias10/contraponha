@@ -1,3 +1,4 @@
+import type { ContentSource } from "./content.js"
 import type { PublicProfile } from "./users.js"
 
 export const ReportTargetType = {
@@ -40,16 +41,52 @@ export const ModerationActionType = {
   REPORT_RESOLVED: "report_resolved",
   REPORT_DISMISSED: "report_dismissed",
   ROLE_CHANGED: "role_changed",
+  CONTEXT_ADDED: "context_added",
+  CONTEXT_REMOVED: "context_removed",
 } as const
 
 export type ModerationActionType = (typeof ModerationActionType)[keyof typeof ModerationActionType]
+
+// Rules of the community guidelines. Every removal names the rule it applied.
+export const CommunityRule = {
+  PERSONAL_ATTACK: "personal_attack",
+  HARASSMENT: "harassment",
+  HATE_SPEECH: "hate_speech",
+  MISINFORMATION: "misinformation",
+  SPAM: "spam",
+  VIOLENCE: "violence",
+  SEXUAL_CONTENT: "sexual_content",
+  PRIVACY: "privacy",
+  ILLEGAL_CONTENT: "illegal_content",
+  IMPERSONATION: "impersonation",
+} as const
+
+export type CommunityRule = (typeof CommunityRule)[keyof typeof CommunityRule]
+
+export const ReportSubject = {
+  ME: "me",
+  SOMEONE_ELSE: "someone_else",
+  GROUP: "group",
+} as const
+
+export type ReportSubject = (typeof ReportSubject)[keyof typeof ReportSubject]
+
+export interface ContextNoteView {
+  id: string
+  body: string
+  sources: ContentSource[]
+  createdAt: string
+}
 
 export interface ReportView {
   id: string
   targetType: ReportTargetType
   targetId: string
   reason: ReportReason
+  subject: ReportSubject | null
   details: string | null
+  excerpt: string | null
+  targetAuthor: PublicProfile | null
   status: ReportStatus
   reporter: PublicProfile | null
   createdAt: string
@@ -64,6 +101,7 @@ export interface ModerationActionView {
   postId: string | null
   commentId: string | null
   targetUserId: string | null
+  rule: CommunityRule | null
   note: string | null
   createdAt: string
 }

@@ -1,8 +1,8 @@
 export const ReactionKind = {
   GOOD_ARGUMENT: "good_argument",
   INSIGHTFUL: "insightful",
-  AGREE: "agree",
-  DISAGREE: "disagree",
+  CHANGED_MY_MIND: "changed_my_mind",
+  NEEDS_SOURCE: "needs_source",
 } as const
 
 export type ReactionKind = (typeof ReactionKind)[keyof typeof ReactionKind]
