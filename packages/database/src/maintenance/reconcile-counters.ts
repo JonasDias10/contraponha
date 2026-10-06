@@ -4,6 +4,7 @@ import type { PgColumn, PgTable } from "drizzle-orm/pg-core"
 import type { Database, DatabaseTransaction } from "../client.js"
 import { comments } from "../schema/comments.js"
 import { posts } from "../schema/posts.js"
+import { topics } from "../schema/topics.js"
 import { users } from "../schema/users.js"
 import { runTransaction } from "../transaction.js"
 
@@ -18,6 +19,7 @@ export interface CounterReconcileReport {
   users: number
   posts: number
   comments: number
+  topics: number
 }
 
 interface FixBatchParams {
@@ -47,19 +49,24 @@ function idArray(ids: string[]): SQL {
   return sql`${`{${ids.join(",")}}`}::uuid[]`
 }
 
-async function fixUserFollowCounts({ tx, ids }: FixBatchParams): Promise<number> {
+async function fixUserCounts({ tx, ids }: FixBatchParams): Promise<number> {
   const result = await tx.execute(sql`
     update users as u
-    set follower_count = c.followers, following_count = c.following
+    set follower_count = c.followers, following_count = c.following, post_count = c.posts
     from (
       select
         target.id,
         (select count(*) from follows f where f.followee_id = target.id)::int as followers,
-        (select count(*) from follows f where f.follower_id = target.id)::int as following
+        (select count(*) from follows f where f.follower_id = target.id)::int as following,
+        (select count(*) from posts p where p.author_id = target.id and p.deleted_at is null)::int as posts
       from unnest(${idArray(ids)}) as target(id)
     ) as c
     where u.id = c.id
-      and (u.follower_count <> c.followers or u.following_count <> c.following)
+      and (
+        u.follower_count <> c.followers
+        or u.following_count <> c.following
+        or u.post_count <> c.posts
+      )
   `)
 
   return result.rowCount ?? 0
@@ -70,18 +77,20 @@ async function fixPostCounts({ tx, ids }: FixBatchParams): Promise<number> {
     update posts as p
     set
       comment_count = c.comments,
+      highlighted_comment_count = c.highlighted,
       good_argument_count = c.good_argument,
       insightful_count = c.insightful,
-      agree_count = c.agree,
-      disagree_count = c.disagree
+      changed_my_mind_count = c.changed_my_mind,
+      needs_source_count = c.needs_source
     from (
       select
         target.id,
         (select count(*) from comments cm where cm.post_id = target.id and cm.deleted_at is null)::int as comments,
+        (select count(*) from comments cm where cm.post_id = target.id and cm.deleted_at is null and cm.highlighted_at is not null)::int as highlighted,
         count(r.id) filter (where r.kind = 'good_argument')::int as good_argument,
         count(r.id) filter (where r.kind = 'insightful')::int as insightful,
-        count(r.id) filter (where r.kind = 'agree')::int as agree,
-        count(r.id) filter (where r.kind = 'disagree')::int as disagree
+        count(r.id) filter (where r.kind = 'changed_my_mind')::int as changed_my_mind,
+        count(r.id) filter (where r.kind = 'needs_source')::int as needs_source
       from unnest(${idArray(ids)}) as target(id)
       left join reactions r on r.post_id = target.id
       group by target.id
@@ -91,8 +100,9 @@ async function fixPostCounts({ tx, ids }: FixBatchParams): Promise<number> {
         p.comment_count <> c.comments
         or p.good_argument_count <> c.good_argument
         or p.insightful_count <> c.insightful
-        or p.agree_count <> c.agree
-        or p.disagree_count <> c.disagree
+        or p.changed_my_mind_count <> c.changed_my_mind
+        or p.needs_source_count <> c.needs_source
+        or p.highlighted_comment_count <> c.highlighted
       )
   `)
 
@@ -106,16 +116,16 @@ async function fixCommentCounts({ tx, ids }: FixBatchParams): Promise<number> {
       reply_count = c.replies,
       good_argument_count = c.good_argument,
       insightful_count = c.insightful,
-      agree_count = c.agree,
-      disagree_count = c.disagree
+      changed_my_mind_count = c.changed_my_mind,
+      needs_source_count = c.needs_source
     from (
       select
         target.id,
         (select count(*) from comments reply where reply.parent_id = target.id and reply.deleted_at is null)::int as replies,
         count(r.id) filter (where r.kind = 'good_argument')::int as good_argument,
         count(r.id) filter (where r.kind = 'insightful')::int as insightful,
-        count(r.id) filter (where r.kind = 'agree')::int as agree,
-        count(r.id) filter (where r.kind = 'disagree')::int as disagree
+        count(r.id) filter (where r.kind = 'changed_my_mind')::int as changed_my_mind,
+        count(r.id) filter (where r.kind = 'needs_source')::int as needs_source
       from unnest(${idArray(ids)}) as target(id)
       left join reactions r on r.comment_id = target.id
       group by target.id
@@ -125,9 +135,28 @@ async function fixCommentCounts({ tx, ids }: FixBatchParams): Promise<number> {
         cm.reply_count <> c.replies
         or cm.good_argument_count <> c.good_argument
         or cm.insightful_count <> c.insightful
-        or cm.agree_count <> c.agree
-        or cm.disagree_count <> c.disagree
+        or cm.changed_my_mind_count <> c.changed_my_mind
+        or cm.needs_source_count <> c.needs_source
       )
+  `)
+
+  return result.rowCount ?? 0
+}
+
+async function fixTopicCounts({ tx, ids }: FixBatchParams): Promise<number> {
+  const result = await tx.execute(sql`
+    update topics as t
+    set post_count = c.posts, follower_count = c.followers
+    from (
+      select
+        target.id,
+        (select count(*) from post_topics pt join posts p on p.id = pt.post_id
+          where pt.topic_id = target.id and p.deleted_at is null)::int as posts,
+        (select count(*) from topic_follows tf where tf.topic_id = target.id)::int as followers
+      from unnest(${idArray(ids)}) as target(id)
+    ) as c
+    where t.id = c.id
+      and (t.post_count <> c.posts or t.follower_count <> c.followers)
   `)
 
   return result.rowCount ?? 0
@@ -189,7 +218,7 @@ export async function reconcileCounters({
     batchSize,
     table: users,
     idColumn: users.id,
-    fixBatch: fixUserFollowCounts,
+    fixBatch: fixUserCounts,
   })
 
   const fixedPosts = await reconcileTable({
@@ -208,5 +237,13 @@ export async function reconcileCounters({
     fixBatch: fixCommentCounts,
   })
 
-  return { users: fixedUsers, posts: fixedPosts, comments: fixedComments }
+  const fixedTopics = await reconcileTable({
+    db,
+    batchSize,
+    table: topics,
+    idColumn: topics.id,
+    fixBatch: fixTopicCounts,
+  })
+
+  return { users: fixedUsers, posts: fixedPosts, comments: fixedComments, topics: fixedTopics }
 }

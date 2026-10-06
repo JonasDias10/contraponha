@@ -1,5 +1,16 @@
 import { sql } from "drizzle-orm"
-import { check, index, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
+import {
+  boolean,
+  check,
+  date,
+  index,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core"
 
 export const userRole = pgEnum("user_role", ["member", "moderator", "admin"])
 
@@ -17,10 +28,21 @@ export const users = pgTable(
     handle: text().notNull().unique(USERS_HANDLE_UNIQUE),
     displayName: text().notNull(),
     bio: text(),
+    headline: text(),
+    location: text(),
+    website: text(),
+    pronouns: text(),
+    birthDate: date(),
     locale: text().notNull().default("pt-BR"),
+    timezone: text().notNull().default("America/Sao_Paulo"),
+    onboardedAt: timestamp({ withTimezone: true }),
     role: userRole().notNull().default("member"),
     followerCount: integer().notNull().default(0),
     followingCount: integer().notNull().default(0),
+    postCount: integer().notNull().default(0),
+    deletionScheduledAt: timestamp({ withTimezone: true }),
+    deleteContributions: boolean().notNull().default(false),
+    deletedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
@@ -34,8 +56,11 @@ export const users = pgTable(
     check("users_handle_format", sql`${table.handle} ~ '^[a-z0-9_]{3,30}$'`),
     check(
       "users_follow_counts_nonnegative",
-      sql`${table.followerCount} >= 0 and ${table.followingCount} >= 0`,
+      sql`${table.followerCount} >= 0 and ${table.followingCount} >= 0 and ${table.postCount} >= 0`,
     ),
+    index("users_deletion_scheduled_at_idx")
+      .on(table.deletionScheduledAt)
+      .where(sql`${table.deletionScheduledAt} is not null and ${table.deletedAt} is null`),
   ],
 )
 

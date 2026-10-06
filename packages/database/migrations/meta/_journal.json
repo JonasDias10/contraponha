@@ -29,6 +29,13 @@
       "when": 1791291841001,
       "tag": "0003_add_media_notifications_moderation_search",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791298731979,
+      "tag": "0004_add_web_mvp_domain",
+      "breakpoints": true
     }
   ]
 }
