@@ -1,5 +1,5 @@
 import { SUPPORTED_LOCALES } from "@ponto/i18n"
-import type { PrivateProfile, PublicProfile } from "@ponto/types"
+import { UserRole, type PrivateProfile, type PublicProfile } from "@ponto/types"
 import { z } from "zod"
 
 export const HANDLE_MIN_LENGTH = 3
@@ -57,4 +57,5 @@ export const privateProfileSchema = publicProfileSchema.extend({
   email: z.string(),
   isEmailVerified: z.boolean(),
   locale: localeSchema,
+  role: z.enum(UserRole),
 }) satisfies z.ZodType<PrivateProfile>

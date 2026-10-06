@@ -15,6 +15,8 @@ export const ApiErrorCode = {
   HANDLE_UNAVAILABLE: "HANDLE_UNAVAILABLE",
   EDIT_WINDOW_EXPIRED: "EDIT_WINDOW_EXPIRED",
   SELF_FOLLOW_NOT_ALLOWED: "SELF_FOLLOW_NOT_ALLOWED",
+  MEDIA_INVALID: "MEDIA_INVALID",
+  DUPLICATE_REPORT: "DUPLICATE_REPORT",
 } as const
 
 export type ApiErrorCode = (typeof ApiErrorCode)[keyof typeof ApiErrorCode]

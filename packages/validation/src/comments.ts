@@ -3,6 +3,7 @@ import type { CommentView } from "@ponto/types"
 import { z } from "zod"
 
 import { pageSchema } from "./pagination.js"
+import { contentRemovalSchema } from "./posts.js"
 import { reactionCountsSchema } from "./reactions.js"
 import { publicProfileSchema } from "./users.js"
 
@@ -27,6 +28,7 @@ export const commentViewSchema = z.object({
   author: publicProfileSchema.nullable(),
   body: z.string().nullable(),
   isDeleted: z.boolean(),
+  removedBy: contentRemovalSchema.nullable(),
   replyCount: z.number().int().nonnegative(),
   reactionCounts: reactionCountsSchema,
   createdAt: z.iso.datetime(),
