@@ -1,25 +1,56 @@
 import type { Metadata } from "next"
+import { Instrument_Sans, Literata } from "next/font/google"
 
+import { AppProviders } from "@/components/providers/app-providers"
 import { getRequestTranslator } from "@/lib/i18n"
+import { THEME_BOOT_SCRIPT } from "@/lib/theme"
 
 import "./globals.css"
 
+const literata = Literata({
+  subsets: ["latin"],
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  variable: "--font-literata",
+  display: "swap",
+})
+
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-instrument-sans",
+  display: "swap",
+})
+
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getRequestTranslator()
+
   return {
-    title: t("app.name"),
+    title: { default: t("app.name"), template: `%s · ${t("app.name")}` },
     description: t("app.tagline"),
   }
 }
 
+interface RootLayoutProps {
+  children: React.ReactNode
+}
+
 export default async function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>): Promise<React.JSX.Element> {
+}: RootLayoutProps): Promise<React.JSX.Element> {
   const { locale } = await getRequestTranslator()
 
   return (
-    <html lang={locale}>
-      <body className="min-h-dvh font-sans antialiased">{children}</body>
+    <html
+      lang={locale}
+      className={`${literata.variable} ${instrumentSans.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
+      <body className="min-h-dvh font-sans antialiased">
+        <AppProviders locale={locale}>{children}</AppProviders>
+      </body>
     </html>
   )
 }
