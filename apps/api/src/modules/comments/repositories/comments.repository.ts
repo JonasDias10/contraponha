@@ -6,6 +6,7 @@ import {
   type DatabaseExecutor,
   type ReactionKindValue,
 } from "@ponto/database"
+import type { ContentRemoval } from "@ponto/types"
 import { and, asc, eq, gt, isNull, or, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -43,6 +44,7 @@ export interface UpdateCommentBodyParams {
 
 export interface SoftDeleteCommentParams {
   id: string
+  removedBy: ContentRemoval
   executor?: DatabaseExecutor
 }
 
@@ -122,10 +124,14 @@ export class CommentsRepository {
     return comment
   }
 
-  async softDelete({ id, executor = this.db }: SoftDeleteCommentParams): Promise<boolean> {
+  async softDelete({
+    id,
+    removedBy,
+    executor = this.db,
+  }: SoftDeleteCommentParams): Promise<boolean> {
     const deleted = await executor
       .update(comments)
-      .set({ body: null, deletedAt: new Date() })
+      .set({ body: null, deletedAt: new Date(), removedBy })
       .where(and(eq(comments.id, id), isNull(comments.deletedAt)))
       .returning({ id: comments.id })
 

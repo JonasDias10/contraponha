@@ -5,11 +5,12 @@ import { PostCommentsController } from "#src/modules/comments/controllers/post-c
 import { CommentRevisionsRepository } from "#src/modules/comments/repositories/comment-revisions.repository.js"
 import { CommentsRepository } from "#src/modules/comments/repositories/comments.repository.js"
 import { CommentsService } from "#src/modules/comments/services/comments.service.js"
+import { NotificationsModule } from "#src/modules/notifications/notifications.module.js"
 import { PostsModule } from "#src/modules/posts/posts.module.js"
 import { UsersModule } from "#src/modules/users/users.module.js"
 
 @Module({
-  imports: [PostsModule, UsersModule],
+  imports: [PostsModule, UsersModule, NotificationsModule],
   controllers: [PostCommentsController, CommentsController],
   providers: [CommentsRepository, CommentRevisionsRepository, CommentsService],
   exports: [CommentsService],

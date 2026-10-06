@@ -1,8 +1,11 @@
 import { randomBytes } from "node:crypto"
 
-import type { AuthResponse } from "@ponto/types"
+import { createDatabaseConnection, users } from "@ponto/database"
+import type { AuthResponse, UserRole } from "@ponto/types"
 import { authResponseSchema } from "@ponto/validation"
+import { eq } from "drizzle-orm"
 import request from "supertest"
+import { inject } from "vitest"
 
 export type App = Parameters<typeof request>[0]
 
@@ -65,4 +68,19 @@ export async function login({ server, email, password }: LoginParams): Promise<s
 
 export function bearer(token: string): AuthorizationHeader {
   return { Authorization: `Bearer ${token}` }
+}
+
+export interface SetRoleParams {
+  userId: string
+  role: UserRole
+}
+
+export async function setRole({ userId, role }: SetRoleParams): Promise<void> {
+  const connection = createDatabaseConnection({ url: inject("testDatabaseUrl") })
+
+  try {
+    await connection.db.update(users).set({ role }).where(eq(users.id, userId))
+  } finally {
+    await connection.close()
+  }
 }

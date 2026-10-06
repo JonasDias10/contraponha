@@ -11,6 +11,7 @@ import {
   type FollowConnection,
   type ListFollowConnectionsParams,
 } from "#src/modules/follows/repositories/follows.repository.js"
+import { NotificationsService } from "#src/modules/notifications/services/notifications.service.js"
 import { toPublicProfile, type User } from "#src/modules/users/domain/user.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
@@ -42,6 +43,7 @@ export class FollowsService {
     @Inject(DATABASE) private readonly db: Database,
     private readonly followsRepository: FollowsRepository,
     private readonly usersService: UsersService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async follow({ followerId, handle }: FollowByHandleParams): Promise<void> {
@@ -58,14 +60,21 @@ export class FollowsService {
           executor: tx,
         })
 
-        if (isAdded) {
-          await this.usersService.adjustFollowCounts({
-            followerId,
-            followeeId: followee.id,
-            delta: 1,
-            executor: tx,
-          })
-        }
+        if (!isAdded) return
+
+        await this.usersService.adjustFollowCounts({
+          followerId,
+          followeeId: followee.id,
+          delta: 1,
+          executor: tx,
+        })
+
+        await this.notificationsService.notify({
+          recipientId: followee.id,
+          actorId: followerId,
+          type: "user_followed",
+          executor: tx,
+        })
       },
     })
   }

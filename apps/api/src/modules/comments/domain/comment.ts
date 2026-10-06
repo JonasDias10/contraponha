@@ -31,6 +31,7 @@ export function toCommentView({ comment, author }: ToCommentViewParams): Comment
     author: isDeleted || !author ? null : toPublicProfile(author),
     body: isDeleted ? null : comment.body,
     isDeleted,
+    removedBy: comment.removedBy,
     replyCount: comment.replyCount,
     reactionCounts: readReactionCounts(comment),
     createdAt: comment.createdAt.toISOString(),

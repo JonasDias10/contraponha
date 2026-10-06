@@ -14,6 +14,7 @@ import {
   type CreateUserData,
   type IncrementFollowCountsParams,
   type UpdateUserData,
+  type UpdateUserRoleParams,
 } from "#src/modules/users/repositories/users.repository.js"
 
 const ERROR_BY_CONSTRAINT: Record<string, ApiErrorCode> = {
@@ -97,5 +98,11 @@ export class UsersService {
 
   adjustFollowCounts(params: AdjustFollowCountsParams): Promise<void> {
     return this.usersRepository.incrementFollowCounts(params)
+  }
+
+  async changeRole({ id, role, executor }: UpdateUserRoleParams): Promise<void> {
+    const isUpdated = await this.usersRepository.updateRole({ id, role, executor })
+
+    if (!isUpdated) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
   }
 }

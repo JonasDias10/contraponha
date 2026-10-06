@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { users, type Database, type DatabaseExecutor, type NewUserRow } from "@ponto/database"
+import type { UserRole } from "@ponto/types"
 import { eq, inArray, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -12,6 +13,12 @@ export interface IncrementFollowCountsParams {
   followerId: string
   followeeId: string
   delta: 1 | -1
+  executor?: DatabaseExecutor
+}
+
+export interface UpdateUserRoleParams {
+  id: string
+  role: UserRole
   executor?: DatabaseExecutor
 }
 
@@ -90,5 +97,15 @@ export class UsersRepository {
 
     for (const update of updates)
       await executor.update(users).set(update.set).where(eq(users.id, update.id))
+  }
+
+  async updateRole({ id, role, executor = this.db }: UpdateUserRoleParams): Promise<boolean> {
+    const updated = await executor
+      .update(users)
+      .set({ role })
+      .where(eq(users.id, id))
+      .returning({ id: users.id })
+
+    return updated.length > 0
   }
 }

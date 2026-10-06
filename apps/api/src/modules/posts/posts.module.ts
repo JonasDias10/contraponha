@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common"
 
+import { MediaModule } from "#src/modules/media/media.module.js"
 import { UsersModule } from "#src/modules/users/users.module.js"
 
 import { PostsController } from "#src/modules/posts/controllers/posts.controller.js"
@@ -9,7 +10,7 @@ import { PostsRepository } from "#src/modules/posts/repositories/posts.repositor
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
 
 @Module({
-  imports: [UsersModule],
+  imports: [UsersModule, MediaModule],
   controllers: [PostsController, UserPostsController],
   providers: [PostsRepository, PostRevisionsRepository, PostsService],
   exports: [PostsService],
