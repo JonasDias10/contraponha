@@ -3,11 +3,9 @@
 import type { CommunityRule } from "@contraponha/types"
 import type { ContextNoteInput } from "@contraponha/validation"
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { errorMessage } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { errorMessage } from "../api-errors.js"
+import { useClient } from "./client-context.js"
 
 export interface RemoveContentChange {
   targetType: "post" | "comment"
@@ -21,8 +19,7 @@ export interface ContextNoteChange {
 }
 
 export function useRemoveContentMutation(): UseMutationResult<void, Error, RemoveContentChange> {
-  const api = useApi()
-  const { t } = useI18n()
+  const { api, t, notify } = useClient()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -30,15 +27,14 @@ export function useRemoveContentMutation(): UseMutationResult<void, Error, Remov
       targetType === "post"
         ? api.moderation.removePost({ targetId, input: { rule } })
         : api.moderation.removeComment({ targetId, input: { rule } }),
-    onSuccess: () => toast.success(t("web.moderation.removed")),
-    onError: (error) => toast.error(errorMessage({ error, t })),
+    onSuccess: () => notify.success(t("web.moderation.removed")),
+    onError: (error) => notify.error(errorMessage({ error, t })),
     onSettled: () => queryClient.invalidateQueries(),
   })
 }
 
 export function useContextNoteMutation(): UseMutationResult<void, Error, ContextNoteChange> {
-  const api = useApi()
-  const { t } = useI18n()
+  const { api, t, notify } = useClient()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -51,8 +47,8 @@ export function useContextNoteMutation(): UseMutationResult<void, Error, Context
 
       await api.moderation.setContextNote({ postId, input })
     },
-    onSuccess: () => toast.success(t("web.moderation.contextSaved")),
-    onError: (error) => toast.error(errorMessage({ error, t })),
+    onSuccess: () => notify.success(t("web.moderation.contextSaved")),
+    onError: (error) => notify.error(errorMessage({ error, t })),
     onSettled: () => queryClient.invalidateQueries(),
   })
 }

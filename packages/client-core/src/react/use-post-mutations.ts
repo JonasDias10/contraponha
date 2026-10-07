@@ -1,11 +1,10 @@
 "use client"
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { errorMessage, queryKeys } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { errorMessage } from "../api-errors.js"
+import { queryKeys } from "../query-keys.js"
+import { useClient } from "./client-context.js"
 
 export interface BookmarkChange {
   postId: string
@@ -34,40 +33,37 @@ function useRefreshPostLists(): (postId: string) => Promise<void> {
 }
 
 export function useBookmarkMutation(): UseMutationResult<void, Error, BookmarkChange> {
-  const api = useApi()
-  const { t } = useI18n()
+  const { api, t, notify } = useClient()
   const refresh = useRefreshPostLists()
 
   return useMutation({
     mutationFn: ({ postId, isSaving }: BookmarkChange) =>
       isSaving ? api.posts.bookmark(postId) : api.posts.removeBookmark(postId),
-    onError: (error) => toast.error(errorMessage({ error, t })),
+    onError: (error) => notify.error(errorMessage({ error, t })),
     onSettled: (_data, _error, { postId }) => refresh(postId),
   })
 }
 
 export function usePinMutation(): UseMutationResult<void, Error, PinChange> {
-  const api = useApi()
-  const { t } = useI18n()
+  const { api, t, notify } = useClient()
   const refresh = useRefreshPostLists()
 
   return useMutation({
     mutationFn: ({ postId, isPinning }: PinChange) =>
       isPinning ? api.posts.pin(postId) : api.posts.unpin(postId),
-    onError: (error) => toast.error(errorMessage({ error, t })),
+    onError: (error) => notify.error(errorMessage({ error, t })),
     onSettled: (_data, _error, { postId }) => refresh(postId),
   })
 }
 
 export function useDeletePostMutation(): UseMutationResult<void, Error, string> {
-  const api = useApi()
-  const { t } = useI18n()
+  const { api, t, notify } = useClient()
   const refresh = useRefreshPostLists()
 
   return useMutation({
     mutationFn: (postId: string) => api.posts.delete(postId),
-    onSuccess: () => toast.success(t("web.post.deleted")),
-    onError: (error) => toast.error(errorMessage({ error, t })),
+    onSuccess: () => notify.success(t("web.post.deleted")),
+    onError: (error) => notify.error(errorMessage({ error, t })),
     onSettled: (_data, _error, postId) => refresh(postId),
   })
 }

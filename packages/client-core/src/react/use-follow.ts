@@ -1,11 +1,10 @@
 "use client"
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { errorMessage, queryKeys } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { errorMessage } from "../api-errors.js"
+import { queryKeys } from "../query-keys.js"
+import { useClient } from "./client-context.js"
 
 export interface FollowChange {
   handle: string
@@ -13,14 +12,13 @@ export interface FollowChange {
 }
 
 export function useFollowMutation(): UseMutationResult<void, Error, FollowChange> {
-  const api = useApi()
-  const { t } = useI18n()
+  const { api, t, notify } = useClient()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ handle, isFollowing }: FollowChange) =>
       isFollowing ? api.follows.follow(handle) : api.follows.unfollow(handle),
-    onError: (error) => toast.error(errorMessage({ error, t })),
+    onError: (error) => notify.error(errorMessage({ error, t })),
     onSettled: (_data, _error, { handle }) =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.profile(handle) }),

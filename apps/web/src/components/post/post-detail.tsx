@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { formatDateTime, queryKeys, readingMinutes } from "@contraponha/client-core"
+import { useBookmarkMutation, useReactions } from "@contraponha/client-core/react"
 
 import { Discussion } from "@/components/discussion/discussion"
 import { AuthorLine } from "@/components/post/author-line"
@@ -23,8 +24,6 @@ import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { Button } from "@/components/ui/button"
 import { Banner } from "@/components/ui/surfaces"
-import { useBookmarkMutation } from "@/hooks/use-post-mutations"
-import { useReactions } from "@/hooks/use-reactions"
 import { cn } from "@/lib/cn"
 
 export interface PostDetailProps {

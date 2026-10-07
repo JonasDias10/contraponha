@@ -4,11 +4,10 @@ import { REACTIONS_PER_TARGET_MAX } from "@contraponha/config"
 import type { ReactionCounts, ReactionKind, ReactionTargetType } from "@contraponha/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { toast } from "sonner"
-import { errorMessage, queryKeys } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { errorMessage } from "../api-errors.js"
+import { queryKeys } from "../query-keys.js"
+import { useClient } from "./client-context.js"
 
 export interface UseReactionsParams {
   targetType: ReactionTargetType
@@ -38,8 +37,7 @@ export function useReactions({
   initialReactions,
   initialCounts,
 }: UseReactionsParams): ReactionsState {
-  const api = useApi()
-  const { t } = useI18n()
+  const { api, t, notify } = useClient()
   const queryClient = useQueryClient()
   const [reactions, setReactions] = useState(initialReactions)
   const [counts, setCounts] = useState(initialCounts)
@@ -54,7 +52,7 @@ export function useReactions({
 
       setCounts(initialCounts)
 
-      toast.error(errorMessage({ error, t }))
+      notify.error(errorMessage({ error, t }))
     },
     onSettled: () =>
       Promise.all([
@@ -69,7 +67,7 @@ export function useReactions({
     const isAdding = !reactions.includes(kind)
 
     if (isAdding && isLimitReached) {
-      toast(t("web.reactions.limit"))
+      notify.show(t("web.reactions.limit"))
 
       return
     }
