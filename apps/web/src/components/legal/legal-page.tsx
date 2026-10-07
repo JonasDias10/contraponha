@@ -1,8 +1,8 @@
 import { LEGAL_DOCUMENT_VERSIONS } from "@contraponha/config"
 import type { Metadata } from "next"
+import { formatDate } from "@contraponha/client-core"
 
 import { LegalDocument } from "@/components/legal/legal-document"
-import { formatDate } from "@/lib/format"
 import { getRequestTranslator } from "@/lib/i18n"
 import { loadLegalDocument, type LegalPage } from "@/lib/legal"
 

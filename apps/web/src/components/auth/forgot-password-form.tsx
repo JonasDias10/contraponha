@@ -7,13 +7,13 @@ import {
 } from "@contraponha/validation"
 import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
+import { errorMessage } from "@contraponha/client-core"
 
 import { FormBanner } from "@/components/auth/form-banner"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/field"
-import { errorMessage } from "@/lib/api-errors"
 
 // Always answers the same way, so the form never reveals whether an account exists.
 export function ForgotPasswordForm(): React.JSX.Element {

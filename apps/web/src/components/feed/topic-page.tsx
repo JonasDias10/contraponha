@@ -3,16 +3,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Hash } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { queryKeys, topicLabel, topicMeta } from "@contraponha/client-core"
 
 import { FeedList } from "@/components/feed/feed-list"
-import { topicLabel } from "@/components/post/topic-tags"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
-import { topicMeta } from "@/components/topics/topic-meta"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { Button } from "@/components/ui/button"
 import { Card, EmptyState } from "@/components/ui/surfaces"
-import { queryKeys } from "@/lib/query-keys"
 
 export interface TopicPageProps {
   slug: string

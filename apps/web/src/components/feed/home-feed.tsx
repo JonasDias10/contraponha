@@ -3,6 +3,7 @@
 import { Bookmark, Compass, Search, Sunrise } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
+import { queryKeys } from "@contraponha/client-core"
 
 import { FeedList } from "@/components/feed/feed-list"
 import { useApi } from "@/components/providers/app-providers"
@@ -11,7 +12,6 @@ import { useViewer } from "@/components/providers/viewer-provider"
 import { Button } from "@/components/ui/button"
 import { Segmented, SegmentedList, SegmentedItem } from "@/components/ui/controls"
 import { Card, EmptyState } from "@/components/ui/surfaces"
-import { queryKeys } from "@/lib/query-keys"
 
 export type HomeTab = "following" | "discover"
 

@@ -8,5 +8,5 @@
     },
     "types": ["expo/types"]
   },
-  "include": ["src", ".expo/types/**/*.ts"]
+  "include": ["src", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

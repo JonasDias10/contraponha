@@ -112,6 +112,7 @@ jobs:
     env:
       API_URL: http://localhost:3000
       EXPO_PUBLIC_API_URL: http://localhost:3000
+      EXPO_PUBLIC_WEB_URL: http://localhost:3001
 
     steps:
       - uses: actions/checkout@v7

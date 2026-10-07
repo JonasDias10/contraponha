@@ -5,9 +5,6 @@ import { CalendarDays } from "lucide-react"
 import { useRef, useState } from "react"
 import { DayPicker } from "react-day-picker"
 import { enUS, es, ptBR } from "react-day-picker/locale"
-
-import { Input } from "@/components/ui/field"
-import { useI18n } from "@/components/providers/i18n-provider"
 import {
   dateFromIso,
   dateOrderFor,
@@ -15,7 +12,10 @@ import {
   isoFromDate,
   maskDateInput,
   parseDateInput,
-} from "@/lib/date-input"
+} from "@contraponha/client-core"
+
+import { Input } from "@/components/ui/field"
+import { useI18n } from "@/components/providers/i18n-provider"
 
 const CALENDAR_LOCALES = { "pt-BR": ptBR, en: enUS, es }
 

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
+import { passwordStrength } from "@contraponha/client-core"
 
 import { signUp } from "@/actions/auth"
 import { FormBanner } from "@/components/auth/form-banner"
@@ -19,7 +20,6 @@ import { Checkbox } from "@/components/ui/controls"
 import { DatePicker } from "@/components/ui/date-picker"
 import { Field, Input } from "@/components/ui/field"
 import { cn } from "@/lib/cn"
-import { passwordStrength } from "@/lib/password-strength"
 
 // The checkbox starts unchecked, so the form holds a boolean and the shared schema's
 // literal true is checked on submit.

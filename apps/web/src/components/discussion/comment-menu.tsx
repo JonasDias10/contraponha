@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Flag, MoreHorizontal, ShieldX, Star, StarOff, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { canModerate, errorMessage, queryKeys } from "@contraponha/client-core"
+import { useRemoveContentMutation } from "@contraponha/client-core/react"
 
 import { commentActionClasses } from "@/components/discussion/comment-actions"
 import { HighlightDialog } from "@/components/discussion/highlight-dialog"
@@ -15,11 +17,7 @@ import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
-import { useRemoveContentMutation } from "@/hooks/use-moderation"
-import { errorMessage } from "@/lib/api-errors"
 import { cn } from "@/lib/cn"
-import { queryKeys } from "@/lib/query-keys"
-import { canModerate } from "@/lib/roles"
 
 const EXCERPT_LENGTH = 200
 

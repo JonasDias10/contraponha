@@ -3,13 +3,13 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { cache } from "react"
+import { queryKeys } from "@contraponha/client-core"
 
 import { HomeRail } from "@/components/feed/home-rail"
 import { TopicPage } from "@/components/feed/topic-page"
 import { AppShell } from "@/components/layout/app-shell"
 import { createServerApiClient } from "@/lib/api"
 import { getRequestTranslator } from "@/lib/i18n"
-import { queryKeys } from "@/lib/query-keys"
 import { getServerQueryClient } from "@/lib/server-query"
 
 const loadTopic = cache(async (slug: string) => {

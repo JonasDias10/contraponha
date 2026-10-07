@@ -1,6 +1,7 @@
 "use client"
 
-import { SUPPORTED_LOCALES, type Locale } from "@contraponha/i18n"
+import { LOCALE_NAMES } from "@contraponha/client-core"
+import { SUPPORTED_LOCALES } from "@contraponha/i18n"
 import { Globe, Monitor, Moon, Sun } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"
@@ -9,12 +10,6 @@ import { changeLocale } from "@/actions/preferences"
 import { useIsClient } from "@/hooks/use-is-client"
 import { useTheme } from "@/hooks/use-theme"
 import { useI18n } from "@/components/providers/i18n-provider"
-
-const LOCALE_NAMES: Record<Locale, string> = {
-  "pt-BR": "Português (Brasil)",
-  en: "English",
-  es: "Español",
-}
 
 export function LocaleSwitcher(): React.JSX.Element {
   const { locale, t } = useI18n()

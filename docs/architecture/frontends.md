@@ -10,9 +10,19 @@ Os dois clientes do Contraponha compartilham contrato, traduções e cliente HTT
 | Tipos de resposta e erro     | `@contraponha/types`, validados por `@contraponha/validation` |
 | Textos de interface          | `@contraponha/i18n` (namespace `app` e outros)                |
 | Validar env na inicialização | `@contraponha/config` (`parseEnv`)                            |
+| Lógica de cliente            | `@contraponha/client-core` e `@contraponha/client-core/react` |
 | Regras de lint e TypeScript  | `@contraponha/eslint-config`, `@contraponha/tsconfig`         |
 
-Regra prática: se a mesma lógica aparece no web e no mobile, ela sobe para um pacote. Exemplo atual: "a API está disponível?" é `health.isReady()` no `@contraponha/api-client`, e não um `try/catch` repetido em cada app.
+Regra prática: se a mesma lógica aparece no web e no mobile, ela sobe para um pacote. Exemplo: "a API está disponível?" é `health.isReady()` no `@contraponha/api-client`, e não um `try/catch` repetido em cada app.
+
+### `@contraponha/client-core`
+
+Tudo que os dois clientes fazem igual e não depende de plataforma:
+
+- **`@contraponha/client-core`** (funções puras, seguras em Server Components): chaves do TanStack Query, regra de retry, formatação de datas e números, força de senha, máscara de data, janela de edição, textos de notificação e de reconhecimento, montagem do histórico de versões, schemas de formulário (compositor, perfil), filtros de busca, preferências de notificação e nomes dos idiomas.
+- **`@contraponha/client-core/react`** (`"use client"`): hooks com mutations otimistas e invalidações (reações, salvar, fixar, excluir, seguir, preferências de notificação, interesses, onboarding, moderação). Eles leem a API, o tradutor e o toast de um `ClientContext` que cada app fornece; o web usa `sonner`, o mobile um toast nativo.
+
+Os dois pontos de entrada existem porque o barrel puro é importado por Server Components do web, que não podem carregar `createContext` nem hooks.
 
 Componentes visuais **não** são compartilhados. Web usa HTML + Tailwind e mobile usa componentes nativos + `StyleSheet`. Um pacote de UI compartilhado só faz sentido se, no futuro, adotarmos uma solução que renderize nos dois (por exemplo, React Native Web), e essa decisão ainda não foi tomada. O que é compartilhado visualmente são os **tokens semânticos** (cores, fontes, raios e elevação), hoje definidos em `globals.css` (web) e `src/lib/theme.ts` (mobile) com os mesmos valores. Valores, regras de uso e justificativas estão em [docs/design/design-system.md](../design/design-system.md).
 
@@ -80,26 +90,46 @@ apps/web/
 ```text
 apps/mobile/
 ├── app.json                     Nome, scheme, bundle id, plugins
-├── .env.example                 EXPO_PUBLIC_API_URL
+├── .env.example                 EXPO_PUBLIC_API_URL, EXPO_PUBLIC_WEB_URL
 └── src/
     ├── app/                     Expo Router (rotas por arquivo)
-    │   ├── _layout.tsx          Stack de navegação
-    │   └── index.tsx            Tela inicial
-    ├── components/
-    ├── hooks/
-    │   ├── use-api-readiness.ts Status da API com timeout e cancelamento
-    │   └── use-translator.ts    Idioma do aparelho (expo-localization) -> t()
+    │   ├── _layout.tsx          Fontes, providers e guardas de sessão (Stack.Protected)
+    │   ├── (auth)/              Boas-vindas, entrar, criar conta, esqueci a senha
+    │   ├── onboarding.tsx       Interesses e sugestões de pessoas
+    │   ├── reset-password.tsx   Link de redefinição (contraponha://reset-password?token=)
+    │   ├── verify-email.tsx     Link de confirmação de e-mail
+    │   └── (app)/               Abas (início, busca, escrever, notificações, perfil), post,
+    │                            histórico, edição, perfis, seguidores, tópicos, salvos,
+    │                            configurações e moderação
+    ├── components/              Componentes nativos por área (post, discussion, composer, ui...)
+    ├── hooks/                   Paleta do tema, upload de imagens, rascunho no aparelho
+    ├── providers/               Preferências, sessão, idioma, toast e ClientContext
     └── lib/
-        ├── api.ts               createMobileApiClient(locale)
-        ├── env.ts               Validação do env do mobile
-        └── theme.ts             Paletas clara/escura
+        ├── polyfills.ts         Intl (plural, tempo relativo) e métodos de array que o Hermes não tem
+        ├── session-token.ts     Token da sessão em memória, lido pelo cliente da API
+        ├── storage.ts           expo-secure-store (token, tema, idioma)
+        ├── paths.ts             Rotas tipadas e links de compartilhamento
+        └── theme.ts             Tokens: paletas, tipografia, espaço, raio
 ```
 
-- **Expo Router** organiza as telas por arquivo, como o App Router do web. Rotas tipadas estão ligadas (`experiments.typedRoutes`).
-- **Idioma do aparelho.** `useTranslator()` lê as preferências do sistema com `expo-localization`, negocia com `negotiateLocale` e reage a mudanças de idioma.
+- **Sessão.** O app chama a API direto com `Authorization: Bearer`. O token fica no `expo-secure-store` (Keychain no iOS, Keystore no Android) e em memória durante o uso. Uma resposta 401 a uma requisição autenticada encerra a sessão local e volta para a tela de entrada.
+- **Navegação.** `Stack.Protected` separa quem não entrou, quem precisa concluir o onboarding e quem já está no app; não há redirecionamento manual.
+- **Dados.** TanStack Query com as mesmas chaves e hooks de `@contraponha/client-core`, refetch ao voltar para o primeiro plano (`focusManager` + `AppState`) e listas com rolagem infinita e puxar para atualizar.
+- **Idioma.** Escolha feita no app, depois o idioma da conta, depois o do aparelho. Trocar o idioma no app também atualiza a conta, para os e-mails seguirem. Os textos reaproveitam o namespace `web` de `@contraponha/i18n`.
+- **Tema.** Automático, claro ou escuro, guardado no aparelho.
+- **Markdown.** O corpo dos posts é escrito em Markdown com uma barra de formatação e prévia; a renderização usa o lexer do `marked` e componentes nativos, com o mesmo subconjunto do web (sem HTML bruto, links só `http(s)` e `mailto`).
+- **Imagens.** `expo-image-picker` escolhe as fotos e o upload vai direto para o storage pela URL pré-assinada, como no web.
+- **Rascunho.** O compositor salva o rascunho no aparelho (`AsyncStorage`), validado pelo mesmo schema antes de restaurar.
+- **Textos legais** abrem no navegador do sistema a partir de `EXPO_PUBLIC_WEB_URL`, que também monta os links de compartilhamento.
 - **Variáveis `EXPO_PUBLIC_*` são embutidas no bundle** e, portanto, públicas. Nunca coloque segredos nelas.
-- **Projetos nativos gerados (CNG).** `ios/` e `android/` não são versionados; o Expo os gera a partir do `app.json` e dos plugins. Configuração nativa entra via config plugins.
+- **Projetos nativos gerados (CNG).** `ios/` e `android/` não são versionados; o Expo os gera a partir do `app.json` e dos plugins.
 - O `bundleIdentifier`/`package` (`app.contraponha.mobile`) deve ser trocado pelo identificador definitivo antes da primeira publicação nas lojas.
+
+### Rodando localmente
+
+- `pnpm dev` na raiz sobe API e web; `pnpm --filter @contraponha/mobile dev` sobe o Metro.
+- iOS: simulador com Expo Go (`i` no terminal do Expo). Android: emulador com Expo Go; rode `adb reverse tcp:3000 tcp:3000` (e `3001`, `9000`) para `localhost` funcionar de dentro do emulador, ou use `http://10.0.2.2:3000` no `.env`.
+- Links de e-mail (confirmação, redefinição) apontam para o web; o app também aceita os mesmos caminhos pelo scheme `contraponha://` e passará a abrir os links `https` quando os universal links/app links forem configurados para o domínio de produção.
 
 ### Builds
 
@@ -109,9 +139,9 @@ apps/mobile/
 ## Fluxo de dados nos clientes
 
 - web: TanStack Query, com prefetch no servidor (seção acima);
-- mobile: por enquanto só o status da API, num hook com `useEffect`, timeout de 3s e cancelamento ao desmontar. Quando o app consumir feed e perfis, a recomendação é adotar o mesmo TanStack Query sobre `@contraponha/api-client`.
+- mobile: o mesmo TanStack Query, sem prefetch no servidor; os dados chegam no primeiro render de cada tela, com estados de carregamento, erro e vazio.
 
 ## Testes
 
-- **web:** Vitest para funções puras de `lib/` (formatação, edição de markdown, força de senha) e para a montagem de textos de notificação. Fluxos completos são cobertos pelos testes e2e da API.
+- **client-core:** Vitest para as funções puras compartilhadas (formatação, força de senha, máscara de data, textos de notificação). Fluxos completos são cobertos pelos testes e2e da API.
 - **mobile:** ainda sem testes próprios; a base será Jest (`jest-expo`) + React Native Testing Library.

@@ -1,9 +1,9 @@
 import "server-only"
 
 import type { PrivateProfile } from "@contraponha/types"
+import { canModerate } from "@contraponha/client-core"
 import { notFound } from "next/navigation"
 
-import { canModerate } from "./roles"
 import { requireViewer } from "./viewer"
 
 // Moderation pages do not exist for members; the API enforces the same rule on every call.

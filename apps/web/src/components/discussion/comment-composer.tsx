@@ -9,6 +9,7 @@ import { useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -17,8 +18,6 @@ import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input, Textarea } from "@/components/ui/field"
 import { Card } from "@/components/ui/surfaces"
-import { errorMessage } from "@/lib/api-errors"
-import { queryKeys } from "@/lib/query-keys"
 
 const commentFormSchema = z.object({
   body: commentBodySchema,

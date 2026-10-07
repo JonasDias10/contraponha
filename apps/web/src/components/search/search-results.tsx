@@ -1,49 +1,31 @@
 "use client"
 
-import type { ContentSearchQuery } from "@contraponha/validation"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { Hash, Search, X } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import {
+  queryKeys,
+  SEARCH_TABS,
+  toContentSearchQuery,
+  topicLabel,
+  topicMeta,
+} from "@contraponha/client-core"
 
 import { ContributionCard } from "@/components/discussion/contribution-card"
 import { PostCardSkeleton } from "@/components/feed/feed-list"
 import { PostCard } from "@/components/post/post-card"
-import { topicLabel } from "@/components/post/topic-tags"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
-import { topicMeta } from "@/components/topics/topic-meta"
-import {
-  SEARCH_TABS,
-  useSearchState,
-  type SearchState,
-} from "@/components/search/use-search-params-state"
+import { useSearchState, type SearchState } from "@/components/search/use-search-params-state"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, EmptyState } from "@/components/ui/surfaces"
 import { cn } from "@/lib/cn"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 const PREVIEW_PEOPLE = 3
-
-interface ToQueryParams {
-  state: SearchState
-  cursor: string | undefined
-}
-
-function toQuery({ state, cursor }: ToQueryParams): ContentSearchQuery {
-  return {
-    q: state.q,
-    cursor,
-    sort: state.sort,
-    period: state.period,
-    hasSource: state.hasSource ? "true" : undefined,
-    followingOnly: state.followingOnly ? "true" : undefined,
-    hasHighlights: state.hasHighlights ? "true" : undefined,
-  }
-}
 
 export function SearchResults(): React.JSX.Element {
   const { t } = useI18n()
@@ -181,7 +163,8 @@ function PostResults({ state }: ResultsProps): React.JSX.Element {
 
   const query = useInfiniteQuery({
     queryKey: queryKeys.search.posts(state),
-    queryFn: ({ pageParam }) => api.search.posts(toQuery({ state, cursor: pageParam })),
+    queryFn: ({ pageParam }) =>
+      api.search.posts(toContentSearchQuery({ key: state, cursor: pageParam })),
     initialPageParam: FIRST_PAGE,
     getNextPageParam: (page) => page.nextCursor ?? undefined,
   })
@@ -222,7 +205,8 @@ function ContributionResults({ state }: ResultsProps): React.JSX.Element {
 
   const query = useInfiniteQuery({
     queryKey: queryKeys.search.contributions(state),
-    queryFn: ({ pageParam }) => api.search.contributions(toQuery({ state, cursor: pageParam })),
+    queryFn: ({ pageParam }) =>
+      api.search.contributions(toContentSearchQuery({ key: state, cursor: pageParam })),
     initialPageParam: FIRST_PAGE,
     getNextPageParam: (page) => page.nextCursor ?? undefined,
   })

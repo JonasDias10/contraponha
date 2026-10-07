@@ -1,11 +1,12 @@
 "use client"
 
 import { ReportStatus, type CommunityRule, type ReportView } from "@contraponha/types"
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { Inbox } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-import { toast } from "sonner"
+import { queryKeys } from "@contraponha/client-core"
+import { useResolveReportMutation } from "@contraponha/client-core/react"
 
 import { RelativeTime } from "@/components/post/relative-time"
 import { RuleSelect } from "@/components/post/rule-select"
@@ -16,9 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
 import { Field, Input } from "@/components/ui/field"
 import { Card, EmptyState, Panel } from "@/components/ui/surfaces"
-import { errorMessage } from "@/lib/api-errors"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 
@@ -88,31 +87,11 @@ interface ReportCardProps {
   report: ReportView
 }
 
-interface Resolution {
-  resolution: "remove_content" | "dismiss"
-}
-
 function ReportCard({ report }: ReportCardProps): React.JSX.Element {
   const { t } = useI18n()
-  const api = useApi()
-  const queryClient = useQueryClient()
   const [rule, setRule] = useState<CommunityRule>()
   const [note, setNote] = useState("")
-
-  const resolve = useMutation({
-    mutationFn: ({ resolution }: Resolution) =>
-      api.moderation.resolveReport({
-        reportId: report.id,
-        input: {
-          resolution,
-          rule: resolution === "remove_content" ? rule : undefined,
-          note: note.trim() || undefined,
-        },
-      }),
-    onSuccess: () => toast.success(t("web.moderation.resolvedToast")),
-    onError: (error) => toast.error(errorMessage({ error, t })),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["moderation"] }),
-  })
+  const resolve = useResolveReportMutation()
 
   const target =
     report.targetType === "post"
@@ -164,7 +143,9 @@ function ReportCard({ report }: ReportCardProps): React.JSX.Element {
             <Button
               variant="secondary"
               isLoading={resolve.isPending}
-              onClick={() => resolve.mutate({ resolution: "dismiss" })}
+              onClick={() =>
+                resolve.mutate({ reportId: report.id, resolution: "dismiss", rule, note })
+              }
             >
               {t("web.moderation.dismiss")}
             </Button>
@@ -173,7 +154,9 @@ function ReportCard({ report }: ReportCardProps): React.JSX.Element {
                 variant="danger"
                 disabled={!rule}
                 isLoading={resolve.isPending}
-                onClick={() => resolve.mutate({ resolution: "remove_content" })}
+                onClick={() =>
+                  resolve.mutate({ reportId: report.id, resolution: "remove_content", rule, note })
+                }
               >
                 {t("web.moderation.removeContent")}
               </Button>

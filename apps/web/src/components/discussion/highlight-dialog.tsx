@@ -4,14 +4,13 @@ import { HIGHLIGHT_NOTE_MAX_LENGTH } from "@contraponha/config"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { toast } from "sonner"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Field, Input } from "@/components/ui/field"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/overlays"
-import { errorMessage } from "@/lib/api-errors"
-import { queryKeys } from "@/lib/query-keys"
 
 export interface HighlightDialogProps {
   commentId: string

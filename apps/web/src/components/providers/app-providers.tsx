@@ -3,13 +3,14 @@
 import type { ApiClient } from "@contraponha/api-client"
 import type { Locale } from "@contraponha/i18n"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { createContext, useContext, useState } from "react"
-import { Toaster } from "sonner"
+import { createContext, useContext, useMemo, useState } from "react"
+import { isRetryable } from "@contraponha/client-core"
+import { ClientContext } from "@contraponha/client-core/react"
+import { toast, Toaster } from "sonner"
 
 import { createBrowserApiClient } from "@/lib/api-browser"
-import { isRetryable } from "@/lib/query"
 
-import { I18nProvider } from "./i18n-provider"
+import { I18nProvider, useI18n } from "./i18n-provider"
 
 const ApiContext = createContext<ApiClient | null>(null)
 
@@ -36,12 +37,30 @@ export function AppProviders({ locale, children }: AppProvidersProps): React.JSX
     <I18nProvider locale={locale}>
       <ApiContext value={api}>
         <QueryClientProvider client={queryClient}>
-          {children}
+          <ClientBridge api={api}>{children}</ClientBridge>
           <Toaster position="bottom-center" toastOptions={{ duration: 4000 }} />
         </QueryClientProvider>
       </ApiContext>
     </I18nProvider>
   )
+}
+
+const NOTIFY = {
+  show: (message: string) => toast(message),
+  success: (message: string) => toast.success(message),
+  error: (message: string) => toast.error(message),
+}
+
+interface ClientBridgeProps {
+  api: ApiClient
+  children: React.ReactNode
+}
+
+function ClientBridge({ api, children }: ClientBridgeProps): React.JSX.Element {
+  const { t } = useI18n()
+  const value = useMemo(() => ({ api, t, notify: NOTIFY }), [api, t])
+
+  return <ClientContext value={value}>{children}</ClientContext>
 }
 
 export function useApi(): ApiClient {

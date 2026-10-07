@@ -1,6 +1,7 @@
 import { CircleCheck, History, ShieldCheck, Star, Sunrise, X } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { REACTION_ORDER } from "@contraponha/client-core"
 
 import { Logo } from "@/components/brand/logo"
 import { Chip } from "@/components/ui/badges"
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/surfaces"
 import { cn } from "@/lib/cn"
 import { getRequestTranslator } from "@/lib/i18n"
-import { REACTION_ICONS, REACTION_ORDER } from "@/lib/reactions"
+import { REACTION_ICONS } from "@/lib/reactions"
 import { getViewer } from "@/lib/viewer"
 
 export default async function LandingPage(): Promise<React.JSX.Element> {

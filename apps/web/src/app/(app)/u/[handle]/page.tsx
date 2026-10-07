@@ -1,13 +1,13 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import type { Metadata } from "next"
 import { Suspense } from "react"
+import { queryKeys } from "@contraponha/client-core"
 
 import { AppShell } from "@/components/layout/app-shell"
 import { ProfileHeader } from "@/components/profile/profile-header"
 import { ProfileRail } from "@/components/profile/profile-rail"
 import { ProfileTabs } from "@/components/profile/profile-tabs"
 import { loadProfile } from "@/lib/load-profile"
-import { queryKeys } from "@/lib/query-keys"
 import { getServerQueryClient } from "@/lib/server-query"
 
 export async function generateMetadata({ params }: PageProps<"/u/[handle]">): Promise<Metadata> {

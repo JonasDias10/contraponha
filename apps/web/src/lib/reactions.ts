@@ -7,10 +7,3 @@ export const REACTION_ICONS: Record<ReactionKind, LucideIcon> = {
   [ReactionKind.CHANGED_MY_MIND]: RefreshCw,
   [ReactionKind.NEEDS_SOURCE]: BookText,
 }
-
-export const REACTION_ORDER = [
-  ReactionKind.GOOD_ARGUMENT,
-  ReactionKind.INSIGHTFUL,
-  ReactionKind.CHANGED_MY_MIND,
-  ReactionKind.NEEDS_SOURCE,
-] as const

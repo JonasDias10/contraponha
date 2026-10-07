@@ -2,8 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
+import { queryKeys, topicLabel } from "@contraponha/client-core"
 
-import { topicLabel } from "@/components/post/topic-tags"
 import { FollowButton } from "@/components/profile/follow-button"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -12,7 +12,6 @@ import { Avatar } from "@/components/ui/avatar"
 import { tagVariants } from "@/components/ui/badges"
 import { Card } from "@/components/ui/surfaces"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 export interface ProfileRailProps {
   handle: string

@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
+import { errorMessage } from "@contraponha/client-core"
 
 import { FormBanner } from "@/components/auth/form-banner"
 import { PasswordInput } from "@/components/auth/password-input"
@@ -13,7 +14,6 @@ import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
-import { errorMessage } from "@/lib/api-errors"
 
 const resetPasswordFormSchema = resetPasswordInputSchema.pick({ newPassword: true })
 

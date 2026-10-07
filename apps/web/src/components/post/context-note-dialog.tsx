@@ -5,12 +5,12 @@ import type { PostView } from "@contraponha/types"
 import { contextNoteInputSchema, httpUrlSchema } from "@contraponha/validation"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useContextNoteMutation } from "@contraponha/client-core/react"
 
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Field, Input, Textarea } from "@/components/ui/field"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/overlays"
-import { useContextNoteMutation } from "@/hooks/use-moderation"
 
 const contextNoteFormSchema = contextNoteInputSchema.pick({ body: true }).extend({
   sourceUrl: z.union([httpUrlSchema, z.literal("")]),

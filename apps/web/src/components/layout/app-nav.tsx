@@ -16,6 +16,8 @@ import {
 import type { Route } from "next"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { canModerate } from "@contraponha/client-core"
+import { useUnreadCount } from "@contraponha/client-core/react"
 
 import { signOut } from "@/actions/auth"
 import { Logo } from "@/components/brand/logo"
@@ -24,9 +26,7 @@ import { useViewer } from "@/components/providers/viewer-provider"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
-import { useUnreadCount } from "@/hooks/use-unread-count"
 import { cn } from "@/lib/cn"
-import { canModerate } from "@/lib/roles"
 import { paths } from "@/lib/paths"
 
 interface NavItem {
@@ -71,7 +71,7 @@ export function SideNav(): React.JSX.Element {
   const { t } = useI18n()
   const viewer = useViewer()
   const pathname = usePathname()
-  const unread = useUnreadCount()
+  const unread = useUnreadCount({ isEnabled: viewer !== null })
   const isModerator = canModerate(viewer)
   const items = navItems(viewer?.handle).filter(({ isSignedInOnly }) => viewer || !isSignedInOnly)
 
@@ -187,7 +187,7 @@ export function BottomNav(): React.JSX.Element {
   const { t } = useI18n()
   const viewer = useViewer()
   const pathname = usePathname()
-  const unread = useUnreadCount()
+  const unread = useUnreadCount({ isEnabled: viewer !== null })
 
   const items: BottomNavItem[] = viewer
     ? [

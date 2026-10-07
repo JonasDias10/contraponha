@@ -16,11 +16,11 @@ import {
 import type { Route } from "next"
 import Link from "next/link"
 import { useState } from "react"
+import { formatCount, formatMonthYear, queryKeys, recognitionText } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
 import { ReportDialog } from "@/components/post/report-dialog"
 import { FollowButton } from "@/components/profile/follow-button"
-import { recognitionText } from "@/components/profile/recognition"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
@@ -29,9 +29,7 @@ import { Chip } from "@/components/ui/badges"
 import { Button } from "@/components/ui/button"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
 import { Panel } from "@/components/ui/surfaces"
-import { formatCount, formatMonthYear } from "@/lib/format"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 export interface ProfileHeaderProps {
   handle: string

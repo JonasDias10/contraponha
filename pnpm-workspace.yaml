@@ -4,6 +4,7 @@ packages:
 allowBuilds:
   "@scarf/scarf": false
   "@swc/core": true
+  core-js: false
   esbuild: true
 minimumReleaseAgeExclude:
   - pino-pretty@13.2.0

@@ -1,4 +1,5 @@
 import type { TopicSummary } from "@contraponha/types"
+import { topicLabel } from "@contraponha/client-core"
 import Link from "next/link"
 
 import { tagVariants } from "@/components/ui/badges"
@@ -6,10 +7,6 @@ import { paths } from "@/lib/paths"
 
 export interface TopicTagsProps {
   topics: TopicSummary[]
-}
-
-export function topicLabel(topic: TopicSummary): string {
-  return topic.isCurated ? topic.name : `#${topic.slug}`
 }
 
 export function TopicTags({ topics }: TopicTagsProps): React.JSX.Element | null {

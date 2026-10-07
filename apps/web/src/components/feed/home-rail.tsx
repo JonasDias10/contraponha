@@ -3,16 +3,15 @@
 import { useQuery } from "@tanstack/react-query"
 import { Info } from "lucide-react"
 import Link from "next/link"
+import { queryKeys, topicLabel } from "@contraponha/client-core"
 
 import { SearchBox } from "@/components/search/search-box"
-import { topicLabel } from "@/components/post/topic-tags"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { tagVariants } from "@/components/ui/badges"
 import { Card, Panel } from "@/components/ui/surfaces"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 export function HomeRail(): React.JSX.Element {
   const { t } = useI18n()

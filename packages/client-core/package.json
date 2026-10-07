@@ -1,0 +1,47 @@
+{
+  "name": "@contraponha/client-core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./react": {
+      "types": "./build/react/index.d.ts",
+      "default": "./build/react/index.js"
+    }
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf build .turbo"
+  },
+  "dependencies": {
+    "@contraponha/api-client": "workspace:*",
+    "@contraponha/config": "workspace:*",
+    "@contraponha/i18n": "workspace:*",
+    "@contraponha/types": "workspace:*",
+    "@contraponha/validation": "workspace:*",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@contraponha/tsconfig": "workspace:*",
+    "@tanstack/react-query": "^5.104.1",
+    "@types/react": "~19.2.18",
+    "react": "19.2.3",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.104.1",
+    "react": "19.2.3"
+  }
+}

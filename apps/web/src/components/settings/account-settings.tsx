@@ -7,6 +7,7 @@ import { Laptop, LogOut } from "lucide-react"
 import { useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
 import { PasswordInput } from "@/components/auth/password-input"
@@ -18,8 +19,6 @@ import { SettingsSection } from "@/components/settings/settings-section"
 import { Chip } from "@/components/ui/badges"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
-import { errorMessage } from "@/lib/api-errors"
-import { queryKeys } from "@/lib/query-keys"
 
 export function AccountSettings(): React.JSX.Element {
   return (
