@@ -129,7 +129,7 @@ export function SignUpForm(): React.JSX.Element {
       >
         {({ id, describedBy, isInvalid }) => (
           <div className={cn("relative")}>
-            <span aria-hidden className="absolute left-3.5 top-1/2 -translate-y-1/2 text-subtle">
+            <span aria-hidden className="absolute top-1/2 left-3.5 -translate-y-1/2 text-subtle">
               @
             </span>
             <Input

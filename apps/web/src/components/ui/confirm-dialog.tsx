@@ -38,7 +38,7 @@ export function ConfirmDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent closeLabel={t("web.common.close")}>
-        <DialogTitle className="pr-8 font-serif text-[25px] font-semibold leading-tight">
+        <DialogTitle className="pr-8 font-serif text-[25px] leading-tight font-semibold">
           {title}
         </DialogTitle>
         <DialogDescription className="text-muted">{description}</DialogDescription>

@@ -26,13 +26,13 @@ export function DialogContent({
 }: DialogContentProps): React.JSX.Element {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-scrim" />
+      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-scrim data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed z-50 flex flex-col gap-5 bg-surface-raised p-7 shadow-e3 focus:outline-none",
+          "fixed z-50 flex flex-col gap-5 bg-surface-raised p-7 shadow-e3 focus:outline-none data-[state=closed]:animate-fade-out",
           side === "center"
-            ? "left-1/2 top-[8vh] max-h-[84vh] w-[calc(100%-32px)] max-w-[560px] -translate-x-1/2 overflow-y-auto rounded-xl"
-            : "inset-y-0 right-0 w-full max-w-[420px] overflow-y-auto",
+            ? "top-[8vh] left-1/2 max-h-[84vh] w-[calc(100%-32px)] max-w-140 -translate-x-1/2 overflow-y-auto rounded-xl data-[state=open]:animate-pop-in"
+            : "inset-y-0 right-0 w-full max-w-105 overflow-y-auto data-[state=open]:animate-slide-in-right",
           className,
         )}
         {...props}
@@ -40,7 +40,7 @@ export function DialogContent({
         {children}
         <DialogPrimitive.Close
           aria-label={closeLabel}
-          className="absolute right-4 top-4 grid size-9 place-items-center rounded-md text-muted hover:bg-surface-sunken"
+          className="absolute top-4 right-4 grid size-9 place-items-center rounded-md text-muted hover:bg-surface-sunken"
         >
           <X aria-hidden className="size-5" />
         </DialogPrimitive.Close>
@@ -62,7 +62,7 @@ export function MenuContent({
         sideOffset={6}
         align="end"
         className={cn(
-          "z-50 min-w-56 rounded-[12px] border border-line bg-surface-raised p-1.5 shadow-e2",
+          "z-50 min-w-56 origin-(--radix-dropdown-menu-content-transform-origin) rounded-[12px] border border-line bg-surface-raised p-1.5 shadow-e2 data-[state=closed]:animate-fade-out data-[state=open]:animate-pop-in",
           className,
         )}
         {...props}
@@ -83,7 +83,7 @@ export function MenuItem({
   return (
     <DropdownPrimitive.Item
       className={cn(
-        "flex h-11 cursor-pointer items-center gap-3 rounded-md px-3 text-[15px] outline-none data-[highlighted]:bg-surface-sunken",
+        "flex h-11 cursor-pointer items-center gap-3 rounded-md px-3 text-[15px] transition-colors outline-none data-highlighted:bg-surface-sunken",
         tone === "danger" ? "text-danger" : "text-ink",
         className,
       )}

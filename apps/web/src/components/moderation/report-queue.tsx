@@ -134,7 +134,7 @@ function ReportCard({ report }: ReportCardProps): React.JSX.Element {
         </span>
       </div>
       {report.excerpt ? (
-        <Panel className="px-4 py-3 font-serif text-base leading-relaxed">“{report.excerpt}”</Panel>
+        <Panel className="px-4 py-3 font-serif text-base/relaxed">“{report.excerpt}”</Panel>
       ) : null}
       {report.targetAuthor ? (
         <p className="text-sm text-muted">

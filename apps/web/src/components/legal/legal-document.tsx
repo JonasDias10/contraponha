@@ -54,7 +54,7 @@ export interface LegalDocumentProps {
 
 export function LegalDocument({ markdown }: LegalDocumentProps): React.JSX.Element {
   return (
-    <div className="prose-read text-[17px] leading-[1.7] [&_h1]:font-serif [&_h1]:text-[40px] [&_h1]:font-semibold [&_h1]:leading-tight [&_table]:w-full [&_table]:border-collapse [&_table]:font-sans [&_table]:text-sm [&_td]:border [&_td]:border-line [&_td]:p-2 [&_th]:border [&_th]:border-line [&_th]:bg-surface-sunken [&_th]:p-2 [&_th]:text-left">
+    <div className="prose-read text-[17px] leading-[1.7] [&_h1]:font-serif [&_h1]:text-[40px] [&_h1]:leading-tight [&_h1]:font-semibold [&_table]:w-full [&_table]:border-collapse [&_table]:font-sans [&_table]:text-sm [&_td]:border [&_td]:border-line [&_td]:p-2 [&_th]:border [&_th]:border-line [&_th]:bg-surface-sunken [&_th]:p-2 [&_th]:text-left">
       <ReactMarkdown components={COMPONENTS} remarkPlugins={REMARK_PLUGINS}>
         {markdown}
       </ReactMarkdown>

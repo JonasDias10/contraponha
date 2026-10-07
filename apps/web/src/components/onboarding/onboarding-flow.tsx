@@ -94,15 +94,15 @@ export function OnboardingFlow(): React.JSX.Element {
       </div>
       <main
         id="content"
-        className="mx-auto flex w-full max-w-[960px] flex-1 flex-col gap-12 px-4 py-14 sm:px-8"
+        className="mx-auto flex w-full max-w-240 flex-1 flex-col gap-12 px-4 py-14 sm:px-8"
       >
         {step === 1 ? (
           <section className="flex flex-col gap-6">
-            <div className="flex max-w-[640px] flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+            <div className="flex max-w-160 flex-col gap-2">
+              <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
                 {t("web.onboarding.stepOf", { step: 1, total: TOTAL_STEPS })}
               </p>
-              <h1 className="font-serif text-[34px] font-semibold leading-tight">
+              <h1 className="font-serif text-[34px] leading-tight font-semibold">
                 {t("web.onboarding.interestsTitle")}
               </h1>
               <p className="font-serif text-lg text-muted">{t("web.onboarding.interestsLead")}</p>
@@ -115,11 +115,11 @@ export function OnboardingFlow(): React.JSX.Element {
           </section>
         ) : (
           <section className="flex flex-col gap-6">
-            <div className="flex max-w-[640px] flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+            <div className="flex max-w-160 flex-col gap-2">
+              <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
                 {t("web.onboarding.stepOf", { step: 2, total: TOTAL_STEPS })}
               </p>
-              <h1 className="font-serif text-[34px] font-semibold leading-tight">
+              <h1 className="font-serif text-[34px] leading-tight font-semibold">
                 {t("web.onboarding.peopleTitle")}
               </h1>
               <p className="text-muted">{t("web.onboarding.peopleLead")}</p>
@@ -152,7 +152,7 @@ export function OnboardingFlow(): React.JSX.Element {
         )}
       </main>
       <footer className="border-t border-line bg-surface">
-        <div className="mx-auto flex max-w-[960px] items-center gap-4 px-4 py-4 sm:px-8">
+        <div className="mx-auto flex max-w-240 items-center gap-4 p-4 sm:px-8">
           {step === 2 ? (
             <Button variant="ghost" onClick={() => setStep(1)}>
               <ArrowLeft aria-hidden className="size-5" />

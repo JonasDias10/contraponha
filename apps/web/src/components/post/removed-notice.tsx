@@ -19,7 +19,7 @@ export function RemovedNotice({ removedBy, rule, subject }: RemovedNoticeProps):
 
   if (removedBy !== "moderation") {
     return (
-      <p className="text-sm italic text-subtle">
+      <p className="text-sm text-subtle italic">
         {subject === "post" ? t("web.post.removedByAuthor") : t("web.comment.removedByAuthor")}
       </p>
     )

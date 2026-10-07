@@ -85,8 +85,8 @@ export function EmptyState({
       >
         {icon}
       </span>
-      <h2 className="font-serif text-[25px] font-semibold leading-tight">{title}</h2>
-      {description ? <p className="max-w-[420px] text-[15px] text-muted">{description}</p> : null}
+      <h2 className="font-serif text-[25px] leading-tight font-semibold">{title}</h2>
+      {description ? <p className="max-w-105 text-[15px] text-muted">{description}</p> : null}
       {children ? <div className="mt-2 flex flex-wrap justify-center gap-3">{children}</div> : null}
     </section>
   )

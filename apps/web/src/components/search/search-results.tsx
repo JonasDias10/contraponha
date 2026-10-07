@@ -67,7 +67,7 @@ export function SearchResults(): React.JSX.Element {
             aria-current={state.tab === tab ? "page" : undefined}
             onClick={() => update({ tab: tab === "all" ? undefined : tab })}
             className={cn(
-              "-mb-px whitespace-nowrap border-b-2 py-3 text-[15px] font-medium",
+              "-mb-px border-b-2 py-3 text-[15px] font-medium whitespace-nowrap",
               state.tab === tab
                 ? "border-ink font-semibold text-ink"
                 : "border-transparent text-muted hover:text-ink",
@@ -108,7 +108,7 @@ function SearchForm({ initialQuery, onSearch }: SearchFormProps): React.JSX.Elem
         onSearch(draft.trim())
       }}
     >
-      <label className="flex h-[52px] items-center gap-2 rounded-full border border-transparent bg-surface-sunken px-4 text-[17px] focus-within:border-brand">
+      <label className="flex h-13 items-center gap-2 rounded-full border border-transparent bg-surface-sunken px-4 text-[17px] focus-within:border-brand">
         <Search aria-hidden className="size-5 text-subtle" />
         <span className="sr-only">{t("web.nav.search")}</span>
         <input
@@ -195,7 +195,7 @@ function PostResults({ state }: ResultsProps): React.JSX.Element {
   return (
     <section className="flex flex-col gap-3">
       {state.tab === "all" ? (
-        <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+        <h2 className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
           {t("web.search.posts")}
         </h2>
       ) : null}
@@ -278,7 +278,7 @@ function PeopleResults({ state, limit }: LimitedResultsProps): React.JSX.Element
   return (
     <section className="flex flex-col gap-2">
       {limit ? (
-        <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+        <h2 className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
           {t("web.search.people")}
         </h2>
       ) : null}

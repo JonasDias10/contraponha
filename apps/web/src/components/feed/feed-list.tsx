@@ -31,7 +31,7 @@ export function PostCardSkeleton(): React.JSX.Element {
           <Skeleton className="h-3 w-1/4" />
         </div>
       </div>
-      <Skeleton className="h-[18px] w-4/5" />
+      <Skeleton className="h-4.5 w-4/5" />
       <Skeleton className="h-3 w-full" />
       <Skeleton className="h-3 w-11/12" />
       <Skeleton className="h-3 w-3/5" />

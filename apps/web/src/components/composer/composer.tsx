@@ -21,6 +21,7 @@ import {
 import { ImageStrip } from "@/components/composer/image-strip"
 import { PublishChecklist } from "@/components/composer/publish-checklist"
 import { SourcesField } from "@/components/composer/sources-field"
+import { toolButtonClasses } from "@/components/composer/tool-button"
 import { TopicsField } from "@/components/composer/topics-field"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -165,8 +166,8 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
         </Button>
       </header>
 
-      <div className="mx-auto flex max-w-[1160px] flex-wrap gap-12 px-4 pb-20 pt-12 sm:px-8">
-        <main id="content" className="flex min-w-0 max-w-[720px] flex-[999_1_560px] flex-col gap-5">
+      <div className="mx-auto flex max-w-290 flex-wrap gap-12 px-4 pt-12 pb-20 sm:px-8">
+        <main id="content" className="flex max-w-180 min-w-0 flex-[999_1_560px] flex-col gap-5">
           <h1 className="sr-only">
             {isEditing ? t("web.composer.editTitle") : t("web.composer.newPost")}
           </h1>
@@ -181,7 +182,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
             <input
               {...register("title")}
               placeholder={t("web.composer.titlePlaceholder")}
-              className="w-full bg-transparent font-serif text-[30px] font-semibold leading-tight placeholder:text-subtle focus-visible:outline-none md:text-[38px]"
+              className="w-full bg-transparent font-serif text-3xl/tight font-semibold placeholder:text-subtle focus-visible:outline-none md:text-[38px]"
             />
           </label>
           <Controller
@@ -200,9 +201,9 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
                       aria-label={t("web.composer.image")}
                       title={t("web.composer.image")}
                       onClick={() => fileInputRef.current?.click()}
-                      className="grid size-9 place-items-center rounded-[8px] text-muted hover:bg-surface-sunken hover:text-ink"
+                      className={toolButtonClasses}
                     >
-                      <ImagePlus aria-hidden className="size-[18px]" />
+                      <ImagePlus aria-hidden className="size-4.5" />
                     </button>
                   )
                 }
@@ -248,7 +249,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
             <Banner tone="danger">{t("web.validation.required")}</Banner>
           ) : null}
         </main>
-        <div className="min-w-0 max-w-[320px] flex-[1_1_280px]">
+        <div className="max-w-[320px] min-w-0 flex-[1_1_280px]">
           <PublishChecklist control={control} title={title} body={body} sourceCount={sourceCount} />
         </div>
       </div>

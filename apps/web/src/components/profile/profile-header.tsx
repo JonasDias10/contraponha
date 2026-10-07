@@ -85,10 +85,10 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
     <section className="flex flex-col gap-5 pt-4">
       <div className="flex flex-wrap items-start gap-6">
         <Avatar id={profile.id} name={profile.displayName} size="xxl" />
-        <div className="flex min-w-[260px] flex-1 flex-col gap-2">
+        <div className="flex min-w-65 flex-1 flex-col gap-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
-              <h1 className="font-serif text-[34px] font-semibold leading-tight">
+              <h1 className="font-serif text-[34px] leading-tight font-semibold">
                 {profile.displayName}
               </h1>
               <p className="flex flex-wrap items-center gap-1.5 text-subtle">

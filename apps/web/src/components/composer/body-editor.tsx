@@ -1,24 +1,14 @@
 "use client"
 
-import { Bold, Italic, Link2, List, Quote, type LucideIcon } from "lucide-react"
-import { useRef } from "react"
+import { Placeholder } from "@tiptap/extensions"
+import { Markdown as MarkdownSerializer } from "@tiptap/markdown"
+import { EditorContent, useEditor } from "@tiptap/react"
+import { StarterKit } from "@tiptap/starter-kit"
+import { useEffect } from "react"
 
+import { BodyToolbar } from "@/components/composer/body-toolbar"
 import { Markdown } from "@/components/post/markdown"
 import { useI18n } from "@/components/providers/i18n-provider"
-import { applyMarkdown, type MarkdownAction } from "@/lib/markdown-edit"
-
-interface Tool {
-  action: MarkdownAction
-  Icon: LucideIcon
-}
-
-const TOOLS: Tool[] = [
-  { action: "bold", Icon: Bold },
-  { action: "italic", Icon: Italic },
-  { action: "list", Icon: List },
-  { action: "quote", Icon: Quote },
-  { action: "link", Icon: Link2 },
-]
 
 export interface BodyEditorProps {
   value: string
@@ -28,6 +18,14 @@ export interface BodyEditorProps {
   extraTools?: React.ReactNode
 }
 
+// The toolbar only offers what the post renderer shows, but headings, strikethrough and
+// code blocks stay in the schema: without them, older bodies that use that syntax would
+// load as an empty document and be wiped on save. Underline has no Markdown form.
+const FORMATTING = StarterKit.configure({
+  underline: false,
+  link: { openOnClick: false, autolink: true, defaultProtocol: "https" },
+})
+
 export function BodyEditor({
   value,
   onChange,
@@ -36,63 +34,45 @@ export function BodyEditor({
   extraTools,
 }: BodyEditorProps): React.JSX.Element {
   const { t } = useI18n()
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const apply = (action: MarkdownAction): void => {
-    const textarea = textareaRef.current
+  const editor = useEditor({
+    extensions: [
+      FORMATTING,
+      Placeholder.configure({ placeholder: t("web.composer.bodyPlaceholder") }),
+      MarkdownSerializer,
+    ],
+    content: value,
+    contentType: "markdown",
+    immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        role: "textbox",
+        "aria-multiline": "true",
+        "aria-label": t("web.composer.bodyPlaceholder"),
+        class:
+          "prose-read min-h-60 text-[19px] leading-[1.65] focus-visible:outline-none aria-invalid:rounded-md aria-invalid:outline aria-invalid:outline-2 aria-invalid:outline-danger",
+      },
+    },
+    onUpdate: ({ editor: current }) => onChange(current.getMarkdown()),
+  })
 
-    if (!textarea) return
+  useEffect(() => {
+    editor?.view.dom.setAttribute("aria-invalid", String(isInvalid))
+  }, [editor, isInvalid])
 
-    const result = applyMarkdown({
-      selection: { value, start: textarea.selectionStart, end: textarea.selectionEnd },
-      action,
-      linkPlaceholder: t("web.composer.linkPlaceholder"),
-    })
+  // Picks up values set from outside, such as a restored draft.
+  useEffect(() => {
+    if (!editor || editor.getMarkdown() === value) return
 
-    onChange(result.value)
-
-    requestAnimationFrame(() => {
-      textarea.focus()
-
-      textarea.setSelectionRange(result.selectionStart, result.selectionEnd)
-    })
-  }
+    editor.commands.setContent(value, { contentType: "markdown", emitUpdate: false })
+  }, [editor, value])
 
   if (isPreviewing) return <Markdown text={value} className="min-h-60 text-[19px] leading-[1.65]" />
 
   return (
     <div className="flex flex-col gap-4">
-      <div
-        role="toolbar"
-        aria-label={t("web.composer.toolbar")}
-        className="flex items-center gap-0.5 self-start rounded-[12px] border border-line bg-surface-raised p-1"
-      >
-        {TOOLS.map(({ action, Icon }) => (
-          <button
-            key={action}
-            type="button"
-            aria-label={t(`web.composer.${action}`)}
-            title={t(`web.composer.${action}`)}
-            onClick={() => apply(action)}
-            className="grid size-9 place-items-center rounded-[8px] text-muted hover:bg-surface-sunken hover:text-ink"
-          >
-            <Icon aria-hidden className="size-[18px]" />
-          </button>
-        ))}
-        {extraTools}
-      </div>
-      <label>
-        <span className="sr-only">{t("web.composer.bodyPlaceholder")}</span>
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={t("web.composer.bodyPlaceholder")}
-          aria-invalid={isInvalid}
-          rows={12}
-          className="field-sizing-content block min-h-60 w-full resize-none bg-transparent font-serif text-[19px] leading-[1.65] placeholder:text-subtle focus-visible:outline-none aria-invalid:rounded-md aria-invalid:outline aria-invalid:outline-2 aria-invalid:outline-danger"
-        />
-      </label>
+      {editor ? <BodyToolbar editor={editor} extraTools={extraTools} /> : null}
+      <EditorContent editor={editor} />
     </div>
   )
 }

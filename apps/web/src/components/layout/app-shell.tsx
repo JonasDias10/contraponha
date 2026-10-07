@@ -20,14 +20,11 @@ export async function AppShell({
 
   return (
     <ViewerProvider viewer={viewer}>
-      <div className="mx-auto flex w-full max-w-[1360px] gap-8 px-4 sm:px-8">
+      <div className="mx-auto flex w-full max-w-340 gap-8 px-4 sm:px-8">
         <SideNav />
         <main
           id="content"
-          className={cn(
-            "min-w-0 flex-1 pb-24 pt-6 lg:pb-16",
-            wide ? "max-w-[1040px]" : "max-w-[680px]",
-          )}
+          className={cn("min-w-0 flex-1 pt-6 pb-24 lg:pb-16", wide ? "max-w-260" : "max-w-170")}
         >
           {children}
         </main>

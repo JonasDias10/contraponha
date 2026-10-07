@@ -6,6 +6,7 @@ import Link from "next/link"
 
 import { HighlightedText } from "@/components/search/highlighted-text"
 import { AuthorLine } from "@/components/post/author-line"
+import { Markdown } from "@/components/post/markdown"
 import { ReactionSummary } from "@/components/post/reaction-bar"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { paths } from "@/lib/paths"
@@ -46,9 +47,13 @@ export function ContributionCard({
       ) : null}
       <Link
         href={paths.comment({ postId: comment.postId, commentId: comment.id })}
-        className="font-serif text-base leading-relaxed text-ink no-underline"
+        className="font-serif text-base/relaxed text-ink no-underline"
       >
-        {highlight ? <HighlightedText text={highlight} /> : comment.body}
+        {highlight ? (
+          <HighlightedText text={highlight} />
+        ) : (
+          <Markdown text={comment.body ?? ""} isInsideLink className="line-clamp-6" />
+        )}
       </Link>
       <ReactionSummary counts={comment.reactionCounts} />
     </article>

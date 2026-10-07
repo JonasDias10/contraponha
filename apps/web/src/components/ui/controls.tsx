@@ -15,12 +15,12 @@ export function Switch({
   return (
     <SwitchPrimitive.Root
       className={cn(
-        "relative h-[26px] w-11 flex-none rounded-full bg-line-strong transition-colors data-[state=checked]:bg-brand",
+        "relative h-6.5 w-11 flex-none rounded-full bg-line-strong transition-colors data-[state=checked]:bg-brand",
         className,
       )}
       {...props}
     >
-      <SwitchPrimitive.Thumb className="block size-5 translate-x-[3px] rounded-full bg-white shadow-e1 transition-transform data-[state=checked]:translate-x-[21px] data-[state=checked]:bg-on-brand" />
+      <SwitchPrimitive.Thumb className="block size-5 translate-x-0.75 rounded-full bg-white shadow-e1 transition-transform data-[state=checked]:translate-x-5.25 data-[state=checked]:bg-on-brand" />
     </SwitchPrimitive.Root>
   )
 }
@@ -32,7 +32,7 @@ export function Checkbox({
   return (
     <CheckboxPrimitive.Root
       className={cn(
-        "mt-px grid size-[22px] flex-none place-items-center rounded-sm border-[1.5px] border-line-strong bg-surface-raised data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-on-brand",
+        "mt-px grid size-5.5 flex-none place-items-center rounded-sm border-[1.5px] border-line-strong bg-surface-raised data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-on-brand",
         className,
       )}
       {...props}
@@ -53,7 +53,7 @@ export function RadioItem({
   return (
     <RadioGroupPrimitive.Item
       className={cn(
-        "mt-px grid size-[22px] flex-none place-items-center rounded-full border-[1.5px] border-line-strong data-[state=checked]:border-2 data-[state=checked]:border-brand",
+        "mt-px grid size-5.5 flex-none place-items-center rounded-full border-[1.5px] border-line-strong data-[state=checked]:border-2 data-[state=checked]:border-brand",
         className,
       )}
       {...props}
@@ -85,7 +85,7 @@ export function SegmentedItem({
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "grid h-9 flex-1 place-items-center whitespace-nowrap rounded-[9px] px-3 text-sm font-medium text-muted data-[state=active]:bg-surface-raised data-[state=active]:font-semibold data-[state=active]:text-ink data-[state=active]:shadow-e1",
+        "grid h-9 flex-1 place-items-center rounded-[9px] px-3 text-sm font-medium whitespace-nowrap text-muted data-[state=active]:bg-surface-raised data-[state=active]:font-semibold data-[state=active]:text-ink data-[state=active]:shadow-e1",
         className,
       )}
       {...props}

@@ -2,6 +2,8 @@ import js from "@eslint/js"
 import nextPlugin from "@next/eslint-plugin-next"
 import stylistic from "@stylistic/eslint-plugin"
 import prettier from "eslint-config-prettier"
+import betterTailwind from "eslint-plugin-better-tailwindcss"
+import { getDefaultVariables } from "eslint-plugin-better-tailwindcss/defaults"
 import reactHooks from "eslint-plugin-react-hooks"
 import globals from "globals"
 import tseslint from "typescript-eslint"
@@ -143,11 +145,42 @@ export function reactConfig(options) {
   })
 }
 
-/** @param {ConfigOptions} options @returns {Config[]} */
-export function nextConfig(options) {
+/**
+ * Tailwind class checks with autofix: canonical names (max-w-[560px] -> max-w-140), class
+ * order, duplicates, deprecated, unknown and conflicting classes. Line wrapping is left
+ * to Prettier.
+ * @param {{ tsconfigRootDir: string, entryPoint: string }} options
+ * @returns {Config}
+ */
+function tailwindConfig({ tsconfigRootDir, entryPoint }) {
+  return {
+    files: ["**/*.{ts,tsx}"],
+    ...betterTailwind.configs["recommended-error"],
+    settings: {
+      "better-tailwindcss": {
+        cwd: tsconfigRootDir,
+        entryPoint,
+        detectComponentClasses: true,
+        variables: [...getDefaultVariables(), ["Classes$", [{ match: "strings" }]]],
+      },
+    },
+    rules: {
+      ...betterTailwind.configs["recommended-error"].rules,
+      "better-tailwindcss/enforce-consistent-line-wrapping": "off",
+      "better-tailwindcss/enforce-canonical-classes": ["error", { rootFontSize: 16 }],
+    },
+  }
+}
+
+/** @param {ConfigOptions & { tailwindEntryPoint: string }} options @returns {Config[]} */
+export function nextConfig({ tailwindEntryPoint, ...options }) {
   return createConfig({
     ...options,
     runtimeGlobals: { ...globals.browser, ...globals.node },
-    extra: [reactHooks.configs.flat.recommended, nextPlugin.configs["core-web-vitals"]],
+    extra: [
+      reactHooks.configs.flat.recommended,
+      nextPlugin.configs["core-web-vitals"],
+      tailwindConfig({ tsconfigRootDir: options.tsconfigRootDir, entryPoint: tailwindEntryPoint }),
+    ],
   })
 }

@@ -45,6 +45,46 @@
   --shadow-e1: 0 1px 2px rgb(20 22 26 / 0.06);
   --shadow-e2: 0 4px 16px rgb(20 22 26 / 0.08), 0 1px 2px rgb(20 22 26 / 0.06);
   --shadow-e3: 0 16px 48px rgb(20 22 26 / 0.16), 0 2px 6px rgb(20 22 26 / 0.08);
+
+  /* Motion: short and subtle; disabled by prefers-reduced-motion at the end of this file. */
+  --animate-fade-in: fade-in 160ms ease-out;
+  --animate-fade-out: fade-out 120ms ease-in;
+  --animate-pop-in: pop-in 160ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-slide-in-right: slide-in-right 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-rise-in: rise-in 240ms ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Individual scale/translate properties, so they compose with positioning transforms. */
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      scale: 0.96;
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      translate: 100% 0;
+    }
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
 }
 
 .dark {
@@ -127,6 +167,29 @@ body {
   outline-offset: 2px;
 }
 
+/* Tailwind v4 leaves buttons with the default cursor. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+[role="switch"],
+[role="checkbox"],
+[role="radio"],
+summary,
+select,
+label:has(> input[type="checkbox"], > input[type="radio"], > button[role="checkbox"]),
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 ::selection {
   background: var(--color-brand-soft);
 }
@@ -181,6 +244,14 @@ body {
 
   .prose-read strong {
     font-weight: 600;
+  }
+
+  .prose-read p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    color: var(--color-subtle);
+    pointer-events: none;
   }
 }
 

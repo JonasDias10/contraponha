@@ -55,7 +55,7 @@ export function NotificationList(): React.JSX.Element {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-serif text-[25px] font-semibold">{t("web.notifications.title")}</h1>
         <Segmented value={filter} onValueChange={(value) => isFilter(value) && setFilter(value)}>
-          <SegmentedList className="w-[360px] max-w-full">
+          <SegmentedList className="w-90 max-w-full">
             <SegmentedItem value={NotificationFilter.ALL}>
               {t("web.notifications.all")}
             </SegmentedItem>
@@ -114,7 +114,7 @@ export function NotificationList(): React.JSX.Element {
 
           return (
             <Card key={period} className="overflow-hidden">
-              <h2 className="px-5 pb-2 pt-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+              <h2 className="px-5 pt-4 pb-2 text-xs font-semibold tracking-[0.08em] text-muted uppercase">
                 {t(`web.notifications.${period}`)}
               </h2>
               <ul>

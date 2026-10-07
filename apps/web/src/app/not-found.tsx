@@ -12,7 +12,7 @@ export default async function NotFound(): Promise<React.JSX.Element> {
   return (
     <main
       id="content"
-      className="mx-auto flex min-h-dvh max-w-[560px] flex-col items-center justify-center gap-6 px-4"
+      className="mx-auto flex min-h-dvh max-w-140 flex-col items-center justify-center gap-6 px-4"
     >
       <Logo />
       <EmptyState

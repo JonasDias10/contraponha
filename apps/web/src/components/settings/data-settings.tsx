@@ -100,7 +100,7 @@ function ExportSection(): React.JSX.Element {
           value={format}
           onValueChange={(value) => setFormat(value === "json" ? "json" : "html")}
         >
-          <SegmentedList className="w-[280px]">
+          <SegmentedList className="w-70">
             <SegmentedItem value="html">{t("web.settings.exportFormatHtml")}</SegmentedItem>
             <SegmentedItem value="json">{t("web.settings.exportFormatJson")}</SegmentedItem>
           </SegmentedList>

@@ -37,7 +37,7 @@ export function HomeRail(): React.JSX.Element {
       <SearchBox />
       {discussions.data && discussions.data.discussions.length > 0 ? (
         <Card className="flex flex-col gap-3 p-5">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+          <h2 className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
             {t("web.feed.ongoingTitle")}
           </h2>
           {discussions.data.discussions.map((discussion, index) => (
@@ -62,7 +62,7 @@ export function HomeRail(): React.JSX.Element {
       ) : null}
       {topics.length > 0 ? (
         <Card className="flex flex-col gap-3 p-5">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+          <h2 className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
             {t("web.feed.yourTopics")}
           </h2>
           <ul className="flex flex-wrap gap-2">

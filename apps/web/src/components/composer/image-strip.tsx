@@ -40,7 +40,7 @@ export function ImageStrip({
             type="button"
             aria-label={t("web.composer.removeImage")}
             onClick={() => onRemove(image.mediaId)}
-            className="absolute right-1.5 top-1.5 grid size-8 place-items-center rounded-full bg-inverse/80 text-on-inverse"
+            className="absolute top-1.5 right-1.5 grid size-8 place-items-center rounded-full bg-inverse/80 text-on-inverse"
           >
             <X aria-hidden className="size-4" />
           </button>

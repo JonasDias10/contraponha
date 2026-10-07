@@ -5,6 +5,7 @@ import { History, Info, Pin } from "lucide-react"
 import Link from "next/link"
 
 import { AuthorLine } from "@/components/post/author-line"
+import { Markdown } from "@/components/post/markdown"
 import { MediaGrid } from "@/components/post/media-grid"
 import { PostActions } from "@/components/post/post-actions"
 import { PostMenu } from "@/components/post/post-menu"
@@ -19,12 +20,6 @@ import { readingMinutes } from "@/lib/format"
 import { paths } from "@/lib/paths"
 
 const EXCERPT_LENGTH = 320
-
-function excerptOf(body: string): string {
-  if (body.length <= EXCERPT_LENGTH) return body
-
-  return `${body.slice(0, EXCERPT_LENGTH).replace(/\s+\S*$/, "")}…`
-}
 
 export interface PostCardProps {
   post: PostView
@@ -74,7 +69,7 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
   const [firstSource] = post.sources
 
   return (
-    <article className="flex flex-col gap-3.5 rounded-lg border border-line bg-surface-raised p-5">
+    <article className="flex animate-rise-in flex-col gap-3.5 rounded-lg border border-line bg-surface-raised p-5 transition-shadow hover:shadow-e1">
       {reason ? <WhyLine reason={reason} /> : null}
       {post.isPinned ? (
         <p className="flex items-center gap-1.5 text-[12.5px] text-subtle">
@@ -99,16 +94,20 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
         trailing={<PostMenu post={post} />}
       />
       {post.title ? (
-        <h2 className="font-serif text-[21px] font-semibold leading-[1.3] tracking-[-0.01em]">
+        <h2 className="font-serif text-[21px] leading-[1.3] font-semibold tracking-[-0.01em]">
           <Link href={paths.post(post.id)} className="text-ink no-underline hover:underline">
             {post.title}
           </Link>
         </h2>
       ) : null}
       <Link href={paths.post(post.id)} className="text-ink no-underline">
-        <p className="whitespace-pre-line font-serif text-[17px] leading-[1.62]">
-          {highlight ? <HighlightedText text={highlight} /> : excerptOf(body)}
-        </p>
+        {highlight ? (
+          <p className="font-serif text-[17px] leading-[1.62] whitespace-pre-line">
+            <HighlightedText text={highlight} />
+          </p>
+        ) : (
+          <Markdown text={body} isInsideLink className="line-clamp-8 text-[17px] leading-[1.62]" />
+        )}
       </Link>
       {isTruncated ? (
         <Link href={paths.post(post.id)} className="text-sm font-semibold text-brand no-underline">

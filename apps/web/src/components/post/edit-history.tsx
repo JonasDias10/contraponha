@@ -4,6 +4,7 @@ import type { ContentRevision, PostView } from "@ponto/types"
 import { useQuery } from "@tanstack/react-query"
 
 import { useApi } from "@/components/providers/app-providers"
+import { Markdown } from "@/components/post/markdown"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Card } from "@/components/ui/surfaces"
 import { cn } from "@/lib/cn"
@@ -101,9 +102,9 @@ export function EditHistory({ post }: EditHistoryProps): React.JSX.Element {
                   <summary className="cursor-pointer font-semibold text-brand">
                     {t("web.history.open")}
                   </summary>
-                  <div className="mt-2 whitespace-pre-line font-serif text-[15px] leading-relaxed text-muted">
+                  <div className="mt-2 flex flex-col gap-2 font-serif text-[15px] leading-relaxed text-muted">
                     {version.title ? <p className="font-semibold">{version.title}</p> : null}
-                    {version.body}
+                    <Markdown text={version.body} />
                   </div>
                 </details>
               )}
