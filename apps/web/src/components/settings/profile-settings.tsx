@@ -4,18 +4,21 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import type { PrivateProfile } from "@contraponha/types"
 import {
   BIO_MAX_LENGTH,
-  bioSchema,
-  displayNameSchema,
   HEADLINE_MAX_LENGTH,
-  httpUrlSchema,
   LOCATION_MAX_LENGTH,
   PRONOUNS_MAX_LENGTH,
 } from "@contraponha/validation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
-import { z } from "zod"
-import { errorMessage, queryKeys } from "@contraponha/client-core"
+import {
+  errorMessage,
+  profileFormSchema,
+  profileFormValuesFrom,
+  queryKeys,
+  type ProfileFormOutput,
+  type ProfileFormValues,
+} from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -23,30 +26,6 @@ import { useViewer } from "@/components/providers/viewer-provider"
 import { SettingsSection } from "@/components/settings/settings-section"
 import { Button } from "@/components/ui/button"
 import { Field, Input, Textarea } from "@/components/ui/field"
-
-const profileFormSchema = z.object({
-  displayName: displayNameSchema,
-  headline: z.string().trim().max(HEADLINE_MAX_LENGTH),
-  bio: bioSchema,
-  location: z.string().trim().max(LOCATION_MAX_LENGTH),
-  website: z.union([httpUrlSchema, z.literal("")]),
-  pronouns: z.string().trim().max(PRONOUNS_MAX_LENGTH),
-})
-
-type ProfileFormValues = z.input<typeof profileFormSchema>
-
-type ProfileFormOutput = z.output<typeof profileFormSchema>
-
-function valuesFrom(viewer: PrivateProfile): ProfileFormValues {
-  return {
-    displayName: viewer.displayName,
-    headline: viewer.headline ?? "",
-    bio: viewer.bio ?? "",
-    location: viewer.location ?? "",
-    website: viewer.website ?? "",
-    pronouns: viewer.pronouns ?? "",
-  }
-}
 
 export function ProfileSettings(): React.JSX.Element | null {
   const viewer = useViewer()
@@ -71,7 +50,7 @@ function ProfileForm({ viewer }: ProfileFormProps): React.JSX.Element {
     ProfileFormOutput
   >({
     resolver: zodResolver(profileFormSchema),
-    defaultValues: valuesFrom(viewer),
+    defaultValues: profileFormValuesFrom(viewer),
   })
 
   const bio = useWatch({ control, name: "bio" })
@@ -81,7 +60,7 @@ function ProfileForm({ viewer }: ProfileFormProps): React.JSX.Element {
     onSuccess: async (updated) => {
       queryClient.setQueryData(queryKeys.me, updated)
 
-      reset(valuesFrom(updated))
+      reset(profileFormValuesFrom(updated))
 
       toast.success(t("web.settings.profileSaved"))
 

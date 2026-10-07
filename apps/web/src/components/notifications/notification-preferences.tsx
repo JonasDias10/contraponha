@@ -1,41 +1,17 @@
 "use client"
 
-import type { NotificationPreferences } from "@contraponha/types"
-import type { UpdateNotificationPreferencesInput } from "@contraponha/validation"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { errorMessage, queryKeys } from "@contraponha/client-core"
+import {
+  DIGEST_HOURS,
+  formatDigestHour,
+  NOTIFICATION_SWITCHES,
+  toggleDigestHour,
+} from "@contraponha/client-core"
+import { useNotificationPreferences } from "@contraponha/client-core/react"
 
-import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { Switch } from "@/components/ui/controls"
 import { cn } from "@/lib/cn"
-
-type PreferenceSwitch = Exclude<keyof NotificationPreferences, "digestHours">
-
-interface SwitchOption {
-  key: PreferenceSwitch
-  label:
-    | "prefReplies"
-    | "prefMentions"
-    | "prefHighlights"
-    | "prefSourceRequests"
-    | "prefReactions"
-    | "prefFollows"
-}
-
-const SWITCHES: SwitchOption[] = [
-  { key: "replies", label: "prefReplies" },
-  { key: "mentions", label: "prefMentions" },
-  { key: "highlights", label: "prefHighlights" },
-  { key: "sourceRequests", label: "prefSourceRequests" },
-  { key: "reactions", label: "prefReactions" },
-  { key: "follows", label: "prefFollows" },
-]
-
-const DIGEST_HOURS = [7, 9, 12, 15, 19, 21] as const
-const DIGEST_HOURS_MAX = 4
 
 export interface NotificationPreferencesFormProps {
   showDigest?: boolean
@@ -45,58 +21,21 @@ export function NotificationPreferencesForm({
   showDigest = true,
 }: NotificationPreferencesFormProps): React.JSX.Element | null {
   const { t } = useI18n()
-  const api = useApi()
   const viewer = useViewer()
-  const queryClient = useQueryClient()
-
-  const { data } = useQuery({
-    queryKey: queryKeys.notificationPreferences,
-    queryFn: () => api.notifications.getPreferences(),
-  })
-
-  const save = useMutation({
-    mutationFn: (input: UpdateNotificationPreferencesInput) =>
-      api.notifications.updatePreferences(input),
-    onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.notificationPreferences })
-
-      const previous = queryClient.getQueryData<NotificationPreferences>(
-        queryKeys.notificationPreferences,
-      )
-
-      if (previous)
-        queryClient.setQueryData(queryKeys.notificationPreferences, { ...previous, ...input })
-
-      return { previous }
-    },
-    onError: (error, _input, context) => {
-      if (context?.previous)
-        queryClient.setQueryData(queryKeys.notificationPreferences, context.previous)
-
-      toast.error(errorMessage({ error, t }))
-    },
-    onSuccess: (saved) => queryClient.setQueryData(queryKeys.notificationPreferences, saved),
-  })
+  const { preferences: data, save } = useNotificationPreferences()
 
   if (!data) return null
 
   const toggleHour = (hour: number): void => {
-    const hours = data.digestHours.includes(hour)
-      ? data.digestHours.filter((value) => value !== hour)
-      : [...data.digestHours, hour].toSorted((a, b) => a - b).slice(0, DIGEST_HOURS_MAX)
-
-    save.mutate({ digestHours: hours })
+    save({ digestHours: toggleDigestHour({ hours: data.digestHours, hour }) })
   }
 
   return (
     <div className="flex flex-col gap-4">
-      {SWITCHES.map(({ key, label }) => (
+      {NOTIFICATION_SWITCHES.map(({ key, label }) => (
         <label key={key} className="flex items-center justify-between gap-3 text-sm">
           {t(`web.notifications.${label}`)}
-          <Switch
-            checked={data[key]}
-            onCheckedChange={(checked) => save.mutate({ [key]: checked })}
-          />
+          <Switch checked={data[key]} onCheckedChange={(checked) => save({ [key]: checked })} />
         </label>
       ))}
       <p className="text-[13px] text-subtle">{t("web.notifications.moderationAlways")}</p>
@@ -127,7 +66,7 @@ export function NotificationPreferencesForm({
                       : "border-line bg-surface-sunken text-ink",
                   )}
                 >
-                  {`${String(hour).padStart(2, "0")}h`}
+                  {formatDigestHour(hour)}
                 </button>
               )
             })}
