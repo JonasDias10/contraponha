@@ -1,0 +1,18 @@
+// Hermes lacks newer APIs that the shared packages use. Each polyfill only installs itself
+// when the engine does not provide it, so this file is a no-op where support exists.
+import "core-js/actual/array/find-last"
+import "core-js/actual/array/find-last-index"
+import "core-js/actual/array/to-reversed"
+import "core-js/actual/array/to-sorted"
+import "core-js/actual/array/to-spliced"
+import "core-js/actual/array/with"
+import "@formatjs/intl-getcanonicallocales/polyfill.js"
+import "@formatjs/intl-locale/polyfill.js"
+import "@formatjs/intl-pluralrules/polyfill.js"
+import "@formatjs/intl-pluralrules/locale-data/pt.js"
+import "@formatjs/intl-pluralrules/locale-data/en.js"
+import "@formatjs/intl-pluralrules/locale-data/es.js"
+import "@formatjs/intl-relativetimeformat/polyfill.js"
+import "@formatjs/intl-relativetimeformat/locale-data/pt.js"
+import "@formatjs/intl-relativetimeformat/locale-data/en.js"
+import "@formatjs/intl-relativetimeformat/locale-data/es.js"
