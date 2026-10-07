@@ -385,6 +385,11 @@ export const web = {
     noHighlighted: "Nenhuma contribuição destacada ainda.",
     notFound: "Este perfil não existe ou a conta foi excluída.",
     report: "Denunciar perfil",
+    followersTitle: "Seguidores de {name}",
+    followingTitle: "Quem {name} segue",
+    noFollowers: "Ninguém segue este perfil ainda.",
+    noFollowing: "Este perfil ainda não segue ninguém.",
+    backToProfile: "Voltar ao perfil",
   },
   topic: {
     follow: "Seguir tópico",

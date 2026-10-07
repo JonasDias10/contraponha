@@ -4,6 +4,7 @@ import * as Popover from "@radix-ui/react-popover"
 import type { ProfileView } from "@ponto/types"
 import { useQuery } from "@tanstack/react-query"
 import { CalendarDays, CircleCheck, Flag, Link2, MapPin, MoreHorizontal } from "lucide-react"
+import type { Route } from "next"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -19,6 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
 import { Panel } from "@/components/ui/surfaces"
 import { formatCount, formatMonthYear } from "@/lib/format"
+import { paths } from "@/lib/paths"
 import { queryKeys } from "@/lib/query-keys"
 
 export interface ProfileHeaderProps {
@@ -38,6 +40,12 @@ export function ProfileHeader({ handle }: ProfileHeaderProps): React.JSX.Element
   return <ProfileHeaderContent profile={profile} />
 }
 
+interface ProfileStat {
+  value: number
+  label: string
+  href?: Route
+}
+
 interface ProfileHeaderContentProps {
   profile: ProfileView
 }
@@ -55,15 +63,17 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
     enabled: viewer !== null && !isSelf,
   })
 
-  const stats = [
+  const stats: ProfileStat[] = [
     { value: profile.postCount, label: t("web.profile.statPosts", { count: profile.postCount }) },
     {
       value: profile.followerCount,
       label: t("web.profile.statFollowers", { count: profile.followerCount }),
+      href: paths.followers(profile.handle),
     },
     {
       value: profile.followingCount,
       label: t("web.profile.statFollowing", { count: profile.followingCount }),
+      href: paths.following(profile.handle),
     },
   ]
 
@@ -147,12 +157,24 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
             </span>
           </p>
           <p className="mt-1 flex flex-wrap gap-5 text-sm text-muted">
-            {stats.map(({ value, label }) => (
-              <span key={label}>
-                <strong className="font-semibold text-ink">{formatCount({ value, locale })}</strong>{" "}
-                {label}
-              </span>
-            ))}
+            {stats.map(({ value, label, href }) => {
+              const content = (
+                <>
+                  <strong className="font-semibold text-ink">
+                    {formatCount({ value, locale })}
+                  </strong>{" "}
+                  {label}
+                </>
+              )
+
+              return href ? (
+                <Link key={label} href={href} className="text-muted no-underline hover:underline">
+                  {content}
+                </Link>
+              ) : (
+                <span key={label}>{content}</span>
+              )
+            })}
           </p>
           {mutuals.length > 0 ? (
             <p className="flex items-center gap-2 text-[13px] text-subtle">

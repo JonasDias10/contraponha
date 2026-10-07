@@ -25,6 +25,11 @@ export interface ContributionsKeyParams {
   onlyHighlighted: boolean
 }
 
+export interface ConnectionsKeyParams {
+  handle: string
+  direction: "followers" | "following"
+}
+
 // One place for every cache key, so invalidations after mutations stay consistent.
 export const queryKeys = {
   me: ["me"] as const,
@@ -46,6 +51,9 @@ export const queryKeys = {
     ["profile", handle, "contributions", onlyHighlighted] as const,
   followedBy: (handle: string) => ["profile", handle, "followed-by"] as const,
   followStatus: (handle: string) => ["profile", handle, "follow-status"] as const,
+  connections: ({ handle, direction }: ConnectionsKeyParams) =>
+    ["profile", handle, direction] as const,
+  followedAmong: (userIds: readonly string[]) => ["follows", "status", ...userIds] as const,
   suggestions: ["people", "suggestions"] as const,
   topics: {
     curated: ["topics", "curated"] as const,
