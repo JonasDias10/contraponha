@@ -5,6 +5,7 @@ import { History, Info, Pin } from "lucide-react"
 import Link from "next/link"
 
 import { AuthorLine } from "@/components/post/author-line"
+import { Markdown } from "@/components/post/markdown"
 import { MediaGrid } from "@/components/post/media-grid"
 import { PostActions } from "@/components/post/post-actions"
 import { PostMenu } from "@/components/post/post-menu"
@@ -19,12 +20,6 @@ import { readingMinutes } from "@/lib/format"
 import { paths } from "@/lib/paths"
 
 const EXCERPT_LENGTH = 320
-
-function excerptOf(body: string): string {
-  if (body.length <= EXCERPT_LENGTH) return body
-
-  return `${body.slice(0, EXCERPT_LENGTH).replace(/\s+\S*$/, "")}…`
-}
 
 export interface PostCardProps {
   post: PostView
@@ -106,9 +101,13 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
         </h2>
       ) : null}
       <Link href={paths.post(post.id)} className="text-ink no-underline">
-        <p className="whitespace-pre-line font-serif text-[17px] leading-[1.62]">
-          {highlight ? <HighlightedText text={highlight} /> : excerptOf(body)}
-        </p>
+        {highlight ? (
+          <p className="whitespace-pre-line font-serif text-[17px] leading-[1.62]">
+            <HighlightedText text={highlight} />
+          </p>
+        ) : (
+          <Markdown text={body} isInsideLink className="line-clamp-8 text-[17px] leading-[1.62]" />
+        )}
       </Link>
       {isTruncated ? (
         <Link href={paths.post(post.id)} className="text-sm font-semibold text-brand no-underline">
