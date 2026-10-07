@@ -1,6 +1,11 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
 import type { PublicProfile } from "@ponto/types"
-import { followStatusSchema, profilePageSchema, publicProfileSchema } from "@ponto/validation"
+import {
+  followedAmongSchema,
+  followStatusSchema,
+  profilePageSchema,
+  publicProfileSchema,
+} from "@ponto/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
@@ -150,5 +155,30 @@ describe("follows", () => {
     expect(profilePageSchema.parse(followingResponse.body).items).toMatchObject([
       { handle: target.auth.user.handle },
     ])
+  })
+
+  it("tells which people in a list the reader already follows", async () => {
+    const reader = await registerAccount({ server })
+    const followed = await registerAccount({ server })
+    const other = await registerAccount({ server })
+
+    await request(server)
+      .put(`/api/v1/users/${followed.auth.user.handle}/follow`)
+      .set(bearer(reader.auth.session.token))
+      .expect(204)
+
+    const response = await request(server)
+      .get("/api/v1/follows/status")
+      .query({ userIds: `${followed.auth.user.id},${other.auth.user.id}` })
+      .set(bearer(reader.auth.session.token))
+      .expect(200)
+
+    expect(followedAmongSchema.parse(response.body).userIds).toEqual([followed.auth.user.id])
+
+    await request(server)
+      .get("/api/v1/follows/status")
+      .query({ userIds: "not-a-uuid" })
+      .set(bearer(reader.auth.session.token))
+      .expect(400)
   })
 })

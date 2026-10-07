@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { follows, type Database, type DatabaseExecutor } from "@ponto/database"
-import { type SQL, and, desc, eq, or, sql } from "drizzle-orm"
+import { type SQL, and, desc, eq, inArray, or, sql } from "drizzle-orm"
 import type { PgColumn } from "drizzle-orm/pg-core"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -8,6 +8,11 @@ import { DATABASE } from "#src/infrastructure/database/database.module.js"
 export interface FollowPair {
   followerId: string
   followeeId: string
+}
+
+export interface FollowedAmongParams {
+  followerId: string
+  followeeIds: readonly string[]
 }
 
 export interface FollowPairParams {
@@ -76,6 +81,15 @@ export class FollowsRepository {
       .select({ followerId: follows.followerId, followeeId: follows.followeeId })
       .from(follows)
       .where(or(eq(follows.followerId, userId), eq(follows.followeeId, userId)))
+  }
+
+  async listFollowedAmong({ followerId, followeeIds }: FollowedAmongParams): Promise<string[]> {
+    const rows = await this.db
+      .select({ followeeId: follows.followeeId })
+      .from(follows)
+      .where(and(eq(follows.followerId, followerId), inArray(follows.followeeId, [...followeeIds])))
+
+    return rows.map(({ followeeId }) => followeeId)
   }
 
   async exists({ followerId, followeeId }: FollowPairParams): Promise<boolean> {

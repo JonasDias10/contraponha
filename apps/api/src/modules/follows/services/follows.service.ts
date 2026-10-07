@@ -1,6 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
-import { ApiErrorCode, type FollowStatus, type Page, type PublicProfile } from "@ponto/types"
+import {
+  ApiErrorCode,
+  type FollowStatus,
+  type Page,
+  type PublicProfile,
+  type FollowedAmong,
+} from "@ponto/types"
 import { z } from "zod"
 
 import { AppError } from "#src/common/errors/app-error.js"
@@ -26,6 +32,11 @@ export interface ListConnectionsByHandleParams {
   handle: string
   cursor: string | undefined
   limit: number
+}
+
+export interface FollowedAmongRequest {
+  followerId: string
+  userIds: readonly string[]
 }
 
 export interface PurgeFollowsParams {
@@ -118,6 +129,14 @@ export class FollowsService {
         }
       },
     })
+  }
+
+  async followedAmong({ followerId, userIds }: FollowedAmongRequest): Promise<FollowedAmong> {
+    const followed = await this.followsRepository.listFollowedAmong({
+      followerId,
+      followeeIds: userIds,
+    })
+    return { userIds: followed }
   }
 
   async getStatus({ followerId, handle }: FollowByHandleParams): Promise<FollowStatus> {
