@@ -96,10 +96,11 @@ export const web: Messages["web"] = {
     finalLead: "Empieza siguiendo tres temas. Lleva dos minutos.",
   },
   auth: {
-    asideQuote:
-      '"Cambié de opinión sobre el transporte gratuito leyendo una discusión aquí. No recuerdo la última vez que eso pasó en una red social."',
-    asideAuthor: "Thiago Albuquerque",
-    asideRole: "Médico de familia, Fortaleza",
+    asideTitle: "Aquí, lo que sube es lo que hace avanzar la conversación.",
+    asidePointReactions:
+      "Reacciones que dicen algo: buen argumento, esclarecedor, cambió mi visión.",
+    asidePointFeeds: "Feeds con reglas claras y el motivo de cada recomendación.",
+    asidePointTransparency: "Ediciones con historial público y moderación que cita la regla.",
     asideNote: "Tus datos se quedan en Brasil y puedes exportarlos o borrarlos cuando quieras.",
     signUpTitle: "Crea tu cuenta",
     haveAccount: "¿Ya tienes cuenta?",

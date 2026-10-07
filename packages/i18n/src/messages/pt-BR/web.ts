@@ -92,10 +92,10 @@ export const web = {
     finalLead: "Comece seguindo três tópicos. Leva dois minutos.",
   },
   auth: {
-    asideQuote:
-      '"Mudei de ideia sobre a tarifa zero lendo uma discussão aqui. Não lembro a última vez que isso aconteceu numa rede social."',
-    asideAuthor: "Thiago Albuquerque",
-    asideRole: "Médico de família, Fortaleza",
+    asideTitle: "Aqui, o que sobe é o que faz a conversa avançar.",
+    asidePointReactions: "Reações que dizem algo: bom argumento, esclarecedor, mudou minha visão.",
+    asidePointFeeds: "Feeds com regras claras e o motivo de cada recomendação.",
+    asidePointTransparency: "Edições com histórico público e moderação que cita a regra.",
     asideNote: "Seus dados ficam no Brasil e você pode exportá-los ou apagá-los quando quiser.",
     signUpTitle: "Criar sua conta",
     haveAccount: "Já tem conta?",

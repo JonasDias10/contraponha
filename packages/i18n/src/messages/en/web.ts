@@ -94,10 +94,11 @@ export const web: Messages["web"] = {
     finalLead: "Start by following three topics. It takes two minutes.",
   },
   auth: {
-    asideQuote:
-      '"I changed my mind about fare-free transit reading a discussion here. I cannot remember the last time that happened on a social network."',
-    asideAuthor: "Thiago Albuquerque",
-    asideRole: "Family doctor, Fortaleza",
+    asideTitle: "Here, what rises is what moves the conversation forward.",
+    asidePointReactions:
+      "Reactions that say something: good argument, clarifying, changed my mind.",
+    asidePointFeeds: "Feeds with clear rules and the reason behind every recommendation.",
+    asidePointTransparency: "Edits with public history and moderation that cites the rule.",
     asideNote: "Your data stays in Brazil and you can export or delete it whenever you want.",
     signUpTitle: "Create your account",
     haveAccount: "Already have an account?",
