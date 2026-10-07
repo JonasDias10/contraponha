@@ -48,9 +48,7 @@ export function DateField({
         mode: "date",
         minimumDate,
         maximumDate,
-        onChange: (event, date) => {
-          if (event.type === "set" && date) onChange(isoFromDate(date))
-        },
+        onValueChange: (_event, date) => onChange(isoFromDate(date)),
       })
 
       return
@@ -121,7 +119,7 @@ export function DateField({
               themeVariant={scheme}
               minimumDate={minimumDate}
               maximumDate={maximumDate}
-              onChange={(_event, date) => date && setDraft(date)}
+              onValueChange={(_event, date) => setDraft(date)}
             />
             <View style={styles.actions}>
               <Button

@@ -48,6 +48,9 @@ import { fonts, space } from "@/lib/theme"
 
 const DRAFT_KEY = "contraponha.composer-draft"
 
+// On iOS the composer opens as a page sheet, which already sits below the status bar.
+const IS_SHEET = Platform.OS === "ios"
+
 function valuesFrom(post: PostView): ComposerValues {
   return {
     title: post.title ?? "",
@@ -159,7 +162,8 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
   const sourceCount = filledSources(sources).length
 
   return (
-    <Screen edges={["top", "bottom"]}>
+    <Screen edges={IS_SHEET ? ["bottom"] : ["top", "bottom"]}>
+      {IS_SHEET ? <View style={[styles.grabber, { backgroundColor: palette.line }]} /> : null}
       <View style={[styles.header, { borderBottomColor: palette.line }]}>
         <IconButton icon={X} label={t("web.composer.exit")} color={palette.ink} onPress={leave} />
         <View style={styles.flex} />
@@ -273,12 +277,14 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  grabber: { alignSelf: "center", width: 36, height: 5, borderRadius: 3, marginTop: space.sm },
   header: {
     flexDirection: "row",
     alignItems: "center",
     gap: space.sm,
-    height: 56,
-    paddingLeft: space.sm,
+    minHeight: 60,
+    paddingVertical: space.sm,
+    paddingLeft: space.xs,
     paddingRight: space.gutter,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },

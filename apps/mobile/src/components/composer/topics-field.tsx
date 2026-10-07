@@ -109,5 +109,5 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: StyleSheet.hairlineWidth,
   },
-  textInput: { flex: 1, fontFamily: fonts.sans, fontSize: 15 },
+  textInput: { flex: 1, height: 40, paddingVertical: 0, fontFamily: fonts.sans, fontSize: 15 },
 })
