@@ -52,7 +52,7 @@ export function ReactionBar({
             disabled={isDisabled}
             onClick={() => onToggle(kind)}
             className={cn(
-              "inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border px-3.5 pl-3 text-sm font-medium transition-colors disabled:opacity-60",
+              "inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border px-3.5 pl-3 text-sm font-medium transition-[color,background-color,border-color,scale] duration-150 active:scale-95 disabled:opacity-60",
               isOn
                 ? isSource
                   ? "border-transparent bg-warning-soft font-semibold text-warning"

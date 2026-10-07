@@ -97,7 +97,7 @@ export function LinkPopover({ editor, isActive }: LinkPopoverProps): React.JSX.E
         <PopoverPrimitive.Content
           sideOffset={6}
           align="start"
-          className="z-50 w-[min(360px,calc(100vw-32px))] rounded-[12px] border border-line bg-surface-raised p-3 shadow-e2"
+          className="z-50 w-[min(360px,calc(100vw-32px))] origin-(--radix-popover-content-transform-origin) rounded-[12px] border border-line bg-surface-raised p-3 shadow-e2 data-[state=closed]:animate-fade-out data-[state=open]:animate-pop-in"
         >
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-ink">

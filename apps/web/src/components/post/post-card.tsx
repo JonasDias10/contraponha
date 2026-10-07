@@ -69,7 +69,7 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
   const [firstSource] = post.sources
 
   return (
-    <article className="flex flex-col gap-3.5 rounded-lg border border-line bg-surface-raised p-5">
+    <article className="flex animate-rise-in flex-col gap-3.5 rounded-lg border border-line bg-surface-raised p-5 transition-shadow hover:shadow-e1">
       {reason ? <WhyLine reason={reason} /> : null}
       {post.isPinned ? (
         <p className="flex items-center gap-1.5 text-[12.5px] text-subtle">

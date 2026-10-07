@@ -26,13 +26,13 @@ export function DialogContent({
 }: DialogContentProps): React.JSX.Element {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-scrim" />
+      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-scrim data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed z-50 flex flex-col gap-5 bg-surface-raised p-7 shadow-e3 focus:outline-none",
+          "fixed z-50 flex flex-col gap-5 bg-surface-raised p-7 shadow-e3 focus:outline-none data-[state=closed]:animate-fade-out",
           side === "center"
-            ? "left-1/2 top-[8vh] max-h-[84vh] w-[calc(100%-32px)] max-w-[560px] -translate-x-1/2 overflow-y-auto rounded-xl"
-            : "inset-y-0 right-0 w-full max-w-[420px] overflow-y-auto",
+            ? "data-[state=open]:animate-pop-in left-1/2 top-[8vh] max-h-[84vh] w-[calc(100%-32px)] max-w-[560px] -translate-x-1/2 overflow-y-auto rounded-xl"
+            : "data-[state=open]:animate-slide-in-right inset-y-0 right-0 w-full max-w-[420px] overflow-y-auto",
           className,
         )}
         {...props}
@@ -62,7 +62,7 @@ export function MenuContent({
         sideOffset={6}
         align="end"
         className={cn(
-          "z-50 min-w-56 rounded-[12px] border border-line bg-surface-raised p-1.5 shadow-e2",
+          "z-50 min-w-56 origin-(--radix-dropdown-menu-content-transform-origin) rounded-[12px] border border-line bg-surface-raised p-1.5 shadow-e2 data-[state=closed]:animate-fade-out data-[state=open]:animate-pop-in",
           className,
         )}
         {...props}
@@ -83,7 +83,7 @@ export function MenuItem({
   return (
     <DropdownPrimitive.Item
       className={cn(
-        "flex h-11 cursor-pointer items-center gap-3 rounded-md px-3 text-[15px] outline-none data-[highlighted]:bg-surface-sunken",
+        "flex h-11 cursor-pointer items-center gap-3 rounded-md px-3 text-[15px] outline-none transition-colors data-[highlighted]:bg-surface-sunken",
         tone === "danger" ? "text-danger" : "text-ink",
         className,
       )}
