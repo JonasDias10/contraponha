@@ -21,24 +21,58 @@ Componentes visuais **não** são compartilhados. Web usa HTML + Tailwind e mobi
 ```text
 apps/web/
 ├── next.config.ts
-├── postcss.config.mjs           Tailwind 4
+├── content/legal/               Termos, privacidade, diretrizes, transparência e "como funciona" (pt-BR, en, es)
 ├── .env.example                 API_URL
 └── src/
     ├── app/                     App Router
-    │   ├── layout.tsx           <html lang>, metadata traduzida
-    │   ├── page.tsx             Tela inicial (server component)
-    │   └── globals.css          Tailwind e tokens de tema (claro/escuro)
-    ├── components/              Componentes de apresentação
+    │   ├── layout.tsx           <html lang>, fontes, script de tema, providers
+    │   ├── (site)/              Páginas públicas: landing e textos legais
+    │   ├── (auth)/              Cadastro, login (senha ou link mágico), senha e verificação de e-mail
+    │   ├── onboarding/          Escolha de tópicos e sugestões de pessoas
+    │   ├── (app)/               Feed, post, perfil, seguidores, busca, notificações, salvos, configurações, moderação
+    │   ├── (editor)/            Escrever e editar post
+    │   └── api/v1/[...path]/    Proxy autenticado para a API (BFF)
+    ├── actions/                 Server actions: entrar, sair, idioma
+    ├── components/              Componentes por área (post, discussion, profile, ui...)
+    ├── hooks/                   Mutations e estado de cliente (reações, seguir, upload, rascunho)
     └── lib/
-        ├── api.ts               createServerApiClient(locale)
-        ├── env.ts               Validação do env do web
-        └── i18n.ts              Idioma da requisição a partir do Accept-Language
+        ├── api.ts               createServerApiClient(locale), com o token da sessão
+        ├── api-browser.ts       Cliente do navegador, apontando para o proxy /api/v1
+        ├── session.ts           Cookie httpOnly da sessão
+        ├── viewer.ts            getViewer() e requireViewer(), cacheados por requisição
+        ├── query-keys.ts        Chaves do TanStack Query, num lugar só
+        ├── server-query.ts      QueryClient por requisição para prefetch
+        ├── paths.ts             URLs tipadas das páginas
+        └── i18n.ts              Idioma: cookie ponto_locale, depois Accept-Language
 ```
 
-- **Server components por padrão.** A página inicial busca o status da API no servidor; nenhum JavaScript extra vai para o navegador. Componentes interativos usam `"use client"` só onde for necessário.
-- **Idioma por requisição.** `getRequestTranslator()` negocia o idioma pelo `Accept-Language` com a mesma função que a API usa e define o `lang` do `<html>`.
-- **`API_URL` é variável de servidor.** Como a chamada acontece no servidor, a URL não é exposta ao navegador. Quando houver chamadas do lado do cliente, crie `NEXT_PUBLIC_API_URL` e libere a origem do web em `CORS_ORIGINS` na API.
-- **Rotas tipadas** (`typedRoutes`) fazem `<Link href>` inválido falhar no typecheck.
+### Sessão e chamadas à API
+
+- **O token nunca chega ao JavaScript do navegador.** O login acontece numa server action, que guarda o token num cookie `ponto_session` (`httpOnly`, `SameSite=Lax`, `Secure` em produção).
+- **Server components** chamam a API direto, com `createServerApiClient`, que anexa o token como `Authorization: Bearer`.
+- **Componentes de cliente** usam o mesmo `@ponto/api-client` com `baseUrl` vazio: as chamadas vão para `/api/v1/...` no próprio web, e o route handler `app/api/v1/[...path]` repassa para `API_URL` com o token do cookie. Requisições que alteram estado só passam se a origem for a mesma (proteção contra CSRF além do `SameSite`).
+- Por isso `API_URL` continua sendo variável de servidor e a API não precisa liberar CORS para o web. O CORS do bucket de mídia, por outro lado, precisa aceitar a origem do web, porque o upload vai direto do navegador para o storage (ver [media.md](media.md)).
+- Páginas que exigem conta chamam `requireViewer()`, que redireciona para `/login`.
+
+### Dados no cliente
+
+- **TanStack Query** para tudo que é buscado ou alterado no cliente. Páginas fazem prefetch no servidor com `getServerQueryClient()` e entregam o cache com `HydrationBoundary`, então a primeira renderização já vem com dados e o cliente continua de onde parou (paginação infinita, mutations otimistas de reações, seguir e salvar).
+- Todas as chaves ficam em `lib/query-keys.ts`; invalidações usam essas mesmas funções.
+- Erros 4xx não são repetidos (`isRetryable`); só falhas de rede e 5xx.
+- Listas de pessoas (seguidores, seguindo) pedem o estado "sigo ou não" de uma página inteira numa única chamada a `GET /follows/status?userIds=`, em vez de uma por linha.
+
+### Formulários
+
+`react-hook-form` com `zodResolver` e os **mesmos schemas** de `@ponto/validation` que a API usa. Quando o schema transforma o valor (por exemplo, `trim` ou datas), o formulário declara os dois tipos: `useForm<Input, unknown, Output>`. Mensagens de erro vêm de `web.validation`.
+
+### Interface
+
+- Primitivos acessíveis do **Radix** (diálogos, menus, abas, popovers), variantes com `cva`, ícones `lucide-react`, toasts com `sonner`.
+- Markdown de posts e contribuições renderizado com `react-markdown` num subconjunto seguro (sem HTML bruto); textos legais usam também `remark-gfm` para tabelas.
+- Fontes Literata (texto) e Instrument Sans (interface) via `next/font`.
+- **Tema** claro, escuro ou automático. Um script pequeno (`THEME_BOOT_SCRIPT`, em `lib/theme.ts`) roda antes da primeira pintura e aplica a classe `dark`, evitando o flash de tema errado. Substitui o `next-themes`, que gerava aviso de script no React 19.2.
+- **Idioma.** O cookie `ponto_locale` (seletor no rodapé ou idioma da conta) tem prioridade sobre o `Accept-Language`. Os textos estão no namespace `web` de `@ponto/i18n`, em pt-BR, en e es. Textos legais traduzidos dizem que a versão em português prevalece.
+- **Rotas tipadas** (`typedRoutes`) fazem `<Link href>` inválido falhar no typecheck; URLs dinâmicas são montadas em `lib/paths.ts`.
 - Porta padrão: **3001** (a API usa a 3000).
 
 ## apps/mobile (Expo)
@@ -74,13 +108,10 @@ apps/mobile/
 
 ## Fluxo de dados nos clientes
 
-Nesta etapa não há biblioteca de cache de dados. O status da API é buscado diretamente:
-
-- web: no servidor, a cada requisição;
-- mobile: num hook com `useEffect`, timeout de 3s e cancelamento ao desmontar.
-
-Quando os clientes começarem a consumir dados de verdade (feed, perfis), a recomendação é adotar **TanStack Query** nos dois apps, com os hooks construídos sobre `@ponto/api-client`.
+- web: TanStack Query, com prefetch no servidor (seção acima);
+- mobile: por enquanto só o status da API, num hook com `useEffect`, timeout de 3s e cancelamento ao desmontar. Quando o app consumir feed e perfis, a recomendação é adotar o mesmo TanStack Query sobre `@ponto/api-client`.
 
 ## Testes
 
-Os apps ainda não têm testes próprios: toda a lógica atual vive nos pacotes compartilhados, que são testados. Quando surgirem componentes com comportamento (formulários, listas), a base será Vitest + Testing Library no web e Jest (`jest-expo`) + React Native Testing Library no mobile.
+- **web:** Vitest para funções puras de `lib/` (formatação, edição de markdown, força de senha) e para a montagem de textos de notificação. Fluxos completos são cobertos pelos testes e2e da API.
+- **mobile:** ainda sem testes próprios; a base será Jest (`jest-expo`) + React Native Testing Library.

@@ -26,7 +26,11 @@ apps/api/
 │       ├── posts/              Posts, edição com histórico, listagem por autor
 │       ├── comments/           Comentários e respostas (1 nível)
 │       ├── reactions/          Reações em posts e comentários
-│       ├── follows/            Seguir, seguidores e seguindo
+│       ├── follows/            Seguir, seguidores, seguindo e estado em lote (/follows/status)
+│       ├── topics/             Tópicos, seguir tópicos e páginas de tópico
+│       ├── bookmarks/          Posts salvos (privados)
+│       ├── people/             Perfil público com estado do visitante, sugestões e reconhecimento (modelo de leitura)
+│       ├── accounts/           LGPD: exportação de dados, exclusão de conta com carência, zerar recomendações
 │       ├── media/              Upload de imagens via storage S3
 │       ├── notifications/      Notificações de interações
 │       ├── feed/               Seguindo e Em destaque (modelo de leitura)
@@ -328,6 +332,18 @@ Para adicionar uma variável: inclua no schema, exponha no `AppConfig`, document
 - `EmailModule` (global) expõe `EmailSender`, implementado por `SmtpEmailSender` (nodemailer). Qualquer provedor com SMTP serve; em desenvolvimento, o Mailpit do docker-compose recebe tudo. É uma das poucas abstrações com classe abstrata, porque há duas implementações reais (SMTP e o capturador dos testes) e o provedor muda por ambiente.
 - `StorageModule` (global) expõe `ObjectStorage`, implementado por `S3ObjectStorage`: URLs de upload pré-assinadas, `HEAD`, leitura parcial e exclusão de objetos. Detalhes em [media.md](media.md).
 - A API **sobe mesmo se PostgreSQL ou Redis estiverem fora**: o pool conecta sob demanda e o Redis reconecta sozinho. Quem decide se a instância recebe tráfego é o readiness check.
+
+## Tarefas em segundo plano
+
+O `BackgroundJobsService` (módulo `accounts`) roda dentro do processo da API, a cada minuto:
+
+1. processa exportações de dados pendentes até a fila esvaziar (gera HTML ou JSON e envia ao storage em `exports/`);
+2. apaga contas cuja carência de 30 dias (`ACCOUNT_DELETION_GRACE_DAYS`) terminou. A conta vira um registro anônimo ("conta excluída") para manter as discussões de outras pessoas legíveis, a menos que a pessoa tenha pedido para apagar também as contribuições;
+3. remove arquivos de exportação com mais de 7 dias (`DATA_EXPORT_RETENTION_DAYS`).
+
+Cada passo é seguro com várias instâncias ao mesmo tempo: exportações são reivindicadas com `FOR UPDATE SKIP LOCKED`, e exclusões e limpezas são idempotentes. Não há fila externa: o volume do MVP não justifica, e trocar por uma fila depois só muda quem chama `runOnce()`.
+
+`BACKGROUND_JOBS_ENABLED=false` desliga o agendamento. Os testes e2e sobem a API assim e chamam os serviços diretamente, para não depender de tempo.
 
 ## Health checks
 

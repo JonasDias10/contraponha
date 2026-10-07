@@ -44,3 +44,7 @@ A aplicação depende da classe abstrata `ObjectStorage` (`src/infrastructure/st
 Em desenvolvimento e no CI o storage é o [RustFS](https://rustfs.com), compatível com S3, no docker-compose (API em `:9000`, console em `:9001`). As imagens do MinIO deixaram de ser publicadas no Docker Hub, por isso a troca.
 
 As imagens são públicas por URL: o conteúdo de posts já é público. A chave do objeto é `posts/<id do dono>/<uuid>.<ext>`: imprevisível e sem o nome original do arquivo.
+
+Só o prefixo `posts/` é público. A política do bucket libera `GetObject` apenas nele e é reaplicada a cada inicialização, então ela sempre acompanha o código. As exportações de dados (LGPD) ficam no mesmo bucket em `exports/<id do dono>/`, sem acesso público: o download usa uma URL pré-assinada de 10 minutos, gerada só para a dona da exportação.
+
+Como o navegador envia a imagem direto para o bucket, o CORS do bucket aceita `PUT` e `GET` vindos de `WEB_APP_URL` e de `CORS_ORIGINS`. Em produção, com `STORAGE_AUTO_CREATE_BUCKET` desligado, configure a mesma política e o mesmo CORS no provedor.
