@@ -1,24 +1,10 @@
 "use client"
 
 import { ReactionKind, type ReactionCounts } from "@contraponha/types"
-import { BookText, CircleCheck, Lightbulb, RefreshCw, type LucideIcon } from "lucide-react"
 
 import { useI18n } from "@/components/providers/i18n-provider"
 import { cn } from "@/lib/cn"
-
-export const REACTION_ICONS: Record<ReactionKind, LucideIcon> = {
-  [ReactionKind.GOOD_ARGUMENT]: CircleCheck,
-  [ReactionKind.INSIGHTFUL]: Lightbulb,
-  [ReactionKind.CHANGED_MY_MIND]: RefreshCw,
-  [ReactionKind.NEEDS_SOURCE]: BookText,
-}
-
-export const REACTION_ORDER = [
-  ReactionKind.GOOD_ARGUMENT,
-  ReactionKind.INSIGHTFUL,
-  ReactionKind.CHANGED_MY_MIND,
-  ReactionKind.NEEDS_SOURCE,
-] as const
+import { REACTION_ICONS, REACTION_ORDER } from "@/lib/reactions"
 
 export interface ReactionBarProps {
   reactions: ReactionKind[]
