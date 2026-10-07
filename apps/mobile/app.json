@@ -6,12 +6,17 @@
     "version": "0.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
     "ios": {
       "bundleIdentifier": "app.contraponha.mobile",
       "supportsTablet": true
     },
     "android": {
-      "package": "app.contraponha.mobile"
+      "package": "app.contraponha.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#fbfbfa"
+      }
     },
     "plugins": ["expo-router", "expo-localization"],
     "experiments": {
