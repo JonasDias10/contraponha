@@ -52,3 +52,30 @@ export function useContextNoteMutation(): UseMutationResult<void, Error, Context
     onSettled: () => queryClient.invalidateQueries(),
   })
 }
+
+export interface ResolveReportChange {
+  reportId: string
+  resolution: "remove_content" | "dismiss"
+  rule: CommunityRule | undefined
+  note: string
+}
+
+export function useResolveReportMutation(): UseMutationResult<void, Error, ResolveReportChange> {
+  const { api, t, notify } = useClient()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ reportId, resolution, rule, note }: ResolveReportChange) =>
+      api.moderation.resolveReport({
+        reportId,
+        input: {
+          resolution,
+          rule: resolution === "remove_content" ? rule : undefined,
+          note: note.trim() || undefined,
+        },
+      }),
+    onSuccess: () => notify.success(t("web.moderation.resolvedToast")),
+    onError: (error) => notify.error(errorMessage({ error, t })),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["moderation"] }),
+  })
+}
