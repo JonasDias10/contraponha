@@ -142,7 +142,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
 
       <section className="border-t border-line py-24">
         <div className="mx-auto flex w-full max-w-300 flex-col items-center gap-5 px-4 text-center sm:px-8">
-          <Logo className="text-[56px]" />
+          <Logo className="text-[34px] sm:text-[56px]" />
           <p className="font-serif text-xl text-muted">{t("web.landing.finalLead")}</p>
           <Button asChild size="lg">
             <Link href="/signup">{t("web.landing.createAccount")}</Link>

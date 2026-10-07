@@ -45,6 +45,10 @@ export const web: Messages["web"] = {
   },
   footer: {
     label: "Pie de página",
+    productTitle: "Producto",
+    communityTitle: "Comunidad",
+    legalTitle: "Legal",
+    copyright: "© {year} Contraponha. Hecho en Brasil.",
     guidelines: "Normas de la comunidad",
     privacy: "Privacidad",
     terms: "Términos",

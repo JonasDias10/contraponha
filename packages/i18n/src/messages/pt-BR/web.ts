@@ -43,6 +43,10 @@ export const web = {
   },
   footer: {
     label: "Rodapé",
+    productTitle: "Produto",
+    communityTitle: "Comunidade",
+    legalTitle: "Legal",
+    copyright: "© {year} Contraponha. Feito no Brasil.",
     guidelines: "Diretrizes da comunidade",
     privacy: "Privacidade",
     terms: "Termos",
