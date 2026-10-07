@@ -28,6 +28,7 @@ export const web = {
     search: "Buscar",
     notifications: "Notificações",
     newNotifications: "{count} novas",
+    newNotifications_one: "{count} nova",
     saved: "Salvos",
     profile: "Perfil",
     settings: "Configurações",
@@ -189,7 +190,8 @@ export const web = {
     emptyDiscoverBody:
       "Quando posts recentes receberem bons argumentos e esclarecimentos, eles aparecem aqui.",
     ongoingTitle: "Discussões em andamento",
-    ongoingMeta: "{comments} contribuições · {highlighted} destacadas",
+    ongoingHighlighted: "{count} destacadas",
+    ongoingHighlighted_one: "{count} destacada",
     yourTopics: "Seus tópicos",
     howOrderedTitle: "Como este feed é ordenado",
     howOrderedBody:

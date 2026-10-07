@@ -30,6 +30,7 @@ export const web: Messages["web"] = {
     search: "Search",
     notifications: "Notifications",
     newNotifications: "{count} new",
+    newNotifications_one: "{count} new",
     saved: "Saved",
     profile: "Profile",
     settings: "Settings",
@@ -189,7 +190,8 @@ export const web: Messages["web"] = {
     emptyDiscoverTitle: "Nothing featured for now",
     emptyDiscoverBody: "When recent posts receive good arguments and insights, they show up here.",
     ongoingTitle: "Ongoing discussions",
-    ongoingMeta: "{comments} contributions · {highlighted} highlighted",
+    ongoingHighlighted: "{count} highlighted",
+    ongoingHighlighted_one: "{count} highlighted",
     yourTopics: "Your topics",
     howOrderedTitle: "How this feed is ordered",
     howOrderedBody:

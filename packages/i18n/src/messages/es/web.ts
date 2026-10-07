@@ -30,6 +30,7 @@ export const web: Messages["web"] = {
     search: "Buscar",
     notifications: "Notificaciones",
     newNotifications: "{count} nuevas",
+    newNotifications_one: "{count} nueva",
     saved: "Guardados",
     profile: "Perfil",
     settings: "Configuración",
@@ -194,7 +195,8 @@ export const web: Messages["web"] = {
     emptyDiscoverBody:
       "Cuando los posts recientes reciban buenos argumentos y aclaraciones, aparecerán aquí.",
     ongoingTitle: "Discusiones en curso",
-    ongoingMeta: "{comments} contribuciones · {highlighted} destacadas",
+    ongoingHighlighted: "{count} destacadas",
+    ongoingHighlighted_one: "{count} destacada",
     yourTopics: "Tus temas",
     howOrderedTitle: "Cómo se ordena este feed",
     howOrderedBody:

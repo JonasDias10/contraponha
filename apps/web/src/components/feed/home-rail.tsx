@@ -49,9 +49,10 @@ export function HomeRail(): React.JSX.Element {
               >
                 <span className="font-semibold">{discussion.title}</span>
                 <span className="text-[13px] text-subtle">
-                  {t("web.feed.ongoingMeta", {
-                    comments: discussion.commentCount,
-                    highlighted: discussion.highlightedCommentCount,
+                  {t("web.post.summaryContributions", { count: discussion.commentCount })}
+                  {" · "}
+                  {t("web.feed.ongoingHighlighted", {
+                    count: discussion.highlightedCommentCount,
                   })}
                 </span>
               </Link>
