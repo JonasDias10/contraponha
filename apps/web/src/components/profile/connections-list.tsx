@@ -3,6 +3,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { ArrowLeft, Users } from "lucide-react"
 import Link from "next/link"
+import { queryKeys } from "@contraponha/client-core"
 
 import { PersonRow } from "@/components/profile/person-row"
 import { useApi } from "@/components/providers/app-providers"
@@ -12,7 +13,6 @@ import { Button } from "@/components/ui/button"
 import { Card, EmptyState, Skeleton } from "@/components/ui/surfaces"
 import { cn } from "@/lib/cn"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 

@@ -2,13 +2,13 @@
 
 import { Inbox } from "lucide-react"
 import Link from "next/link"
+import { queryKeys } from "@contraponha/client-core"
 
 import { FeedList } from "@/components/feed/feed-list"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Card, EmptyState } from "@/components/ui/surfaces"
-import { queryKeys } from "@/lib/query-keys"
 
 export function SavedPosts(): React.JSX.Element {
   const { t } = useI18n()

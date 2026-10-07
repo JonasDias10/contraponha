@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { BodyEditor } from "@/components/composer/body-editor"
 import {
@@ -34,9 +35,7 @@ import { Field, Input } from "@/components/ui/field"
 import { Banner } from "@/components/ui/surfaces"
 import { useImageUploads } from "@/hooks/use-image-upload"
 import { readDraft, useLocalDraft } from "@/hooks/use-local-draft"
-import { errorMessage } from "@/lib/api-errors"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 const DRAFT_KEY = "contraponha:composer-draft"
 

@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
+import { queryKeys } from "@contraponha/client-core"
 
 import { topicLabel } from "@/components/post/topic-tags"
 import { FollowButton } from "@/components/profile/follow-button"
@@ -12,7 +13,6 @@ import { Avatar } from "@/components/ui/avatar"
 import { tagVariants } from "@/components/ui/badges"
 import { Card } from "@/components/ui/surfaces"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 export interface ProfileRailProps {
   handle: string

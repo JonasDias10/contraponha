@@ -5,6 +5,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { Hash, Search, X } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { queryKeys } from "@contraponha/client-core"
 
 import { ContributionCard } from "@/components/discussion/contribution-card"
 import { PostCardSkeleton } from "@/components/feed/feed-list"
@@ -23,7 +24,6 @@ import { Button } from "@/components/ui/button"
 import { Card, EmptyState } from "@/components/ui/surfaces"
 import { cn } from "@/lib/cn"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 const PREVIEW_PEOPLE = 3

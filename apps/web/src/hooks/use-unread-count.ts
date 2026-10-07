@@ -1,10 +1,10 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useViewer } from "@/components/providers/viewer-provider"
-import { queryKeys } from "@/lib/query-keys"
 
 const UNREAD_REFRESH_MS = 60_000
 

@@ -3,14 +3,13 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { formatDateTime, queryKeys } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/surfaces"
-import { formatDateTime } from "@/lib/format"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 

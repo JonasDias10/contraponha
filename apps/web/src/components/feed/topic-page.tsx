@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Hash } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { queryKeys } from "@contraponha/client-core"
 
 import { FeedList } from "@/components/feed/feed-list"
 import { topicLabel } from "@/components/post/topic-tags"
@@ -12,7 +13,6 @@ import { topicMeta } from "@/components/topics/topic-meta"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { Button } from "@/components/ui/button"
 import { Card, EmptyState } from "@/components/ui/surfaces"
-import { queryKeys } from "@/lib/query-keys"
 
 export interface TopicPageProps {
   slug: string

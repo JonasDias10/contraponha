@@ -3,9 +3,9 @@
 import type { PrivateProfile } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 import { createContext, useContext } from "react"
+import { queryKeys } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
-import { queryKeys } from "@/lib/query-keys"
 
 const ViewerSeedContext = createContext<PrivateProfile | null>(null)
 

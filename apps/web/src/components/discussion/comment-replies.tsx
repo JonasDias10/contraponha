@@ -3,11 +3,11 @@
 import type { CommentView } from "@contraponha/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { ChevronDown } from "lucide-react"
+import { queryKeys } from "@contraponha/client-core"
 
 import { CommentItem } from "@/components/discussion/comment-item"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 

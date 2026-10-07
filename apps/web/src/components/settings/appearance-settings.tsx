@@ -2,14 +2,13 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { LocaleSwitcher, ThemeSwitcher } from "@/components/layout/preference-switchers"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { SettingsSection } from "@/components/settings/settings-section"
-import { errorMessage } from "@/lib/api-errors"
-import { queryKeys } from "@/lib/query-keys"
 
 const TIME_ZONES = Intl.supportedValuesOf("timeZone").filter((zone) => zone.startsWith("America/"))
 

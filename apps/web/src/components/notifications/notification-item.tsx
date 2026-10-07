@@ -4,8 +4,8 @@ import type { NotificationView } from "@contraponha/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { BookText, MessageSquare, ShieldCheck, Star } from "lucide-react"
 import Link from "next/link"
+import { notificationText, queryKeys } from "@contraponha/client-core"
 
-import { notificationText } from "@/components/notifications/notification-text"
 import { RelativeTime } from "@/components/post/relative-time"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -13,7 +13,6 @@ import { Avatar } from "@/components/ui/avatar"
 import { UnreadDot } from "@/components/ui/badges"
 import { cn } from "@/lib/cn"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 interface IconProps {
   notification: NotificationView

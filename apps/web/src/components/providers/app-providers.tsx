@@ -5,9 +5,9 @@ import type { Locale } from "@contraponha/i18n"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createContext, useContext, useState } from "react"
 import { Toaster } from "sonner"
+import { isRetryable } from "@contraponha/client-core"
 
 import { createBrowserApiClient } from "@/lib/api-browser"
-import { isRetryable } from "@/lib/query"
 
 import { I18nProvider } from "./i18n-provider"
 

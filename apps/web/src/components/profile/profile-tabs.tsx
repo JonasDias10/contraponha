@@ -3,6 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
+import { queryKeys } from "@contraponha/client-core"
 
 import { ContributionCard } from "@/components/discussion/contribution-card"
 import { PostCardSkeleton } from "@/components/feed/feed-list"
@@ -11,7 +12,6 @@ import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/cn"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 

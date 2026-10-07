@@ -2,6 +2,7 @@
 
 import type { CommentView } from "@contraponha/types"
 import { CircleCheck } from "lucide-react"
+import { REACTION_ORDER } from "@contraponha/client-core"
 
 import { commentActionClasses } from "@/components/discussion/comment-actions"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -9,7 +10,7 @@ import { useViewer } from "@/components/providers/viewer-provider"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
 import { useReactions } from "@/hooks/use-reactions"
 import { cn } from "@/lib/cn"
-import { REACTION_ICONS, REACTION_ORDER } from "@/lib/reactions"
+import { REACTION_ICONS } from "@/lib/reactions"
 
 export interface CommentReactionsProps {
   comment: CommentView

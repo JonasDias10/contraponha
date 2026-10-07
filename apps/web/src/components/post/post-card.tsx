@@ -3,6 +3,7 @@
 import type { FeedReason, PostView } from "@contraponha/types"
 import { History, Info, Pin } from "lucide-react"
 import Link from "next/link"
+import { readingMinutes } from "@contraponha/client-core"
 
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
@@ -16,7 +17,6 @@ import { topicLabel } from "@/components/post/topic-tags"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { HighlightedText } from "@/components/search/highlighted-text"
 import { useReactions } from "@/hooks/use-reactions"
-import { readingMinutes } from "@/lib/format"
 import { paths } from "@/lib/paths"
 
 const EXCERPT_LENGTH = 320

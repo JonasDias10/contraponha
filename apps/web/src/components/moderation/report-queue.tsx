@@ -6,6 +6,7 @@ import { Inbox } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { RelativeTime } from "@/components/post/relative-time"
 import { RuleSelect } from "@/components/post/rule-select"
@@ -16,9 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
 import { Field, Input } from "@/components/ui/field"
 import { Card, EmptyState, Panel } from "@/components/ui/surfaces"
-import { errorMessage } from "@/lib/api-errors"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 

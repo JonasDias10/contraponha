@@ -4,8 +4,7 @@ import { SEARCH_QUERY_MIN_LENGTH } from "@contraponha/config"
 import { SearchPeriod, SearchSort } from "@contraponha/types"
 import type { Route } from "next"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-
-import type { ContentSearchKey } from "@/lib/query-keys"
+import type { ContentSearchKey } from "@contraponha/client-core"
 
 export const SEARCH_TABS = ["all", "posts", "contributions", "people", "topics"] as const
 

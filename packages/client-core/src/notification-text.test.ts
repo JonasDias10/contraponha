@@ -2,7 +2,7 @@ import { createTranslator } from "@contraponha/i18n"
 import type { NotificationView, PublicProfile } from "@contraponha/types"
 import { describe, expect, it } from "vitest"
 
-import { notificationText, periodOf } from "./notification-text"
+import { notificationText, periodOf } from "./notification-text.js"
 
 const t = createTranslator({ locale: "pt-BR" })
 

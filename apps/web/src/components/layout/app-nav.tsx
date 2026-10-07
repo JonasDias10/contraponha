@@ -16,6 +16,7 @@ import {
 import type { Route } from "next"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { canModerate } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
 import { Logo } from "@/components/brand/logo"
@@ -26,7 +27,6 @@ import { Button } from "@/components/ui/button"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
 import { useUnreadCount } from "@/hooks/use-unread-count"
 import { cn } from "@/lib/cn"
-import { canModerate } from "@/lib/roles"
 import { paths } from "@/lib/paths"
 
 interface NavItem {

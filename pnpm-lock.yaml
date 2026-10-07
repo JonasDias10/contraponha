@@ -354,6 +354,9 @@ importers:
       '@contraponha/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@contraponha/client-core':
+        specifier: workspace:*
+        version: link:../../packages/client-core
       '@contraponha/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -502,6 +505,31 @@ importers:
       zod:
         specifier: ^4.6.5
         version: 4.6.5
+    devDependencies:
+      '@contraponha/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(@types/node@22.20.5)(vite@8.3.2(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/client-core:
+    dependencies:
+      '@contraponha/api-client':
+        specifier: workspace:*
+        version: link:../api-client
+      '@contraponha/config':
+        specifier: workspace:*
+        version: link:../config
+      '@contraponha/i18n':
+        specifier: workspace:*
+        version: link:../i18n
+      '@contraponha/types':
+        specifier: workspace:*
+        version: link:../types
     devDependencies:
       '@contraponha/tsconfig':
         specifier: workspace:*

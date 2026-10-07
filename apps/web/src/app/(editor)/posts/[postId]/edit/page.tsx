@@ -1,12 +1,12 @@
 import { ApiError } from "@contraponha/api-client"
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
+import { isWithinEditWindow } from "@contraponha/client-core"
 
 import { Composer } from "@/components/composer/composer"
 import { ViewerProvider } from "@/components/providers/viewer-provider"
 import { createServerApiClient } from "@/lib/api"
 import { getRequestTranslator } from "@/lib/i18n"
-import { isWithinEditWindow } from "@/lib/edit-window"
 import { paths } from "@/lib/paths"
 import { requireViewer } from "@/lib/viewer"
 

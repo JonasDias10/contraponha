@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
+import { canModerate, isWithinEditWindow } from "@contraponha/client-core"
 
 import { ContextNoteDialog } from "@/components/post/context-note-dialog"
 import { ReportDialog } from "@/components/post/report-dialog"
@@ -26,9 +27,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
 import { useRemoveContentMutation } from "@/hooks/use-moderation"
 import { useDeletePostMutation, usePinMutation } from "@/hooks/use-post-mutations"
-import { isWithinEditWindow } from "@/lib/edit-window"
 import { paths } from "@/lib/paths"
-import { canModerate } from "@/lib/roles"
 
 type OpenDialog = "delete" | "report" | "remove" | "context" | null
 

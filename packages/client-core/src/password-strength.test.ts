@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { passwordStrength } from "./password-strength"
+import { passwordStrength } from "./password-strength.js"
 
 describe("passwordStrength", () => {
   it("rates short passwords as weak and long varied ones as strong", () => {

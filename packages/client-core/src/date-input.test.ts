@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { formatIsoDate, maskDateInput, parseDateInput } from "./date-input"
+import { formatIsoDate, maskDateInput, parseDateInput } from "./date-input.js"
 
 describe("maskDateInput", () => {
   it("inserts slashes while typing and ignores other characters", () => {

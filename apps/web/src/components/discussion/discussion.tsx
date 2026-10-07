@@ -4,6 +4,7 @@ import { CommentSort } from "@contraponha/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { MessageSquare } from "lucide-react"
 import { useState } from "react"
+import { queryKeys } from "@contraponha/client-core"
 
 import { CommentComposer } from "@/components/discussion/comment-composer"
 import { CommentItem } from "@/components/discussion/comment-item"
@@ -12,7 +13,6 @@ import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
 import { Banner, EmptyState, Skeleton } from "@/components/ui/surfaces"
-import { queryKeys } from "@/lib/query-keys"
 
 const FIRST_PAGE: string | undefined = undefined
 

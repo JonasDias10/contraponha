@@ -6,6 +6,7 @@ import { Download, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
+import { errorMessage, formatDate, formatDateTime, queryKeys } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
 import { useApi } from "@/components/providers/app-providers"
@@ -17,9 +18,6 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Checkbox, Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
 import { Field, Input } from "@/components/ui/field"
 import { Banner } from "@/components/ui/surfaces"
-import { errorMessage } from "@/lib/api-errors"
-import { formatDate, formatDateTime } from "@/lib/format"
-import { queryKeys } from "@/lib/query-keys"
 
 const SECTION_KEYS = {
   [DataExportSection.CONTENT]: "web.settings.exportContent",

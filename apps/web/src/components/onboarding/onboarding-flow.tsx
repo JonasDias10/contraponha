@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { Logo } from "@/components/brand/logo"
 import { recognitionText } from "@/components/profile/recognition"
@@ -15,9 +16,7 @@ import { InterestsPicker } from "@/components/topics/interests-picker"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/surfaces"
-import { errorMessage } from "@/lib/api-errors"
 import { cn } from "@/lib/cn"
-import { queryKeys } from "@/lib/query-keys"
 
 const MIN_INTERESTS = 3
 const TOTAL_STEPS = 2

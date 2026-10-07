@@ -16,6 +16,7 @@ import {
 import type { Route } from "next"
 import Link from "next/link"
 import { useState } from "react"
+import { formatCount, formatMonthYear, queryKeys } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
 import { ReportDialog } from "@/components/post/report-dialog"
@@ -29,9 +30,7 @@ import { Chip } from "@/components/ui/badges"
 import { Button } from "@/components/ui/button"
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
 import { Panel } from "@/components/ui/surfaces"
-import { formatCount, formatMonthYear } from "@/lib/format"
 import { paths } from "@/lib/paths"
-import { queryKeys } from "@/lib/query-keys"
 
 export interface ProfileHeaderProps {
   handle: string

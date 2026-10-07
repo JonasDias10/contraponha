@@ -2,13 +2,13 @@
 
 import { Check, Info } from "lucide-react"
 import { Controller } from "react-hook-form"
+import { readingMinutes, wordCount } from "@contraponha/client-core"
 
 import type { ComposerControl } from "@/components/composer/composer-schema"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { RadioGroup, RadioItem } from "@/components/ui/controls"
 import { Card, Panel } from "@/components/ui/surfaces"
 import { cn } from "@/lib/cn"
-import { readingMinutes, wordCount } from "@/lib/format"
 
 const IDEAL_WORDS_MAX = 1200
 

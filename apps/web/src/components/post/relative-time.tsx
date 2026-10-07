@@ -1,8 +1,9 @@
 "use client"
 
+import { formatDateTime, formatRelativeDate } from "@contraponha/client-core"
+
 import { useI18n } from "@/components/providers/i18n-provider"
 import { useIsClient } from "@/hooks/use-is-client"
-import { formatDateTime, formatRelativeDate } from "@/lib/format"
 
 export interface RelativeTimeProps {
   value: string

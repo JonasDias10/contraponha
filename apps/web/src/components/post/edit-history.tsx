@@ -2,14 +2,13 @@
 
 import type { ContentRevision, PostView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
+import { formatDateTime, queryKeys } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { Markdown } from "@/components/post/markdown"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Card } from "@/components/ui/surfaces"
 import { cn } from "@/lib/cn"
-import { formatDateTime } from "@/lib/format"
-import { queryKeys } from "@/lib/query-keys"
 
 interface Version {
   number: number

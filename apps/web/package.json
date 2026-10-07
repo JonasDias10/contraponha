@@ -10,10 +10,11 @@
     "typecheck": "next typegen && tsc --noEmit",
     "lint": "next typegen && eslint .",
     "clean": "rm -rf .next .turbo",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@contraponha/api-client": "workspace:*",
+    "@contraponha/client-core": "workspace:*",
     "@contraponha/config": "workspace:*",
     "@contraponha/i18n": "workspace:*",
     "@contraponha/types": "workspace:*",

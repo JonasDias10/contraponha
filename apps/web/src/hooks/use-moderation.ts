@@ -4,10 +4,10 @@ import type { CommunityRule } from "@contraponha/types"
 import type { ContextNoteInput } from "@contraponha/validation"
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { errorMessage } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
-import { errorMessage } from "@/lib/api-errors"
 
 export interface RemoveContentChange {
   targetType: "post" | "comment"

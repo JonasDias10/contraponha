@@ -9,6 +9,7 @@ import { useState } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
+import { errorMessage } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -17,7 +18,6 @@ import { RadioGroup, RadioItem } from "@/components/ui/controls"
 import { Field, Textarea } from "@/components/ui/field"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/overlays"
 import { Banner, Panel } from "@/components/ui/surfaces"
-import { errorMessage } from "@/lib/api-errors"
 
 const REASONS = [
   ReportReason.SPAM,

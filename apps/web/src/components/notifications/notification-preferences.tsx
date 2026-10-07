@@ -4,14 +4,13 @@ import type { NotificationPreferences } from "@contraponha/types"
 import type { UpdateNotificationPreferencesInput } from "@contraponha/validation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
 import { Switch } from "@/components/ui/controls"
-import { errorMessage } from "@/lib/api-errors"
 import { cn } from "@/lib/cn"
-import { queryKeys } from "@/lib/query-keys"
 
 type PreferenceSwitch = Exclude<keyof NotificationPreferences, "digestHours">
 

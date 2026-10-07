@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { formatCount, formatRelativeDate, readingMinutes } from "./format"
+import { formatCount, formatRelativeDate, readingMinutes } from "./format.js"
 
 describe("formatRelativeDate", () => {
   const now = new Date("2026-10-06T15:00:00Z")
