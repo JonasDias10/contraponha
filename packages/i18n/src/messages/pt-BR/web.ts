@@ -557,6 +557,8 @@ export const web = {
     unknownDevice: "Dispositivo desconhecido",
     endSession: "Encerrar",
     endOtherSessions: "Sair de todos os outros dispositivos",
+    signOutTitle: "Sair da conta",
+    signOutLead: "Encerra a sessão neste dispositivo. Para sair dos outros, use Sessões ativas.",
     sessionsEnded: "Outras sessões encerradas.",
     interestsTitle: "Interesses",
     interestsLead: "Tópicos que você segue. Eles definem o que aparece em Descobrir.",

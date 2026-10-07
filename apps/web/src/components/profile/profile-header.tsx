@@ -3,11 +3,21 @@
 import * as Popover from "@radix-ui/react-popover"
 import type { ProfileView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
-import { CalendarDays, CircleCheck, Flag, Link2, MapPin, MoreHorizontal } from "lucide-react"
+import {
+  CalendarDays,
+  CircleCheck,
+  Flag,
+  Link2,
+  LogOut,
+  MapPin,
+  MoreHorizontal,
+  SlidersHorizontal,
+} from "lucide-react"
 import type { Route } from "next"
 import Link from "next/link"
 import { useState } from "react"
 
+import { signOut } from "@/actions/auth"
 import { ReportDialog } from "@/components/post/report-dialog"
 import { FollowButton } from "@/components/profile/follow-button"
 import { recognitionText } from "@/components/profile/recognition"
@@ -99,9 +109,35 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
             </div>
             <div className="flex gap-2">
               {isSelf ? (
-                <Button asChild variant="secondary">
-                  <Link href="/settings">{t("web.profile.editProfile")}</Link>
-                </Button>
+                <>
+                  <Button asChild variant="secondary">
+                    <Link href="/settings">{t("web.profile.editProfile")}</Link>
+                  </Button>
+                  <Menu>
+                    <MenuTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        aria-label={t("web.nav.accountMenu")}
+                        className="lg:hidden"
+                      >
+                        <MoreHorizontal aria-hidden className="size-5" />
+                      </Button>
+                    </MenuTrigger>
+                    <MenuContent>
+                      <MenuItem asChild>
+                        <Link href="/settings">
+                          <SlidersHorizontal aria-hidden className="size-4" />
+                          {t("web.nav.settings")}
+                        </Link>
+                      </MenuItem>
+                      <MenuItem onSelect={() => void signOut()}>
+                        <LogOut aria-hidden className="size-4" />
+                        {t("web.nav.signOut")}
+                      </MenuItem>
+                    </MenuContent>
+                  </Menu>
+                </>
               ) : (
                 <>
                   {viewer ? (

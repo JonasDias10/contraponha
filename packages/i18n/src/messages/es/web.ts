@@ -563,6 +563,9 @@ export const web: Messages["web"] = {
     unknownDevice: "Dispositivo desconocido",
     endSession: "Cerrar",
     endOtherSessions: "Cerrar sesión en todos los demás dispositivos",
+    signOutTitle: "Cerrar sesión",
+    signOutLead:
+      "Cierra la sesión en este dispositivo. Para salir de los demás, usa Sesiones activas.",
     sessionsEnded: "Se cerraron las demás sesiones.",
     interestsTitle: "Intereses",
     interestsLead: "Temas que sigues. Definen lo que aparece en Descubrir.",

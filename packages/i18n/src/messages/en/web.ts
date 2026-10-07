@@ -560,6 +560,8 @@ export const web: Messages["web"] = {
     unknownDevice: "Unknown device",
     endSession: "End",
     endOtherSessions: "Sign out of all other devices",
+    signOutTitle: "Sign out",
+    signOutLead: "Ends the session on this device. To sign out elsewhere, use Active sessions.",
     sessionsEnded: "Other sessions ended.",
     interestsTitle: "Interests",
     interestsLead: "Topics you follow. They define what shows up in Discover.",
