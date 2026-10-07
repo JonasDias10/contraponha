@@ -6,3 +6,4 @@ coverage
 .turbo
 pnpm-lock.yaml
 packages/database/migrations/meta
+apps/mobile/expo-env.d.ts

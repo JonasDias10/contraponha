@@ -66,7 +66,7 @@ Mantivemos o azul que já estava no código (6,4:1 sobre o fundo) e adicionamos 
 | small      | Instrument Sans 400 | 14/20                  | 14     |
 | caption    | Instrument Sans 400 | 13/18 (mínimo)         | 13     |
 
-As duas fontes ainda não são carregadas pelos apps: os tokens já apontam para elas e caem para fontes do sistema até que o carregamento (`next/font` no web, `expo-font` no mobile) seja adicionado junto com as primeiras telas reais.
+As duas fontes são carregadas pelos dois apps: `next/font` no web e `expo-font` (com `@expo-google-fonts`) no mobile, que mantém a tela de abertura até as fontes estarem prontas.
 
 ## Espaço, raio e elevação
 
