@@ -13,6 +13,7 @@ import { RemovedNotice } from "@/components/post/removed-notice"
 import { SourceCard } from "@/components/post/source-card"
 import { topicLabel } from "@/components/post/topic-tags"
 import { useI18n } from "@/components/providers/i18n-provider"
+import { HighlightedText } from "@/components/search/highlighted-text"
 import { useReactions } from "@/hooks/use-reactions"
 import { readingMinutes } from "@/lib/format"
 import { paths } from "@/lib/paths"
@@ -28,6 +29,7 @@ function excerptOf(body: string): string {
 export interface PostCardProps {
   post: PostView
   reason?: FeedReason | null
+  highlight?: string | null
 }
 
 interface WhyLineProps {
@@ -48,7 +50,7 @@ function WhyLine({ reason }: WhyLineProps): React.JSX.Element {
 }
 
 // The feed reads like a magazine: a flat card where the text takes most of the space.
-export function PostCard({ post, reason }: PostCardProps): React.JSX.Element {
+export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.Element {
   const { t } = useI18n()
 
   const reactions = useReactions({
@@ -105,7 +107,7 @@ export function PostCard({ post, reason }: PostCardProps): React.JSX.Element {
       ) : null}
       <Link href={paths.post(post.id)} className="text-ink no-underline">
         <p className="whitespace-pre-line font-serif text-[17px] leading-[1.62]">
-          {excerptOf(body)}
+          {highlight ? <HighlightedText text={highlight} /> : excerptOf(body)}
         </p>
       </Link>
       {isTruncated ? (

@@ -199,8 +199,8 @@ function PostResults({ state }: ResultsProps): React.JSX.Element {
           {t("web.search.posts")}
         </h2>
       ) : null}
-      {items.map(({ post }) => (
-        <PostCard key={post.id} post={post} />
+      {items.map(({ post, highlight }) => (
+        <PostCard key={post.id} post={post} highlight={highlight} />
       ))}
       {query.hasNextPage ? (
         <Button
