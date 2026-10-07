@@ -53,9 +53,26 @@ export function NotificationList(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-serif text-[25px] font-semibold">{t("web.notifications.title")}</h1>
-        <Segmented value={filter} onValueChange={(value) => isFilter(value) && setFilter(value)}>
-          <SegmentedList className="w-90 max-w-full">
+        <div className="flex w-full items-center justify-between gap-3 sm:w-auto">
+          <h1 className="font-serif text-[25px] font-semibold">{t("web.notifications.title")}</h1>
+          {hasUnread ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="-mr-2 sm:hidden"
+              isLoading={markAll.isPending}
+              onClick={() => markAll.mutate()}
+            >
+              {t("web.notifications.markAllRead")}
+            </Button>
+          ) : null}
+        </div>
+        <Segmented
+          value={filter}
+          onValueChange={(value) => isFilter(value) && setFilter(value)}
+          className="w-full sm:w-auto"
+        >
+          <SegmentedList className="w-full sm:w-90">
             <SegmentedItem value={NotificationFilter.ALL}>
               {t("web.notifications.all")}
             </SegmentedItem>
@@ -86,7 +103,7 @@ export function NotificationList(): React.JSX.Element {
         <Button
           variant="ghost"
           size="sm"
-          className="self-end"
+          className="hidden self-end sm:inline-flex"
           isLoading={markAll.isPending}
           onClick={() => markAll.mutate()}
         >
@@ -113,8 +130,11 @@ export function NotificationList(): React.JSX.Element {
           if (inPeriod.length === 0) return null
 
           return (
-            <Card key={period} className="overflow-hidden">
-              <h2 className="px-5 pt-4 pb-2 text-xs font-semibold tracking-[0.08em] text-muted uppercase">
+            <Card
+              key={period}
+              className="-mx-4 overflow-hidden rounded-none border-x-0 sm:mx-0 sm:rounded-lg sm:border-x"
+            >
+              <h2 className="px-4 pt-4 pb-2 text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:px-5">
                 {t(`web.notifications.${period}`)}
               </h2>
               <ul>
