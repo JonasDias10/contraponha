@@ -2,7 +2,7 @@
 
 import { NotificationFilter } from "@contraponha/types"
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { BellOff, CalendarClock } from "lucide-react"
+import { BellOff, CalendarClock, CheckCheck } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -58,12 +58,14 @@ export function NotificationList(): React.JSX.Element {
           {hasUnread ? (
             <Button
               variant="ghost"
-              size="sm"
-              className="-mr-2 sm:hidden"
+              size="icon"
+              className="-mr-2.5 sm:hidden"
+              aria-label={t("web.notifications.markAllRead")}
+              title={t("web.notifications.markAllRead")}
               isLoading={markAll.isPending}
               onClick={() => markAll.mutate()}
             >
-              {t("web.notifications.markAllRead")}
+              <CheckCheck aria-hidden className="size-5" />
             </Button>
           ) : null}
         </div>
