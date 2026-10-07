@@ -19,10 +19,10 @@ export default async function AuthLayout({
   const { t } = await getRequestTranslator()
 
   return (
-    <div className="flex min-h-dvh flex-wrap">
-      <aside className="flex min-w-0 flex-[1_1_480px] flex-col justify-between gap-8 bg-surface-sunken px-6 py-10 sm:px-16 sm:py-12">
-        <Logo className="text-[30px]" />
-        <div className="hidden max-w-130 flex-col gap-6 md:flex">
+    <div className="flex min-h-dvh flex-col lg:flex-row">
+      <aside className="flex min-w-0 flex-col justify-between gap-8 border-b border-line px-5 py-4 sm:px-8 lg:flex-1 lg:border-b-0 lg:bg-surface-sunken lg:px-16 lg:py-12">
+        <Logo className="text-[22px] lg:text-[30px]" />
+        <div className="hidden max-w-130 flex-col gap-6 lg:flex">
           <p className="font-serif text-[32px] leading-tight font-semibold">
             {t("web.auth.asideTitle")}
           </p>
@@ -35,11 +35,11 @@ export default async function AuthLayout({
             ))}
           </ul>
         </div>
-        <p className="hidden text-[13px] text-subtle md:block">{t("web.auth.asideNote")}</p>
+        <p className="hidden text-[13px] text-subtle lg:block">{t("web.auth.asideNote")}</p>
       </aside>
       <main
         id="content"
-        className="flex min-w-0 flex-[1_1_520px] items-center justify-center px-6 py-12 sm:px-16"
+        className="flex min-w-0 flex-1 justify-center px-5 pt-8 pb-12 sm:px-8 sm:pt-12 lg:items-center lg:px-16 lg:py-12"
       >
         <div className="flex w-full max-w-110 flex-col gap-5">{children}</div>
       </main>
