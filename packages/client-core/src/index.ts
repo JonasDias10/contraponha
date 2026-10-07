@@ -1,4 +1,5 @@
 export * from "./api-errors.js"
+export * from "./composer.js"
 export * from "./date-input.js"
 export * from "./edit-window.js"
 export * from "./format.js"

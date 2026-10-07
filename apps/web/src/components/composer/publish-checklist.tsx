@@ -4,7 +4,7 @@ import { Check, Info } from "lucide-react"
 import { Controller } from "react-hook-form"
 import { readingMinutes, wordCount } from "@contraponha/client-core"
 
-import type { ComposerControl } from "@/components/composer/composer-schema"
+import { type ComposerControl } from "@/components/composer/composer-schema"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { RadioGroup, RadioItem } from "@/components/ui/controls"
 import { Card, Panel } from "@/components/ui/surfaces"

@@ -29,7 +29,8 @@
     "@contraponha/config": "workspace:*",
     "@contraponha/i18n": "workspace:*",
     "@contraponha/types": "workspace:*",
-    "@contraponha/validation": "workspace:*"
+    "@contraponha/validation": "workspace:*",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@contraponha/tsconfig": "workspace:*",

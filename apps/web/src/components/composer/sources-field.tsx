@@ -3,8 +3,9 @@
 import { POST_SOURCES_MAX } from "@contraponha/config"
 import { BookText, Plus, X } from "lucide-react"
 import { useFieldArray, type FieldErrors, type UseFormRegister } from "react-hook-form"
+import { type ComposerValues } from "@contraponha/client-core"
 
-import type { ComposerControl, ComposerValues } from "@/components/composer/composer-schema"
+import { type ComposerControl } from "@/components/composer/composer-schema"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/field"
