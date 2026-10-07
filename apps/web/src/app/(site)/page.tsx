@@ -35,17 +35,15 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
 
   return (
     <>
-      <section className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-16 px-4 py-16 sm:px-8 md:py-24">
+      <section className="mx-auto flex w-full max-w-300 flex-wrap items-center gap-16 px-4 py-16 sm:px-8 md:py-24">
         <div className="flex min-w-0 flex-[1_1_480px] flex-col gap-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+          <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
             {t("web.landing.overline")}
           </p>
-          <h1 className="font-serif text-5xl font-semibold leading-[1.08] tracking-[-0.02em] md:text-[64px]">
+          <h1 className="font-serif text-5xl leading-[1.08] font-semibold tracking-[-0.02em] md:text-[64px]">
             {t("web.landing.title")}
           </h1>
-          <p className="max-w-[560px] font-serif text-xl leading-relaxed text-muted">
-            {t("web.landing.lead")}
-          </p>
+          <p className="max-w-140 font-serif text-xl/relaxed text-muted">{t("web.landing.lead")}</p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link href="/signup">{t("web.landing.createAccount")}</Link>
@@ -56,7 +54,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
           </div>
           <p className="text-[13px] text-subtle">{t("web.landing.dataNote")}</p>
         </div>
-        <div aria-hidden className="flex min-w-0 max-w-[560px] flex-[1_1_440px] flex-col gap-3">
+        <div aria-hidden className="flex max-w-140 min-w-0 flex-[1_1_440px] flex-col gap-3">
           <Card className="flex flex-col gap-3.5 p-5 shadow-e2">
             <div className="flex items-center gap-3">
               <Avatar id="sample-author" name={t("web.landing.sampleAuthor")} />
@@ -67,16 +65,16 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
                 </span>
               </div>
             </div>
-            <p className="font-serif text-[21px] font-semibold leading-snug">
+            <p className="font-serif text-[21px] leading-snug font-semibold">
               {t("web.landing.sampleTitle")}
             </p>
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex h-10 items-center gap-2 rounded-full bg-brand-soft px-3.5 text-sm font-semibold text-brand">
-                <CircleCheck className="size-[18px]" />
+                <CircleCheck className="size-4.5" />
                 {t("web.reactions.good_argument")} <span>128</span>
               </span>
               <span className="inline-flex h-10 items-center gap-2 rounded-full border border-line px-3.5 text-sm font-medium">
-                <Lightbulb className="size-[18px] text-muted" />
+                <Lightbulb className="size-4.5 text-muted" />
                 {t("web.reactions.insightful")} <span className="text-subtle">64</span>
               </span>
             </div>
@@ -92,17 +90,15 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
               </span>{" "}
               · {t("web.landing.sampleHighlightPlace")}
             </p>
-            <p className="font-serif text-base leading-relaxed">
-              {t("web.landing.sampleHighlightBody")}
-            </p>
+            <p className="font-serif text-base/relaxed">{t("web.landing.sampleHighlightBody")}</p>
           </div>
         </div>
       </section>
 
       <section className="bg-surface-sunken py-24">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-12 px-4 sm:px-8">
-          <div className="flex max-w-[640px] flex-col gap-3">
-            <h2 className="font-serif text-[40px] font-semibold leading-tight">
+        <div className="mx-auto flex w-full max-w-300 flex-col gap-12 px-4 sm:px-8">
+          <div className="flex max-w-160 flex-col gap-3">
+            <h2 className="font-serif text-[40px] leading-tight font-semibold">
               {t("web.landing.principlesTitle")}
             </h2>
             <p className="font-serif text-lg text-muted">{t("web.landing.principlesLead")}</p>
@@ -121,7 +117,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
         </div>
       </section>
 
-      <section className="mx-auto flex w-full max-w-[1200px] flex-wrap gap-16 px-4 py-24 sm:px-8">
+      <section className="mx-auto flex w-full max-w-300 flex-wrap gap-16 px-4 py-24 sm:px-8">
         <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-4">
           <h2 className="font-serif text-[34px] font-semibold">{t("web.landing.notTitle")}</h2>
           <ul className="mt-2 flex flex-col gap-4">
@@ -144,7 +140,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
       </section>
 
       <section className="border-t border-line py-24">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-5 px-4 text-center sm:px-8">
+        <div className="mx-auto flex w-full max-w-300 flex-col items-center gap-5 px-4 text-center sm:px-8">
           <Logo className="text-[56px]" />
           <p className="font-serif text-xl text-muted">{t("web.landing.finalLead")}</p>
           <Button asChild size="lg">

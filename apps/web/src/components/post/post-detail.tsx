@@ -114,7 +114,7 @@ function PostArticle({ post }: PostArticleProps): React.JSX.Element {
             }
           />
           {post.title ? (
-            <h1 className="font-serif text-[30px] font-semibold leading-tight tracking-[-0.015em] md:text-[38px]">
+            <h1 className="font-serif text-3xl/tight font-semibold tracking-[-0.015em] md:text-[38px]">
               {post.title}
             </h1>
           ) : null}

@@ -28,7 +28,7 @@ export function MediaGrid({ media, altPrefix }: MediaGridProps): React.JSX.Eleme
           loading="lazy"
           className={cn(
             "w-full bg-surface-sunken object-cover",
-            media.length === 1 ? "max-h-[480px]" : "aspect-square",
+            media.length === 1 ? "max-h-120" : "aspect-square",
           )}
         />
       ))}

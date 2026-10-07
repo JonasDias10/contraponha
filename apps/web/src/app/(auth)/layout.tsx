@@ -15,8 +15,8 @@ export default async function AuthLayout({
     <div className="flex min-h-dvh flex-wrap">
       <aside className="flex min-w-0 flex-[1_1_480px] flex-col justify-between gap-8 bg-surface-sunken px-6 py-10 sm:px-16 sm:py-12">
         <Logo className="text-[30px]" />
-        <figure className="hidden max-w-[520px] flex-col gap-5 md:flex">
-          <blockquote className="font-serif text-[32px] italic leading-[1.35]">
+        <figure className="hidden max-w-130 flex-col gap-5 md:flex">
+          <blockquote className="font-serif text-[32px] leading-[1.35] italic">
             {t("web.auth.asideQuote")}
           </blockquote>
           <figcaption className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export default async function AuthLayout({
         id="content"
         className="flex min-w-0 flex-[1_1_520px] items-center justify-center px-6 py-12 sm:px-16"
       >
-        <div className="flex w-full max-w-[440px] flex-col gap-5">{children}</div>
+        <div className="flex w-full max-w-110 flex-col gap-5">{children}</div>
       </main>
     </div>
   )

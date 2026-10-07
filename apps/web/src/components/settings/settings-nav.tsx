@@ -40,7 +40,7 @@ export function SettingsNav(): React.JSX.Element {
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex h-11 items-center whitespace-nowrap rounded-[10px] px-3.5 text-[15px] font-medium text-ink no-underline hover:bg-surface-sunken",
+              "flex h-11 items-center rounded-md px-3.5 text-[15px] font-medium whitespace-nowrap text-ink no-underline hover:bg-surface-sunken",
               isActive && "bg-surface-sunken font-semibold",
             )}
           >

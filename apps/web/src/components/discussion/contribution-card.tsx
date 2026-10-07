@@ -47,7 +47,7 @@ export function ContributionCard({
       ) : null}
       <Link
         href={paths.comment({ postId: comment.postId, commentId: comment.id })}
-        className="font-serif text-base leading-relaxed text-ink no-underline"
+        className="font-serif text-base/relaxed text-ink no-underline"
       >
         {highlight ? (
           <HighlightedText text={highlight} />

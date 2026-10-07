@@ -25,7 +25,7 @@ export function PasswordInput({
         type="button"
         onClick={() => setIsVisible((visible) => !visible)}
         aria-label={isVisible ? t("web.auth.hidePassword") : t("web.auth.showPassword")}
-        className="absolute right-1 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-md text-subtle hover:text-ink"
+        className="absolute top-1/2 right-1 grid size-9 -translate-y-1/2 place-items-center rounded-md text-subtle hover:text-ink"
       >
         {isVisible ? (
           <EyeOff aria-hidden className="size-5" />

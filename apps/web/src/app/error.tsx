@@ -16,7 +16,7 @@ export default function ErrorPage({ retry }: ErrorPageProps): React.JSX.Element 
   return (
     <main
       id="content"
-      className="mx-auto flex min-h-[60dvh] max-w-[560px] flex-col items-center justify-center px-4"
+      className="mx-auto flex min-h-[60dvh] max-w-140 flex-col items-center justify-center px-4"
     >
       <EmptyState
         icon={<WifiOff className="size-8" />}

@@ -91,7 +91,7 @@ export function LinkPopover({ editor, isActive }: LinkPopoverProps): React.JSX.E
         aria-pressed={isActive}
         className={toolButtonClasses}
       >
-        <Link2 aria-hidden className="size-[18px]" />
+        <Link2 aria-hidden className="size-4.5" />
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content

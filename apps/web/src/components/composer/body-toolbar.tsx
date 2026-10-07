@@ -80,7 +80,7 @@ export function BodyToolbar({ editor, extraTools }: BodyToolbarProps): React.JSX
           onClick={() => toggle(editor)}
           className={toolButtonClasses}
         >
-          <Icon aria-hidden className="size-[18px]" />
+          <Icon aria-hidden className="size-4.5" />
         </button>
       ))}
       <LinkPopover editor={editor} isActive={active.link} />

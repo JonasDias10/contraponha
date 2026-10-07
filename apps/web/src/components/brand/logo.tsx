@@ -13,7 +13,7 @@ export function Logo({ href = "/", className }: LogoProps): React.JSX.Element {
     <Link
       href={href}
       className={cn(
-        "inline-flex items-baseline font-serif text-[26px] font-bold leading-none tracking-[-0.03em] text-ink no-underline",
+        "inline-flex items-baseline font-serif text-[26px] leading-none font-bold tracking-[-0.03em] text-ink no-underline",
         className,
       )}
     >

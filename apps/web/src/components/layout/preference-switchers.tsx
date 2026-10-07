@@ -66,7 +66,7 @@ export function ThemeSwitcher(): React.JSX.Element {
     <div
       role="radiogroup"
       aria-label={t("web.footer.theme")}
-      className="inline-flex gap-1 rounded-[10px] bg-surface-sunken p-1"
+      className="inline-flex gap-1 rounded-md bg-surface-sunken p-1"
     >
       {THEMES.map(({ value, Icon, key }) => (
         <button

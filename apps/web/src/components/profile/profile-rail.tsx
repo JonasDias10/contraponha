@@ -44,7 +44,7 @@ export function ProfileRail({ handle }: ProfileRailProps): React.JSX.Element {
     <>
       {topics.length > 0 ? (
         <Card className="flex flex-col gap-3 p-5">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+          <h2 className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
             {t("web.profile.writesAbout")}
           </h2>
           <ul className="flex flex-wrap gap-2">
@@ -60,7 +60,7 @@ export function ProfileRail({ handle }: ProfileRailProps): React.JSX.Element {
       ) : null}
       {people.length > 0 ? (
         <Card className="flex flex-col py-3">
-          <h2 className="px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+          <h2 className="px-4 py-2 text-xs font-semibold tracking-[0.08em] text-muted uppercase">
             {t("web.profile.similarPeople")}
           </h2>
           {people.map(({ profile: person }) => (

@@ -33,7 +33,7 @@ export function HomeFeed(): React.JSX.Element {
         <h1 className="font-serif text-[25px] font-semibold">{t("web.feed.title")}</h1>
         {viewer ? (
           <Segmented value={tab} onValueChange={changeTab}>
-            <SegmentedList className="w-[280px]">
+            <SegmentedList className="w-70">
               <SegmentedItem value="following">{t("web.feed.following")}</SegmentedItem>
               <SegmentedItem value="discover">{t("web.feed.discover")}</SegmentedItem>
             </SegmentedList>

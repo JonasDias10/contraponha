@@ -18,7 +18,7 @@ export async function SiteHeader(): Promise<React.JSX.Element> {
 
   return (
     <header className="border-b border-line">
-      <div className="mx-auto flex min-h-[72px] w-full max-w-[1200px] flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-8">
+      <div className="mx-auto flex min-h-18 w-full max-w-300 flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-8">
         <Logo />
         <nav aria-label={t("web.footer.label")} className="hidden gap-6 md:flex">
           <Link href="/about" className="text-ink no-underline hover:underline">
@@ -63,8 +63,8 @@ export async function SiteFooter(): Promise<React.JSX.Element> {
   ]
 
   return (
-    <footer className="border-t border-line pb-12 pt-8">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-6 px-4 sm:px-8">
+    <footer className="border-t border-line pt-8 pb-12">
+      <div className="mx-auto flex w-full max-w-300 flex-wrap items-center gap-6 px-4 sm:px-8">
         <Logo className="text-xl" />
         <nav
           aria-label={t("web.footer.label")}

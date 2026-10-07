@@ -94,7 +94,7 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
         trailing={<PostMenu post={post} />}
       />
       {post.title ? (
-        <h2 className="font-serif text-[21px] font-semibold leading-[1.3] tracking-[-0.01em]">
+        <h2 className="font-serif text-[21px] leading-[1.3] font-semibold tracking-[-0.01em]">
           <Link href={paths.post(post.id)} className="text-ink no-underline hover:underline">
             {post.title}
           </Link>
@@ -102,7 +102,7 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
       ) : null}
       <Link href={paths.post(post.id)} className="text-ink no-underline">
         {highlight ? (
-          <p className="whitespace-pre-line font-serif text-[17px] leading-[1.62]">
+          <p className="font-serif text-[17px] leading-[1.62] whitespace-pre-line">
             <HighlightedText text={highlight} />
           </p>
         ) : (

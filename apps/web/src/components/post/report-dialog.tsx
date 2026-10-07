@@ -96,15 +96,15 @@ export function ReportDialog({
   return (
     <Dialog open={open} onOpenChange={close}>
       <DialogContent closeLabel={t("web.common.close")}>
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+        <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
           {t(TITLE_KEYS[targetType])} ·{" "}
           {step === 1 ? t("web.report.stepReason") : t("web.report.stepDetails")}
         </p>
-        <DialogTitle className="font-serif text-[25px] font-semibold leading-tight">
+        <DialogTitle className="font-serif text-[25px] leading-tight font-semibold">
           {step === 1 ? t("web.report.whatHappens") : t(`web.report.${reason}`)}
         </DialogTitle>
         {excerpt ? (
-          <Panel className="px-4 py-3 font-serif text-base leading-relaxed">“{excerpt}”</Panel>
+          <Panel className="px-4 py-3 font-serif text-base/relaxed">“{excerpt}”</Panel>
         ) : null}
         <form
           noValidate

@@ -37,7 +37,7 @@ export async function LegalPageView({ page }: LegalPageViewProps): Promise<React
   return (
     <article
       lang={document.locale}
-      className="mx-auto flex w-full max-w-[720px] flex-col gap-6 px-4 py-16 sm:px-8"
+      className="mx-auto flex w-full max-w-180 flex-col gap-6 px-4 py-16 sm:px-8"
     >
       {version ? (
         <p className="text-[13px] text-subtle">

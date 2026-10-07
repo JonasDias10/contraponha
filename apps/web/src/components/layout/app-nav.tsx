@@ -226,7 +226,7 @@ export function BottomNav(): React.JSX.Element {
             {href === "/notifications" && unread > 0 ? (
               <span
                 aria-hidden
-                className="absolute right-[calc(50%-16px)] top-2 size-2 rounded-full bg-ink"
+                className="absolute top-2 right-[calc(50%-16px)] size-2 rounded-full bg-ink"
               />
             ) : null}
           </Link>

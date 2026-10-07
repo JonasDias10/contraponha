@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/cn"
 
 export const tagVariants = cva(
-  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border font-medium no-underline",
+  "inline-flex items-center gap-1.5 rounded-full border font-medium whitespace-nowrap no-underline",
   {
     variants: {
       variant: {
@@ -12,7 +12,7 @@ export const tagVariants = cva(
         topic: "border-line bg-transparent text-muted hover:text-ink",
       },
       size: {
-        sm: "h-[26px] px-2.5 text-[13px]",
+        sm: "h-6.5 px-2.5 text-[13px]",
         md: "h-8 px-3 text-sm",
         lg: "h-11 px-4 text-[15px]",
       },
@@ -22,7 +22,7 @@ export const tagVariants = cva(
 )
 
 const chipVariants = cva(
-  "inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-semibold leading-[18px]",
+  "inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs/4.5 font-semibold",
   {
     variants: {
       tone: {

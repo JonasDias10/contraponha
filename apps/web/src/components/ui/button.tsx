@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/cn"
 
 export const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-transparent font-semibold leading-none no-underline transition-[color,background-color,border-color,opacity,scale] duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-45",
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md border border-transparent leading-none font-semibold whitespace-nowrap no-underline transition-[color,background-color,border-color,opacity,scale] duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-45",
   {
     variants: {
       variant: {
@@ -18,9 +18,9 @@ export const buttonVariants = cva(
         dangerOutline: "border-danger bg-transparent text-danger hover:bg-danger-soft",
       },
       size: {
-        md: "h-11 px-[18px] text-[15px]",
+        md: "h-11 px-4.5 text-[15px]",
         sm: "h-9 rounded-[8px] px-3.5 text-sm",
-        lg: "h-[52px] rounded-[12px] px-6 text-base",
+        lg: "h-13 rounded-[12px] px-6 text-base",
         icon: "size-11 p-0 text-muted",
         iconSm: "size-9 p-0 text-muted",
       },

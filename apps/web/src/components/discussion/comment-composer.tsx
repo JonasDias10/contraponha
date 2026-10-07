@@ -107,7 +107,7 @@ export function CommentComposer({
               placeholder={
                 parentId ? t("web.comment.replyPlaceholder") : t("web.post.composerPlaceholder")
               }
-              className="min-h-[72px] border-0 bg-transparent px-0 py-1.5 font-serif text-base focus-visible:outline-none"
+              className="min-h-18 border-0 bg-transparent px-0 py-1.5 font-serif text-base focus-visible:outline-none"
               aria-invalid={Boolean(formState.errors.body)}
               {...register("body")}
             />

@@ -85,7 +85,7 @@ export function SegmentedItem({
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "grid h-9 flex-1 place-items-center whitespace-nowrap rounded-[9px] px-3 text-sm font-medium text-muted data-[state=active]:bg-surface-raised data-[state=active]:font-semibold data-[state=active]:text-ink data-[state=active]:shadow-e1",
+        "grid h-9 flex-1 place-items-center rounded-[9px] px-3 text-sm font-medium whitespace-nowrap text-muted data-[state=active]:bg-surface-raised data-[state=active]:font-semibold data-[state=active]:text-ink data-[state=active]:shadow-e1",
         className,
       )}
       {...props}

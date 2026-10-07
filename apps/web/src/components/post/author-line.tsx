@@ -56,13 +56,13 @@ export function AuthorLine({
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="flex items-center gap-1.5">
           {isDeleted ? (
-            <span className="text-[15px] font-semibold leading-tight text-subtle">
+            <span className="text-[15px] leading-tight font-semibold text-subtle">
               {t("web.common.deletedAccount")}
             </span>
           ) : (
             <Link
               href={paths.profile(author.handle)}
-              className="truncate text-[15px] font-semibold leading-tight text-ink no-underline hover:underline"
+              className="truncate text-[15px] leading-tight font-semibold text-ink no-underline hover:underline"
             >
               {author.displayName}
             </Link>

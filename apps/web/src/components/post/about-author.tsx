@@ -28,7 +28,7 @@ export function AboutAuthor({ handle }: AboutAuthorProps): React.JSX.Element | n
 
   return (
     <Card className="flex flex-col gap-3 p-5">
-      <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+      <h2 className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
         {t("web.post.aboutAuthor")}
       </h2>
       <Link

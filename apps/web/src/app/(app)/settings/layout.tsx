@@ -19,7 +19,7 @@ export default async function SettingsLayout({
       <h1 className="mb-6 font-serif text-[34px] font-semibold">{t("web.settings.title")}</h1>
       <div className="flex flex-col gap-8 md:flex-row">
         <SettingsNav />
-        <div className="flex min-w-0 max-w-[720px] flex-1 flex-col gap-6">{children}</div>
+        <div className="flex max-w-180 min-w-0 flex-1 flex-col gap-6">{children}</div>
       </div>
     </AppShell>
   )
