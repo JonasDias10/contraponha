@@ -1,5 +1,5 @@
 {
-  "name": "@ponto/database",
+  "name": "@contraponha/database",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -26,12 +26,12 @@
     "reconcile-counters": "node --env-file-if-exists=../../.env build/scripts/reconcile-counters.js"
   },
   "dependencies": {
-    "@ponto/config": "workspace:*",
+    "@contraponha/config": "workspace:*",
     "drizzle-orm": "^0.45.3",
     "pg": "^8.23.1"
   },
   "devDependencies": {
-    "@ponto/tsconfig": "workspace:*",
+    "@contraponha/tsconfig": "workspace:*",
     "typescript": "~6.0.3",
     "vitest": "^5.0.3",
     "@types/node": "^22.19.0",

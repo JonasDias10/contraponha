@@ -1,6 +1,6 @@
 import { VersioningType } from "@nestjs/common"
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { API_DEFAULT_VERSION, API_GLOBAL_PREFIX, REQUEST_ID_HEADER } from "@ponto/config"
+import { API_DEFAULT_VERSION, API_GLOBAL_PREFIX, REQUEST_ID_HEADER } from "@contraponha/config"
 import helmet from "helmet"
 import { Logger } from "nestjs-pino"
 

@@ -2,8 +2,8 @@ import {
   COMMENT_BODY_MAX_LENGTH,
   COMMENT_SOURCES_MAX,
   HIGHLIGHT_NOTE_MAX_LENGTH,
-} from "@ponto/config"
-import { CommentSort, type CommentView, type ContributionView } from "@ponto/types"
+} from "@contraponha/config"
+import { CommentSort, type CommentView, type ContributionView } from "@contraponha/types"
 import { z } from "zod"
 
 import { contentSourceSchema, editReasonSchema, sourceListSchema } from "./content.js"

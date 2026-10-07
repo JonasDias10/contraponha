@@ -1,6 +1,6 @@
 "use client"
 
-import { createTranslator, type Locale, type Translate } from "@ponto/i18n"
+import { createTranslator, type Locale, type Translate } from "@contraponha/i18n"
 import { createContext, useContext, useMemo } from "react"
 
 interface I18nContextValue {

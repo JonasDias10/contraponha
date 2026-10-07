@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { changePasswordInputSchema, type ChangePasswordInput } from "@ponto/validation"
+import { changePasswordInputSchema, type ChangePasswordInput } from "@contraponha/validation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Laptop } from "lucide-react"
 import { useForm } from "react-hook-form"

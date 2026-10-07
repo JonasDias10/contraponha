@@ -1,6 +1,6 @@
 "use client"
 
-import type { ContributionView } from "@ponto/types"
+import type { ContributionView } from "@contraponha/types"
 import { Star } from "lucide-react"
 import Link from "next/link"
 

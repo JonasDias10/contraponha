@@ -1,12 +1,12 @@
 # Privacy policy
 
-This is Ponto's privacy policy, written to be read. It explains which personal data we process, why, for how long and how you exercise your rights under Brazil's General Data Protection Law (Law No. 13,709/2018, LGPD).
+This is Contraponha's privacy policy, written to be read. It explains which personal data we process, why, for how long and how you exercise your rights under Brazil's General Data Protection Law (Law No. 13,709/2018, LGPD).
 
 This is a translation. If there is any difference, the Portuguese version prevails.
 
 ## Who we are
 
-Ponto is a Brazilian social network. For the purposes of the LGPD, we are the controller of the personal data processed in the service. To reach the person in charge of data processing (data protection officer), write to **[data protection officer email]**.
+Contraponha is a Brazilian social network. For the purposes of the LGPD, we are the controller of the personal data processed in the service. To reach the person in charge of data processing (data protection officer), write to **[data protection officer email]**.
 
 ## What we collect
 
@@ -58,7 +58,7 @@ Passwords are stored only as a hash (argon2id). Sessions can be ended at any tim
 
 ## Minors
 
-Ponto is for people aged 16 or older.
+Contraponha is for people aged 16 or older.
 
 ## Changes to this policy
 

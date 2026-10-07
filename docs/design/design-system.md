@@ -1,4 +1,4 @@
-# Design system do Ponto
+# Design system do Contraponha
 
 Este documento é a referência escrita do design system. As telas e os componentes desenhados estão no [canvas de design](https://claude.ai/artifact/MGbNaoNNqQcGx5bt83joKi) (acesso privado; peça para quem mantém o design); aqui ficam os tokens, as regras de uso e o porquê de cada decisão.
 
@@ -79,7 +79,7 @@ As duas fontes ainda não são carregadas pelos apps: os tokens já apontam para
 
 Base: botão (primário, secundário, quieto, fantasma, perigo; estados hover, foco, desabilitado, carregando), campo de texto (dica, erro, sucesso), seleção, opção, alternância, avatar (iniciais sobre 6 tons fixos), tag, selo, toast, modal, bottom sheet, tab bar, abas, navegação lateral, banner e estados vazio, erro e carregando.
 
-Do Ponto:
+Do Contraponha:
 
 - **Card de post**: "por que estou vendo isto", autoria com credencial curta, título opcional, corpo truncado com tempo de leitura, bloco de fonte, resumo de reações em texto e ações "Reagir", "Contribuir", "Salvar", "Compartilhar".
 - **Barra de reações**: até duas reações por pessoa; não existe reação negativa genérica. "Precisa de fonte" usa `warning`.
@@ -91,4 +91,4 @@ Do Ponto:
 ## Texto e idiomas
 
 - pt-BR é a fonte; en e es podem ser até 30% mais longos. Barras de reação quebram linha em vez de abreviar, e botões não têm largura fixa.
-- Nenhum texto de interface fica no JSX: tudo passa por `t()` com chaves de `@ponto/i18n`.
+- Nenhum texto de interface fica no JSX: tudo passa por `t()` com chaves de `@contraponha/i18n`.

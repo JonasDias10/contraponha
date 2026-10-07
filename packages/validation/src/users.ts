@@ -1,4 +1,4 @@
-import { SUPPORTED_LOCALES } from "@ponto/i18n"
+import { SUPPORTED_LOCALES } from "@contraponha/i18n"
 import {
   RecognitionKind,
   UserRole,
@@ -7,7 +7,7 @@ import {
   type ProfileView,
   type PublicProfile,
   type SuggestedPeople,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { httpUrlSchema } from "./content.js"

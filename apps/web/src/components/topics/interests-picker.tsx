@@ -1,6 +1,6 @@
 "use client"
 
-import type { TopicView } from "@ponto/types"
+import type { TopicView } from "@contraponha/types"
 import { Check } from "lucide-react"
 
 import { useI18n } from "@/components/providers/i18n-provider"

@@ -9,18 +9,18 @@ describe("account emails", () => {
         to: "ana@example.com",
         name: "Ana",
         locale: "en",
-        link: "https://ponto.test/v?token=abc",
+        link: "https://contraponha.test/v?token=abc",
       },
       ttlHours: 24,
     })
 
-    expect(email.subject).toBe("Confirm your email on Ponto")
+    expect(email.subject).toBe("Confirm your email on Contraponha")
 
     expect(email.text).toContain("Hi, Ana!")
 
     expect(email.text).toContain("valid for 24 hours")
 
-    expect(email.html).toContain('<a href="https://ponto.test/v?token=abc">')
+    expect(email.html).toContain('<a href="https://contraponha.test/v?token=abc">')
   })
 
   it("escapes user-controlled content in HTML", () => {
@@ -29,12 +29,12 @@ describe("account emails", () => {
         to: "x@example.com",
         name: '<img src=x onerror="alert(1)">',
         locale: "pt-BR",
-        link: "https://ponto.test/r",
+        link: "https://contraponha.test/r",
       },
       ttlMinutes: 30,
     })
 
-    expect(email.subject).toBe("Redefinição de senha do Ponto")
+    expect(email.subject).toBe("Redefinição de senha do Contraponha")
 
     expect(email.html).not.toContain("<img")
 

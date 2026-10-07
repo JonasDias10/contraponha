@@ -1,6 +1,6 @@
-# How Ponto works
+# How Contraponha works
 
-Ponto is a Brazilian social network built for conversations worth having. Instead of rewarding what gets the most clicks, it gives prominence to what moves the discussion forward.
+Contraponha is a Brazilian social network built for conversations worth having. Instead of rewarding what gets the most clicks, it gives prominence to what moves the discussion forward.
 
 ## Reactions that say something
 

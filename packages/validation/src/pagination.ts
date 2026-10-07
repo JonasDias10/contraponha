@@ -1,4 +1,4 @@
-import type { Page } from "@ponto/types"
+import type { Page } from "@contraponha/types"
 import { z } from "zod"
 
 export const PAGE_SIZE_DEFAULT = 20

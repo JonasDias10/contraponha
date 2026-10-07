@@ -1,4 +1,4 @@
-import type { Locale } from "@ponto/i18n"
+import type { Locale } from "@contraponha/i18n"
 
 import type { TopicSummary } from "./topics.js"
 

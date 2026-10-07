@@ -1,5 +1,5 @@
 {
-  "name": "ponto",
+  "name": "contraponha",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.9.1",
@@ -7,10 +7,10 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "turbo run dev --filter=@ponto/api --filter=@ponto/web",
-    "dev:api": "turbo run dev --filter=@ponto/api",
-    "dev:web": "turbo run dev --filter=@ponto/web",
-    "dev:mobile": "turbo run build --filter=@ponto/mobile^... && pnpm --filter @ponto/mobile dev",
+    "dev": "turbo run dev --filter=@contraponha/api --filter=@contraponha/web",
+    "dev:api": "turbo run dev --filter=@contraponha/api",
+    "dev:web": "turbo run dev --filter=@contraponha/web",
+    "dev:mobile": "turbo run build --filter=@contraponha/mobile^... && pnpm --filter @contraponha/mobile dev",
     "build": "turbo run build",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
@@ -19,15 +19,15 @@
     "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "pnpm --filter @ponto/database db:generate",
-    "db:migrate": "pnpm --filter @ponto/database db:migrate",
-    "db:studio": "pnpm --filter @ponto/database db:studio",
-    "users:set-role": "turbo run build --filter=@ponto/api && pnpm --filter @ponto/api users:set-role",
-    "db:reconcile-counters": "turbo run build --filter=@ponto/database && pnpm --filter @ponto/database reconcile-counters",
+    "db:generate": "pnpm --filter @contraponha/database db:generate",
+    "db:migrate": "pnpm --filter @contraponha/database db:migrate",
+    "db:studio": "pnpm --filter @contraponha/database db:studio",
+    "users:set-role": "turbo run build --filter=@contraponha/api && pnpm --filter @contraponha/api users:set-role",
+    "db:reconcile-counters": "turbo run build --filter=@contraponha/database && pnpm --filter @contraponha/database reconcile-counters",
     "clean": "turbo run clean && rm -rf node_modules/.cache .turbo"
   },
   "devDependencies": {
-    "@ponto/eslint-config": "workspace:*",
+    "@contraponha/eslint-config": "workspace:*",
     "eslint": "^10.12.0",
     "prettier": "^3.9.9",
     "turbo": "^2.11.7",

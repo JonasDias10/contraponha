@@ -1,4 +1,4 @@
-import type { BookmarkCount, ContentRevisionList, Page, PostView } from "@ponto/types"
+import type { BookmarkCount, ContentRevisionList, Page, PostView } from "@contraponha/types"
 import {
   bookmarkCountSchema,
   contentRevisionListSchema,
@@ -7,7 +7,7 @@ import {
   type CreatePostInput,
   type PaginationQuery,
   type UpdatePostInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
 

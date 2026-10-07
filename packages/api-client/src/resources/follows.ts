@@ -1,10 +1,10 @@
-import type { FollowedAmong, FollowStatus, Page, PublicProfile } from "@ponto/types"
+import type { FollowedAmong, FollowStatus, Page, PublicProfile } from "@contraponha/types"
 import {
   followedAmongSchema,
   followStatusSchema,
   profilePageSchema,
   type PaginationQuery,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
 

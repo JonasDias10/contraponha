@@ -1,12 +1,12 @@
 import { Controller, Get, Param, Query } from "@nestjs/common"
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import type { DiscussionList, FeedItem, Page } from "@ponto/types"
+import type { DiscussionList, FeedItem, Page } from "@contraponha/types"
 import {
   discussionListSchema,
   feedPageSchema,
   paginationQuerySchema,
   topicSlugSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"

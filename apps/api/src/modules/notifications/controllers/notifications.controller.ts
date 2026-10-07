@@ -11,14 +11,14 @@ import type {
   NotificationView,
   Page,
   UnreadNotificationCount,
-} from "@ponto/types"
+} from "@contraponha/types"
 import {
   notificationListQuerySchema,
   notificationPageSchema,
   notificationPreferencesSchema,
   unreadNotificationCountSchema,
   updateNotificationPreferencesInputSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

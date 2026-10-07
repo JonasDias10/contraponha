@@ -1,5 +1,9 @@
-import { ReactionTargetType, type ReactionKind, type ViewerReactionsResponse } from "@ponto/types"
-import { viewerReactionsResponseSchema } from "@ponto/validation"
+import {
+  ReactionTargetType,
+  type ReactionKind,
+  type ViewerReactionsResponse,
+} from "@contraponha/types"
+import { viewerReactionsResponseSchema } from "@contraponha/validation"
 
 import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
 

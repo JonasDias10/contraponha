@@ -1,6 +1,6 @@
 import { Injectable, type CanActivate, type ExecutionContext } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
-import { ApiErrorCode, type UserRole } from "@ponto/types"
+import { ApiErrorCode, type UserRole } from "@contraponha/types"
 
 import type { AuthenticatedRequest } from "#src/common/auth/auth-context.js"
 import { REQUIRED_ROLE_KEY } from "#src/common/auth/require-role.decorator.js"

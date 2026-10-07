@@ -8,7 +8,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { AuthResponse } from "@ponto/types"
+import type { AuthResponse } from "@contraponha/types"
 import {
   authResponseSchema,
   changePasswordInputSchema,
@@ -19,7 +19,7 @@ import {
   requestMagicLinkInputSchema,
   requestPasswordResetInputSchema,
   resetPasswordInputSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

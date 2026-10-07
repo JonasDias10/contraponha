@@ -1,11 +1,11 @@
-import { readReactionCounts, type CommentRevisionRow, type CommentRow } from "@ponto/database"
+import { readReactionCounts, type CommentRevisionRow, type CommentRow } from "@contraponha/database"
 import type {
   CommentView,
   CommentViewerState,
   ContentRevision,
   ContributionView,
   PostSummary,
-} from "@ponto/types"
+} from "@contraponha/types"
 
 import { toSourceViews } from "#src/common/content/sources.js"
 import { toPublicProfile, type User } from "#src/modules/users/domain/user.js"

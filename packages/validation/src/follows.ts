@@ -1,4 +1,4 @@
-import type { FollowedAmong, FollowStatus } from "@ponto/types"
+import type { FollowedAmong, FollowStatus } from "@contraponha/types"
 import { z } from "zod"
 
 import { pageSchema } from "./pagination.js"

@@ -1,5 +1,5 @@
-import { API_READINESS_TIMEOUT_MS } from "@ponto/config"
-import type { Locale } from "@ponto/i18n"
+import { API_READINESS_TIMEOUT_MS } from "@contraponha/config"
+import type { Locale } from "@contraponha/i18n"
 import { useEffect, useState } from "react"
 
 import { createMobileApiClient } from "@/lib/api"

@@ -61,16 +61,16 @@ docker compose down        # parar (os dados ficam nos volumes)
 docker compose down -v     # parar e apagar os dados
 ```
 
-| Serviço    | Imagem               | Porta local             | Credenciais padrão               |
-| ---------- | -------------------- | ----------------------- | -------------------------------- |
-| PostgreSQL | `postgres:18-alpine` | 5432                    | `ponto` / `ponto`, banco `ponto` |
-| Redis      | `redis:8-alpine`     | 6379                    | sem senha (apenas local)         |
-| Mailpit    | `axllent/mailpit`    | 1025 (SMTP), 8025 (web) | sem autenticação                 |
-| RustFS     | `rustfs/rustfs`      | 9000 (S3), 9001 (web)   | `ponto` / `ponto-local-secret`   |
+| Serviço    | Imagem               | Porta local             | Credenciais padrão                                 |
+| ---------- | -------------------- | ----------------------- | -------------------------------------------------- |
+| PostgreSQL | `postgres:18-alpine` | 5432                    | `contraponha` / `contraponha`, banco `contraponha` |
+| Redis      | `redis:8-alpine`     | 6379                    | sem senha (apenas local)                           |
+| Mailpit    | `axllent/mailpit`    | 1025 (SMTP), 8025 (web) | sem autenticação                                   |
+| RustFS     | `rustfs/rustfs`      | 9000 (S3), 9001 (web)   | `contraponha` / `contraponha-local-secret`         |
 
 O Mailpit recebe todos os e-mails enviados pela API em desenvolvimento (verificação de conta, redefinição de senha). Para ler, abra <http://localhost:8025>. Nada sai para a internet.
 
-O RustFS é o storage compatível com S3 onde ficam as imagens dos posts. A API cria o bucket `ponto-media` na inicialização (só fora de produção). O console fica em <http://localhost:9001>.
+O RustFS é o storage compatível com S3 onde ficam as imagens dos posts. A API cria o bucket `contraponha-media` na inicialização (só fora de produção). O console fica em <http://localhost:9001>.
 
 Se as portas já estiverem em uso, altere `POSTGRES_PORT`/`REDIS_PORT`/`STORAGE_PORT` no `.env` e ajuste `DATABASE_URL`/`REDIS_URL`/`STORAGE_ENDPOINT`/`MEDIA_PUBLIC_BASE_URL`.
 
@@ -142,21 +142,21 @@ A URL da API depende de onde o app roda (veja os comentários em `apps/mobile/.e
 API, web e mobile consomem os pacotes compilados (`build/`). O `pnpm dev` compila tudo uma vez ao iniciar. Se você alterar um pacote em `packages/` com a API rodando, recompile-o:
 
 ```bash
-pnpm --filter @ponto/i18n build
+pnpm --filter @contraponha/i18n build
 ```
 
 ## 6. Testes
 
 ```bash
 pnpm test        # unitários, sem dependências externas
-pnpm test:e2e    # e2e da API, exige `docker compose up -d`; usa o banco ponto_test (criado e migrado automaticamente)
+pnpm test:e2e    # e2e da API, exige `docker compose up -d`; usa o banco contraponha_test (criado e migrado automaticamente)
 ```
 
 Para um pacote específico ou em modo watch:
 
 ```bash
-pnpm --filter @ponto/api test
-pnpm --filter @ponto/i18n exec vitest
+pnpm --filter @contraponha/api test
+pnpm --filter @contraponha/i18n exec vitest
 ```
 
 Testes ficam ao lado do código (`foo.ts` e `foo.test.ts`). Os e2e da API ficam em `apps/api/test/`.

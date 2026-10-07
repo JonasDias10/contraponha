@@ -14,7 +14,7 @@ import {
   topics,
   users,
   type Database,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { and, asc, eq, inArray, isNull } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

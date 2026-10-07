@@ -1,6 +1,17 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { comments, posts, reports, type Database, type DatabaseExecutor } from "@ponto/database"
-import type { ReportReason, ReportStatus, ReportSubject, ReportTargetType } from "@ponto/types"
+import {
+  comments,
+  posts,
+  reports,
+  type Database,
+  type DatabaseExecutor,
+} from "@contraponha/database"
+import type {
+  ReportReason,
+  ReportStatus,
+  ReportSubject,
+  ReportTargetType,
+} from "@contraponha/types"
 import { and, desc, eq, lt, or } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

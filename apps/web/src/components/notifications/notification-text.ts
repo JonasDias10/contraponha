@@ -1,5 +1,5 @@
-import type { Translate } from "@ponto/i18n"
-import type { NotificationView } from "@ponto/types"
+import type { Translate } from "@contraponha/i18n"
+import type { NotificationView } from "@contraponha/types"
 
 const GROUPED_TYPES = new Set([
   "post_commented",

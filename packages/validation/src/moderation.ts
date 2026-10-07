@@ -3,7 +3,7 @@ import {
   MODERATION_NOTE_MAX_LENGTH,
   POST_SOURCES_MAX,
   REPORT_DETAILS_MAX_LENGTH,
-} from "@ponto/config"
+} from "@contraponha/config"
 import {
   CommunityRule,
   ModerationActionType,
@@ -16,7 +16,7 @@ import {
   type ContextNoteView,
   type ModerationActionView,
   type ReportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { contentSourceSchema, sourceListSchema } from "./content.js"

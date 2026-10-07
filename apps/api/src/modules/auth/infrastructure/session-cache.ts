@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { msToSeconds } from "@ponto/config"
+import { msToSeconds } from "@contraponha/config"
 import type { Redis } from "ioredis"
 
 import { SESSION_CACHE_MAX_TTL_SECONDS } from "#src/config/durations.js"

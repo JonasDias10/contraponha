@@ -3,14 +3,14 @@ import type {
   NotificationView,
   Page,
   UnreadNotificationCount,
-} from "@ponto/types"
+} from "@contraponha/types"
 import {
   notificationPageSchema,
   notificationPreferencesSchema,
   unreadNotificationCountSchema,
   type NotificationListQuery,
   type UpdateNotificationPreferencesInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
 

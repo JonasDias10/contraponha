@@ -1,5 +1,5 @@
-import type { ModerationActionRow, ReportRow } from "@ponto/database"
-import type { ModerationActionView, ReportView } from "@ponto/types"
+import type { ModerationActionRow, ReportRow } from "@contraponha/database"
+import type { ModerationActionView, ReportView } from "@contraponha/types"
 
 import { toExcerpt } from "#src/common/content/sources.js"
 import { toPublicProfile, type User } from "#src/modules/users/domain/user.js"

@@ -1,12 +1,12 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { UserRole, type ModerationActionView, type ReportView } from "@ponto/types"
+import { UserRole, type ModerationActionView, type ReportView } from "@contraponha/types"
 import {
   moderationActionPageSchema,
   notificationPageSchema,
   privateProfileSchema,
   reportPageSchema,
   reportViewSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

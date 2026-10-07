@@ -5,7 +5,7 @@ import {
   type Database,
   type DatabaseExecutor,
   type ReactionKindValue,
-} from "@ponto/database"
+} from "@contraponha/database"
 import {
   ApiErrorCode,
   ContentRemoval,
@@ -17,7 +17,7 @@ import {
   type PostView,
   type PostViewerState,
   type ReactionKind,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import {

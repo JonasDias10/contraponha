@@ -1,6 +1,6 @@
 "use server"
 
-import { isLocale } from "@ponto/i18n"
+import { isLocale } from "@contraponha/i18n"
 
 import { createServerApiClient } from "@/lib/api"
 import { storeLocale } from "@/lib/i18n"

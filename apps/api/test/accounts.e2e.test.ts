@@ -1,5 +1,5 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { consents, users } from "@ponto/database"
+import { consents, users } from "@contraponha/database"
 import {
   accountDeletionStatusSchema,
   authResponseSchema,
@@ -7,7 +7,7 @@ import {
   dataExportDownloadSchema,
   dataExportListSchema,
   dataExportViewSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import { eq } from "drizzle-orm"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
@@ -118,7 +118,9 @@ describe("account and personal data", () => {
 
     expect(ready?.status).toBe("ready")
 
-    expect(emails.lastTo(input.email)?.subject).toBe("Sua exportação de dados do Ponto está pronta")
+    expect(emails.lastTo(input.email)?.subject).toBe(
+      "Sua exportação de dados do Contraponha está pronta",
+    )
 
     expect(exported).toMatchObject({
       account: { profile: { handle: auth.user.handle } },

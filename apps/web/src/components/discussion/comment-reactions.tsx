@@ -1,6 +1,6 @@
 "use client"
 
-import type { CommentView } from "@ponto/types"
+import type { CommentView } from "@contraponha/types"
 import { CircleCheck } from "lucide-react"
 
 import { commentActionClasses } from "@/components/discussion/comment-actions"

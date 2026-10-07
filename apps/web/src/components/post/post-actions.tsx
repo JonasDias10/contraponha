@@ -1,7 +1,7 @@
 "use client"
 
 import * as Popover from "@radix-ui/react-popover"
-import type { PostView } from "@ponto/types"
+import type { PostView } from "@contraponha/types"
 import { Bookmark, CircleCheck, MessageSquare, Share } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"

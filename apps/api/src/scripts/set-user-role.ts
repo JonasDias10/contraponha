@@ -1,7 +1,7 @@
 import { parseArgs } from "node:util"
 
-import { createDatabaseConnection, moderationActions, users } from "@ponto/database"
-import { UserRole } from "@ponto/types"
+import { createDatabaseConnection, moderationActions, users } from "@contraponha/database"
+import { UserRole } from "@contraponha/types"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
 

@@ -1,7 +1,7 @@
 import "server-only"
 
-import { ApiError } from "@ponto/api-client"
-import type { ProfileView } from "@ponto/types"
+import { ApiError } from "@contraponha/api-client"
+import type { ProfileView } from "@contraponha/types"
 import { notFound } from "next/navigation"
 import { cache } from "react"
 

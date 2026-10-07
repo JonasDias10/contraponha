@@ -1,6 +1,6 @@
 "use client"
 
-import { NotificationFilter } from "@ponto/types"
+import { NotificationFilter } from "@contraponha/types"
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { BellOff, CalendarClock } from "lucide-react"
 import Link from "next/link"

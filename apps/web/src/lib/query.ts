@@ -1,4 +1,4 @@
-import { ApiError } from "@ponto/api-client"
+import { ApiError } from "@contraponha/api-client"
 
 const MAX_RETRIES = 2
 

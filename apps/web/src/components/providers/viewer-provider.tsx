@@ -1,6 +1,6 @@
 "use client"
 
-import type { PrivateProfile } from "@ponto/types"
+import type { PrivateProfile } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 import { createContext, useContext } from "react"
 

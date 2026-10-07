@@ -1,6 +1,6 @@
-import { MENTIONS_PER_CONTENT_MAX } from "@ponto/config"
-import type { ContentSourceValue } from "@ponto/database"
-import type { ContentSource } from "@ponto/types"
+import { MENTIONS_PER_CONTENT_MAX } from "@contraponha/config"
+import type { ContentSourceValue } from "@contraponha/database"
+import type { ContentSource } from "@contraponha/types"
 
 export interface SourceInput {
   url: string

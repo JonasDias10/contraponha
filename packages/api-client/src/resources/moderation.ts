@@ -1,4 +1,4 @@
-import type { ContextNoteView, ModerationActionView, Page, ReportView } from "@ponto/types"
+import type { ContextNoteView, ModerationActionView, Page, ReportView } from "@contraponha/types"
 import {
   contextNoteViewSchema,
   moderationActionPageSchema,
@@ -11,7 +11,7 @@ import {
   type RemoveContentInput,
   type ReportListQuery,
   type ResolveReportInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
 

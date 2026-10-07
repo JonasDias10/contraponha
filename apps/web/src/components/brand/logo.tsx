@@ -17,7 +17,7 @@ export function Logo({ href = "/", className }: LogoProps): React.JSX.Element {
         className,
       )}
     >
-      ponto
+      contraponha
       <span aria-hidden className="ml-[0.06em] inline-block size-[0.26em] rounded-full bg-brand" />
     </Link>
   )

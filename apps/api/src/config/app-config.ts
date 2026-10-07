@@ -1,5 +1,5 @@
-import { daysToMs, parseEnv, secondsToMs, type EnvSource } from "@ponto/config"
-import type { Locale } from "@ponto/i18n"
+import { daysToMs, parseEnv, secondsToMs, type EnvSource } from "@contraponha/config"
+import type { Locale } from "@contraponha/i18n"
 
 import { envSchema, type Env } from "./env.schema.js"
 

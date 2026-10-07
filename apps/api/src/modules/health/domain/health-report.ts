@@ -3,7 +3,7 @@ import {
   type DependencyHealth,
   type LivenessReport,
   type ReadinessReport,
-} from "@ponto/types"
+} from "@contraponha/types"
 
 export interface BuildLivenessReportParams {
   uptimeSeconds: number

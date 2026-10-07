@@ -1,5 +1,5 @@
-import type { MediaUploadTicket } from "@ponto/types"
-import { mediaUploadTicketSchema } from "@ponto/validation"
+import type { MediaUploadTicket } from "@contraponha/types"
+import { mediaUploadTicketSchema } from "@contraponha/validation"
 import request from "supertest"
 
 import { bearer, type App } from "./accounts.js"

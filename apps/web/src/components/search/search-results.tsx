@@ -1,6 +1,6 @@
 "use client"
 
-import type { ContentSearchQuery } from "@ponto/validation"
+import type { ContentSearchQuery } from "@contraponha/validation"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { Hash, Search, X } from "lucide-react"
 import Link from "next/link"

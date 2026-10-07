@@ -5,7 +5,7 @@ import {
   type Database,
   type DatabaseExecutor,
   type ReactionKindValue,
-} from "@ponto/database"
+} from "@contraponha/database"
 import {
   ApiErrorCode,
   CommentSort,
@@ -16,7 +16,7 @@ import {
   type ContributionView,
   type Page,
   type ReactionKind,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { toSourceValues, type SourceInput } from "#src/common/content/sources.js"

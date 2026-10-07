@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { PostView } from "@ponto/types"
+import type { PostView } from "@contraponha/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ArrowLeft, ImagePlus } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -38,7 +38,7 @@ import { errorMessage } from "@/lib/api-errors"
 import { paths } from "@/lib/paths"
 import { queryKeys } from "@/lib/query-keys"
 
-const DRAFT_KEY = "ponto:composer-draft"
+const DRAFT_KEY = "contraponha:composer-draft"
 
 function valuesFrom(post: PostView): ComposerValues {
   return {

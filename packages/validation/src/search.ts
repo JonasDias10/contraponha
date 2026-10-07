@@ -1,10 +1,10 @@
-import { SEARCH_QUERY_MAX_LENGTH, SEARCH_QUERY_MIN_LENGTH } from "@ponto/config"
+import { SEARCH_QUERY_MAX_LENGTH, SEARCH_QUERY_MIN_LENGTH } from "@contraponha/config"
 import {
   SearchPeriod,
   SearchSort,
   type ContributionSearchResult,
   type PostSearchResult,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { contributionViewSchema } from "./comments.js"

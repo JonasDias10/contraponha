@@ -89,7 +89,7 @@ modules/users/
 └── domain/user.ts                          Handles reservados, mapeamento para perfil público/privado
 ```
 
-Os schemas de entrada ficam em `@ponto/validation` porque os formulários de web e mobile usam os mesmos.
+Os schemas de entrada ficam em `@contraponha/validation` porque os formulários de web e mobile usam os mesmos.
 
 O módulo `auth` é o maior até agora:
 
@@ -124,7 +124,7 @@ As regras abaixo valem em todo o monorepo e são verificadas pelo ESLint (`pnpm 
   ```
 
 - **Funções com dois ou mais parâmetros recebem um único objeto.** Os campos ficam nomeados na chamada (`revoke({ userId, sessionId })`) e a ordem dos argumentos deixa de importar. Ficam de fora as assinaturas impostas pelo framework: construtores (injeção de dependência), handlers de controller com parâmetros decorados, callbacks passados diretamente a outras funções (`.map((item, index) => ...)`) e métodos de interfaces do Nest, como `catch(exception, host)` do filtro de exceções, que usa `eslint-disable` com justificativa.
-- **Tipos de parâmetro e de retorno são declarados fora da assinatura**, como `interface` (ou `type`, quando for preciso, por exemplo para ser atribuível a um tipo com assinatura de índice). O nome segue o padrão `<Ação><Assunto>Params` para parâmetros (`IssueSessionParams`, `UpsertPasswordHashParams`). A interface é exportada quando a função ou o método público também é. Formatos usados por mais de um app ou pacote vão para o pacote compartilhado (`SessionListResponse` em `@ponto/types`, `LocaleTranslator` em `@ponto/i18n`).
+- **Tipos de parâmetro e de retorno são declarados fora da assinatura**, como `interface` (ou `type`, quando for preciso, por exemplo para ser atribuível a um tipo com assinatura de índice). O nome segue o padrão `<Ação><Assunto>Params` para parâmetros (`IssueSessionParams`, `UpsertPasswordHashParams`). A interface é exportada quando a função ou o método público também é. Formatos usados por mais de um app ou pacote vão para o pacote compartilhado (`SessionListResponse` em `@contraponha/types`, `LocaleTranslator` em `@contraponha/i18n`).
 
   ```ts
   // avoid
@@ -176,13 +176,13 @@ import { SessionsService } from "./sessions.service.js" // same folder: relative
 
 ## Versionamento da API
 
-Todas as rotas ficam sob `/api/v{n}`. O prefixo (`api`) e a versão padrão (`1`) são constantes em `@ponto/config`, usadas pela API e pelo `@ponto/api-client`, então não podem divergir.
+Todas as rotas ficam sob `/api/v{n}`. O prefixo (`api`) e a versão padrão (`1`) são constantes em `@contraponha/config`, usadas pela API e pelo `@contraponha/api-client`, então não podem divergir.
 
 Para introduzir uma versão nova de um endpoint, use `@Version("2")` no handler ou no controller. A v1 continua respondendo até ser descontinuada.
 
 ## Validação de entrada
 
-A validação usa **Zod**, não `class-validator`. O motivo: os mesmos schemas podem ser usados pela API e pelos formulários de web e mobile (`@ponto/validation`).
+A validação usa **Zod**, não `class-validator`. O motivo: os mesmos schemas podem ser usados pela API e pelos formulários de web e mobile (`@contraponha/validation`).
 
 ```ts
 @Post()
@@ -210,12 +210,12 @@ Toda resposta de erro da API, sem exceção, tem este formato:
 }
 ```
 
-| Campo       | Significado                                                                                                 |
-| ----------- | ----------------------------------------------------------------------------------------------------------- |
-| `code`      | Identificador estável em inglês (`ApiErrorCode` em `@ponto/types`). É nele que os clientes devem se basear. |
-| `message`   | Texto para pessoas, traduzido conforme o `Accept-Language` da requisição (padrão pt-BR).                    |
-| `details`   | Informação estruturada opcional (erros por campo, relatório de health). Sempre `null` em erros internos.    |
-| `requestId` | O mesmo valor do header `X-Request-ID`, para suporte e correlação com logs.                                 |
+| Campo       | Significado                                                                                                       |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `code`      | Identificador estável em inglês (`ApiErrorCode` em `@contraponha/types`). É nele que os clientes devem se basear. |
+| `message`   | Texto para pessoas, traduzido conforme o `Accept-Language` da requisição (padrão pt-BR).                          |
+| `details`   | Informação estruturada opcional (erros por campo, relatório de health). Sempre `null` em erros internos.          |
+| `requestId` | O mesmo valor do header `X-Request-ID`, para suporte e correlação com logs.                                       |
 
 Como funciona:
 
@@ -225,7 +225,7 @@ Como funciona:
 - Erros inesperados viram `INTERNAL_ERROR` (500) com mensagem genérica. Stack trace e mensagem original vão **apenas para o log**, em qualquer ambiente.
 - A resposta inclui `Content-Language` com o idioma usado.
 
-Para adicionar um código novo: inclua-o em `ApiErrorCode` (`@ponto/types`), crie a mensagem em `@ponto/i18n` e registre no `ERROR_CATALOG`. O `typecheck` aponta o que faltar.
+Para adicionar um código novo: inclua-o em `ApiErrorCode` (`@contraponha/types`), crie a mensagem em `@contraponha/i18n` e registre no `ERROR_CATALOG`. O `typecheck` aponta o que faltar.
 
 ## Logs
 
@@ -245,7 +245,7 @@ Exemplo de produção:
 {
   "level": "warn",
   "time": "2026-10-05T13:00:00.731Z",
-  "service": "ponto-api",
+  "service": "contraponha-api",
   "env": "production",
   "requestId": "163fb39c-...",
   "req": { "id": "163fb39c-...", "method": "GET", "path": "/api/v1/x" },
@@ -356,7 +356,7 @@ Cada passo é seguro com várias instâncias ao mesmo tempo: exportações são 
 
 - **Unitários** (`src/**/*.test.ts`, `pnpm test`): funções puras e peças isoladas (config, pipe de validação, agregação de health). Não precisam de Docker.
 - **E2E** (`test/**/*.e2e.test.ts`, `pnpm test:e2e`): sobem o `AppModule` completo com PostgreSQL, Redis e storage S3 reais e fazem requisições HTTP. Cobrem envelope de erro, i18n, request id, rate limiting, headers de segurança, OpenAPI, health e os fluxos de todos os módulos de domínio.
-  - Rodam num banco separado, `<nome>_test` (por exemplo, `ponto_test`). O `test/global-setup.ts` cria o banco se não existir, aplica as migrations com o migrator programático e limpa as tabelas antes da execução.
+  - Rodam num banco separado, `<nome>_test` (por exemplo, `contraponha_test`). O `test/global-setup.ts` cria o banco se não existir, aplica as migrations com o migrator programático e limpa as tabelas antes da execução.
   - O `EmailSender` é trocado por `CapturingEmailSender`, que guarda as mensagens em memória; os testes leem os links de verificação e redefinição a partir dele.
   - Cada teste cria contas com e-mail e handle aleatórios (`test/support/accounts.ts`), então os testes não dependem de ordem.
 

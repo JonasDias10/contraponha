@@ -4,7 +4,7 @@ import type {
   PostSearchResult,
   PublicProfile,
   TopicList,
-} from "@ponto/types"
+} from "@contraponha/types"
 import {
   contributionSearchPageSchema,
   postSearchPageSchema,
@@ -12,7 +12,7 @@ import {
   topicListSchema,
   type ContentSearchQuery,
   type SearchQuery,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { withQuery, type HttpClient } from "../http.js"
 

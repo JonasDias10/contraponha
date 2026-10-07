@@ -56,7 +56,7 @@ Nenhum serviço de busca extra (Elasticsearch, Meilisearch) foi adicionado: o Po
 | `POST /notifications/:notificationId/read` | sim  | Marca uma como lida (idempotente)  |
 | `POST /notifications/read-all`             | sim  | Marca todas como lidas             |
 
-Tipos: `post_commented`, `comment_replied`, `post_reacted`, `comment_reacted`, `user_followed`. Os textos ficam no namespace `notifications` do `@ponto/i18n`, com a variável `{actor}`.
+Tipos: `post_commented`, `comment_replied`, `post_reacted`, `comment_reacted`, `user_followed`. Os textos ficam no namespace `notifications` do `@contraponha/i18n`, com a variável `{actor}`.
 
 Regras:
 

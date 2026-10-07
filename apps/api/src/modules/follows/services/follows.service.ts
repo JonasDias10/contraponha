@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
+import { runTransaction, type Database, type DatabaseExecutor } from "@contraponha/database"
 import {
   ApiErrorCode,
   type FollowStatus,
   type Page,
   type PublicProfile,
   type FollowedAmong,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { AppError } from "#src/common/errors/app-error.js"

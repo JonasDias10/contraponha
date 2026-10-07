@@ -1,7 +1,7 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { POST_BODY_MAX_LENGTH } from "@ponto/config"
-import { postRevisions } from "@ponto/database"
-import { contentRevisionListSchema, postPageSchema } from "@ponto/validation"
+import { POST_BODY_MAX_LENGTH } from "@contraponha/config"
+import { postRevisions } from "@contraponha/database"
+import { contentRevisionListSchema, postPageSchema } from "@contraponha/validation"
 import { eq } from "drizzle-orm"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
@@ -30,11 +30,16 @@ describe("posts", () => {
     it("publishes a post that anyone can read", async () => {
       const { auth } = await registerAccount({ server })
 
-      const post = await createPost({ server, token: auth.session.token, body: "  Olá, Ponto.  " })
+      const post = await createPost({
+        server,
+        token: auth.session.token,
+        body: "  Olá, Contraponha.  ",
+      })
+
       const fetched = await getPost({ server, postId: post.id })
 
       expect(post).toMatchObject({
-        body: "Olá, Ponto.",
+        body: "Olá, Contraponha.",
         isDeleted: false,
         commentCount: 0,
         reactionCounts: { good_argument: 0, insightful: 0, changed_my_mind: 0, needs_source: 0 },

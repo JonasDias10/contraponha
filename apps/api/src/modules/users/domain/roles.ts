@@ -1,4 +1,4 @@
-import { UserRole } from "@ponto/types"
+import { UserRole } from "@contraponha/types"
 
 const RANK: Record<UserRole, number> = {
   [UserRole.MEMBER]: 0,

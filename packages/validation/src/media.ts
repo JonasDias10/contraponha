@@ -1,5 +1,5 @@
-import { MEDIA_ALLOWED_TYPES, MEDIA_MAX_BYTES } from "@ponto/config"
-import type { MediaUploadTicket, MediaView } from "@ponto/types"
+import { MEDIA_ALLOWED_TYPES, MEDIA_MAX_BYTES } from "@contraponha/config"
+import type { MediaUploadTicket, MediaView } from "@contraponha/types"
 import { z } from "zod"
 
 export const mediaMimeTypeSchema = z.enum(MEDIA_ALLOWED_TYPES)

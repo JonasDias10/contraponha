@@ -1,7 +1,7 @@
 "use client"
 
-import type { CommunityRule } from "@ponto/types"
-import { type PostView } from "@ponto/types"
+import type { CommunityRule } from "@contraponha/types"
+import { type PostView } from "@contraponha/types"
 import {
   Flag,
   Link2,

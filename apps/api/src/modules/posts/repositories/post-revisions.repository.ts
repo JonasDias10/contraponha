@@ -5,7 +5,7 @@ import {
   type DatabaseExecutor,
   type ContentSourceValue,
   type PostRevisionRow,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { count, desc, eq, inArray } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

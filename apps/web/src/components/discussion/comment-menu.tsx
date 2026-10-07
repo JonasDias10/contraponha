@@ -1,6 +1,6 @@
 "use client"
 
-import type { CommentView, CommunityRule } from "@ponto/types"
+import type { CommentView, CommunityRule } from "@contraponha/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Flag, MoreHorizontal, ShieldX, Star, StarOff, Trash2 } from "lucide-react"
 import { useState } from "react"

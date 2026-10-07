@@ -1,5 +1,5 @@
 {
-  "extends": "@ponto/tsconfig/nestjs.json",
+  "extends": "@contraponha/tsconfig/nestjs.json",
   "compilerOptions": {
     "noEmit": true,
     "customConditions": ["source"]

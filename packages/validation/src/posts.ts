@@ -3,14 +3,14 @@ import {
   POST_BODY_MAX_LENGTH,
   POST_SOURCES_MAX,
   POST_TITLE_MAX_LENGTH,
-} from "@ponto/config"
+} from "@contraponha/config"
 import {
   ContentRemoval,
   type BookmarkCount,
   type ContentRevisionList,
   type PostSummary,
   type PostView,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import {

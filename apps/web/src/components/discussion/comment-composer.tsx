@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { commentBodySchema, httpUrlSchema } from "@ponto/validation"
+import { commentBodySchema, httpUrlSchema } from "@contraponha/validation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { BookText } from "lucide-react"
 import Link from "next/link"

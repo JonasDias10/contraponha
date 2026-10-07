@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
-import { negotiateLocale } from "@ponto/i18n"
-import { ApiErrorCode, type AuthResponse } from "@ponto/types"
+import { runTransaction, type Database, type DatabaseExecutor } from "@contraponha/database"
+import { negotiateLocale } from "@contraponha/i18n"
+import { ApiErrorCode, type AuthResponse } from "@contraponha/types"
 import type {
   changePasswordInputSchema,
   loginInputSchema,
   registerInputSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import type { AuthContext } from "#src/common/auth/auth-context.js"

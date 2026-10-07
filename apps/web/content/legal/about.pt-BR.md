@@ -1,6 +1,6 @@
-# Como o Ponto funciona
+# Como o Contraponha funciona
 
-O Ponto é uma rede social brasileira feita para conversas que valem a pena. Em vez de premiar o que dá mais clique, ele dá destaque ao que faz a discussão avançar.
+O Contraponha é uma rede social brasileira feita para conversas que valem a pena. Em vez de premiar o que dá mais clique, ele dá destaque ao que faz a discussão avançar.
 
 ## Reações que dizem algo
 

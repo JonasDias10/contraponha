@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { POST_TOPICS_MAX } from "@ponto/config"
-import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
-import { ApiErrorCode, type TopicList, type TopicSummary, type TopicView } from "@ponto/types"
+import { POST_TOPICS_MAX } from "@contraponha/config"
+import { runTransaction, type Database, type DatabaseExecutor } from "@contraponha/database"
+import { ApiErrorCode, type TopicList, type TopicSummary, type TopicView } from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

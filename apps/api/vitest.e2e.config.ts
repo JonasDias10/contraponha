@@ -1,4 +1,4 @@
-import { secondsToMs } from "@ponto/config"
+import { secondsToMs } from "@contraponha/config"
 import swc from "unplugin-swc"
 import { defineConfig } from "vitest/config"
 

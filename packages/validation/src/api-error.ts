@@ -1,4 +1,4 @@
-import { ApiErrorCode, type ApiErrorResponse, type ValidationIssue } from "@ponto/types"
+import { ApiErrorCode, type ApiErrorResponse, type ValidationIssue } from "@contraponha/types"
 import { z } from "zod"
 
 export const apiErrorResponseSchema = z.object({

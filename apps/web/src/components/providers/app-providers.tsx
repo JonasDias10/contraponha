@@ -1,7 +1,7 @@
 "use client"
 
-import type { ApiClient } from "@ponto/api-client"
-import type { Locale } from "@ponto/i18n"
+import type { ApiClient } from "@contraponha/api-client"
+import type { Locale } from "@contraponha/i18n"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createContext, useContext, useState } from "react"
 import { Toaster } from "sonner"

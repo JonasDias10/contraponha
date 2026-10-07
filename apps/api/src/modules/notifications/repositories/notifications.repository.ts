@@ -10,7 +10,7 @@ import {
   type DatabaseExecutor,
   type NotificationPreferencesRow,
   type NotificationTypeValue,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { and, count, desc, eq, gt, inArray, isNull, lte, or, sql, type SQL } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

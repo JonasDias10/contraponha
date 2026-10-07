@@ -1,4 +1,4 @@
-import { HealthStatus, type LivenessReport, type ReadinessReport } from "@ponto/types"
+import { HealthStatus, type LivenessReport, type ReadinessReport } from "@contraponha/types"
 import { z } from "zod"
 
 const healthStatusSchema = z.enum(HealthStatus)

@@ -1,5 +1,5 @@
 {
-  "extends": ["@ponto/tsconfig/base.json", "expo/tsconfig.base"],
+  "extends": ["@contraponha/tsconfig/base.json", "expo/tsconfig.base"],
   "compilerOptions": {
     "declaration": false,
     "declarationMap": false,

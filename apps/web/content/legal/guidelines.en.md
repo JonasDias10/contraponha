@@ -1,6 +1,6 @@
 # Community guidelines
 
-Ponto exists for conversations that move the discussion forward. Disagreeing is welcome; attacking people is not. These guidelines say what we expect from those who take part and which rules moderation applies. Every removal cites the rule used, and the affected person always receives the decision.
+Contraponha exists for conversations that move the discussion forward. Disagreeing is welcome; attacking people is not. These guidelines say what we expect from those who take part and which rules moderation applies. Every removal cites the rule used, and the affected person always receives the decision.
 
 This is a translation. If there is any difference, the Portuguese version prevails.
 
@@ -47,7 +47,7 @@ Do not publish other people's personal data without permission, such as addresse
 
 ### Illegal content {#illegal_content}
 
-Do not use Ponto for activities that are illegal under Brazilian law, including selling prohibited products and copyright infringement.
+Do not use Contraponha for activities that are illegal under Brazilian law, including selling prohibited products and copyright infringement.
 
 ### Impersonation {#impersonation}
 

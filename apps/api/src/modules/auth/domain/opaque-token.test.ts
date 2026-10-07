@@ -1,4 +1,4 @@
-import { opaqueTokenSchema } from "@ponto/validation"
+import { opaqueTokenSchema } from "@contraponha/validation"
 import { describe, expect, it } from "vitest"
 
 import { generateOpaqueToken, hashOpaqueToken } from "./opaque-token.js"

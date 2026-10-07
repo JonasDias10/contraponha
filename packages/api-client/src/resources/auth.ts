@@ -1,4 +1,4 @@
-import type { AuthResponse, SessionSummary } from "@ponto/types"
+import type { AuthResponse, SessionSummary } from "@contraponha/types"
 import {
   authResponseSchema,
   sessionListSchema,
@@ -10,7 +10,7 @@ import {
   type RequestMagicLinkInput,
   type RequestPasswordResetInput,
   type ResetPasswordInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { emptyResponseSchema, type HttpClient } from "../http.js"
 

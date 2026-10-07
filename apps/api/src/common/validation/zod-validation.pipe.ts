@@ -1,6 +1,6 @@
 import { Injectable, type PipeTransform } from "@nestjs/common"
-import { ApiErrorCode } from "@ponto/types"
-import { toValidationIssues } from "@ponto/validation"
+import { ApiErrorCode } from "@contraponha/types"
+import { toValidationIssues } from "@contraponha/validation"
 import type { z } from "zod"
 
 import { AppError } from "#src/common/errors/app-error.js"

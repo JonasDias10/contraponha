@@ -6,13 +6,13 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { FollowStatus, Page, PublicProfile } from "@ponto/types"
+import type { FollowStatus, Page, PublicProfile } from "@contraponha/types"
 import {
   followStatusSchema,
   handleSchema,
   paginationQuerySchema,
   profilePageSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

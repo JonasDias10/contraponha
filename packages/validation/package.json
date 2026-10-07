@@ -1,5 +1,5 @@
 {
-  "name": "@ponto/validation",
+  "name": "@contraponha/validation",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -21,13 +21,13 @@
     "clean": "rm -rf build .turbo"
   },
   "dependencies": {
-    "@ponto/config": "workspace:*",
-    "@ponto/i18n": "workspace:*",
-    "@ponto/types": "workspace:*",
+    "@contraponha/config": "workspace:*",
+    "@contraponha/i18n": "workspace:*",
+    "@contraponha/types": "workspace:*",
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@ponto/tsconfig": "workspace:*",
+    "@contraponha/tsconfig": "workspace:*",
     "typescript": "~6.0.3",
     "vitest": "^5.0.3"
   }

@@ -1,5 +1,5 @@
-import type { MediaUploadTicket } from "@ponto/types"
-import { mediaUploadTicketSchema, type CreateMediaUploadInput } from "@ponto/validation"
+import type { MediaUploadTicket } from "@contraponha/types"
+import { mediaUploadTicketSchema, type CreateMediaUploadInput } from "@contraponha/validation"
 
 import type { HttpClient } from "../http.js"
 

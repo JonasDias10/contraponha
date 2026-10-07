@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto"
 
 import { Injectable, Logger } from "@nestjs/common"
-import { minutesToMs, msToSeconds } from "@ponto/config"
-import type { DatabaseExecutor } from "@ponto/database"
-import { ApiErrorCode, type MediaUploadTicket, type MediaView } from "@ponto/types"
+import { minutesToMs, msToSeconds } from "@contraponha/config"
+import type { DatabaseExecutor } from "@contraponha/database"
+import { ApiErrorCode, type MediaUploadTicket, type MediaView } from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { MEDIA_UPLOAD_URL_TTL_MINUTES } from "#src/config/durations.js"

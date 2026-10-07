@@ -1,4 +1,4 @@
-import { ApiErrorCode, type Page } from "@ponto/types"
+import { ApiErrorCode, type Page } from "@contraponha/types"
 import type { z } from "zod"
 
 import { AppError } from "#src/common/errors/app-error.js"

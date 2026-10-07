@@ -1,6 +1,6 @@
 "use client"
 
-import type { PublicProfile } from "@ponto/types"
+import type { PublicProfile } from "@contraponha/types"
 import Link from "next/link"
 
 import { RelativeTime } from "@/components/post/relative-time"

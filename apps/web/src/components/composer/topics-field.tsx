@@ -1,6 +1,6 @@
 "use client"
 
-import { POST_TOPICS_MAX } from "@ponto/config"
+import { POST_TOPICS_MAX } from "@contraponha/config"
 import { useQuery } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
 import { useState } from "react"

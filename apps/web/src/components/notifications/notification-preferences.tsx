@@ -1,7 +1,7 @@
 "use client"
 
-import type { NotificationPreferences } from "@ponto/types"
-import type { UpdateNotificationPreferencesInput } from "@ponto/validation"
+import type { NotificationPreferences } from "@contraponha/types"
+import type { UpdateNotificationPreferencesInput } from "@contraponha/validation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 

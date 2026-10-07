@@ -1,6 +1,6 @@
 # Termos de uso
 
-Estes termos regem o uso do Ponto. Ao criar uma conta, você concorda com eles, com a [Política de privacidade](/privacy) e com as [Diretrizes da comunidade](/guidelines).
+Estes termos regem o uso do Contraponha. Ao criar uma conta, você concorda com eles, com a [Política de privacidade](/privacy) e com as [Diretrizes da comunidade](/guidelines).
 
 ## 1. Quem pode usar
 
@@ -13,7 +13,7 @@ Você é responsável pelo que acontece na sua conta. Se perceber acesso indevid
 ## 3. O que você publica
 
 - O conteúdo que você publica continua sendo seu.
-- Ao publicar, você nos dá uma licença gratuita, não exclusiva e mundial para hospedar, exibir e distribuir esse conteúdo no Ponto, enquanto ele estiver publicado. A licença termina quando você apaga o conteúdo ou a conta, exceto para cópias que outras pessoas tenham legitimamente compartilhado.
+- Ao publicar, você nos dá uma licença gratuita, não exclusiva e mundial para hospedar, exibir e distribuir esse conteúdo no Contraponha, enquanto ele estiver publicado. A licença termina quando você apaga o conteúdo ou a conta, exceto para cópias que outras pessoas tenham legitimamente compartilhado.
 - Posts podem ser editados nos primeiros 30 minutos. As versões anteriores ficam visíveis publicamente, com o motivo da edição, por transparência.
 - Você garante que tem o direito de publicar o que publica, incluindo imagens e textos citados.
 
@@ -23,7 +23,7 @@ Você concorda em seguir as [Diretrizes da comunidade](/guidelines). Podemos rem
 
 ## 5. O que oferecemos
 
-O Ponto é oferecido gratuitamente e "no estado em que se encontra". Trabalhamos para que o serviço funcione bem, mas ele pode ter interrupções. Podemos mudar funcionalidades, sempre buscando avisar com antecedência mudanças relevantes.
+O Contraponha é oferecido gratuitamente e "no estado em que se encontra". Trabalhamos para que o serviço funcione bem, mas ele pode ter interrupções. Podemos mudar funcionalidades, sempre buscando avisar com antecedência mudanças relevantes.
 
 ## 6. Responsabilidade
 

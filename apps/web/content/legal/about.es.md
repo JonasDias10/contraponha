@@ -1,6 +1,6 @@
-# Cómo funciona Ponto
+# Cómo funciona Contraponha
 
-Ponto es una red social brasileña hecha para conversaciones que valen la pena. En lugar de premiar lo que más clics recibe, da protagonismo a lo que hace avanzar la discusión.
+Contraponha es una red social brasileña hecha para conversaciones que valen la pena. En lugar de premiar lo que más clics recibe, da protagonismo a lo que hace avanzar la discusión.
 
 ## Reacciones que dicen algo
 

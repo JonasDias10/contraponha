@@ -1,6 +1,6 @@
 import "server-only"
 
-import type { PrivateProfile } from "@ponto/types"
+import type { PrivateProfile } from "@contraponha/types"
 import { notFound } from "next/navigation"
 
 import { canModerate } from "./roles"

@@ -1,6 +1,6 @@
 "use client"
 
-import type { ContentRevision, PostView } from "@ponto/types"
+import type { ContentRevision, PostView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 
 import { useApi } from "@/components/providers/app-providers"

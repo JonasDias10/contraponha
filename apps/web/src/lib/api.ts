@@ -1,7 +1,7 @@
 import "server-only"
 
-import { createApiClient, type ApiClient } from "@ponto/api-client"
-import type { Locale } from "@ponto/i18n"
+import { createApiClient, type ApiClient } from "@contraponha/api-client"
+import type { Locale } from "@contraponha/i18n"
 
 import { getWebEnv } from "./env"
 import { getSessionToken } from "./session"

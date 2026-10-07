@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common"
-import { hoursToMs, minutesToMs } from "@ponto/config"
-import { runTransaction, type Database, type VerificationTokenPurpose } from "@ponto/database"
-import { ApiErrorCode } from "@ponto/types"
+import { hoursToMs, minutesToMs } from "@contraponha/config"
+import { runTransaction, type Database, type VerificationTokenPurpose } from "@contraponha/database"
+import { ApiErrorCode } from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"

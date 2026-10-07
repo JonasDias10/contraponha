@@ -4,8 +4,8 @@ import type {
   NotificationPreferencesRow,
   NotificationRow,
   NotificationTypeValue,
-} from "@ponto/database"
-import type { NotificationPreferences, NotificationView } from "@ponto/types"
+} from "@contraponha/database"
+import type { NotificationPreferences, NotificationView } from "@contraponha/types"
 
 import { toExcerpt } from "#src/common/content/sources.js"
 import { toPublicProfile, type User } from "#src/modules/users/domain/user.js"

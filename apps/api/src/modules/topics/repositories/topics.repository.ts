@@ -5,7 +5,7 @@ import {
   topics,
   type Database,
   type DatabaseExecutor,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

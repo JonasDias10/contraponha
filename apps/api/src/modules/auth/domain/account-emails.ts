@@ -1,4 +1,4 @@
-import { createTranslator, type Locale, type MessageKey } from "@ponto/i18n"
+import { createTranslator, type Locale, type MessageKey } from "@contraponha/i18n"
 
 import type { EmailMessage } from "#src/infrastructure/email/email-sender.js"
 

@@ -1,8 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { PostView } from "@ponto/types"
-import { contextNoteInputSchema, httpUrlSchema } from "@ponto/validation"
+import type { PostView } from "@contraponha/types"
+import { contextNoteInputSchema, httpUrlSchema } from "@contraponha/validation"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 

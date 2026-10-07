@@ -5,7 +5,7 @@ import { useCallback, useEffect, useSyncExternalStore } from "react"
 import { THEME_STORAGE_KEY, THEMES, type Theme } from "@/lib/theme"
 
 const DARK_QUERY = "(prefers-color-scheme: dark)"
-const CHANGE_EVENT = "ponto:theme-change"
+const CHANGE_EVENT = "contraponha:theme-change"
 
 function readTheme(): Theme {
   try {

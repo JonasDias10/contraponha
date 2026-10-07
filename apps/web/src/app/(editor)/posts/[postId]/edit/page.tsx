@@ -1,4 +1,4 @@
-import { ApiError } from "@ponto/api-client"
+import { ApiError } from "@contraponha/api-client"
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 

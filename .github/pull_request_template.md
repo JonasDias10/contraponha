@@ -18,7 +18,7 @@
 
 - [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test` e `pnpm test:e2e` passam
 - [ ] Código em inglês; documentação em pt-BR
-- [ ] Textos de interface e de e-mail passam por `@ponto/i18n`, com chaves em pt-BR (e `en`/`es` quando houver tradução)
+- [ ] Textos de interface e de e-mail passam por `@contraponha/i18n`, com chaves em pt-BR (e `en`/`es` quando houver tradução)
 - [ ] Mudança de schema tem migration gerada com nome descritivo e o SQL foi revisado
 - [ ] Variáveis de ambiente novas estão no `.env.example` e no CI
 - [ ] Nenhum segredo, token ou dado pessoal em código, logs ou fixtures

@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ApiErrorCode } from "@ponto/types"
+import type { ApiErrorBody, ApiErrorCode } from "@contraponha/types"
 
 export class ApiError extends Error {
   readonly code: ApiErrorCode

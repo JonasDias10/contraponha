@@ -4,7 +4,7 @@ import {
   type Database,
   type DatabaseExecutor,
   type NotificationTypeValue,
-} from "@ponto/database"
+} from "@contraponha/database"
 import {
   ApiErrorCode,
   NotificationFilter,
@@ -12,7 +12,7 @@ import {
   type NotificationView,
   type Page,
   type UnreadNotificationCount,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { AppError } from "#src/common/errors/app-error.js"

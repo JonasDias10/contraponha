@@ -1,6 +1,6 @@
 "use client"
 
-import type { PostView } from "@ponto/types"
+import type { PostView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 import { ArrowLeft, Bookmark, History, Share } from "lucide-react"
 import Link from "next/link"

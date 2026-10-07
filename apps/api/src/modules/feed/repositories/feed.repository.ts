@@ -1,6 +1,13 @@
-import { daysToMs } from "@ponto/config"
+import { daysToMs } from "@contraponha/config"
 import { Inject, Injectable } from "@nestjs/common"
-import { follows, postTopics, posts, topicFollows, topics, type Database } from "@ponto/database"
+import {
+  follows,
+  postTopics,
+  posts,
+  topicFollows,
+  topics,
+  type Database,
+} from "@contraponha/database"
 import { and, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql, type SQL } from "drizzle-orm"
 
 import { FEED_FEATURED_WINDOW_DAYS } from "#src/config/durations.js"

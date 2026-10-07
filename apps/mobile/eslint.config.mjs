@@ -1,3 +1,3 @@
-import { reactConfig } from "@ponto/eslint-config"
+import { reactConfig } from "@contraponha/eslint-config"
 
 export default reactConfig({ tsconfigRootDir: import.meta.dirname })

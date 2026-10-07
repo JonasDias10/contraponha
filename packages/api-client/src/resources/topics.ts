@@ -1,5 +1,5 @@
-import type { TopicList, TopicView } from "@ponto/types"
-import { topicListSchema, topicViewSchema, type FollowTopicsInput } from "@ponto/validation"
+import type { TopicList, TopicView } from "@contraponha/types"
+import { topicListSchema, topicViewSchema, type FollowTopicsInput } from "@contraponha/validation"
 
 import { emptyResponseSchema, type HttpClient } from "../http.js"
 

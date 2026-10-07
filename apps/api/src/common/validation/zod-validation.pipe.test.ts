@@ -1,4 +1,4 @@
-import { ApiErrorCode } from "@ponto/types"
+import { ApiErrorCode } from "@contraponha/types"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 

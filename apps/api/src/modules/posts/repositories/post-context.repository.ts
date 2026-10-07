@@ -7,7 +7,7 @@ import {
   type ContextNoteRow,
   type Database,
   type ReactionKindValue,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { and, eq, inArray, isNull } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

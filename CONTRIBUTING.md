@@ -1,16 +1,16 @@
-# Como contribuir com o Ponto
+# Como contribuir com o Contraponha
 
 Obrigado por contribuir. Este guia resume as convenções do projeto. Para configurar o ambiente, veja [docs/development/setup.md](docs/development/setup.md).
 
 ## Idiomas
 
-| O quê                                                                              | Idioma                                        |
-| ---------------------------------------------------------------------------------- | --------------------------------------------- |
-| Código: arquivos, pastas, classes, funções, variáveis, tabelas, colunas, endpoints | Inglês                                        |
-| Comentários no código e em arquivos de configuração                                | Inglês                                        |
-| Mensagens de log e de commit                                                       | Inglês                                        |
-| Documentação para pessoas desenvolvedoras (README, `docs/`, este guia)             | pt-BR                                         |
-| Textos exibidos para usuários                                                      | Catálogos de `@ponto/i18n` (pt-BR como fonte) |
+| O quê                                                                              | Idioma                                              |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Código: arquivos, pastas, classes, funções, variáveis, tabelas, colunas, endpoints | Inglês                                              |
+| Comentários no código e em arquivos de configuração                                | Inglês                                              |
+| Mensagens de log e de commit                                                       | Inglês                                              |
+| Documentação para pessoas desenvolvedoras (README, `docs/`, este guia)             | pt-BR                                               |
+| Textos exibidos para usuários                                                      | Catálogos de `@contraponha/i18n` (pt-BR como fonte) |
 
 Use `User`, `Post`, `getUserById()`. Nunca `Usuario`, `Publicacao`, `buscarUsuario()`.
 
@@ -56,7 +56,7 @@ Leia [docs/architecture/backend.md](docs/architecture/backend.md). Os pontos mai
 
 ## Web e mobile
 
-Leia [docs/architecture/frontends.md](docs/architecture/frontends.md). Nenhum texto de interface fica escrito direto no JSX: tudo passa por `t()` com chaves de `@ponto/i18n`. Lógica usada pelos dois apps vai para um pacote compartilhado.
+Leia [docs/architecture/frontends.md](docs/architecture/frontends.md). Nenhum texto de interface fica escrito direto no JSX: tudo passa por `t()` com chaves de `@contraponha/i18n`. Lógica usada pelos dois apps vai para um pacote compartilhado.
 
 ## Banco de dados
 

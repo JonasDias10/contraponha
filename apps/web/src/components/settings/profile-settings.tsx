@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { PrivateProfile } from "@ponto/types"
+import type { PrivateProfile } from "@contraponha/types"
 import {
   BIO_MAX_LENGTH,
   bioSchema,
@@ -10,7 +10,7 @@ import {
   httpUrlSchema,
   LOCATION_MAX_LENGTH,
   PRONOUNS_MAX_LENGTH,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"

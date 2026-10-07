@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common"
-import { daysToMs } from "@ponto/config"
-import type { FollowedByPreview, ProfileView, Recognition, SuggestedPeople } from "@ponto/types"
+import { daysToMs } from "@contraponha/config"
+import type {
+  FollowedByPreview,
+  ProfileView,
+  Recognition,
+  SuggestedPeople,
+} from "@contraponha/types"
 
 import {
   FOLLOWED_BY_PREVIEW_LIMIT,

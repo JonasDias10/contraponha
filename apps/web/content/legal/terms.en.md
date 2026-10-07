@@ -1,6 +1,6 @@
 # Terms of use
 
-These terms govern the use of Ponto. By creating an account, you agree to them, to the [Privacy policy](/privacy) and to the [Community guidelines](/guidelines).
+These terms govern the use of Contraponha. By creating an account, you agree to them, to the [Privacy policy](/privacy) and to the [Community guidelines](/guidelines).
 
 This is a translation. If there is any difference, the Portuguese version prevails.
 
@@ -15,7 +15,7 @@ You are responsible for what happens in your account. If you notice unauthorized
 ## 3. What you publish
 
 - The content you publish remains yours.
-- By publishing, you give us a free, non-exclusive, worldwide license to host, display and distribute that content on Ponto, while it is published. The license ends when you delete the content or the account, except for copies other people have legitimately shared.
+- By publishing, you give us a free, non-exclusive, worldwide license to host, display and distribute that content on Contraponha, while it is published. The license ends when you delete the content or the account, except for copies other people have legitimately shared.
 - Posts can be edited during the first 30 minutes. Earlier versions stay publicly visible, with the reason for the edit, for transparency.
 - You guarantee that you have the right to publish what you publish, including quoted images and texts.
 
@@ -25,7 +25,7 @@ You agree to follow the [Community guidelines](/guidelines). We may remove conte
 
 ## 5. What we offer
 
-Ponto is offered free of charge and "as is". We work to make the service run well, but it may have interruptions. We may change features, always trying to give advance notice of relevant changes.
+Contraponha is offered free of charge and "as is". We work to make the service run well, but it may have interruptions. We may change features, always trying to give advance notice of relevant changes.
 
 ## 6. Liability
 

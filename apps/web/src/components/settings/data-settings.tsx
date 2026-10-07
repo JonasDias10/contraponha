@@ -1,6 +1,6 @@
 "use client"
 
-import { DataExportSection, type DataExportFormat } from "@ponto/types"
+import { DataExportSection, type DataExportFormat } from "@contraponha/types"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Download, Trash2 } from "lucide-react"
 import Link from "next/link"

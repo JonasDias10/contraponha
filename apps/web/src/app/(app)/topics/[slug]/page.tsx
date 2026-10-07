@@ -1,4 +1,4 @@
-import { ApiError } from "@ponto/api-client"
+import { ApiError } from "@contraponha/api-client"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"

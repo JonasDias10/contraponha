@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common"
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import type { MediaUploadTicket } from "@ponto/types"
-import { createMediaUploadInputSchema, mediaUploadTicketSchema } from "@ponto/validation"
+import type { MediaUploadTicket } from "@contraponha/types"
+import { createMediaUploadInputSchema, mediaUploadTicketSchema } from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

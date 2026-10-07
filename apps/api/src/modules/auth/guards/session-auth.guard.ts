@@ -1,6 +1,6 @@
 import { Injectable, type CanActivate, type ExecutionContext } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
-import { ApiErrorCode } from "@ponto/types"
+import { ApiErrorCode } from "@contraponha/types"
 
 import type { AuthenticatedRequest } from "#src/common/auth/auth-context.js"
 import { IS_PUBLIC_KEY } from "#src/common/auth/public.decorator.js"

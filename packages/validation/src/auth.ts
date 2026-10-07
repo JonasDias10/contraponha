@@ -1,5 +1,5 @@
-import type { AuthResponse, SessionListResponse, SessionSummary } from "@ponto/types"
-import { ageInYears, MINIMUM_AGE_YEARS } from "@ponto/config"
+import type { AuthResponse, SessionListResponse, SessionSummary } from "@contraponha/types"
+import { ageInYears, MINIMUM_AGE_YEARS } from "@contraponha/config"
 import { z } from "zod"
 
 import {

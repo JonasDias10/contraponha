@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
-import type { DatabaseExecutor } from "@ponto/database"
-import type { BookmarkCount, Page, PostView } from "@ponto/types"
+import type { DatabaseExecutor } from "@contraponha/database"
+import type { BookmarkCount, Page, PostView } from "@contraponha/types"
 import { z } from "zod"
 
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"

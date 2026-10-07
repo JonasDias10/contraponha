@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { REACTIONS_PER_TARGET_MAX } from "@ponto/config"
-import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
+import { REACTIONS_PER_TARGET_MAX } from "@contraponha/config"
+import { runTransaction, type Database, type DatabaseExecutor } from "@contraponha/database"
 import {
   ApiErrorCode,
   ReactionKind,
   ReactionTargetType,
   type ViewerReactionsResponse,
-} from "@ponto/types"
+} from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

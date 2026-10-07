@@ -1,6 +1,6 @@
 "use client"
 
-import { HIGHLIGHT_NOTE_MAX_LENGTH } from "@ponto/config"
+import { HIGHLIGHT_NOTE_MAX_LENGTH } from "@contraponha/config"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { toast } from "sonner"

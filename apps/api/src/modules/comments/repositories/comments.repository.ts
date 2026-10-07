@@ -8,8 +8,8 @@ import {
   type Database,
   type DatabaseExecutor,
   type ReactionKindValue,
-} from "@ponto/database"
-import type { ContentRemoval } from "@ponto/types"
+} from "@contraponha/database"
+import type { ContentRemoval } from "@contraponha/types"
 import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

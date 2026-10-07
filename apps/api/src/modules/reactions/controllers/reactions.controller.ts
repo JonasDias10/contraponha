@@ -6,12 +6,16 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import { ReactionTargetType, type ReactionKind, type ViewerReactionsResponse } from "@ponto/types"
+import {
+  ReactionTargetType,
+  type ReactionKind,
+  type ViewerReactionsResponse,
+} from "@contraponha/types"
 import {
   reactionKindSchema,
   viewerReactionsQuerySchema,
   viewerReactionsResponseSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

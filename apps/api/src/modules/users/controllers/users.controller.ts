@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post } from "@nestjs/common"
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import type { PrivateProfile } from "@ponto/types"
-import { privateProfileSchema, updateProfileInputSchema } from "@ponto/validation"
+import type { PrivateProfile } from "@contraponha/types"
+import { privateProfileSchema, updateProfileInputSchema } from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

@@ -1,6 +1,6 @@
 "use client"
 
-import { SearchPeriod, SearchSort } from "@ponto/types"
+import { SearchPeriod, SearchSort } from "@contraponha/types"
 import { Filter } from "lucide-react"
 
 import { useI18n } from "@/components/providers/i18n-provider"

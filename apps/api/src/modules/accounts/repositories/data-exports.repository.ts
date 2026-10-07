@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { dataExports, type Database, type DatabaseExecutor } from "@ponto/database"
-import type { DataExportFormat, DataExportSection } from "@ponto/types"
+import { dataExports, type Database, type DatabaseExecutor } from "@contraponha/database"
+import type { DataExportFormat, DataExportSection } from "@contraponha/types"
 import { and, asc, desc, eq, inArray, isNotNull, lte, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

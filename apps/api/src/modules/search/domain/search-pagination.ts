@@ -1,4 +1,4 @@
-import { HIGHLIGHT_END, HIGHLIGHT_START, SearchPeriod } from "@ponto/types"
+import { HIGHLIGHT_END, HIGHLIGHT_START, SearchPeriod } from "@contraponha/types"
 
 // Relevance order is not stable enough for keyset pagination, so search pages by offset
 // and stops after a cap; deeper results call for a more specific query.

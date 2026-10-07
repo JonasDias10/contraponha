@@ -1,4 +1,4 @@
-import { RecognitionKind, type Recognition, type TopicSummary } from "@ponto/types"
+import { RecognitionKind, type Recognition, type TopicSummary } from "@contraponha/types"
 
 // Below this many quality reactions, nothing is shown: a handful of reactions says little.
 export const RECOGNITION_MIN_REACTIONS = 10

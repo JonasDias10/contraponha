@@ -1,4 +1,4 @@
-import { LEGAL_DOCUMENT_VERSIONS } from "@ponto/config"
+import { LEGAL_DOCUMENT_VERSIONS } from "@contraponha/config"
 import type { Metadata } from "next"
 
 import { LegalDocument } from "@/components/legal/legal-document"

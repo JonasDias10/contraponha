@@ -1,5 +1,5 @@
-import type { MediaAssetRow } from "@ponto/database"
-import type { MediaView } from "@ponto/types"
+import type { MediaAssetRow } from "@contraponha/database"
+import type { MediaView } from "@contraponha/types"
 
 export type MediaAsset = MediaAssetRow
 

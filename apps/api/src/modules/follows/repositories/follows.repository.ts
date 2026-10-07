@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { follows, type Database, type DatabaseExecutor } from "@ponto/database"
+import { follows, type Database, type DatabaseExecutor } from "@contraponha/database"
 import { type SQL, and, desc, eq, inArray, or, sql } from "drizzle-orm"
 import type { PgColumn } from "drizzle-orm/pg-core"
 

@@ -5,7 +5,7 @@ import {
   type ContentSourceValue,
   type Database,
   type DatabaseExecutor,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { desc, eq } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

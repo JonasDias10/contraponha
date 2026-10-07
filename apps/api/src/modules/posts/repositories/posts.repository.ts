@@ -7,8 +7,8 @@ import {
   type CommunityRuleValue,
   type ContentSourceValue,
   type ReactionKindValue,
-} from "@ponto/database"
-import type { ContentRemoval, ReplyPolicy } from "@ponto/types"
+} from "@contraponha/database"
+import type { ContentRemoval, ReplyPolicy } from "@contraponha/types"
 import { and, desc, eq, inArray, isNotNull, isNull, lt, ne, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

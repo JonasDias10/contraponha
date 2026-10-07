@@ -6,8 +6,8 @@ import {
   SwaggerModule,
   type ApiResponseSchemaHost,
 } from "@nestjs/swagger"
-import { API_DEFAULT_VERSION, API_GLOBAL_PREFIX, REQUEST_ID_HEADER } from "@ponto/config"
-import { apiErrorResponseSchema } from "@ponto/validation"
+import { API_DEFAULT_VERSION, API_GLOBAL_PREFIX, REQUEST_ID_HEADER } from "@contraponha/config"
+import { apiErrorResponseSchema } from "@contraponha/validation"
 import { z } from "zod"
 
 export const SWAGGER_PATH = `${API_GLOBAL_PREFIX}/docs`
@@ -40,8 +40,8 @@ export function setupSwagger(app: INestApplication): void {
   const document = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
-      .setTitle("Ponto API")
-      .setDescription("Public HTTP API of the Ponto platform.")
+      .setTitle("Contraponha API")
+      .setDescription("Public HTTP API of the Contraponha platform.")
       .setVersion(API_DEFAULT_VERSION)
       .addBearerAuth(
         { type: "http", scheme: "bearer", description: "Session token from login or register" },

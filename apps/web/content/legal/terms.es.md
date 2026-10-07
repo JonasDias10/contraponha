@@ -1,6 +1,6 @@
 # Términos de uso
 
-Estos términos rigen el uso de Ponto. Al crear una cuenta, aceptas estos términos, la [Política de privacidad](/privacy) y las [Normas de la comunidad](/guidelines).
+Estos términos rigen el uso de Contraponha. Al crear una cuenta, aceptas estos términos, la [Política de privacidad](/privacy) y las [Normas de la comunidad](/guidelines).
 
 Esta es una traducción. Si hay alguna diferencia, prevalece la versión en portugués.
 
@@ -15,7 +15,7 @@ Eres responsable de lo que ocurre en tu cuenta. Si notas un acceso indebido, cam
 ## 3. Lo que publicas
 
 - El contenido que publicas sigue siendo tuyo.
-- Al publicar, nos das una licencia gratuita, no exclusiva y mundial para alojar, mostrar y distribuir ese contenido en Ponto, mientras esté publicado. La licencia termina cuando borras el contenido o la cuenta, salvo las copias que otras personas hayan compartido legítimamente.
+- Al publicar, nos das una licencia gratuita, no exclusiva y mundial para alojar, mostrar y distribuir ese contenido en Contraponha, mientras esté publicado. La licencia termina cuando borras el contenido o la cuenta, salvo las copias que otras personas hayan compartido legítimamente.
 - Los posts se pueden editar durante los primeros 30 minutos. Las versiones anteriores quedan visibles públicamente, con el motivo de la edición, por transparencia.
 - Garantizas que tienes derecho a publicar lo que publicas, incluidas las imágenes y los textos citados.
 
@@ -25,7 +25,7 @@ Aceptas seguir las [Normas de la comunidad](/guidelines). Podemos eliminar conte
 
 ## 5. Lo que ofrecemos
 
-Ponto se ofrece de forma gratuita y "tal como está". Trabajamos para que el servicio funcione bien, pero puede tener interrupciones. Podemos cambiar funcionalidades, procurando siempre avisar con antelación de los cambios relevantes.
+Contraponha se ofrece de forma gratuita y "tal como está". Trabajamos para que el servicio funcione bien, pero puede tener interrupciones. Podemos cambiar funcionalidades, procurando siempre avisar con antelación de los cambios relevantes.
 
 ## 6. Responsabilidad
 

@@ -24,7 +24,7 @@ import {
   type ModerationActionView,
   type Page,
   type ReportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 import {
   changeRoleInputSchema,
   contextNoteInputSchema,
@@ -36,7 +36,7 @@ import {
   reportListQuerySchema,
   reportPageSchema,
   resolveReportInputSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

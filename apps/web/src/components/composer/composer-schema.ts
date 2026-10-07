@@ -1,4 +1,4 @@
-import { POST_SOURCES_MAX, POST_TOPICS_MAX, SOURCE_TITLE_MAX_LENGTH } from "@ponto/config"
+import { POST_SOURCES_MAX, POST_TOPICS_MAX, SOURCE_TITLE_MAX_LENGTH } from "@contraponha/config"
 import {
   editReasonSchema,
   httpUrlSchema,
@@ -6,7 +6,7 @@ import {
   postTitleSchema,
   replyPolicySchema,
   topicNameSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { Control } from "react-hook-form"
 import { z } from "zod"
 

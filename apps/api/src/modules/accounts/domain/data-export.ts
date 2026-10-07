@@ -1,5 +1,5 @@
-import type { DataExportRow } from "@ponto/database"
-import { DataExportStatus, type DataExportSection, type DataExportView } from "@ponto/types"
+import type { DataExportRow } from "@contraponha/database"
+import { DataExportStatus, type DataExportSection, type DataExportView } from "@contraponha/types"
 
 export type DataExport = DataExportRow
 
@@ -89,7 +89,7 @@ export function renderHtmlExport(document: ExportDocument): string {
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>Seus dados no Ponto</title>
+<title>Seus dados no Contraponha</title>
 <style>
 body{font-family:system-ui,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#14161a}
 table{border-collapse:collapse;width:100%;margin:.5rem 0}
@@ -98,7 +98,7 @@ th{width:12rem;background:#f2f3f1;font-weight:600}
 </style>
 </head>
 <body>
-<h1>Seus dados no Ponto</h1>
+<h1>Seus dados no Contraponha</h1>
 ${sections}
 </body>
 </html>

@@ -1,6 +1,6 @@
 "use client"
 
-import type { CommentView } from "@ponto/types"
+import type { CommentView } from "@contraponha/types"
 import { MessageSquareReply, Star } from "lucide-react"
 import { useState } from "react"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { CommentSort } from "@ponto/types"
+import { CommentSort } from "@contraponha/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { MessageSquare } from "lucide-react"
 import { useState } from "react"

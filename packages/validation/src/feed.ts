@@ -1,4 +1,4 @@
-import { FeedReasonType, type DiscussionList, type FeedItem } from "@ponto/types"
+import { FeedReasonType, type DiscussionList, type FeedItem } from "@contraponha/types"
 import { z } from "zod"
 
 import { pageSchema } from "./pagination.js"

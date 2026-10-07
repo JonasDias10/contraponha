@@ -1,7 +1,7 @@
 "use client"
 
-import { REACTIONS_PER_TARGET_MAX } from "@ponto/config"
-import type { ReactionCounts, ReactionKind, ReactionTargetType } from "@ponto/types"
+import { REACTIONS_PER_TARGET_MAX } from "@contraponha/config"
+import type { ReactionCounts, ReactionKind, ReactionTargetType } from "@contraponha/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { toast } from "sonner"

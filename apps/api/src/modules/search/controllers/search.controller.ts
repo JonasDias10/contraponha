@@ -6,7 +6,7 @@ import type {
   PostSearchResult,
   PublicProfile,
   TopicList,
-} from "@ponto/types"
+} from "@contraponha/types"
 import {
   contentSearchQuerySchema,
   contributionSearchPageSchema,
@@ -14,7 +14,7 @@ import {
   profilePageSchema,
   searchQuerySchema,
   topicListSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"

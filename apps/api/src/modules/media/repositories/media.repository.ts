@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { mediaAssets, type Database, type DatabaseExecutor } from "@ponto/database"
+import { mediaAssets, type Database, type DatabaseExecutor } from "@contraponha/database"
 import { and, asc, eq, inArray } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

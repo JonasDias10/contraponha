@@ -1,18 +1,18 @@
 # Frontends (apps/web e apps/mobile)
 
-Os dois clientes do Ponto compartilham contrato, traduções e cliente HTTP com a API. Este documento descreve a estrutura de cada um e as regras para manter o que é comum de fato comum.
+Os dois clientes do Contraponha compartilham contrato, traduções e cliente HTTP com a API. Este documento descreve a estrutura de cada um e as regras para manter o que é comum de fato comum.
 
 ## O que é compartilhado
 
-| Necessidade                  | De onde vem                                       |
-| ---------------------------- | ------------------------------------------------- |
-| Chamar a API                 | `@ponto/api-client` (`createApiClient`)           |
-| Tipos de resposta e erro     | `@ponto/types`, validados por `@ponto/validation` |
-| Textos de interface          | `@ponto/i18n` (namespace `app` e outros)          |
-| Validar env na inicialização | `@ponto/config` (`parseEnv`)                      |
-| Regras de lint e TypeScript  | `@ponto/eslint-config`, `@ponto/tsconfig`         |
+| Necessidade                  | De onde vem                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| Chamar a API                 | `@contraponha/api-client` (`createApiClient`)                 |
+| Tipos de resposta e erro     | `@contraponha/types`, validados por `@contraponha/validation` |
+| Textos de interface          | `@contraponha/i18n` (namespace `app` e outros)                |
+| Validar env na inicialização | `@contraponha/config` (`parseEnv`)                            |
+| Regras de lint e TypeScript  | `@contraponha/eslint-config`, `@contraponha/tsconfig`         |
 
-Regra prática: se a mesma lógica aparece no web e no mobile, ela sobe para um pacote. Exemplo atual: "a API está disponível?" é `health.isReady()` no `@ponto/api-client`, e não um `try/catch` repetido em cada app.
+Regra prática: se a mesma lógica aparece no web e no mobile, ela sobe para um pacote. Exemplo atual: "a API está disponível?" é `health.isReady()` no `@contraponha/api-client`, e não um `try/catch` repetido em cada app.
 
 Componentes visuais **não** são compartilhados. Web usa HTML + Tailwind e mobile usa componentes nativos + `StyleSheet`. Um pacote de UI compartilhado só faz sentido se, no futuro, adotarmos uma solução que renderize nos dois (por exemplo, React Native Web), e essa decisão ainda não foi tomada. O que é compartilhado visualmente são os **tokens semânticos** (cores, fontes, raios e elevação), hoje definidos em `globals.css` (web) e `src/lib/theme.ts` (mobile) com os mesmos valores. Valores, regras de uso e justificativas estão em [docs/design/design-system.md](../design/design-system.md).
 
@@ -43,14 +43,14 @@ apps/web/
         ├── query-keys.ts        Chaves do TanStack Query, num lugar só
         ├── server-query.ts      QueryClient por requisição para prefetch
         ├── paths.ts             URLs tipadas das páginas
-        └── i18n.ts              Idioma: cookie ponto_locale, depois Accept-Language
+        └── i18n.ts              Idioma: cookie contraponha_locale, depois Accept-Language
 ```
 
 ### Sessão e chamadas à API
 
-- **O token nunca chega ao JavaScript do navegador.** O login acontece numa server action, que guarda o token num cookie `ponto_session` (`httpOnly`, `SameSite=Lax`, `Secure` em produção).
+- **O token nunca chega ao JavaScript do navegador.** O login acontece numa server action, que guarda o token num cookie `contraponha_session` (`httpOnly`, `SameSite=Lax`, `Secure` em produção).
 - **Server components** chamam a API direto, com `createServerApiClient`, que anexa o token como `Authorization: Bearer`.
-- **Componentes de cliente** usam o mesmo `@ponto/api-client` com `baseUrl` vazio: as chamadas vão para `/api/v1/...` no próprio web, e o route handler `app/api/v1/[...path]` repassa para `API_URL` com o token do cookie. Requisições que alteram estado só passam se a origem for a mesma (proteção contra CSRF além do `SameSite`).
+- **Componentes de cliente** usam o mesmo `@contraponha/api-client` com `baseUrl` vazio: as chamadas vão para `/api/v1/...` no próprio web, e o route handler `app/api/v1/[...path]` repassa para `API_URL` com o token do cookie. Requisições que alteram estado só passam se a origem for a mesma (proteção contra CSRF além do `SameSite`).
 - Por isso `API_URL` continua sendo variável de servidor e a API não precisa liberar CORS para o web. O CORS do bucket de mídia, por outro lado, precisa aceitar a origem do web, porque o upload vai direto do navegador para o storage (ver [media.md](media.md)).
 - Páginas que exigem conta chamam `requireViewer()`, que redireciona para `/login`.
 
@@ -63,7 +63,7 @@ apps/web/
 
 ### Formulários
 
-`react-hook-form` com `zodResolver` e os **mesmos schemas** de `@ponto/validation` que a API usa. Quando o schema transforma o valor (por exemplo, `trim` ou datas), o formulário declara os dois tipos: `useForm<Input, unknown, Output>`. Mensagens de erro vêm de `web.validation`.
+`react-hook-form` com `zodResolver` e os **mesmos schemas** de `@contraponha/validation` que a API usa. Quando o schema transforma o valor (por exemplo, `trim` ou datas), o formulário declara os dois tipos: `useForm<Input, unknown, Output>`. Mensagens de erro vêm de `web.validation`.
 
 ### Interface
 
@@ -71,7 +71,7 @@ apps/web/
 - Markdown de posts e contribuições renderizado com `react-markdown` num subconjunto seguro (sem HTML bruto); textos legais usam também `remark-gfm` para tabelas.
 - Fontes Literata (texto) e Instrument Sans (interface) via `next/font`.
 - **Tema** claro, escuro ou automático. Um script pequeno (`THEME_BOOT_SCRIPT`, em `lib/theme.ts`) roda antes da primeira pintura e aplica a classe `dark`, evitando o flash de tema errado. Substitui o `next-themes`, que gerava aviso de script no React 19.2.
-- **Idioma.** O cookie `ponto_locale` (seletor no rodapé ou idioma da conta) tem prioridade sobre o `Accept-Language`. Os textos estão no namespace `web` de `@ponto/i18n`, em pt-BR, en e es. Textos legais traduzidos dizem que a versão em português prevalece.
+- **Idioma.** O cookie `contraponha_locale` (seletor no rodapé ou idioma da conta) tem prioridade sobre o `Accept-Language`. Os textos estão no namespace `web` de `@contraponha/i18n`, em pt-BR, en e es. Textos legais traduzidos dizem que a versão em português prevalece.
 - **Rotas tipadas** (`typedRoutes`) fazem `<Link href>` inválido falhar no typecheck; URLs dinâmicas são montadas em `lib/paths.ts`.
 - Porta padrão: **3001** (a API usa a 3000).
 
@@ -99,7 +99,7 @@ apps/mobile/
 - **Idioma do aparelho.** `useTranslator()` lê as preferências do sistema com `expo-localization`, negocia com `negotiateLocale` e reage a mudanças de idioma.
 - **Variáveis `EXPO_PUBLIC_*` são embutidas no bundle** e, portanto, públicas. Nunca coloque segredos nelas.
 - **Projetos nativos gerados (CNG).** `ios/` e `android/` não são versionados; o Expo os gera a partir do `app.json` e dos plugins. Configuração nativa entra via config plugins.
-- O `bundleIdentifier`/`package` (`app.ponto.mobile`) deve ser trocado pelo identificador definitivo antes da primeira publicação nas lojas.
+- O `bundleIdentifier`/`package` (`app.contraponha.mobile`) deve ser trocado pelo identificador definitivo antes da primeira publicação nas lojas.
 
 ### Builds
 
@@ -109,7 +109,7 @@ apps/mobile/
 ## Fluxo de dados nos clientes
 
 - web: TanStack Query, com prefetch no servidor (seção acima);
-- mobile: por enquanto só o status da API, num hook com `useEffect`, timeout de 3s e cancelamento ao desmontar. Quando o app consumir feed e perfis, a recomendação é adotar o mesmo TanStack Query sobre `@ponto/api-client`.
+- mobile: por enquanto só o status da API, num hook com `useEffect`, timeout de 3s e cancelamento ao desmontar. Quando o app consumir feed e perfis, a recomendação é adotar o mesmo TanStack Query sobre `@contraponha/api-client`.
 
 ## Testes
 
