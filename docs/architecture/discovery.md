@@ -10,28 +10,37 @@ Sem essa exceção, cada página do feed custaria uma chamada por módulo e por 
 
 ## Feed
 
-| Rota                  | Auth | Ordem                                 |
-| --------------------- | ---- | ------------------------------------- |
-| `GET /feed/following` | sim  | Cronológica, mais recentes primeiro   |
-| `GET /feed/featured`  | não  | Pontuação de qualidade com decaimento |
+| Rota                  | Auth | Ordem                                |
+| --------------------- | ---- | ------------------------------------ |
+| `GET /feed/following` | sim  | Cronológica, mais recentes primeiro  |
+| `GET /feed/discover`  | não  | Pipeline de qualidade com decaimento |
 
 ### Seguindo
 
 Posts ativos de quem a pessoa segue **e os dela própria**, em ordem cronológica. A consulta usa uma subconsulta em `follows` e o índice parcial `posts_active_created_at_idx`; a paginação é por cursor (`createdAt`, `id`), estável mesmo com posts novos chegando.
 
-### Em destaque
+### Descobrir
 
-Posts ativos dos últimos `FEED_FEATURED_WINDOW_DAYS` (7) dias, ordenados por:
+Posts ativos dos últimos `FEED_FEATURED_WINDOW_DAYS` (7) dias, montados por um pipeline em etapas (`modules/feed/domain/discover-pipeline.ts`):
 
-```text
-score = (1 + 3·bom_argumento + 2·perspicaz + 1·comentários) / (idade_em_horas + 2) ^ 1,5
-```
+1. **Fontes de candidatos.** `listFollowedTopicCandidates` (posts nos tópicos que a pessoa segue, com o tópico que explica a escolha) e `listQualityCandidates` (os melhores posts de qualquer tópico). Cada fonte traz até `DISCOVER_CANDIDATES_PER_SOURCE` posts, o bastante para preencher todas as páginas até o limite de deslocamento. Anônimos só usam a segunda.
+2. **Merge.** Posts repetidos ficam com a cópia da primeira fonte, a que tem o motivo da recomendação.
+3. **Filtros.** Saem os posts da própria pessoa, os posts que ela denunciou e os de autores que ela denunciou (qualquer status de denúncia: se a moderação descartou, a pessoa ainda não quer ver). As denúncias são buscadas só para os candidatos da página.
+4. **Score.** Pontuação de qualidade com decaimento, multiplicada por `FOLLOWED_TOPIC_BOOST` quando o post está num tópico seguido:
 
-- **Só sinais de qualidade.** "Concordo" e "discordo" não entram: um post bem argumentado com o qual a maioria discorda pode, e deve, aparecer em destaque.
+   ```text
+   qualidade = (1 + 3·bom_argumento + 3·mudou_minha_visão + 2·esclarecedor + 1·comentários) / (idade_em_horas + 2) ^ 1,5
+   ```
+
+5. **Diversidade de autor.** Cada post a mais do mesmo autor pesa `(1 - 0,1) · 0,5 ^ n + 0,1`, onde `n` é quantos posts dele já estão acima. Um autor prolífico não ocupa a página inteira, mas nunca some.
+6. **Página.** Fatia do ranking pelo offset do cursor; só os posts da página são carregados e viram views.
+
+- **Só sinais de qualidade.** Não há reação de concordância e popularidade (seguidores, visualizações) não entra: um post bem argumentado com o qual a maioria discorda pode, e deve, aparecer.
 - **Decaimento no estilo Hacker News.** A gravidade 1,5 faz posts antigos cederem lugar aos novos; o `+2` evita que um post recém-criado domine por divisão por quase zero.
+- **Etapas independentes.** Um modelo de ranking aprendido trocaria só `scoreCandidates`; uma fonte nova (por exemplo, pessoas parecidas) é mais uma consulta no merge.
 - Pesos e constantes ficam em `modules/feed/domain/featured-ranking.ts`.
 
-Como o score muda com o tempo, cursor por chave não funciona. A paginação é por deslocamento (cursor opaco com offset), limitada a `FEATURED_MAX_OFFSET` (500 posts). É o suficiente para um feed de destaques e mantém a consulta barata. Quando o volume justificar, o score passa a ser pré-calculado por um job e guardado numa tabela ordenável.
+Como o score muda com o tempo, cursor por chave não funciona. A paginação é por deslocamento (cursor opaco com offset), limitada a `FEATURED_MAX_OFFSET` (500 posts). Cada página recalcula o ranking sobre os candidatos (algumas centenas de linhas leves: id, autor e score); quando o volume justificar, as fontes passam a ler de uma tabela de scores pré-calculada por um job.
 
 ## Busca
 
