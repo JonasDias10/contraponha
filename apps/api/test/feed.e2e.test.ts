@@ -191,6 +191,84 @@ describe("feed", () => {
     expect(topicFeed.items.map(({ post }) => post.id)).toContain(inTopic)
   })
 
+  it("keeps one prolific author from filling the top", async () => {
+    const prolific = await registerAccount({ server })
+    const other = await registerAccount({ server })
+    const people: RegisteredAccount[] = []
+
+    for (let index = 0; index < 4; index += 1) {
+      const person = await registerAccount({ server })
+
+      people.push(person)
+    }
+
+    const prolificIds: string[] = []
+
+    for (let index = 0; index < 3; index += 1) {
+      const post = await createPost({ server, token: prolific.auth.session.token })
+
+      await reactMany({ server, postId: post.id, kind: "good_argument", people })
+
+      prolificIds.push(post.id)
+    }
+
+    const otherPost = await createPost({ server, token: other.auth.session.token })
+
+    await reactMany({
+      server,
+      postId: otherPost.id,
+      kind: "good_argument",
+      people: people.slice(0, 3),
+    })
+
+    const items = await allDiscoverItems({ server })
+    const ids = items.map(({ post }) => post.id)
+    const prolificPositions = prolificIds.map((id) => ids.indexOf(id)).toSorted((a, b) => a - b)
+
+    expect(ids.indexOf(otherPost.id)).toBeGreaterThan(prolificPositions[0] ?? -1)
+
+    expect(ids.indexOf(otherPost.id)).toBeLessThan(prolificPositions[1] ?? -1)
+  })
+
+  it("hides posts and authors the reader reported", async () => {
+    const reader = await registerAccount({ server })
+    const author = await registerAccount({ server })
+    const reportedAuthor = await registerAccount({ server })
+    const readerToken = reader.auth.session.token
+
+    const reportedPost = await createPost({ server, token: author.auth.session.token })
+    const keptPost = await createPost({ server, token: author.auth.session.token })
+    const byReportedAuthor = await createPost({ server, token: reportedAuthor.auth.session.token })
+
+    await request(server)
+      .post("/api/v1/reports")
+      .set(bearer(readerToken))
+      .send({ targetType: "post", targetId: reportedPost.id, reason: "spam" })
+      .expect(201)
+
+    await request(server)
+      .post("/api/v1/reports")
+      .set(bearer(readerToken))
+      .send({ targetType: "user", targetId: reportedAuthor.auth.user.id, reason: "harassment" })
+      .expect(201)
+
+    const readerItems = await allDiscoverItems({ server, token: readerToken })
+    const readerIds = readerItems.map(({ post }) => post.id)
+
+    expect(readerIds).toContain(keptPost.id)
+
+    expect(readerIds).not.toContain(reportedPost.id)
+
+    expect(readerIds).not.toContain(byReportedAuthor.id)
+
+    const anonymousItems = await allDiscoverItems({ server })
+    const anonymousIds = anonymousItems.map(({ post }) => post.id)
+
+    expect(anonymousIds).toEqual(
+      expect.arrayContaining([reportedPost.id, keptPost.id, byReportedAuthor.id]),
+    )
+  })
+
   it("lists ongoing discussions with titles", async () => {
     const { auth } = await registerAccount({ server })
     const token = auth.session.token
