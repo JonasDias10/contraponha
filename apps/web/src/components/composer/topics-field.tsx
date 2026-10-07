@@ -8,6 +8,7 @@ import { useState } from "react"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { tagVariants } from "@/components/ui/badges"
+import { cn } from "@/lib/cn"
 import { queryKeys } from "@/lib/query-keys"
 
 export interface TopicsFieldProps {
@@ -61,7 +62,7 @@ export function TopicsField({ value, onChange }: TopicsFieldProps): React.JSX.El
           </span>
         ))}
         {isFull ? null : (
-          <label className={tagVariants({ variant: "topic", size: "md" })}>
+          <label className={cn(tagVariants({ variant: "topic", size: "md" }), "w-full sm:w-auto")}>
             <Plus aria-hidden className="size-3.5" />
             <span className="sr-only">{t("web.composer.addTopic")}</span>
             <input
@@ -76,7 +77,7 @@ export function TopicsField({ value, onChange }: TopicsFieldProps): React.JSX.El
               }}
               onBlur={() => add(draft)}
               placeholder={t("web.composer.topicPlaceholder")}
-              className="w-44 bg-transparent text-ink placeholder:text-subtle focus-visible:outline-none"
+              className="min-w-0 flex-1 bg-transparent text-ink placeholder:text-subtle focus-visible:outline-none sm:w-44 sm:flex-none"
             />
           </label>
         )}

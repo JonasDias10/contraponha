@@ -249,7 +249,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
             <Banner tone="danger">{t("web.validation.required")}</Banner>
           ) : null}
         </main>
-        <div className="max-w-[320px] min-w-0 flex-[1_1_280px]">
+        <div className="w-full min-w-0 flex-[1_1_280px] lg:max-w-[320px]">
           <PublishChecklist control={control} title={title} body={body} sourceCount={sourceCount} />
         </div>
       </div>

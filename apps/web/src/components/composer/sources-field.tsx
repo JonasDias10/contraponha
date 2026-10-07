@@ -70,7 +70,7 @@ export function SourcesField({ control, register, errors }: SourcesFieldProps): 
       {fields.length < POST_SOURCES_MAX ? (
         <Button
           variant="secondary"
-          className="self-start"
+          className="w-full sm:w-auto sm:self-start"
           onClick={() => append({ url: "", title: "" })}
         >
           <Plus aria-hidden className="size-4" />
