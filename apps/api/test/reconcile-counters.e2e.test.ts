@@ -34,7 +34,7 @@ describe("counter reconciliation", () => {
     await createComment({ server, token, postId: post.id, parentId: comment.id })
 
     await request(server)
-      .put(`/api/v1/posts/${post.id}/reactions/agree`)
+      .put(`/api/v1/posts/${post.id}/reactions/changed_my_mind`)
       .set(bearer(reader.auth.session.token))
       .expect(204)
 
@@ -45,12 +45,18 @@ describe("counter reconciliation", () => {
 
     const firstRun = await withTestDatabase(({ db }) => reconcileCounters({ db, batchSize: 2 }))
 
-    expect(firstRun).toEqual({ users: 0, posts: 0, comments: 0 })
+    expect(firstRun).toEqual({ users: 0, posts: 0, comments: 0, topics: 0 })
 
     await withTestDatabase(async ({ db }) => {
-      await db.update(users).set({ followerCount: 999 }).where(eq(users.id, author.auth.user.id))
+      await db
+        .update(users)
+        .set({ followerCount: 999, postCount: 40 })
+        .where(eq(users.id, author.auth.user.id))
 
-      await db.update(posts).set({ commentCount: 0, agreeCount: 7 }).where(eq(posts.id, post.id))
+      await db
+        .update(posts)
+        .set({ commentCount: 0, changedMyMindCount: 7 })
+        .where(eq(posts.id, post.id))
 
       await db.update(comments).set({ replyCount: 5 }).where(eq(comments.id, comment.id))
     })
@@ -62,13 +68,13 @@ describe("counter reconciliation", () => {
       .get(`/api/v1/users/${author.auth.user.handle}`)
       .expect(200)
 
-    expect(repairRun).toEqual({ users: 1, posts: 1, comments: 1 })
+    expect(repairRun).toEqual({ users: 1, posts: 1, comments: 1, topics: 0 })
 
     expect(repairedPost).toMatchObject({
       commentCount: 2,
-      reactionCounts: { good_argument: 0, insightful: 0, agree: 1, disagree: 0 },
+      reactionCounts: { good_argument: 0, insightful: 0, changed_my_mind: 1, needs_source: 0 },
     })
 
-    expect(profile.body).toMatchObject({ followerCount: 1, followingCount: 0 })
+    expect(profile.body).toMatchObject({ followerCount: 1, followingCount: 0, postCount: 1 })
   })
 })

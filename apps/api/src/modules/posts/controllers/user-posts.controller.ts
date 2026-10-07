@@ -4,6 +4,7 @@ import type { Page, PostView } from "@ponto/types"
 import { handleSchema, paginationQuerySchema, postPageSchema } from "@ponto/validation"
 import type { z } from "zod"
 
+import { CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"
 import { ApiStandardErrors, toOpenApiSchema } from "#src/common/openapi/swagger.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
@@ -17,13 +18,19 @@ export class UserPostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  @ApiOperation({ summary: "Posts by a user, newest first" })
+  @ApiOperation({ summary: "Posts by a user, pinned post first, then newest first" })
   @ApiOkResponse({ schema: toOpenApiSchema(postPageSchema) })
   list(
+    @CurrentViewer() viewer: AuthContext | undefined,
     @Param("handle", new ZodValidationPipe(handleSchema)) handle: string,
     @Query(new ZodValidationPipe(paginationQuerySchema))
     query: z.output<typeof paginationQuerySchema>,
   ): Promise<Page<PostView>> {
-    return this.postsService.listByHandle({ handle, cursor: query.cursor, limit: query.limit })
+    return this.postsService.listByHandle({
+      handle,
+      cursor: query.cursor,
+      limit: query.limit,
+      viewerId: viewer?.userId,
+    })
   }
 }

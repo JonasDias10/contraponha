@@ -1,11 +1,17 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { runTransaction, type Database, type DatabaseTransaction } from "@ponto/database"
+import {
+  runTransaction,
+  type CommunityRuleValue,
+  type Database,
+  type DatabaseExecutor,
+} from "@ponto/database"
 import {
   ApiErrorCode,
   ModerationActionType,
   ReportResolution,
   ReportTargetType,
   UserRole,
+  type ContextNoteView,
   type ModerationActionView,
   type Page,
   type ReportStatus,
@@ -13,17 +19,21 @@ import {
 } from "@ponto/types"
 import { z } from "zod"
 
+import { toSourceValues, toSourceViews, type SourceInput } from "#src/common/content/sources.js"
 import { AppError } from "#src/common/errors/app-error.js"
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { CommentsService } from "#src/modules/comments/services/comments.service.js"
 import {
+  reportTargetAuthorId,
   toModerationActionView,
   toReportView,
   type Report,
 } from "#src/modules/moderation/domain/moderation.js"
+import { ContextNotesRepository } from "#src/modules/moderation/repositories/context-notes.repository.js"
 import { ModerationActionsRepository } from "#src/modules/moderation/repositories/moderation-actions.repository.js"
 import { ReportsRepository } from "#src/modules/moderation/repositories/reports.repository.js"
+import { NotificationsService } from "#src/modules/notifications/services/notifications.service.js"
 import { PostsService, type RemovedPost } from "#src/modules/posts/services/posts.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
@@ -39,13 +49,27 @@ export interface ResolveReportParams {
   reportId: string
   moderatorId: string
   resolution: ReportResolution
+  rule: CommunityRuleValue | undefined
   note: string | undefined
 }
 
 export interface RemoveContentParams {
   targetId: string
   moderatorId: string
+  rule: CommunityRuleValue
   note: string | undefined
+}
+
+export interface SetContextNoteParams {
+  postId: string
+  moderatorId: string
+  body: string
+  sources: readonly SourceInput[]
+}
+
+export interface RemoveContextNoteParams {
+  postId: string
+  moderatorId: string
 }
 
 export interface ChangeRoleParams {
@@ -59,9 +83,31 @@ export interface ListActionsRequest {
   limit: number
 }
 
+interface RemovalOutcome {
+  removedPost: RemovedPost | undefined
+  contentAuthorId: string | undefined
+}
+
 interface RemoveReportedContentParams {
   report: Report
-  tx: DatabaseTransaction
+  rule: CommunityRuleValue
+  executor: DatabaseExecutor
+}
+
+interface CloseTargetReportsParams {
+  report: Report
+  status: "resolved" | "dismissed"
+  moderatorId: string
+  actionId: string
+  executor: DatabaseExecutor
+}
+
+interface NotifyAuthorParams {
+  authorId: string | undefined
+  actionId: string
+  postId?: string
+  commentId?: string
+  executor: DatabaseExecutor
 }
 
 @Injectable()
@@ -70,9 +116,11 @@ export class ModerationService {
     @Inject(DATABASE) private readonly db: Database,
     private readonly reportsRepository: ReportsRepository,
     private readonly actionsRepository: ModerationActionsRepository,
+    private readonly contextNotesRepository: ContextNotesRepository,
     private readonly postsService: PostsService,
     private readonly commentsService: CommentsService,
     private readonly usersService: UsersService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async listReports({ status, cursor, limit }: ListReportsRequest): Promise<Page<ReportView>> {
@@ -84,20 +132,28 @@ export class ModerationService {
       limit: limit + 1,
     })
 
-    const reporters = await this.usersService.findByIds(rows.map(({ reporterId }) => reporterId))
+    const users = await this.usersService.findByIds(
+      rows.flatMap((row) => {
+        const targetAuthorId = reportTargetAuthorId(row)
+        return targetAuthorId ? [row.report.reporterId, targetAuthorId] : [row.report.reporterId]
+      }),
+    )
 
     return buildPage({
       rows,
       limit,
-      toItem: (report) => toReportView({ report, reporter: reporters.get(report.reporterId) }),
-      toCursor: (report) => ({ id: report.id }),
+      toItem: (row) => toReportView({ row, users }),
+      toCursor: ({ report }) => ({ id: report.id }),
     })
   }
 
+  // Closing the report, removing the content, the audit entry and the notifications to the
+  // author and to everyone who reported the same target commit together.
   async resolveReport({
     reportId,
     moderatorId,
     resolution,
+    rule,
     note,
   }: ResolveReportParams): Promise<void> {
     const report = await this.reportsRepository.findById(reportId)
@@ -114,21 +170,21 @@ export class ModerationService {
       })
     }
 
+    if (isRemoval && !rule) {
+      throw new AppError(ApiErrorCode.VALIDATION_FAILED, {
+        details: [{ path: "rule", code: "required" }],
+      })
+    }
+
     const removed = await runTransaction({
       db: this.db,
       work: async (tx) => {
-        const isClosed = await this.reportsRepository.close({
-          id: report.id,
-          status: isRemoval ? "resolved" : "dismissed",
-          resolvedById: moderatorId,
-          executor: tx,
-        })
+        const outcome: RemovalOutcome =
+          isRemoval && rule
+            ? await this.removeReportedContent({ report, rule, executor: tx })
+            : { removedPost: undefined, contentAuthorId: undefined }
 
-        if (!isClosed) throw new AppError(ApiErrorCode.CONFLICT)
-
-        const removedPost = isRemoval ? await this.removeReportedContent({ report, tx }) : undefined
-
-        await this.actionsRepository.record({
+        const actionId = await this.actionsRepository.record({
           data: {
             moderatorId,
             type: isRemoval
@@ -138,29 +194,60 @@ export class ModerationService {
             postId: report.postId ?? undefined,
             commentId: report.commentId ?? undefined,
             targetUserId: report.targetUserId ?? undefined,
+            rule,
             note,
           },
           executor: tx,
         })
 
-        return removedPost
+        await this.closeTargetReports({
+          report,
+          status: isRemoval ? "resolved" : "dismissed",
+          moderatorId,
+          actionId,
+          executor: tx,
+        })
+
+        await this.notifyAuthor({
+          authorId: outcome.contentAuthorId,
+          actionId,
+          postId: report.postId ?? undefined,
+          commentId: report.commentId ?? undefined,
+          executor: tx,
+        })
+
+        return outcome.removedPost
       },
     })
 
     if (removed) await this.postsService.deleteStoredMedia(removed)
   }
 
-  async removePost({ targetId, moderatorId, note }: RemoveContentParams): Promise<void> {
+  async removePost({ targetId, moderatorId, rule, note }: RemoveContentParams): Promise<void> {
     const removed = await runTransaction({
       db: this.db,
       work: async (tx) => {
         const removedPost = await this.postsService.removeByModeration({
           postId: targetId,
+          rule,
           executor: tx,
         })
 
-        await this.actionsRepository.record({
-          data: { moderatorId, type: ModerationActionType.CONTENT_REMOVED, postId: targetId, note },
+        const actionId = await this.actionsRepository.record({
+          data: {
+            moderatorId,
+            type: ModerationActionType.CONTENT_REMOVED,
+            postId: targetId,
+            rule,
+            note,
+          },
+          executor: tx,
+        })
+
+        await this.notifyAuthor({
+          authorId: removedPost.authorId,
+          actionId,
+          postId: targetId,
           executor: tx,
         })
 
@@ -171,19 +258,81 @@ export class ModerationService {
     await this.postsService.deleteStoredMedia(removed)
   }
 
-  async removeComment({ targetId, moderatorId, note }: RemoveContentParams): Promise<void> {
+  async removeComment({ targetId, moderatorId, rule, note }: RemoveContentParams): Promise<void> {
     await runTransaction({
       db: this.db,
       work: async (tx) => {
-        await this.commentsService.removeByModeration({ commentId: targetId, executor: tx })
+        const comment = await this.commentsService.removeByModeration({
+          commentId: targetId,
+          rule,
+          executor: tx,
+        })
 
-        await this.actionsRepository.record({
+        const actionId = await this.actionsRepository.record({
           data: {
             moderatorId,
             type: ModerationActionType.CONTENT_REMOVED,
             commentId: targetId,
+            rule,
             note,
           },
+          executor: tx,
+        })
+
+        await this.notifyAuthor({
+          authorId: comment.authorId,
+          actionId,
+          postId: comment.postId,
+          commentId: targetId,
+          executor: tx,
+        })
+      },
+    })
+  }
+
+  async setContextNote({
+    postId,
+    moderatorId,
+    body,
+    sources,
+  }: SetContextNoteParams): Promise<ContextNoteView> {
+    await this.postsService.getActivePost(postId)
+
+    const note = await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const created = await this.contextNotesRepository.replace({
+          data: { postId, authorId: moderatorId, body, sources: toSourceValues(sources) },
+          executor: tx,
+        })
+
+        await this.actionsRepository.record({
+          data: { moderatorId, type: ModerationActionType.CONTEXT_ADDED, postId, note: body },
+          executor: tx,
+        })
+
+        return created
+      },
+    })
+
+    return {
+      id: note.id,
+      body: note.body,
+      sources: toSourceViews(note.sources),
+      createdAt: note.createdAt.toISOString(),
+    }
+  }
+
+  async removeContextNote({ postId, moderatorId }: RemoveContextNoteParams): Promise<void> {
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        const isRetired = await this.contextNotesRepository.retire({ postId, executor: tx })
+
+        if (!isRetired) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
+
+        await this.actionsRepository.record({
+          data: { moderatorId, type: ModerationActionType.CONTEXT_REMOVED, postId },
           executor: tx,
         })
       },
@@ -240,23 +389,87 @@ export class ModerationService {
   // Content the author already removed counts as handled: the report is still closed.
   private async removeReportedContent({
     report,
-    tx,
-  }: RemoveReportedContentParams): Promise<RemovedPost | undefined> {
+    rule,
+    executor,
+  }: RemoveReportedContentParams): Promise<RemovalOutcome> {
     if (report.postId) {
       const isActive = await this.postsService.isActive(report.postId)
 
-      if (!isActive) return undefined
+      if (!isActive) return { removedPost: undefined, contentAuthorId: undefined }
 
-      return this.postsService.removeByModeration({ postId: report.postId, executor: tx })
+      const removedPost = await this.postsService.removeByModeration({
+        postId: report.postId,
+        rule,
+        executor,
+      })
+
+      return { removedPost, contentAuthorId: removedPost.authorId }
     }
 
     if (report.commentId) {
       const isActive = await this.commentsService.isActive(report.commentId)
 
-      if (isActive)
-        await this.commentsService.removeByModeration({ commentId: report.commentId, executor: tx })
+      if (!isActive) return { removedPost: undefined, contentAuthorId: undefined }
+
+      const comment = await this.commentsService.removeByModeration({
+        commentId: report.commentId,
+        rule,
+        executor,
+      })
+
+      return { removedPost: undefined, contentAuthorId: comment.authorId }
     }
 
-    return undefined
+    return { removedPost: undefined, contentAuthorId: undefined }
+  }
+
+  // Every open report on the same target gets the same decision, and each reporter hears back.
+  private async closeTargetReports({
+    report,
+    status,
+    moderatorId,
+    actionId,
+    executor,
+  }: CloseTargetReportsParams): Promise<void> {
+    const open = await this.reportsRepository.listOpenForTarget({ target: report, executor })
+
+    for (const target of open) {
+      await this.reportsRepository.close({
+        id: target.id,
+        status,
+        resolvedById: moderatorId,
+        executor,
+      })
+
+      await this.notificationsService.notify({
+        recipientId: target.reporterId,
+        actorId: null,
+        type: "report_resolved",
+        postId: target.postId ?? undefined,
+        commentId: target.commentId ?? undefined,
+        moderationActionId: actionId,
+        executor,
+      })
+    }
+  }
+
+  private async notifyAuthor({
+    authorId,
+    actionId,
+    postId,
+    commentId,
+    executor,
+  }: NotifyAuthorParams): Promise<void> {
+    if (!authorId) return
+
+    await this.notificationsService.notify({
+      recipientId: authorId,
+      actorId: null,
+      type: "content_removed",
+      postId,
+      commentId,
+      moderationActionId: actionId,
+      executor,
+    })
   }
 }

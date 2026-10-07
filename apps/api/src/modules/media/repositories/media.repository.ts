@@ -23,6 +23,11 @@ export interface DeleteMediaForPostParams {
   executor?: DatabaseExecutor
 }
 
+export interface DeleteMediaForOwnerParams {
+  ownerId: string
+  executor: DatabaseExecutor
+}
+
 @Injectable()
 export class MediaRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
@@ -70,5 +75,14 @@ export class MediaRepository {
       .returning({ storageKey: mediaAssets.storageKey })
 
     return deleted.map(({ storageKey }) => storageKey)
+  }
+
+  async deleteForOwner({ ownerId, executor }: DeleteMediaForOwnerParams): Promise<string[]> {
+    const removed = await executor
+      .delete(mediaAssets)
+      .where(eq(mediaAssets.ownerId, ownerId))
+      .returning({ storageKey: mediaAssets.storageKey })
+
+    return removed.map(({ storageKey }) => storageKey)
   }
 }

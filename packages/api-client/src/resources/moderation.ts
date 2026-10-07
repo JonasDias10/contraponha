@@ -1,9 +1,11 @@
-import type { ModerationActionView, Page, ReportView } from "@ponto/types"
+import type { ContextNoteView, ModerationActionView, Page, ReportView } from "@ponto/types"
 import {
+  contextNoteViewSchema,
   moderationActionPageSchema,
   reportPageSchema,
   reportViewSchema,
   type ChangeRoleInput,
+  type ContextNoteInput,
   type CreateReportInput,
   type PaginationQuery,
   type RemoveContentInput,
@@ -20,7 +22,12 @@ export interface ResolveReportRequest {
 
 export interface RemoveContentRequest {
   targetId: string
-  input?: RemoveContentInput
+  input: RemoveContentInput
+}
+
+export interface ContextNoteRequest {
+  postId: string
+  input: ContextNoteInput
 }
 
 export interface ChangeRoleRequest {
@@ -36,6 +43,8 @@ export interface ModerationResource {
   removeComment(request: RemoveContentRequest): Promise<void>
   listActions(query?: PaginationQuery): Promise<Page<ModerationActionView>>
   changeRole(request: ChangeRoleRequest): Promise<void>
+  setContextNote(request: ContextNoteRequest): Promise<ContextNoteView>
+  removeContextNote(postId: string): Promise<void>
 }
 
 export function createModerationResource(request: HttpClient): ModerationResource {
@@ -56,7 +65,7 @@ export function createModerationResource(request: HttpClient): ModerationResourc
         schema: emptyResponseSchema,
       })
     },
-    removePost: async ({ targetId, input = {} }) => {
+    removePost: async ({ targetId, input }) => {
       await request({
         method: "POST",
         path: `/moderation/posts/${encodeURIComponent(targetId)}/remove`,
@@ -64,7 +73,7 @@ export function createModerationResource(request: HttpClient): ModerationResourc
         schema: emptyResponseSchema,
       })
     },
-    removeComment: async ({ targetId, input = {} }) => {
+    removeComment: async ({ targetId, input }) => {
       await request({
         method: "POST",
         path: `/moderation/comments/${encodeURIComponent(targetId)}/remove`,
@@ -83,6 +92,20 @@ export function createModerationResource(request: HttpClient): ModerationResourc
         method: "PUT",
         path: `/moderation/users/${encodeURIComponent(handle)}/role`,
         body: input,
+        schema: emptyResponseSchema,
+      })
+    },
+    setContextNote: ({ postId, input }) =>
+      request({
+        method: "PUT",
+        path: `/moderation/posts/${encodeURIComponent(postId)}/context`,
+        body: input,
+        schema: contextNoteViewSchema,
+      }),
+    removeContextNote: async (postId) => {
+      await request({
+        method: "DELETE",
+        path: `/moderation/posts/${encodeURIComponent(postId)}/context`,
         schema: emptyResponseSchema,
       })
     },

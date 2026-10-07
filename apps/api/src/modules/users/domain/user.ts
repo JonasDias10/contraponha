@@ -32,14 +32,28 @@ export function userLocale(user: User): Locale {
   return isLocale(user.locale) ? user.locale : DEFAULT_LOCALE
 }
 
+export function isDeletedUser(user: User): boolean {
+  return user.deletedAt !== null
+}
+
+// Deleted accounts stay as anonymous tombstones so the discussions they took part in
+// still make sense; nothing about the person is exposed.
 export function toPublicProfile(user: User): PublicProfile {
+  const isDeleted = isDeletedUser(user)
+
   return {
     id: user.id,
     handle: user.handle,
-    displayName: user.displayName,
-    bio: user.bio,
+    displayName: isDeleted ? "" : user.displayName,
+    bio: isDeleted ? null : user.bio,
+    headline: isDeleted ? null : user.headline,
+    location: isDeleted ? null : user.location,
+    website: isDeleted ? null : user.website,
+    pronouns: isDeleted ? null : user.pronouns,
     followerCount: user.followerCount,
     followingCount: user.followingCount,
+    postCount: user.postCount,
+    isDeleted,
     createdAt: user.createdAt.toISOString(),
   }
 }
@@ -50,6 +64,10 @@ export function toPrivateProfile(user: User): PrivateProfile {
     email: user.email,
     isEmailVerified: user.emailVerifiedAt !== null,
     locale: userLocale(user),
+    timezone: user.timezone,
     role: user.role,
+    birthDate: user.birthDate,
+    isOnboarded: user.onboardedAt !== null,
+    deletionScheduledAt: user.deletionScheduledAt?.toISOString() ?? null,
   }
 }

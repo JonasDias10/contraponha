@@ -8,6 +8,7 @@ import { media } from "./media.js"
 import { moderation } from "./moderation.js"
 import { notifications } from "./notifications.js"
 import { users } from "./users.js"
+import { web } from "./web.js"
 
 export const ptBR = {
   app,
@@ -20,4 +21,5 @@ export const ptBR = {
   moderation,
   notifications,
   users,
+  web,
 }

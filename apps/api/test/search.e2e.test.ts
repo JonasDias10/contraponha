@@ -1,12 +1,18 @@
 import { randomBytes } from "node:crypto"
 
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { postPageSchema, profilePageSchema } from "@ponto/validation"
+import { HIGHLIGHT_END, HIGHLIGHT_START } from "@ponto/types"
+import {
+  contributionSearchPageSchema,
+  postSearchPageSchema,
+  profilePageSchema,
+  topicListSchema,
+} from "@ponto/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
 import { bearer, registerAccount, type App } from "./support/accounts.js"
-import { createPost } from "./support/content.js"
+import { createComment, createPost } from "./support/content.js"
 import { createTestApp } from "./support/create-test-app.js"
 
 interface SearchParams {
@@ -16,7 +22,7 @@ interface SearchParams {
 
 async function searchPostIds({ server, q }: SearchParams): Promise<string[]> {
   const response = await request(server).get("/api/v1/search/posts").query({ q }).expect(200)
-  return postPageSchema.parse(response.body).items.map(({ id }) => id)
+  return postSearchPageSchema.parse(response.body).items.map(({ post }) => post.id)
 }
 
 async function searchHandles({ server, q }: SearchParams): Promise<string[]> {
@@ -109,5 +115,64 @@ describe("search", () => {
     await request(server).get("/api/v1/search/users").query({ q: "a" }).expect(400)
 
     await request(server).get("/api/v1/search/posts").expect(400)
+  })
+
+  it("highlights matches and filters posts that cite a source", async () => {
+    const { auth } = await registerAccount({ server })
+    const token = auth.session.token
+    const marker = `fonteteste${randomBytes(3).toString("hex")}`
+
+    const cited = await request(server)
+      .post("/api/v1/posts")
+      .set(bearer(token))
+      .send({
+        title: `Dados sobre ${marker}`,
+        body: "O relatório mostra a série completa.",
+        sources: [{ url: "https://www.ibge.gov.br/relatorio", title: "Relatório" }],
+      })
+      .expect(201)
+
+    await createPost({ server, token, body: `Opinião sem fonte sobre ${marker}` })
+
+    const response = await request(server)
+      .get("/api/v1/search/posts")
+      .query({ q: marker, hasSource: "true" })
+      .expect(200)
+
+    const page = postSearchPageSchema.parse(response.body)
+    const [result] = page.items
+
+    expect(page.items.map(({ post }) => post.id)).toEqual([cited.body.id])
+
+    expect(result?.post.sources[0]?.host).toBe("ibge.gov.br")
+
+    expect(result?.highlight).toContain(`${HIGHLIGHT_START}${marker}${HIGHLIGHT_END}`)
+  })
+
+  it("finds contributions and topics", async () => {
+    const { auth } = await registerAccount({ server })
+    const token = auth.session.token
+    const marker = `contrib${randomBytes(3).toString("hex")}`
+    const post = await createPost({ server, token, body: "Post de origem" })
+
+    await createComment({ server, token, postId: post.id, body: `Trago um dado sobre ${marker}` })
+
+    const contributions = await request(server)
+      .get("/api/v1/search/contributions")
+      .query({ q: marker })
+      .expect(200)
+
+    const topics = await request(server)
+      .get("/api/v1/search/topics")
+      .query({ q: "Mobilidade" })
+      .expect(200)
+
+    const [found] = contributionSearchPageSchema.parse(contributions.body).items
+
+    expect(found?.contribution.post.id).toBe(post.id)
+
+    expect(topicListSchema.parse(topics.body).topics.map(({ slug }) => slug)).toContain(
+      "mobilidade-urbana",
+    )
   })
 })

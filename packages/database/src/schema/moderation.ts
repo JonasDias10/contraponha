@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm"
 import {
   check,
   index,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -11,6 +12,7 @@ import {
 } from "drizzle-orm/pg-core"
 
 import { comments } from "./comments.js"
+import type { CommunityRuleValue, ContentSourceValue } from "./content-columns.js"
 import { posts } from "./posts.js"
 import { users } from "./users.js"
 
@@ -33,7 +35,11 @@ export const moderationActionType = pgEnum("moderation_action_type", [
   "report_resolved",
   "report_dismissed",
   "role_changed",
+  "context_added",
+  "context_removed",
 ])
+
+export const reportSubject = pgEnum("report_subject", ["me", "someone_else", "group"])
 
 export const reports = pgTable(
   "reports",
@@ -49,6 +55,7 @@ export const reports = pgTable(
     commentId: uuid().references(() => comments.id, { onDelete: "cascade" }),
     targetUserId: uuid().references(() => users.id, { onDelete: "cascade" }),
     reason: reportReason().notNull(),
+    subject: reportSubject(),
     details: text(),
     status: reportStatus().notNull().default("open"),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
@@ -92,9 +99,34 @@ export const moderationActions = pgTable("moderation_actions", {
   postId: uuid().references(() => posts.id, { onDelete: "set null" }),
   commentId: uuid().references(() => comments.id, { onDelete: "set null" }),
   targetUserId: uuid().references(() => users.id, { onDelete: "set null" }),
+  rule: text().$type<CommunityRuleValue>(),
   note: text(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 })
 
+// Context shown above a post, written by moderators with sources. At most one is active.
+export const contextNotes = pgTable(
+  "context_notes",
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    postId: uuid()
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    authorId: uuid().references(() => users.id, { onDelete: "set null" }),
+    body: text().notNull(),
+    sources: jsonb().$type<ContentSourceValue[]>().notNull().default([]),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    removedAt: timestamp({ withTimezone: true }),
+  },
+  (table) => [
+    uniqueIndex("context_notes_active_post_unique")
+      .on(table.postId)
+      .where(sql`${table.removedAt} is null`),
+  ],
+)
+
+export type ContextNoteRow = typeof contextNotes.$inferSelect
 export type ReportRow = typeof reports.$inferSelect
 export type ModerationActionRow = typeof moderationActions.$inferSelect

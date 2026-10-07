@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common"
 import {
   commentRevisions,
   type CommentRevisionRow,
+  type ContentSourceValue,
   type Database,
   type DatabaseExecutor,
 } from "@ponto/database"
@@ -9,9 +10,15 @@ import { desc, eq } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 
-export interface CreateCommentRevisionParams {
+export interface CommentRevisionData {
   commentId: string
   body: string
+  sources: ContentSourceValue[]
+  reason: string | null
+}
+
+export interface CreateCommentRevisionParams {
+  data: CommentRevisionData
   executor?: DatabaseExecutor
 }
 
@@ -24,12 +31,8 @@ export interface DeleteCommentRevisionsParams {
 export class CommentRevisionsRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  async create({
-    commentId,
-    body,
-    executor = this.db,
-  }: CreateCommentRevisionParams): Promise<void> {
-    await executor.insert(commentRevisions).values({ commentId, body })
+  async create({ data, executor = this.db }: CreateCommentRevisionParams): Promise<void> {
+    await executor.insert(commentRevisions).values(data)
   }
 
   listByComment(commentId: string): Promise<CommentRevisionRow[]> {

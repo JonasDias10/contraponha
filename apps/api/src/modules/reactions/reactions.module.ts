@@ -11,5 +11,6 @@ import { ReactionsService } from "#src/modules/reactions/services/reactions.serv
   imports: [PostsModule, CommentsModule, NotificationsModule],
   controllers: [ReactionsController],
   providers: [ReactionsRepository, ReactionsService],
+  exports: [ReactionsService],
 })
 export class ReactionsModule {}

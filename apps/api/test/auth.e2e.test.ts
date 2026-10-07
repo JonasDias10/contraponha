@@ -93,7 +93,14 @@ describe("auth", () => {
     it("validates input without echoing the password back", async () => {
       const response = await request(server)
         .post("/api/v1/auth/register")
-        .send({ email: "not-an-email", password: "short-pw", handle: "a", displayName: "" })
+        .send({
+          email: "not-an-email",
+          password: "short-pw",
+          handle: "a",
+          displayName: "",
+          birthDate: "2015-01-01",
+          acceptedTerms: false,
+        })
         .expect(400)
 
       expect(response.body.error.code).toBe("VALIDATION_FAILED")
@@ -105,6 +112,8 @@ describe("auth", () => {
         "password",
         "handle",
         "displayName",
+        "birthDate",
+        "acceptedTerms",
       ])
 
       expect(JSON.stringify(response.body)).not.toContain("short-pw")

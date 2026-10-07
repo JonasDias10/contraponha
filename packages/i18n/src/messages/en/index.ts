@@ -9,6 +9,7 @@ import { media } from "./media.js"
 import { moderation } from "./moderation.js"
 import { notifications } from "./notifications.js"
 import { users } from "./users.js"
+import { web } from "./web.js"
 
 export const en: PartialMessages = {
   app,
@@ -21,4 +22,5 @@ export const en: PartialMessages = {
   moderation,
   notifications,
   users,
+  web,
 }

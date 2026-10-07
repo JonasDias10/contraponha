@@ -13,8 +13,8 @@ export const reactionKindSchema = z.enum(ReactionKind)
 export const reactionCountsSchema = z.object({
   good_argument: z.number().int().nonnegative(),
   insightful: z.number().int().nonnegative(),
-  agree: z.number().int().nonnegative(),
-  disagree: z.number().int().nonnegative(),
+  changed_my_mind: z.number().int().nonnegative(),
+  needs_source: z.number().int().nonnegative(),
 }) satisfies z.ZodType<ReactionCounts>
 
 export const viewerReactionsQuerySchema = z.object({

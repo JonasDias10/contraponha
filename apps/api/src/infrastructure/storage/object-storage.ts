@@ -20,10 +20,28 @@ export interface ReadObjectPrefixParams {
   bytes: number
 }
 
+export interface PutObjectParams {
+  key: string
+  body: string | Uint8Array
+  contentType: string
+}
+
+export interface CreateDownloadUrlParams {
+  key: string
+  fileName: string
+  expiresInSeconds: number
+}
+
+// Only objects under this prefix are publicly readable; everything else (data exports)
+// is private and downloaded through short-lived signed URLs.
+export const PUBLIC_OBJECT_PREFIX = "posts/"
+
 // Provider-neutral object storage. The S3 implementation works with any S3-compatible
 // service, including providers with Brazilian regions.
 export abstract class ObjectStorage {
   abstract createUploadUrl(params: CreateUploadUrlParams): Promise<UploadUrl>
+  abstract put(params: PutObjectParams): Promise<void>
+  abstract createDownloadUrl(params: CreateDownloadUrlParams): Promise<string>
   abstract head(key: string): Promise<StoredObject | undefined>
   abstract readPrefix(params: ReadObjectPrefixParams): Promise<Uint8Array>
   abstract delete(keys: readonly string[]): Promise<void>

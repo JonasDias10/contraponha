@@ -14,6 +14,8 @@ export interface AccountInput {
   password: string
   handle: string
   displayName: string
+  birthDate: string
+  acceptedTerms: boolean
   locale?: string
 }
 
@@ -24,6 +26,8 @@ export function newAccountInput(overrides: Partial<AccountInput> = {}): AccountI
     password: "correct horse battery staple",
     handle: `person_${suffix}`,
     displayName: "Pessoa de Teste",
+    birthDate: "1990-05-17",
+    acceptedTerms: true,
     ...overrides,
   }
 }

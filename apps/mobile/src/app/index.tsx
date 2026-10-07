@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
-import { ApiStatusBadge } from "@/components/ApiStatusBadge"
+import { ApiStatusBadge } from "@/components/api-status-badge"
 import { useApiReadiness } from "@/hooks/use-api-readiness"
 import { useTranslator } from "@/hooks/use-translator"
 import { usePalette } from "@/lib/theme"

@@ -96,3 +96,45 @@ export function buildPasswordResetEmail({
     },
   })
 }
+
+export interface BuildMagicLinkEmailParams {
+  recipient: AccountEmailRecipient
+  ttlMinutes: number
+}
+
+export function buildMagicLinkEmail({
+  recipient,
+  ttlMinutes,
+}: BuildMagicLinkEmailParams): EmailMessage {
+  return buildAccountEmail({
+    recipient,
+    copy: {
+      subject: "emails.magicLink.subject",
+      body: "emails.magicLink.body",
+      expiry: "emails.magicLink.expiry",
+      ignore: "emails.magicLink.ignore",
+      expiryParams: { minutes: ttlMinutes },
+    },
+  })
+}
+
+export interface BuildDataExportReadyEmailParams {
+  recipient: AccountEmailRecipient
+  retentionDays: number
+}
+
+export function buildDataExportReadyEmail({
+  recipient,
+  retentionDays,
+}: BuildDataExportReadyEmailParams): EmailMessage {
+  return buildAccountEmail({
+    recipient,
+    copy: {
+      subject: "emails.dataExportReady.subject",
+      body: "emails.dataExportReady.body",
+      expiry: "emails.dataExportReady.expiry",
+      ignore: "emails.dataExportReady.ignore",
+      expiryParams: { days: retentionDays },
+    },
+  })
+}

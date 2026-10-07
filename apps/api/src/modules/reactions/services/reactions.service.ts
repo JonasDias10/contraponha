@@ -1,12 +1,18 @@
 import { Inject, Injectable } from "@nestjs/common"
+import { REACTIONS_PER_TARGET_MAX } from "@ponto/config"
 import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
-import { ReactionTargetType, type ReactionKind, type ViewerReactionsResponse } from "@ponto/types"
+import {
+  ApiErrorCode,
+  ReactionKind,
+  ReactionTargetType,
+  type ViewerReactionsResponse,
+} from "@ponto/types"
 
+import { AppError } from "#src/common/errors/app-error.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { CommentsService } from "#src/modules/comments/services/comments.service.js"
 import { NotificationsService } from "#src/modules/notifications/services/notifications.service.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
-import { exclusiveCounterpart } from "#src/modules/reactions/domain/reaction-rules.js"
 import {
   ReactionsRepository,
   type ReactionTarget,
@@ -24,10 +30,29 @@ export interface ListViewerReactionsParams {
   targetIds: readonly string[]
 }
 
+export interface PurgeReactionsParams {
+  userId: string
+  executor: DatabaseExecutor
+}
+
 interface AdjustTargetCountParams {
   target: ReactionTarget
   kind: ReactionKind
   delta: 1 | -1
+  executor: DatabaseExecutor
+}
+
+interface AddWithinLimitParams extends ReactParams {
+  given: number
+  executor: DatabaseExecutor
+}
+
+interface NotifyReactionParams {
+  target: ReactionTarget
+  kind: ReactionKind
+  userId: string
+  authorId: string
+  isFirstReaction: boolean
   executor: DatabaseExecutor
 }
 
@@ -42,39 +67,33 @@ export class ReactionsService {
   ) {}
 
   async react({ target, userId, kind }: ReactParams): Promise<void> {
-    const targetAuthorId = await this.ensureTargetIsActive(target)
+    const authorId = await this.ensureTargetIsActive(target)
 
     await runTransaction({
       db: this.db,
       work: async (tx) => {
-        const isAdded = await this.reactionsRepository.add({ target, userId, kind, executor: tx })
+        await this.reactionsRepository.lockUserTarget({ target, userId, executor: tx })
+
+        const given = await this.reactionsRepository.countByUserOnTarget({
+          target,
+          userId,
+          executor: tx,
+        })
+
+        const isAdded = await this.addWithinLimit({ target, userId, kind, given, executor: tx })
 
         if (!isAdded) return
 
         await this.adjustTargetCount({ target, kind, delta: 1, executor: tx })
 
-        await this.notificationsService.notify({
-          recipientId: targetAuthorId,
-          actorId: userId,
-          ...(target.type === ReactionTargetType.POST
-            ? { type: "post_reacted", postId: target.id }
-            : { type: "comment_reacted", commentId: target.id }),
-          executor: tx,
-        })
-
-        const counterpart = exclusiveCounterpart(kind)
-
-        if (!counterpart) return
-
-        const isCounterpartRemoved = await this.reactionsRepository.remove({
+        await this.notifyReaction({
           target,
+          kind,
           userId,
-          kind: counterpart,
+          authorId,
+          isFirstReaction: given === 0,
           executor: tx,
         })
-
-        if (isCounterpartRemoved)
-          await this.adjustTargetCount({ target, kind: counterpart, delta: -1, executor: tx })
       },
     })
   }
@@ -110,6 +129,72 @@ export class ReactionsService {
     return {
       reactions: [...kindsByTarget].map(([targetId, kinds]) => ({ targetId, kinds })),
     }
+  }
+
+  // Account deletion: takes back every reaction the person gave, keeping counters exact.
+  async purgeUser({ userId, executor }: PurgeReactionsParams): Promise<void> {
+    const given = await this.reactionsRepository.listAllByUser(userId)
+
+    for (const { postId, commentId, kind } of given) {
+      const target: ReactionTarget = postId
+        ? { type: ReactionTargetType.POST, id: postId }
+        : { type: ReactionTargetType.COMMENT, id: commentId ?? "" }
+
+      await this.adjustTargetCount({ target, kind, delta: -1, executor })
+    }
+
+    await this.reactionsRepository.deleteAllByUser({ userId, executor })
+  }
+
+  private async addWithinLimit({
+    target,
+    userId,
+    kind,
+    given,
+    executor,
+  }: AddWithinLimitParams): Promise<boolean> {
+    const isAdded = await this.reactionsRepository.add({ target, userId, kind, executor })
+
+    if (isAdded && given >= REACTIONS_PER_TARGET_MAX)
+      throw new AppError(ApiErrorCode.REACTION_LIMIT_REACHED)
+
+    return isAdded
+  }
+
+  // "Needs a source" is a request the author should see; other reactions notify once per
+  // person and target, so giving a second reaction does not count as a new reactor.
+  private async notifyReaction({
+    target,
+    kind,
+    userId,
+    authorId,
+    isFirstReaction,
+    executor,
+  }: NotifyReactionParams): Promise<void> {
+    const isPost = target.type === ReactionTargetType.POST
+    const targetIds = isPost ? { postId: target.id } : { commentId: target.id }
+
+    if (kind === ReactionKind.NEEDS_SOURCE) {
+      await this.notificationsService.notify({
+        recipientId: authorId,
+        actorId: userId,
+        type: "source_requested",
+        ...targetIds,
+        executor,
+      })
+
+      return
+    }
+
+    if (!isFirstReaction) return
+
+    await this.notificationsService.notify({
+      recipientId: authorId,
+      actorId: userId,
+      type: isPost ? "post_reacted" : "comment_reacted",
+      ...targetIds,
+      executor,
+    })
   }
 
   // Returns the author of the target, who is notified of new reactions.

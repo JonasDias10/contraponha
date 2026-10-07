@@ -196,11 +196,11 @@ describe("createApiClient", () => {
       const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }))
       const client = createApiClient({ baseUrl: "https://api.ponto.test", fetch: fetchMock })
 
-      await client.reactions.add({ targetType: "comment", targetId: "c1", kind: "agree" })
+      await client.reactions.add({ targetType: "comment", targetId: "c1", kind: "changed_my_mind" })
 
       const [url, init] = fetchMock.mock.calls[0] ?? []
 
-      expect(url).toBe("https://api.ponto.test/api/v1/comments/c1/reactions/agree")
+      expect(url).toBe("https://api.ponto.test/api/v1/comments/c1/reactions/changed_my_mind")
 
       expect(init?.method).toBe("PUT")
     })

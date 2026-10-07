@@ -1,5 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { moderationActions, type Database, type DatabaseExecutor } from "@ponto/database"
+import {
+  moderationActions,
+  type CommunityRuleValue,
+  type Database,
+  type DatabaseExecutor,
+} from "@ponto/database"
 import type { ModerationActionType } from "@ponto/types"
 import { desc, lt } from "drizzle-orm"
 
@@ -7,12 +12,13 @@ import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import type { ModerationAction } from "#src/modules/moderation/domain/moderation.js"
 
 export interface ModerationActionData {
-  moderatorId: string
+  moderatorId: string | null
   type: ModerationActionType
   reportId?: string
   postId?: string
   commentId?: string
   targetUserId?: string
+  rule?: CommunityRuleValue
   note?: string
 }
 
@@ -31,8 +37,15 @@ export interface ListActionsParams {
 export class ModerationActionsRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  async record({ data, executor = this.db }: RecordActionParams): Promise<void> {
-    await executor.insert(moderationActions).values(data)
+  async record({ data, executor = this.db }: RecordActionParams): Promise<string> {
+    const [row] = await executor
+      .insert(moderationActions)
+      .values(data)
+      .returning({ id: moderationActions.id })
+
+    if (!row) throw new Error("Insert into moderation_actions returned no row")
+
+    return row.id
   }
 
   list({ beforeId, limit }: ListActionsParams): Promise<ModerationAction[]> {

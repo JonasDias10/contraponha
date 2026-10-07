@@ -13,8 +13,10 @@ import {
   authResponseSchema,
   changePasswordInputSchema,
   confirmEmailInputSchema,
+  confirmMagicLinkInputSchema,
   loginInputSchema,
   registerInputSchema,
+  requestMagicLinkInputSchema,
   requestPasswordResetInputSchema,
   resetPasswordInputSchema,
 } from "@ponto/validation"
@@ -152,5 +154,37 @@ export class AuthController {
     body: z.output<typeof resetPasswordInputSchema>,
   ): Promise<void> {
     return this.accountVerification.resetPassword(body)
+  }
+
+  @Public()
+  @SensitiveRateLimit()
+  @Post("magic-link")
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({
+    summary: "Email a one-time sign-in link",
+    description: "Always responds 202, whether or not the email belongs to an account.",
+  })
+  @ApiZodBody(requestMagicLinkInputSchema)
+  @ApiAcceptedResponse()
+  requestMagicLink(
+    @Body(new ZodValidationPipe(requestMagicLinkInputSchema))
+    body: z.output<typeof requestMagicLinkInputSchema>,
+  ): Promise<void> {
+    return this.accountVerification.requestMagicLink(body.email)
+  }
+
+  @Public()
+  @SensitiveRateLimit()
+  @Post("magic-link/confirm")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Sign in with the emailed link; it can be used once" })
+  @ApiZodBody(confirmMagicLinkInputSchema)
+  @ApiOkResponse({ schema: toOpenApiSchema(authResponseSchema) })
+  loginWithMagicLink(
+    @Body(new ZodValidationPipe(confirmMagicLinkInputSchema))
+    body: z.output<typeof confirmMagicLinkInputSchema>,
+    @Headers("user-agent") userAgent: string | undefined,
+  ): Promise<AuthResponse> {
+    return this.authService.loginWithMagicLink({ token: body.token, userAgent })
   }
 }

@@ -1,5 +1,10 @@
-import type { FollowStatus, Page, PublicProfile } from "@ponto/types"
-import { followStatusSchema, profilePageSchema, type PaginationQuery } from "@ponto/validation"
+import type { FollowedAmong, FollowStatus, Page, PublicProfile } from "@ponto/types"
+import {
+  followedAmongSchema,
+  followStatusSchema,
+  profilePageSchema,
+  type PaginationQuery,
+} from "@ponto/validation"
 
 import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
 
@@ -12,6 +17,7 @@ export interface FollowsResource {
   follow(handle: string): Promise<void>
   unfollow(handle: string): Promise<void>
   getStatus(handle: string): Promise<FollowStatus>
+  followedAmong(userIds: readonly string[]): Promise<FollowedAmong>
   listFollowers(request: ListConnectionsRequest): Promise<Page<PublicProfile>>
   listFollowing(request: ListConnectionsRequest): Promise<Page<PublicProfile>>
 }
@@ -38,6 +44,12 @@ export function createFollowsResource(request: HttpClient): FollowsResource {
     },
     getStatus: (handle) =>
       request({ method: "GET", path: `${userPath(handle)}/follow`, schema: followStatusSchema }),
+    followedAmong: (userIds) =>
+      request({
+        method: "GET",
+        path: withQuery({ path: "/follows/status", query: { userIds: userIds.join(",") } }),
+        schema: followedAmongSchema,
+      }),
     listFollowers: ({ handle, query = {} }) =>
       request({
         method: "GET",

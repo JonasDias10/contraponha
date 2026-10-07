@@ -30,15 +30,13 @@ export class SessionAuthGuard implements CanActivate {
       context.getClass(),
     ])
 
-    if (isPublic) return true
-
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>()
     const token = extractBearerToken(request)
     const auth = token ? await this.sessionsService.authenticate(token) : undefined
 
-    if (!auth) throw new AppError(ApiErrorCode.UNAUTHORIZED)
+    if (auth) request.auth = auth
 
-    request.auth = auth
+    if (!auth && !isPublic) throw new AppError(ApiErrorCode.UNAUTHORIZED)
 
     return true
   }

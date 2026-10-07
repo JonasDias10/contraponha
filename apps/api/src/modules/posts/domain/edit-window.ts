@@ -1,6 +1,4 @@
-import { minutesToMs } from "@ponto/config"
-
-import { CONTENT_EDIT_WINDOW_MINUTES } from "#src/config/durations.js"
+import { CONTENT_EDIT_WINDOW_MINUTES, minutesToMs } from "@ponto/config"
 
 export interface IsWithinEditWindowParams {
   createdAt: Date

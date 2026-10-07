@@ -1,0 +1,229 @@
+"use client"
+
+import * as Popover from "@radix-ui/react-popover"
+import type { ProfileView } from "@ponto/types"
+import { useQuery } from "@tanstack/react-query"
+import { CalendarDays, CircleCheck, Flag, Link2, MapPin, MoreHorizontal } from "lucide-react"
+import type { Route } from "next"
+import Link from "next/link"
+import { useState } from "react"
+
+import { ReportDialog } from "@/components/post/report-dialog"
+import { FollowButton } from "@/components/profile/follow-button"
+import { recognitionText } from "@/components/profile/recognition"
+import { useApi } from "@/components/providers/app-providers"
+import { useI18n } from "@/components/providers/i18n-provider"
+import { useViewer } from "@/components/providers/viewer-provider"
+import { Avatar } from "@/components/ui/avatar"
+import { Chip } from "@/components/ui/badges"
+import { Button } from "@/components/ui/button"
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
+import { Panel } from "@/components/ui/surfaces"
+import { formatCount, formatMonthYear } from "@/lib/format"
+import { paths } from "@/lib/paths"
+import { queryKeys } from "@/lib/query-keys"
+
+export interface ProfileHeaderProps {
+  handle: string
+}
+
+export function ProfileHeader({ handle }: ProfileHeaderProps): React.JSX.Element | null {
+  const api = useApi()
+
+  const { data: profile } = useQuery({
+    queryKey: queryKeys.profile(handle),
+    queryFn: () => api.users.getByHandle(handle),
+  })
+
+  if (!profile) return null
+
+  return <ProfileHeaderContent profile={profile} />
+}
+
+interface ProfileStat {
+  value: number
+  label: string
+  href?: Route
+}
+
+interface ProfileHeaderContentProps {
+  profile: ProfileView
+}
+
+function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX.Element {
+  const { t, locale } = useI18n()
+  const api = useApi()
+  const viewer = useViewer()
+  const [isReporting, setIsReporting] = useState(false)
+  const isSelf = viewer?.id === profile.id
+
+  const followedBy = useQuery({
+    queryKey: queryKeys.followedBy(profile.handle),
+    queryFn: () => api.users.followedBy(profile.handle),
+    enabled: viewer !== null && !isSelf,
+  })
+
+  const stats: ProfileStat[] = [
+    { value: profile.postCount, label: t("web.profile.statPosts", { count: profile.postCount }) },
+    {
+      value: profile.followerCount,
+      label: t("web.profile.statFollowers", { count: profile.followerCount }),
+      href: paths.followers(profile.handle),
+    },
+    {
+      value: profile.followingCount,
+      label: t("web.profile.statFollowing", { count: profile.followingCount }),
+      href: paths.following(profile.handle),
+    },
+  ]
+
+  const mutuals = followedBy.data?.people ?? []
+  const mutualNames = mutuals.map(({ displayName }) => displayName.split(" ")[0]).join(", ")
+  const others = (followedBy.data?.total ?? 0) - mutuals.length
+
+  return (
+    <section className="flex flex-col gap-5 pt-4">
+      <div className="flex flex-wrap items-start gap-6">
+        <Avatar id={profile.id} name={profile.displayName} size="xxl" />
+        <div className="flex min-w-[260px] flex-1 flex-col gap-2">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <h1 className="font-serif text-[34px] font-semibold leading-tight">
+                {profile.displayName}
+              </h1>
+              <p className="flex flex-wrap items-center gap-1.5 text-subtle">
+                @{profile.handle}
+                {profile.pronouns ? <span>· {profile.pronouns}</span> : null}
+                {profile.viewer?.isFollowedBy ? <Chip>{t("web.profile.followsYou")}</Chip> : null}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {isSelf ? (
+                <Button asChild variant="secondary">
+                  <Link href="/settings">{t("web.profile.editProfile")}</Link>
+                </Button>
+              ) : (
+                <>
+                  {viewer ? (
+                    <Menu>
+                      <MenuTrigger asChild>
+                        <Button variant="secondary" size="icon" aria-label={t("web.post.options")}>
+                          <MoreHorizontal aria-hidden className="size-5" />
+                        </Button>
+                      </MenuTrigger>
+                      <MenuContent>
+                        <MenuItem tone="danger" onSelect={() => setIsReporting(true)}>
+                          <Flag aria-hidden className="size-4" />
+                          {t("web.profile.report")}
+                        </MenuItem>
+                      </MenuContent>
+                    </Menu>
+                  ) : null}
+                  <FollowButton
+                    handle={profile.handle}
+                    initialIsFollowing={profile.viewer?.isFollowing}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+          {profile.bio ? (
+            <p className="mt-1 font-serif text-[17px] leading-relaxed">{profile.bio}</p>
+          ) : null}
+          <p className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted">
+            {profile.headline ? <span>{profile.headline}</span> : null}
+            {profile.location ? (
+              <span className="inline-flex items-center gap-1">
+                <MapPin aria-hidden className="size-4" />
+                {profile.location}
+              </span>
+            ) : null}
+            {profile.website ? (
+              <a
+                href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer nofollow me"
+                className="inline-flex items-center gap-1 text-brand"
+              >
+                <Link2 aria-hidden className="size-4" />
+                {new URL(profile.website).hostname.replace(/^www\./, "")}
+              </a>
+            ) : null}
+            <span className="inline-flex items-center gap-1">
+              <CalendarDays aria-hidden className="size-4" />
+              {t("web.profile.joined", {
+                date: formatMonthYear({ value: profile.createdAt, locale }),
+              })}
+            </span>
+          </p>
+          <p className="mt-1 flex flex-wrap gap-5 text-sm text-muted">
+            {stats.map(({ value, label, href }) => {
+              const content = (
+                <>
+                  <strong className="font-semibold text-ink">
+                    {formatCount({ value, locale })}
+                  </strong>{" "}
+                  {label}
+                </>
+              )
+
+              return href ? (
+                <Link key={label} href={href} className="text-muted no-underline hover:underline">
+                  {content}
+                </Link>
+              ) : (
+                <span key={label}>{content}</span>
+              )
+            })}
+          </p>
+          {mutuals.length > 0 ? (
+            <p className="flex items-center gap-2 text-[13px] text-subtle">
+              <span className="flex">
+                {mutuals.map((person, index) => (
+                  <Avatar
+                    key={person.id}
+                    id={person.id}
+                    name={person.displayName}
+                    size="xs"
+                    className={index > 0 ? "-ml-2 ring-2 ring-surface" : "ring-2 ring-surface"}
+                  />
+                ))}
+              </span>
+              {others > 0
+                ? t("web.profile.followedByMore", { names: mutualNames, count: others })
+                : t("web.profile.followedBy", { names: mutualNames })}
+            </p>
+          ) : null}
+        </div>
+      </div>
+      {profile.recognition ? (
+        <Panel className="flex items-center gap-3 px-4 py-3.5">
+          <CircleCheck aria-hidden className="size-5 flex-none text-brand" />
+          <p className="flex-1 text-sm">
+            {recognitionText({ recognition: profile.recognition, t })}
+          </p>
+          <Popover.Root>
+            <Popover.Trigger className="text-sm text-brand underline decoration-dotted underline-offset-2">
+              {t("web.profile.whatIsThis")}
+            </Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content
+                sideOffset={6}
+                align="end"
+                className="z-40 max-w-72 rounded-[12px] border border-line bg-surface-raised p-4 text-sm text-muted shadow-e2"
+              >
+                {t("web.profile.recognitionExplain")}
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+        </Panel>
+      ) : null}
+      <ReportDialog
+        targetType="user"
+        targetId={profile.id}
+        open={isReporting}
+        onOpenChange={setIsReporting}
+      />
+    </section>
+  )
+}

@@ -80,6 +80,18 @@ export const ERROR_CATALOG: Record<ApiErrorCode, ErrorDefinition> = {
     status: HttpStatus.CONFLICT,
     messageKey: "moderation.errors.duplicateReport",
   },
+  [ApiErrorCode.REACTION_LIMIT_REACHED]: {
+    status: HttpStatus.CONFLICT,
+    messageKey: "content.errors.reactionLimitReached",
+  },
+  [ApiErrorCode.REPLIES_RESTRICTED]: {
+    status: HttpStatus.FORBIDDEN,
+    messageKey: "content.errors.repliesRestricted",
+  },
+  [ApiErrorCode.DATA_EXPORT_IN_PROGRESS]: {
+    status: HttpStatus.CONFLICT,
+    messageKey: "users.errors.dataExportInProgress",
+  },
 }
 
 const CODE_BY_STATUS: Partial<Record<number, ApiErrorCode>> = {

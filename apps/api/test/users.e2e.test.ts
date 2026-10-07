@@ -1,5 +1,5 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { privateProfileSchema, publicProfileSchema } from "@ponto/validation"
+import { privateProfileSchema, profileViewSchema } from "@ponto/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
@@ -82,14 +82,23 @@ describe("users", () => {
         .get(`/api/v1/users/${auth.user.handle.toUpperCase()}`)
         .expect(200)
 
-      expect(publicProfileSchema.strict().parse(response.body)).toEqual({
+      expect(profileViewSchema.strict().parse(response.body)).toEqual({
         id: auth.user.id,
         handle: auth.user.handle,
         displayName: auth.user.displayName,
         bio: null,
+        headline: null,
+        location: null,
+        website: null,
+        pronouns: null,
         followerCount: 0,
         followingCount: 0,
+        postCount: 0,
+        isDeleted: false,
         createdAt: auth.user.createdAt,
+        recognition: null,
+        topics: [],
+        viewer: null,
       })
     })
 

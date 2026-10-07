@@ -22,6 +22,7 @@ export async function createTestApp(envOverrides: Record<string, string> = {}): 
     SWAGGER_ENABLED: "true",
     DATABASE_URL: inject("testDatabaseUrl"),
     AUTH_RATE_LIMIT_MAX_REQUESTS: "1000",
+    BACKGROUND_JOBS_ENABLED: "false",
     ...envOverrides,
   })
 

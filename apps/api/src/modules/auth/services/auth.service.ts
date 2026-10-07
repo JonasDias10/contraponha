@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { runTransaction, type Database } from "@ponto/database"
+import { runTransaction, type Database, type DatabaseExecutor } from "@ponto/database"
 import { negotiateLocale } from "@ponto/i18n"
 import { ApiErrorCode, type AuthResponse } from "@ponto/types"
 import type {
@@ -17,6 +17,8 @@ import { PasswordHasher } from "#src/modules/auth/infrastructure/password-hasher
 import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
 import { toPrivateProfile, type User } from "#src/modules/users/domain/user.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
+
+import { VerificationTokensRepository } from "#src/modules/auth/repositories/verification-tokens.repository.js"
 
 import { AccountVerificationService } from "./account-verification.service.js"
 import { SessionsService } from "./sessions.service.js"
@@ -41,6 +43,16 @@ export interface LoginParams {
   userAgent: string | undefined
 }
 
+export interface MagicLinkLoginParams {
+  token: string
+  userAgent: string | undefined
+}
+
+export interface ForgetCredentialsParams {
+  userId: string
+  executor: DatabaseExecutor
+}
+
 export interface RegisterParams {
   input: z.output<typeof registerInputSchema>
   client: ClientInfo
@@ -56,6 +68,7 @@ export class AuthService {
     private readonly passwordHasher: PasswordHasher,
     private readonly sessionsService: SessionsService,
     private readonly accountVerification: AccountVerificationService,
+    private readonly verificationTokens: VerificationTokensRepository,
   ) {}
 
   async register({ input, client }: RegisterParams): Promise<AuthResponse> {
@@ -77,10 +90,13 @@ export class AuthService {
             email: input.email,
             handle: input.handle,
             displayName: input.displayName,
+            birthDate: input.birthDate,
             locale,
           },
           executor: tx,
         })
+
+        await this.usersService.recordLegalConsents({ userId: created.id, executor: tx })
 
         await this.credentials.upsertPasswordHash({
           userId: created.id,
@@ -110,6 +126,23 @@ export class AuthService {
     return this.startSession({ user, userAgent })
   }
 
+  async loginWithMagicLink({ token, userAgent }: MagicLinkLoginParams): Promise<AuthResponse> {
+    const user = await this.accountVerification.consumeMagicLink(token)
+    return this.startSession({ user, userAgent })
+  }
+
+  // Account deletion: ends every session and erases the password and pending tokens.
+  // Returns the revoked session token hashes, evicted from the cache after commit.
+  async forgetCredentials({ userId, executor }: ForgetCredentialsParams): Promise<string[]> {
+    const revoked = await this.sessionsService.revokeAll({ userId, executor })
+
+    await this.credentials.deleteForUser({ userId, executor })
+
+    await this.verificationTokens.deleteForUser({ userId, executor })
+
+    return revoked
+  }
+
   async changePassword({ auth, input }: ChangePasswordParams): Promise<void> {
     const currentHash = await this.credentials.findPasswordHash(auth.userId)
 
@@ -132,8 +165,17 @@ export class AuthService {
     await this.sessionsService.revokeOthers(auth)
   }
 
+  // Signing in during the 30-day grace period cancels a scheduled account deletion.
   private async startSession({ user, userAgent }: StartSessionParams): Promise<AuthResponse> {
-    const session = await this.sessionsService.issue({ userId: user.id, userAgent })
-    return { user: toPrivateProfile(user), session }
+    const active = user.deletionScheduledAt
+      ? await this.usersService.scheduleDeletion({
+          id: user.id,
+          scheduledFor: null,
+          deleteContributions: false,
+        })
+      : user
+
+    const session = await this.sessionsService.issue({ userId: active.id, userAgent })
+    return { user: toPrivateProfile(active), session }
   }
 }

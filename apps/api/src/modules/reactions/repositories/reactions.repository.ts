@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { reactions, type Database, type DatabaseExecutor } from "@ponto/database"
 import { ReactionTargetType, type ReactionKind } from "@ponto/types"
-import { and, eq, inArray, type SQL } from "drizzle-orm"
+import { and, count, eq, inArray, sql, type SQL } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 
@@ -21,6 +21,23 @@ export interface ListUserReactionsParams {
   userId: string
   targetType: ReactionTargetType
   targetIds: readonly string[]
+}
+
+export interface UserTargetParams {
+  target: ReactionTarget
+  userId: string
+  executor: DatabaseExecutor
+}
+
+export interface DeleteAllByUserParams {
+  userId: string
+  executor: DatabaseExecutor
+}
+
+export interface ReactionByUserRow {
+  postId: string | null
+  commentId: string | null
+  kind: ReactionKind
 }
 
 export interface UserReactionRow {
@@ -86,5 +103,33 @@ export class ReactionsRepository {
       .select({ targetId: column, kind: reactions.kind })
       .from(reactions)
       .where(and(eq(reactions.userId, userId), inArray(column, [...targetIds])))
+  }
+
+  // Serializes reactions of one person on one target, so the per-target limit holds even
+  // when two requests arrive together.
+  async lockUserTarget({ target, userId, executor }: UserTargetParams): Promise<void> {
+    await executor.execute(
+      sql`select pg_advisory_xact_lock(hashtextextended(${`${userId}:${target.id}`}, 0))`,
+    )
+  }
+
+  async countByUserOnTarget({ target, userId, executor }: UserTargetParams): Promise<number> {
+    const [row] = await executor
+      .select({ total: count() })
+      .from(reactions)
+      .where(and(eq(targetColumn(target.type), target.id), eq(reactions.userId, userId)))
+
+    return row?.total ?? 0
+  }
+
+  listAllByUser(userId: string): Promise<ReactionByUserRow[]> {
+    return this.db
+      .select({ postId: reactions.postId, commentId: reactions.commentId, kind: reactions.kind })
+      .from(reactions)
+      .where(eq(reactions.userId, userId))
+  }
+
+  async deleteAllByUser({ userId, executor }: DeleteAllByUserParams): Promise<void> {
+    await executor.delete(reactions).where(eq(reactions.userId, userId))
   }
 }

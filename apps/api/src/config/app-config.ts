@@ -56,6 +56,9 @@ export interface AppConfig {
   media: {
     publicBaseUrl: string
   }
+  backgroundJobs: {
+    enabled: boolean
+  }
   email: {
     from: string
     smtp: {
@@ -122,6 +125,9 @@ export function loadAppConfig(source: EnvSource): AppConfig {
     },
     media: {
       publicBaseUrl: env.MEDIA_PUBLIC_BASE_URL.replace(/\/+$/, ""),
+    },
+    backgroundJobs: {
+      enabled: env.BACKGROUND_JOBS_ENABLED,
     },
     email: {
       from: env.EMAIL_FROM,

@@ -35,7 +35,7 @@ export class ReactionsController {
 
   @Put("posts/:postId/reactions/:kind")
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: "React to a post; agree and disagree replace each other" })
+  @ApiOperation({ summary: "React to a post (idempotent; at most 2 reactions per person)" })
   @ApiNoContentResponse()
   reactToPost(
     @CurrentAuth() auth: AuthContext,
@@ -67,7 +67,7 @@ export class ReactionsController {
 
   @Put("comments/:commentId/reactions/:kind")
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: "React to a comment; agree and disagree replace each other" })
+  @ApiOperation({ summary: "React to a comment (idempotent; at most 2 reactions per person)" })
   @ApiNoContentResponse()
   reactToComment(
     @CurrentAuth() auth: AuthContext,

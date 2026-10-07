@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Post, Query } from "@nestjs/common"
+import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Query } from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiNoContentResponse,
@@ -6,17 +6,25 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { NotificationView, Page, UnreadNotificationCount } from "@ponto/types"
+import type {
+  NotificationPreferences,
+  NotificationView,
+  Page,
+  UnreadNotificationCount,
+} from "@ponto/types"
 import {
+  notificationListQuerySchema,
   notificationPageSchema,
-  paginationQuerySchema,
+  notificationPreferencesSchema,
   unreadNotificationCountSchema,
+  updateNotificationPreferencesInputSchema,
 } from "@ponto/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
 import {
   ApiStandardErrors,
+  ApiZodBody,
   SESSION_SECURITY_SCHEME,
   toOpenApiSchema,
 } from "#src/common/openapi/swagger.js"
@@ -36,11 +44,12 @@ export class NotificationsController {
   @ApiOkResponse({ schema: toOpenApiSchema(notificationPageSchema) })
   list(
     @CurrentAuth() auth: AuthContext,
-    @Query(new ZodValidationPipe(paginationQuerySchema))
-    query: z.output<typeof paginationQuerySchema>,
+    @Query(new ZodValidationPipe(notificationListQuerySchema))
+    query: z.output<typeof notificationListQuerySchema>,
   ): Promise<Page<NotificationView>> {
     return this.notificationsService.list({
       userId: auth.userId,
+      filter: query.filter,
       cursor: query.cursor,
       limit: query.limit,
     })
@@ -51,6 +60,25 @@ export class NotificationsController {
   @ApiOkResponse({ schema: toOpenApiSchema(unreadNotificationCountSchema) })
   countUnread(@CurrentAuth() auth: AuthContext): Promise<UnreadNotificationCount> {
     return this.notificationsService.countUnread(auth.userId)
+  }
+
+  @Get("preferences")
+  @ApiOperation({ summary: "Which notifications the user wants and when they arrive" })
+  @ApiOkResponse({ schema: toOpenApiSchema(notificationPreferencesSchema) })
+  getPreferences(@CurrentAuth() auth: AuthContext): Promise<NotificationPreferences> {
+    return this.notificationsService.getPreferences(auth.userId)
+  }
+
+  @Patch("preferences")
+  @ApiOperation({ summary: "Change notification preferences and digest hours" })
+  @ApiZodBody(updateNotificationPreferencesInputSchema)
+  @ApiOkResponse({ schema: toOpenApiSchema(notificationPreferencesSchema) })
+  updatePreferences(
+    @CurrentAuth() auth: AuthContext,
+    @Body(new ZodValidationPipe(updateNotificationPreferencesInputSchema))
+    body: z.output<typeof updateNotificationPreferencesInputSchema>,
+  ): Promise<NotificationPreferences> {
+    return this.notificationsService.updatePreferences({ userId: auth.userId, data: body })
   }
 
   @Post("read-all")

@@ -4,7 +4,7 @@ import { notificationPageSchema, unreadNotificationCountSchema } from "@ponto/va
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
-import { bearer, registerAccount, type App } from "./support/accounts.js"
+import { bearer, registerAccount, type App, type RegisteredAccount } from "./support/accounts.js"
 import { createComment, createPost } from "./support/content.js"
 import { createTestApp } from "./support/create-test-app.js"
 
@@ -19,6 +19,14 @@ async function listNotifications({
 }: NotificationsParams): Promise<Page<NotificationView>> {
   const response = await request(server).get("/api/v1/notifications").set(bearer(token)).expect(200)
   return notificationPageSchema.parse(response.body)
+}
+
+async function enableAllNotifications({ server, token }: NotificationsParams): Promise<void> {
+  await request(server)
+    .patch("/api/v1/notifications/preferences")
+    .set(bearer(token))
+    .send({ reactions: true, follows: true })
+    .expect(200)
 }
 
 async function unreadCount({ server, token }: NotificationsParams): Promise<number> {
@@ -54,6 +62,8 @@ describe("notifications", () => {
     const post = await createPost({ server, token: authorToken })
     const authorComment = await createComment({ server, token: authorToken, postId: post.id })
 
+    await enableAllNotifications({ server, token: authorToken })
+
     await createComment({ server, token: readerToken, postId: post.id })
 
     await createComment({ server, token: readerToken, postId: post.id, parentId: authorComment.id })
@@ -83,9 +93,11 @@ describe("notifications", () => {
       "post_commented",
     ])
 
-    expect(page.items.every(({ actor }) => actor?.handle === reader.auth.user.handle)).toBe(true)
+    expect(page.items.every(({ actors }) => actors[0]?.handle === reader.auth.user.handle)).toBe(
+      true,
+    )
 
-    expect(page.items[1]).toMatchObject({ commentId: authorComment.id, postId: null })
+    expect(page.items[1]).toMatchObject({ commentId: authorComment.id, post: null })
 
     const readerPage = await listNotifications({ server, token: readerToken })
 
@@ -100,7 +112,7 @@ describe("notifications", () => {
     await createComment({ server, token, postId: post.id })
 
     await request(server)
-      .put(`/api/v1/posts/${post.id}/reactions/agree`)
+      .put(`/api/v1/posts/${post.id}/reactions/changed_my_mind`)
       .set(bearer(token))
       .expect(204)
 
@@ -168,5 +180,103 @@ describe("notifications", () => {
       .expect(404)
 
     await request(server).get("/api/v1/notifications").expect(401)
+  })
+
+  it("groups repeated events and respects the switches", async () => {
+    const author = await registerAccount({ server })
+    const authorToken = author.auth.session.token
+    const post = await createPost({ server, token: authorToken })
+
+    await enableAllNotifications({ server, token: authorToken })
+
+    const readers: RegisteredAccount[] = []
+
+    for (let index = 0; index < 3; index += 1) {
+      const reader = await registerAccount({ server })
+
+      readers.push(reader)
+    }
+
+    for (const reader of readers) {
+      await request(server)
+        .put(`/api/v1/posts/${post.id}/reactions/good_argument`)
+        .set(bearer(reader.auth.session.token))
+        .expect(204)
+    }
+
+    const page = await listNotifications({ server, token: authorToken })
+    const [grouped] = page.items
+
+    expect(page.items).toHaveLength(1)
+
+    expect(grouped).toMatchObject({ type: "post_reacted", actorCount: 3 })
+
+    expect(grouped?.actors.map(({ handle }) => handle)).toEqual([
+      readers[2]?.auth.user.handle,
+      readers[1]?.auth.user.handle,
+    ])
+  })
+
+  it("holds notifications until the chosen digest hour", async () => {
+    const author = await registerAccount({ server })
+    const reader = await registerAccount({ server })
+    const authorToken = author.auth.session.token
+    const post = await createPost({ server, token: authorToken })
+    const now = new Date()
+    const hourInSaoPaulo = (now.getUTCHours() - 3 + 24) % 24
+    const laterHour = (hourInSaoPaulo + 2) % 24
+
+    await request(server)
+      .patch("/api/v1/notifications/preferences")
+      .set(bearer(authorToken))
+      .send({ digestHours: [laterHour] })
+      .expect(200)
+
+    await createComment({ server, token: reader.auth.session.token, postId: post.id })
+
+    const page = await listNotifications({ server, token: authorToken })
+    const unread = await unreadCount({ server, token: authorToken })
+
+    expect(page.items).toEqual([])
+
+    expect(unread).toBe(0)
+  })
+
+  it("tells people when they are mentioned and when a contribution is highlighted", async () => {
+    const author = await registerAccount({ server })
+    const contributor = await registerAccount({ server })
+    const mentioned = await registerAccount({ server })
+    const authorToken = author.auth.session.token
+
+    const post = await createPost({
+      server,
+      token: authorToken,
+      body: `O que você acha, @${mentioned.auth.user.handle}?`,
+    })
+
+    const comment = await createComment({
+      server,
+      token: contributor.auth.session.token,
+      postId: post.id,
+    })
+
+    await request(server)
+      .put(`/api/v1/comments/${comment.id}/highlight`)
+      .set(bearer(authorToken))
+      .send({ note: "Trouxe dado de campo" })
+      .expect(200)
+
+    const mentionedPage = await listNotifications({ server, token: mentioned.auth.session.token })
+
+    const contributorPage = await listNotifications({
+      server,
+      token: contributor.auth.session.token,
+    })
+
+    expect(mentionedPage.items.map(({ type }) => type)).toEqual(["mentioned"])
+
+    expect(contributorPage.items.map(({ type }) => type)).toEqual(["comment_highlighted"])
+
+    expect(contributorPage.items[0]?.post?.id).toBe(post.id)
   })
 })
