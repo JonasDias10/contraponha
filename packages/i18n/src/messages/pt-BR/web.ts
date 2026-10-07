@@ -1,5 +1,7 @@
 export const web = {
   common: {
+    datePlaceholder: "dd/mm/aaaa",
+    openCalendar: "Abrir calendário",
     close: "Fechar",
     cancel: "Cancelar",
     back: "Voltar",

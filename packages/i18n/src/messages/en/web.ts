@@ -2,6 +2,8 @@ import type { Messages } from "../../types.js"
 
 export const web: Messages["web"] = {
   common: {
+    datePlaceholder: "mm/dd/yyyy",
+    openCalendar: "Open calendar",
     close: "Close",
     cancel: "Cancel",
     back: "Back",

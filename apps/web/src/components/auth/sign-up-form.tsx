@@ -1,6 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { MINIMUM_AGE_YEARS } from "@contraponha/config"
 import type { MessageKey } from "@contraponha/i18n"
 import { registerInputSchema } from "@contraponha/validation"
 import { Mail } from "lucide-react"
@@ -16,6 +17,7 @@ import { PasswordInput } from "@/components/auth/password-input"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/controls"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Field, Input } from "@/components/ui/field"
 import { cn } from "@/lib/cn"
 import { passwordStrength } from "@/lib/password-strength"
@@ -42,6 +44,17 @@ const FIELD_MESSAGES: Partial<Record<FieldName, MessageKey>> = {
 function isFieldName(path: string): path is FieldName {
   return path in FIELD_MESSAGES
 }
+
+const TODAY = new Date()
+const BIRTH_DATE_START = new Date(TODAY.getFullYear() - 120, 0, 1)
+
+const BIRTH_DATE_END = new Date(
+  TODAY.getFullYear() - MINIMUM_AGE_YEARS,
+  TODAY.getMonth(),
+  TODAY.getDate(),
+)
+
+const BIRTH_DATE_DEFAULT_MONTH = new Date(TODAY.getFullYear() - 25, 0, 1)
 
 const STRENGTH_STYLE = {
   weak: { width: "w-1/4", color: "bg-danger", key: "web.auth.passwordWeak" },
@@ -185,13 +198,25 @@ export function SignUpForm(): React.JSX.Element {
         error={fieldError("birthDate")}
       >
         {({ id, describedBy, isInvalid }) => (
-          <Input
-            id={id}
-            type="date"
-            autoComplete="bday"
-            aria-describedby={describedBy}
-            aria-invalid={isInvalid}
-            {...register("birthDate")}
+          <Controller
+            control={control}
+            name="birthDate"
+            render={({ field }) => (
+              <DatePicker
+                id={id}
+                name={field.name}
+                ref={field.ref}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                autoComplete="bday"
+                aria-describedby={describedBy}
+                aria-invalid={isInvalid}
+                startMonth={BIRTH_DATE_START}
+                endMonth={BIRTH_DATE_END}
+                defaultMonth={BIRTH_DATE_DEFAULT_MONTH}
+              />
+            )}
           />
         )}
       </Field>
