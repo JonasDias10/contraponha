@@ -1,11 +1,16 @@
-import type { FollowedByPreview, PrivateProfile, ProfileView, SuggestedPeople } from "@ponto/types"
+import type {
+  FollowedByPreview,
+  PrivateProfile,
+  ProfileView,
+  SuggestedPeople,
+} from "@contraponha/types"
 import {
   followedByPreviewSchema,
   privateProfileSchema,
   profileViewSchema,
   suggestedPeopleSchema,
   type UpdateProfileInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import type { HttpClient } from "../http.js"
 

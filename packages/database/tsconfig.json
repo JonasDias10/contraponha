@@ -1,5 +1,5 @@
 {
-  "extends": "@ponto/tsconfig/node.json",
+  "extends": "@contraponha/tsconfig/node.json",
   "compilerOptions": {
     "noEmit": true
   },

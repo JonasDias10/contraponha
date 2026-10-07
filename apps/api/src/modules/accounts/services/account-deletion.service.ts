@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common"
-import { daysToMs } from "@ponto/config"
-import { runTransaction, type Database } from "@ponto/database"
-import { ApiErrorCode, type AccountDeletionStatus } from "@ponto/types"
+import { daysToMs } from "@contraponha/config"
+import { runTransaction, type Database } from "@contraponha/database"
+import { ApiErrorCode, type AccountDeletionStatus } from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { ACCOUNT_DELETION_GRACE_DAYS } from "#src/config/durations.js"

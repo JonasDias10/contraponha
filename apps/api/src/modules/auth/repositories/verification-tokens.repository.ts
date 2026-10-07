@@ -4,7 +4,7 @@ import {
   type Database,
   type DatabaseExecutor,
   type VerificationTokenPurpose,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { and, eq, gt, isNull } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

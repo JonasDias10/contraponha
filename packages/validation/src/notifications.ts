@@ -4,7 +4,7 @@ import {
   type NotificationPreferences,
   type NotificationView,
   type UnreadNotificationCount,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { communityRuleSchema } from "./moderation.js"

@@ -1,4 +1,4 @@
-import { HIGHLIGHT_END, HIGHLIGHT_START } from "@ponto/types"
+import { HIGHLIGHT_END, HIGHLIGHT_START } from "@contraponha/types"
 
 export interface HighlightedTextProps {
   text: string

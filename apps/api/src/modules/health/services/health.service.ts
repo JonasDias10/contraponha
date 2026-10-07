@@ -1,6 +1,11 @@
 import { Inject, Injectable, Logger } from "@nestjs/common"
-import { pingDatabase, type Database } from "@ponto/database"
-import { ApiErrorCode, HealthStatus, type LivenessReport, type ReadinessReport } from "@ponto/types"
+import { pingDatabase, type Database } from "@contraponha/database"
+import {
+  ApiErrorCode,
+  HealthStatus,
+  type LivenessReport,
+  type ReadinessReport,
+} from "@contraponha/types"
 import type { Redis } from "ioredis"
 
 import { AppError } from "#src/common/errors/app-error.js"

@@ -6,13 +6,13 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { TopicList, TopicView } from "@ponto/types"
+import type { TopicList, TopicView } from "@contraponha/types"
 import {
   followTopicsInputSchema,
   topicListSchema,
   topicSlugSchema,
   topicViewSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"

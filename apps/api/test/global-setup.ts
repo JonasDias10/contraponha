@@ -1,7 +1,11 @@
 import { existsSync } from "node:fs"
 import { resolve } from "node:path"
 
-import { createDatabaseConnection, ensureDatabaseExists, runMigrations } from "@ponto/database"
+import {
+  createDatabaseConnection,
+  ensureDatabaseExists,
+  runMigrations,
+} from "@contraponha/database"
 import { sql } from "drizzle-orm"
 import type { TestProject } from "vitest/node"
 

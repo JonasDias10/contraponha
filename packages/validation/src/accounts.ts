@@ -6,7 +6,7 @@ import {
   type DataExportDownload,
   type DataExportList,
   type DataExportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { handleSchema } from "./users.js"

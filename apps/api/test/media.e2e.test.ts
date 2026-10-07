@@ -1,6 +1,6 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { MEDIA_MAX_BYTES } from "@ponto/config"
-import { postViewSchema } from "@ponto/validation"
+import { MEDIA_MAX_BYTES } from "@contraponha/config"
+import { postViewSchema } from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

@@ -1,6 +1,6 @@
-import { ApiError } from "@ponto/api-client"
-import type { Translate } from "@ponto/i18n"
-import type { ValidationIssue } from "@ponto/types"
+import { ApiError } from "@contraponha/api-client"
+import type { Translate } from "@contraponha/i18n"
+import type { ValidationIssue } from "@contraponha/types"
 
 export interface ErrorMessageParams {
   error: unknown

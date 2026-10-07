@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactionKind, type ReactionCounts } from "@ponto/types"
+import { ReactionKind, type ReactionCounts } from "@contraponha/types"
 import { BookText, CircleCheck, Lightbulb, RefreshCw, type LucideIcon } from "lucide-react"
 
 import { useI18n } from "@/components/providers/i18n-provider"

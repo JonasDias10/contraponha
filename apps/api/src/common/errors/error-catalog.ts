@@ -1,6 +1,6 @@
 import { HttpStatus } from "@nestjs/common"
-import type { MessageKey } from "@ponto/i18n"
-import { ApiErrorCode } from "@ponto/types"
+import type { MessageKey } from "@contraponha/i18n"
+import { ApiErrorCode } from "@contraponha/types"
 
 interface ErrorDefinition {
   status: HttpStatus

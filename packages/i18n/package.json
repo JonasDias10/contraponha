@@ -1,5 +1,5 @@
 {
-  "name": "@ponto/i18n",
+  "name": "@contraponha/i18n",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -22,7 +22,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@ponto/tsconfig": "workspace:*",
+    "@contraponha/tsconfig": "workspace:*",
     "typescript": "~6.0.3",
     "vitest": "^5.0.3"
   }

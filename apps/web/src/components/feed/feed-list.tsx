@@ -1,6 +1,6 @@
 "use client"
 
-import type { FeedItem, Page } from "@ponto/types"
+import type { FeedItem, Page } from "@contraponha/types"
 import { useInfiniteQuery, type QueryKey } from "@tanstack/react-query"
 import { WifiOff } from "lucide-react"
 

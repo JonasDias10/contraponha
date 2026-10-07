@@ -16,7 +16,7 @@ export const REDIS = Symbol("REDIS")
         const logger = new Logger("Redis")
 
         const client = new Redis(config.redis.url, {
-          connectionName: "ponto-api",
+          connectionName: "contraponha-api",
           maxRetriesPerRequest: 2,
           commandTimeout: REDIS_COMMAND_TIMEOUT_MS,
         })

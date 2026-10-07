@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core"
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { EnvValidationError } from "@ponto/config"
+import { EnvValidationError } from "@contraponha/config"
 
 import { AppModule } from "./app.module.js"
 import { configureApp } from "./app.setup.js"

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { reactions, type Database, type DatabaseExecutor } from "@ponto/database"
-import { ReactionTargetType, type ReactionKind } from "@ponto/types"
+import { reactions, type Database, type DatabaseExecutor } from "@contraponha/database"
+import { ReactionTargetType, type ReactionKind } from "@contraponha/types"
 import { and, count, eq, inArray, sql, type SQL } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

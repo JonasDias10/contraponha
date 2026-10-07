@@ -1,4 +1,4 @@
-import { PAGE_SIZE_MAX } from "@ponto/validation"
+import { PAGE_SIZE_MAX } from "@contraponha/validation"
 
 // Quality signals only: there is no agreement reaction, and popularity (followers, views)
 // plays no part, so a well-argued post most people disagree with can still be recommended.

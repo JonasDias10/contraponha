@@ -4,7 +4,7 @@ import {
   type CommunityRuleValue,
   type Database,
   type DatabaseExecutor,
-} from "@ponto/database"
+} from "@contraponha/database"
 import {
   ApiErrorCode,
   ModerationActionType,
@@ -16,7 +16,7 @@ import {
   type Page,
   type ReportStatus,
   type ReportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { toSourceValues, toSourceViews, type SourceInput } from "#src/common/content/sources.js"

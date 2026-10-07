@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { passwordCredentials, type Database, type DatabaseExecutor } from "@ponto/database"
+import { passwordCredentials, type Database, type DatabaseExecutor } from "@contraponha/database"
 import { eq } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

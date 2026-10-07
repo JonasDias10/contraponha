@@ -1,8 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { MessageKey } from "@ponto/i18n"
-import { registerInputSchema } from "@ponto/validation"
+import type { MessageKey } from "@contraponha/i18n"
+import { registerInputSchema } from "@contraponha/validation"
 import { Mail } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"

@@ -1,6 +1,11 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { createDatabaseConnection, passwordCredentials, sessions, users } from "@ponto/database"
-import { sessionListSchema } from "@ponto/validation"
+import {
+  createDatabaseConnection,
+  passwordCredentials,
+  sessions,
+  users,
+} from "@contraponha/database"
+import { sessionListSchema } from "@contraponha/validation"
 import { eq } from "drizzle-orm"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest"
@@ -44,7 +49,7 @@ describe("auth", () => {
 
       const email = emails.lastTo(input.email)
 
-      expect(email?.subject).toBe("Confirme seu e-mail no Ponto")
+      expect(email?.subject).toBe("Confirme seu e-mail no Contraponha")
 
       expect(email?.text).toContain("http://localhost:3001/verify-email?token=")
     })
@@ -60,7 +65,7 @@ describe("auth", () => {
 
       expect(response.body.user.locale).toBe("en")
 
-      expect(emails.lastTo(input.email)?.subject).toBe("Confirm your email on Ponto")
+      expect(emails.lastTo(input.email)?.subject).toBe("Confirm your email on Contraponha")
     })
 
     it("normalizes email and handle before checking uniqueness", async () => {
@@ -219,7 +224,7 @@ describe("auth", () => {
       const listResponse = await request(server)
         .get("/api/v1/auth/sessions")
         .set(bearer(auth.session.token))
-        .set("User-Agent", "PontoTest/1.0")
+        .set("User-Agent", "ContraponhaTest/1.0")
         .expect(200)
 
       const { sessions: listed } = sessionListSchema.parse(listResponse.body)

@@ -1,5 +1,5 @@
 {
-  "name": "@ponto/mobile",
+  "name": "@contraponha/mobile",
   "version": "0.0.0",
   "private": true,
   "main": "expo-router/entry",
@@ -14,9 +14,9 @@
     "clean": "rm -rf build .expo .turbo"
   },
   "dependencies": {
-    "@ponto/api-client": "workspace:*",
-    "@ponto/config": "workspace:*",
-    "@ponto/i18n": "workspace:*",
+    "@contraponha/api-client": "workspace:*",
+    "@contraponha/config": "workspace:*",
+    "@contraponha/i18n": "workspace:*",
     "expo": "~57.0.26",
     "expo-constants": "~57.0.20",
     "expo-linking": "~57.0.11",
@@ -30,7 +30,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@ponto/tsconfig": "workspace:*",
+    "@contraponha/tsconfig": "workspace:*",
     "@types/react": "~19.2.18",
     "typescript": "~6.0.3"
   }

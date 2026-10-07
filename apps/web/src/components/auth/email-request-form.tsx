@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { requestMagicLinkInputSchema, type RequestMagicLinkInput } from "@ponto/validation"
+import { requestMagicLinkInputSchema, type RequestMagicLinkInput } from "@contraponha/validation"
 import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 

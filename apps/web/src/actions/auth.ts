@@ -1,7 +1,7 @@
 "use server"
 
-import { ApiError } from "@ponto/api-client"
-import type { AuthResponse, ValidationIssue } from "@ponto/types"
+import { ApiError } from "@contraponha/api-client"
+import type { AuthResponse, ValidationIssue } from "@contraponha/types"
 import {
   confirmMagicLinkInputSchema,
   loginInputSchema,
@@ -9,7 +9,7 @@ import {
   type ConfirmMagicLinkInput,
   type LoginInput,
   type RegisterInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import { redirect } from "next/navigation"
 
 import { createServerApiClient } from "@/lib/api"

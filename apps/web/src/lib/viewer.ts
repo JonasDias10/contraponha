@@ -1,7 +1,7 @@
 import "server-only"
 
-import { ApiError } from "@ponto/api-client"
-import type { PrivateProfile } from "@ponto/types"
+import { ApiError } from "@contraponha/api-client"
+import type { PrivateProfile } from "@contraponha/types"
 import { redirect } from "next/navigation"
 import { cache } from "react"
 

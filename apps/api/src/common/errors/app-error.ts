@@ -1,4 +1,4 @@
-import type { ApiErrorCode } from "@ponto/types"
+import type { ApiErrorCode } from "@contraponha/types"
 
 import { ERROR_CATALOG } from "./error-catalog.js"
 

@@ -1,6 +1,6 @@
-# Ponto
+# Contraponha
 
-O Ponto é uma plataforma social brasileira feita para conversas que valem a pena. Em vez de otimizar o tempo de tela ou a quantidade de curtidas, o Ponto quer dar visibilidade a conteúdo relevante, bons argumentos e contribuições que fazem uma discussão avançar.
+O Contraponha é uma plataforma social brasileira feita para conversas que valem a pena. Em vez de otimizar o tempo de tela ou a quantidade de curtidas, o Contraponha quer dar visibilidade a conteúdo relevante, bons argumentos e contribuições que fazem uma discussão avançar.
 
 Este repositório contém a fundação técnica do produto: a API, o app web, o app mobile (iOS e Android), os pacotes compartilhados e a infraestrutura de desenvolvimento.
 
@@ -39,7 +39,7 @@ Este repositório contém a fundação técnica do produto: a API, o app web, o 
             ┌──────────────── clientes ──────────────┐
             │   apps/web (Next.js)  apps/mobile (Expo)│
             └──────────────┬─────────────────────────┘
-                           │ @ponto/api-client (HTTP tipado)
+                           │ @contraponha/api-client (HTTP tipado)
                            ▼
 ┌──────────────────────── apps/api (NestJS) ────────────────────────┐
 │  /api/v1/...                                                      │
@@ -47,7 +47,7 @@ Este repositório contém a fundação técnica do produto: a API, o app web, o 
 │  modules/ (auth, users, posts, feed, search, moderation...)       │
 │  infrastructure/ (PostgreSQL, Redis, e-mail, storage S3)          │
 └───────────────────────────────────────────────────────────────────┘
-        compartilhados: @ponto/types · @ponto/validation · @ponto/i18n · @ponto/config
+        compartilhados: @contraponha/types · @contraponha/validation · @contraponha/i18n · @contraponha/config
 ```
 
 A API é um **monolito modular**: um único deploy, dividido em módulos de domínio com fronteiras explícitas. Detalhes e justificativas em [docs/architecture/overview.md](docs/architecture/overview.md).
@@ -91,7 +91,7 @@ Com tudo no ar:
 - Readiness (PostgreSQL + Redis): <http://localhost:3000/api/v1/health/ready>
 - Documentação OpenAPI: <http://localhost:3000/api/docs>
 - E-mails enviados em desenvolvimento (Mailpit): <http://localhost:8025>
-- Console do storage de mídia (RustFS, `ponto` / `ponto-local-secret`): <http://localhost:9001>
+- Console do storage de mídia (RustFS, `contraponha` / `contraponha-local-secret`): <http://localhost:9001>
 
 O passo a passo completo, com solução de problemas, está em [docs/development/setup.md](docs/development/setup.md).
 
@@ -110,31 +110,31 @@ Segredos nunca são versionados. O arquivo `.env` está no `.gitignore`.
 
 Todos os comandos rodam a partir da raiz.
 
-| Comando                      | O que faz                                                                           |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
-| `pnpm dev`                   | Sobe API e web em modo watch (compila os pacotes antes)                             |
-| `pnpm dev:api`               | Só a API                                                                            |
-| `pnpm dev:web`               | Só o web (porta 3001)                                                               |
-| `pnpm dev:mobile`            | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                                 |
-| `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                    |
-| `pnpm test`                  | Testes unitários (não precisam de Docker)                                           |
-| `pnpm test:e2e`              | Testes de integração da API contra PostgreSQL, Redis e storage reais (`ponto_test`) |
-| `pnpm lint`                  | ESLint com regras que usam informação de tipos                                      |
-| `pnpm lint:fix`              | ESLint corrigindo automaticamente o que for possível                                |
-| `pnpm typecheck`             | Verificação de tipos em todo o monorepo                                             |
-| `pnpm format`                | Formata o código com Prettier                                                       |
-| `pnpm format:check`          | Verifica a formatação (usado no CI)                                                 |
-| `pnpm db:generate`           | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                     |
-| `pnpm db:migrate`            | Aplica as migrations pendentes                                                      |
-| `pnpm db:studio`             | Abre o Drizzle Studio                                                               |
-| `pnpm db:reconcile-counters` | Recalcula contadores denormalizados a partir das linhas de origem                   |
-| `pnpm users:set-role`        | Altera o papel de alguém (`--handle maria --role admin`), ex.: o primeiro admin     |
-| `pnpm clean`                 | Remove artefatos de build e cache                                                   |
+| Comando                      | O que faz                                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------------------------- |
+| `pnpm dev`                   | Sobe API e web em modo watch (compila os pacotes antes)                                   |
+| `pnpm dev:api`               | Só a API                                                                                  |
+| `pnpm dev:web`               | Só o web (porta 3001)                                                                     |
+| `pnpm dev:mobile`            | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                                       |
+| `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                          |
+| `pnpm test`                  | Testes unitários (não precisam de Docker)                                                 |
+| `pnpm test:e2e`              | Testes de integração da API contra PostgreSQL, Redis e storage reais (`contraponha_test`) |
+| `pnpm lint`                  | ESLint com regras que usam informação de tipos                                            |
+| `pnpm lint:fix`              | ESLint corrigindo automaticamente o que for possível                                      |
+| `pnpm typecheck`             | Verificação de tipos em todo o monorepo                                                   |
+| `pnpm format`                | Formata o código com Prettier                                                             |
+| `pnpm format:check`          | Verifica a formatação (usado no CI)                                                       |
+| `pnpm db:generate`           | Gera uma migration a partir do schema Drizzle (`--name <nome>`)                           |
+| `pnpm db:migrate`            | Aplica as migrations pendentes                                                            |
+| `pnpm db:studio`             | Abre o Drizzle Studio                                                                     |
+| `pnpm db:reconcile-counters` | Recalcula contadores denormalizados a partir das linhas de origem                         |
+| `pnpm users:set-role`        | Altera o papel de alguém (`--handle maria --role admin`), ex.: o primeiro admin           |
+| `pnpm clean`                 | Remove artefatos de build e cache                                                         |
 
 ## Estrutura do monorepo
 
 ```text
-ponto/
+contraponha/
 ├── apps/
 │   ├── api/                  API NestJS
 │   ├── mobile/               App iOS/Android (Expo)

@@ -1,6 +1,6 @@
 # Visão geral da arquitetura
 
-Este documento registra as decisões estruturais do Ponto e o motivo de cada uma. Quando uma decisão mudar, atualize este arquivo no mesmo PR.
+Este documento registra as decisões estruturais do Contraponha e o motivo de cada uma. Quando uma decisão mudar, atualize este arquivo no mesmo PR.
 
 ## Princípios
 
@@ -16,12 +16,12 @@ A coluna da esquerda guia as decisões de hoje. A da direita não é ignorada: n
 
 ## Por que monorepo
 
-O Ponto terá API, web e apps iOS/Android, e todos falam o mesmo "idioma" de contrato: tipos de resposta, códigos de erro, regras de validação e mensagens traduzidas. Em repositórios separados, esses contratos viram cópias que divergem com o tempo.
+O Contraponha terá API, web e apps iOS/Android, e todos falam o mesmo "idioma" de contrato: tipos de resposta, códigos de erro, regras de validação e mensagens traduzidas. Em repositórios separados, esses contratos viram cópias que divergem com o tempo.
 
 No monorepo:
 
 - Uma mudança de contrato (por exemplo, um novo campo obrigatório) aparece no mesmo PR para API e clientes, e o `typecheck` acusa quem ficou para trás.
-- Pacotes compartilhados (`@ponto/types`, `@ponto/validation`, `@ponto/i18n`) são consumidos via `workspace:*`, sem publicar versões em registry.
+- Pacotes compartilhados (`@contraponha/types`, `@contraponha/validation`, `@contraponha/i18n`) são consumidos via `workspace:*`, sem publicar versões em registry.
 - O Turborepo executa só o que foi afetado e guarda cache de build, lint e testes.
 
 **pnpm** foi escolhido por instalar dependências de forma estrita (um pacote só enxerga o que declara) e pelo suporte nativo a workspaces.
@@ -70,16 +70,16 @@ Nesta etapa existe apenas o cliente configurado, com encerramento gracioso e ver
 
 ## Pacotes compartilhados
 
-| Pacote                 | Responsabilidade                                                                                                              | Quem consome                    |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `@ponto/types`         | Tipos de contrato (envelope de erro, códigos, relatórios de health)                                                           | todos                           |
-| `@ponto/validation`    | Schemas Zod dos contratos e utilitários de validação                                                                          | API, api-client, apps           |
-| `@ponto/i18n`          | Idiomas suportados, catálogos, negociação de idioma, `t()`                                                                    | API, apps                       |
-| `@ponto/config`        | Constantes HTTP globais (prefixo, versão, header de request id), parser de env, conversões de tempo e durações compartilhadas | API, api-client, database, apps |
-| `@ponto/api-client`    | Cliente HTTP tipado da API                                                                                                    | web, mobile                     |
-| `@ponto/database`      | Conexão, schema e migrations                                                                                                  | somente a API                   |
-| `@ponto/tsconfig`      | Bases de configuração do TypeScript                                                                                           | todos                           |
-| `@ponto/eslint-config` | Regras de lint                                                                                                                | todos                           |
+| Pacote                       | Responsabilidade                                                                                                              | Quem consome                    |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `@contraponha/types`         | Tipos de contrato (envelope de erro, códigos, relatórios de health)                                                           | todos                           |
+| `@contraponha/validation`    | Schemas Zod dos contratos e utilitários de validação                                                                          | API, api-client, apps           |
+| `@contraponha/i18n`          | Idiomas suportados, catálogos, negociação de idioma, `t()`                                                                    | API, apps                       |
+| `@contraponha/config`        | Constantes HTTP globais (prefixo, versão, header de request id), parser de env, conversões de tempo e durações compartilhadas | API, api-client, database, apps |
+| `@contraponha/api-client`    | Cliente HTTP tipado da API                                                                                                    | web, mobile                     |
+| `@contraponha/database`      | Conexão, schema e migrations                                                                                                  | somente a API                   |
+| `@contraponha/tsconfig`      | Bases de configuração do TypeScript                                                                                           | todos                           |
+| `@contraponha/eslint-config` | Regras de lint                                                                                                                | todos                           |
 
 Regras para manter os pacotes saudáveis:
 
@@ -102,18 +102,18 @@ apps/
 - **Web com Next.js** porque posts e perfis públicos precisam ser indexáveis por buscadores e gerar preview quando um link é compartilhado. Isso exige renderização no servidor.
 - **Mobile com Expo** porque é o caminho recomendado pelo próprio React Native: builds iOS/Android na nuvem (EAS), atualizações over-the-air e projetos nativos gerados sob demanda (`ios/` e `android/` não são versionados).
 
-Os dois apps importam o mesmo cliente (`@ponto/api-client`, que valida as respostas com os schemas de `@ponto/validation`), os mesmos catálogos de tradução (`@ponto/i18n`) e o mesmo parser de env (`@ponto/config`). A única lógica de rede que cada app tem é a criação do cliente com a URL da API. Detalhes em [frontends.md](frontends.md).
+Os dois apps importam o mesmo cliente (`@contraponha/api-client`, que valida as respostas com os schemas de `@contraponha/validation`), os mesmos catálogos de tradução (`@contraponha/i18n`) e o mesmo parser de env (`@contraponha/config`). A única lógica de rede que cada app tem é a criação do cliente com a URL da API. Detalhes em [frontends.md](frontends.md).
 
 Para adicionar outro app (um painel administrativo, por exemplo):
 
 1. Criar `apps/<nome>` com `package.json` próprio. O `pnpm-workspace.yaml` já inclui `apps/*`.
 2. Depender dos pacotes compartilhados via `workspace:*`.
-3. Estender a base de `@ponto/tsconfig` adequada e uma das configs de `@ponto/eslint-config` (`nodeConfig`, `reactConfig` ou `nextConfig`).
+3. Estender a base de `@contraponha/tsconfig` adequada e uma das configs de `@contraponha/eslint-config` (`nodeConfig`, `reactConfig` ou `nextConfig`).
 4. Definir as tarefas `build`, `dev`, `lint`, `typecheck` e `test`. O `turbo.json` não precisa mudar.
 
 ## LGPD e privacidade
 
-O Ponto tratará dados pessoais de brasileiros, então a LGPD orienta a arquitetura desde o início. Nesta etapa nada disso está implementado, mas as decisões abaixo evitam bloqueios futuros:
+O Contraponha tratará dados pessoais de brasileiros, então a LGPD orienta a arquitetura desde o início. Nesta etapa nada disso está implementado, mas as decisões abaixo evitam bloqueios futuros:
 
 | Requisito                           | Preparação atual / plano                                                                                                                                                                                                   |
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

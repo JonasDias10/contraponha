@@ -51,7 +51,7 @@ O custo é uma consulta por requisição autenticada, absorvido pelo cache no Re
 
 A API aceita somente Bearer. Isso elimina CSRF na API (navegadores não enviam o header sozinhos) e funciona igual para web e mobile.
 
-- **Mobile** guarda o token em armazenamento seguro do sistema (Keychain/Keystore, via `expo-secure-store`) e o envia com `getSessionToken` do `@ponto/api-client`.
+- **Mobile** guarda o token em armazenamento seguro do sistema (Keychain/Keystore, via `expo-secure-store`) e o envia com `getSessionToken` do `@contraponha/api-client`.
 - **Web** usa o servidor do Next.js como intermediário: o login acontece numa Server Action, o token vai para um cookie `httpOnly`, `Secure`, `SameSite=Lax` **no domínio do web**, e os server components o repassam como Bearer para a API. O JavaScript do navegador nunca vê o token. As Server Actions do Next já verificam a origem das requisições.
 
 ## Rotas

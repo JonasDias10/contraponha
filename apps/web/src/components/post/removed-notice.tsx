@@ -1,6 +1,6 @@
 "use client"
 
-import type { CommunityRule, ContentRemoval } from "@ponto/types"
+import type { CommunityRule, ContentRemoval } from "@contraponha/types"
 import { ShieldAlert } from "lucide-react"
 import Link from "next/link"
 

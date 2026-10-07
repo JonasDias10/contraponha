@@ -1,11 +1,11 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import type { PublicProfile } from "@ponto/types"
+import type { PublicProfile } from "@contraponha/types"
 import {
   followedAmongSchema,
   followStatusSchema,
   profilePageSchema,
   publicProfileSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

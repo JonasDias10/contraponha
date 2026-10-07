@@ -1,4 +1,4 @@
-import type { CommentView, ContentRevisionList, ContributionView, Page } from "@ponto/types"
+import type { CommentView, ContentRevisionList, ContributionView, Page } from "@contraponha/types"
 import {
   commentPageSchema,
   commentViewSchema,
@@ -9,7 +9,7 @@ import {
   type HighlightCommentInput,
   type PaginationQuery,
   type UpdateCommentInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
 

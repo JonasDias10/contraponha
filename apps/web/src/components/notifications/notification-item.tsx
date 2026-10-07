@@ -1,6 +1,6 @@
 "use client"
 
-import type { NotificationView } from "@ponto/types"
+import type { NotificationView } from "@contraponha/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { BookText, MessageSquare, ShieldCheck, Star } from "lucide-react"
 import Link from "next/link"

@@ -1,4 +1,4 @@
-import { createTranslator, negotiateLocale, type LocaleTranslator } from "@ponto/i18n"
+import { createTranslator, negotiateLocale, type LocaleTranslator } from "@contraponha/i18n"
 import { useLocales } from "expo-localization"
 
 export function useTranslator(): LocaleTranslator {

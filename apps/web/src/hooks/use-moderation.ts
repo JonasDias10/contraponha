@@ -1,7 +1,7 @@
 "use client"
 
-import type { CommunityRule } from "@ponto/types"
-import type { ContextNoteInput } from "@ponto/validation"
+import type { CommunityRule } from "@contraponha/types"
+import type { ContextNoteInput } from "@contraponha/validation"
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query"
 import { toast } from "sonner"
 

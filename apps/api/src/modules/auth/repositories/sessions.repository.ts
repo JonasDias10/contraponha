@@ -1,5 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { sessions, type Database, type DatabaseExecutor, type SessionRow } from "@ponto/database"
+import {
+  sessions,
+  type Database,
+  type DatabaseExecutor,
+  type SessionRow,
+} from "@contraponha/database"
 import { and, desc, eq, gt, isNull, ne, type SQL } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

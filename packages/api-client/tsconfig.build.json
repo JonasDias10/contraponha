@@ -1,5 +1,5 @@
 {
-  "extends": "@ponto/tsconfig/library.json",
+  "extends": "@contraponha/tsconfig/library.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "build"

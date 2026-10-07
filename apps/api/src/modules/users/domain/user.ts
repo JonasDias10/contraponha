@@ -1,6 +1,6 @@
-import { isLocale, DEFAULT_LOCALE, type Locale } from "@ponto/i18n"
-import type { UserRow } from "@ponto/database"
-import type { PrivateProfile, PublicProfile } from "@ponto/types"
+import { isLocale, DEFAULT_LOCALE, type Locale } from "@contraponha/i18n"
+import type { UserRow } from "@contraponha/database"
+import type { PrivateProfile, PublicProfile } from "@contraponha/types"
 
 export type User = UserRow
 
@@ -14,7 +14,7 @@ const RESERVED_HANDLES: ReadonlySet<string> = new Set([
   "logout",
   "me",
   "moderation",
-  "ponto",
+  "contraponha",
   "privacy",
   "register",
   "root",

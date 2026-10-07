@@ -1,12 +1,12 @@
 import { Controller, Get, Param } from "@nestjs/common"
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import type { FollowedByPreview, ProfileView, SuggestedPeople } from "@ponto/types"
+import type { FollowedByPreview, ProfileView, SuggestedPeople } from "@contraponha/types"
 import {
   followedByPreviewSchema,
   handleSchema,
   profileViewSchema,
   suggestedPeopleSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"

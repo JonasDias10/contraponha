@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto"
 
-import { createDatabaseConnection, users } from "@ponto/database"
-import type { AuthResponse, UserRole } from "@ponto/types"
-import { authResponseSchema } from "@ponto/validation"
+import { createDatabaseConnection, users } from "@contraponha/database"
+import type { AuthResponse, UserRole } from "@contraponha/types"
+import { authResponseSchema } from "@contraponha/validation"
 import { eq } from "drizzle-orm"
 import request from "supertest"
 import { inject } from "vitest"

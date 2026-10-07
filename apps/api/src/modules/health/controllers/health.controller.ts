@@ -6,12 +6,12 @@ import {
   ApiTags,
 } from "@nestjs/swagger"
 import { SkipThrottle } from "@nestjs/throttler"
-import type { LivenessReport, ReadinessReport } from "@ponto/types"
+import type { LivenessReport, ReadinessReport } from "@contraponha/types"
 import {
   apiErrorResponseSchema,
   livenessReportSchema,
   readinessReportSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { Public } from "#src/common/auth/public.decorator.js"
 import { toOpenApiSchema } from "#src/common/openapi/swagger.js"

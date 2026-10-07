@@ -7,7 +7,7 @@ import type {
   SearchPeriod,
   SearchSort,
   TopicList,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"

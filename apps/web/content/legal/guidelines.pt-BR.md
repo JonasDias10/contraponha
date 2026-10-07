@@ -1,6 +1,6 @@
 # Diretrizes da comunidade
 
-O Ponto existe para conversas que fazem a discussão avançar. Discordar é bem-vindo; atacar pessoas, não. Estas diretrizes dizem o que esperamos de quem participa e quais regras a moderação aplica. Toda remoção cita a regra usada, e a pessoa afetada sempre recebe a decisão.
+O Contraponha existe para conversas que fazem a discussão avançar. Discordar é bem-vindo; atacar pessoas, não. Estas diretrizes dizem o que esperamos de quem participa e quais regras a moderação aplica. Toda remoção cita a regra usada, e a pessoa afetada sempre recebe a decisão.
 
 ## O espírito
 
@@ -45,7 +45,7 @@ Não publique dados pessoais de terceiros sem autorização, como endereço, tel
 
 ### Conteúdo ilegal {#illegal_content}
 
-Não use o Ponto para atividades ilegais segundo a lei brasileira, incluindo venda de produtos proibidos e violação de direitos autorais.
+Não use o Contraponha para atividades ilegais segundo a lei brasileira, incluindo venda de produtos proibidos e violação de direitos autorais.
 
 ### Falsa identidade {#impersonation}
 

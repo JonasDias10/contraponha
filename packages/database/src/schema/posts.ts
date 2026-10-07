@@ -1,4 +1,4 @@
-import { POST_BODY_MAX_LENGTH, POST_TITLE_MAX_LENGTH } from "@ponto/config"
+import { POST_BODY_MAX_LENGTH, POST_TITLE_MAX_LENGTH } from "@contraponha/config"
 import { sql, type SQL } from "drizzle-orm"
 import {
   check,

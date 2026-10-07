@@ -1,6 +1,6 @@
-import { API_BASE_PATH } from "@ponto/config"
-import type { Locale } from "@ponto/i18n"
-import { apiErrorResponseSchema } from "@ponto/validation"
+import { API_BASE_PATH } from "@contraponha/config"
+import type { Locale } from "@contraponha/i18n"
+import { apiErrorResponseSchema } from "@contraponha/validation"
 import { z } from "zod"
 
 import { ApiError, ApiResponseFormatError } from "./errors.js"

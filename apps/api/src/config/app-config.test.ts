@@ -1,18 +1,18 @@
-import { daysToMs, EnvValidationError } from "@ponto/config"
+import { daysToMs, EnvValidationError } from "@contraponha/config"
 import { describe, expect, it } from "vitest"
 
 import { loadAppConfig } from "./app-config.js"
 
 const requiredEnv = {
-  DATABASE_URL: "postgres://ponto:ponto@localhost:5432/ponto",
+  DATABASE_URL: "postgres://contraponha:contraponha@localhost:5432/contraponha",
   REDIS_URL: "redis://localhost:6379",
   WEB_APP_URL: "http://localhost:3001/",
   SMTP_HOST: "localhost",
-  EMAIL_FROM: "Ponto <no-reply@ponto.test>",
-  STORAGE_BUCKET: "ponto-media",
+  EMAIL_FROM: "Contraponha <no-reply@contraponha.test>",
+  STORAGE_BUCKET: "contraponha-media",
   STORAGE_ACCESS_KEY_ID: "key",
   STORAGE_SECRET_ACCESS_KEY: "secret",
-  MEDIA_PUBLIC_BASE_URL: "http://localhost:9000/ponto-media/",
+  MEDIA_PUBLIC_BASE_URL: "http://localhost:9000/contraponha-media/",
 }
 
 describe("loadAppConfig", () => {
@@ -35,7 +35,7 @@ describe("loadAppConfig", () => {
 
     expect(config.auth.sessionTtlMs).toBe(daysToMs(30))
 
-    expect(config.media.publicBaseUrl).toBe("http://localhost:9000/ponto-media")
+    expect(config.media.publicBaseUrl).toBe("http://localhost:9000/contraponha-media")
   })
 
   it("disables developer conveniences in production unless explicitly enabled", () => {

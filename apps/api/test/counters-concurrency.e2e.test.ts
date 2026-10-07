@@ -1,6 +1,6 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
 import { sql } from "drizzle-orm"
-import { REACTIONS_PER_TARGET_MAX } from "@ponto/config"
+import { REACTIONS_PER_TARGET_MAX } from "@contraponha/config"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

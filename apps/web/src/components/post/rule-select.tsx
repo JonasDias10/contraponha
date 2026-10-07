@@ -1,6 +1,6 @@
 "use client"
 
-import { CommunityRule } from "@ponto/types"
+import { CommunityRule } from "@contraponha/types"
 
 import { useI18n } from "@/components/providers/i18n-provider"
 import { RadioGroup, RadioItem } from "@/components/ui/controls"

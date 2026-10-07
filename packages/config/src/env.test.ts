@@ -15,7 +15,7 @@ describe("parseEnv", () => {
     const env = parseEnv({
       schema,
       source: {
-        DATABASE_URL: "postgres://localhost:5432/ponto",
+        DATABASE_URL: "postgres://localhost:5432/contraponha",
         PORT: "4000",
         FEATURE_ENABLED: "true",
         ORIGINS: "https://a.example, https://b.example,",
@@ -23,7 +23,7 @@ describe("parseEnv", () => {
     })
 
     expect(env).toEqual({
-      DATABASE_URL: "postgres://localhost:5432/ponto",
+      DATABASE_URL: "postgres://localhost:5432/contraponha",
       PORT: 4000,
       FEATURE_ENABLED: true,
       ORIGINS: ["https://a.example", "https://b.example"],
@@ -33,7 +33,7 @@ describe("parseEnv", () => {
   it("treats empty strings as missing so defaults apply", () => {
     const env = parseEnv({
       schema,
-      source: { DATABASE_URL: "postgres://localhost/ponto", PORT: "" },
+      source: { DATABASE_URL: "postgres://localhost/contraponha", PORT: "" },
     })
 
     expect(env.PORT).toBe(3000)

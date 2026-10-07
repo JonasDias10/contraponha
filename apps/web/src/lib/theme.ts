@@ -1,4 +1,4 @@
-export const THEME_STORAGE_KEY = "ponto:theme"
+export const THEME_STORAGE_KEY = "contraponha:theme"
 
 export const THEMES = ["system", "light", "dark"] as const
 

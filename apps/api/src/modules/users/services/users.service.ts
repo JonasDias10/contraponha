@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common"
-import { LEGAL_DOCUMENT_VERSIONS, LEGAL_DOCUMENTS } from "@ponto/config"
+import { LEGAL_DOCUMENT_VERSIONS, LEGAL_DOCUMENTS } from "@contraponha/config"
 import {
   getUniqueViolationConstraint,
   USERS_EMAIL_UNIQUE,
   USERS_HANDLE_UNIQUE,
-} from "@ponto/database"
-import type { DatabaseExecutor } from "@ponto/database"
-import { ApiErrorCode } from "@ponto/types"
+} from "@contraponha/database"
+import type { DatabaseExecutor } from "@contraponha/database"
+import { ApiErrorCode } from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { isDeletedUser, isReservedHandle, type User } from "#src/modules/users/domain/user.js"

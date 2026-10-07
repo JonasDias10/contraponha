@@ -1,6 +1,6 @@
 "use client"
 
-import { POST_SOURCES_MAX } from "@ponto/config"
+import { POST_SOURCES_MAX } from "@contraponha/config"
 import { BookText, Plus, X } from "lucide-react"
 import { useFieldArray, type FieldErrors, type UseFormRegister } from "react-hook-form"
 

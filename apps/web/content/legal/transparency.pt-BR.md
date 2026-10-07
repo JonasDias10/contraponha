@@ -1,6 +1,6 @@
 # Transparência
 
-Este espaço reúne como tomamos decisões que afetam o que você vê e o que pode ser publicado no Ponto.
+Este espaço reúne como tomamos decisões que afetam o que você vê e o que pode ser publicado no Contraponha.
 
 ## O que publicamos
 

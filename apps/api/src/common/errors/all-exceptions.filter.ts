@@ -6,8 +6,8 @@ import {
   type ArgumentsHost,
   type ExceptionFilter,
 } from "@nestjs/common"
-import { createTranslator, negotiateLocale } from "@ponto/i18n"
-import { ApiErrorCode, type ApiErrorResponse } from "@ponto/types"
+import { createTranslator, negotiateLocale } from "@contraponha/i18n"
+import { ApiErrorCode, type ApiErrorResponse } from "@contraponha/types"
 import type { Request, Response } from "express"
 
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"

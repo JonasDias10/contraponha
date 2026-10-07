@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common"
-import { consents, type DatabaseExecutor, type LegalDocumentValue } from "@ponto/database"
+import { consents, type DatabaseExecutor, type LegalDocumentValue } from "@contraponha/database"
 
 export interface ConsentData {
   document: LegalDocumentValue

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { users, type Database, type DatabaseExecutor, type NewUserRow } from "@ponto/database"
-import type { UserRole } from "@ponto/types"
+import { users, type Database, type DatabaseExecutor, type NewUserRow } from "@contraponha/database"
+import type { UserRole } from "@contraponha/types"
 import { and, eq, inArray, isNull, lte, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -162,7 +162,7 @@ export class UsersRepository {
     await executor
       .update(users)
       .set({
-        email: `deleted+${suffix}@ponto.invalid`,
+        email: `deleted+${suffix}@contraponha.invalid`,
         emailVerifiedAt: null,
         handle: `deleted_${suffix}`,
         displayName: "",

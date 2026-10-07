@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common"
-import { daysToMs, minutesToMs, msToSeconds } from "@ponto/config"
+import { daysToMs, minutesToMs, msToSeconds } from "@contraponha/config"
 import {
   ApiErrorCode,
   DataExportStatus,
@@ -8,7 +8,7 @@ import {
   type DataExportList,
   type DataExportSection,
   type DataExportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import {
@@ -83,7 +83,7 @@ export class DataExportsService {
 
     const url = await this.storage.createDownloadUrl({
       key: dataExport.storageKey,
-      fileName: `ponto-dados.${dataExport.format}`,
+      fileName: `contraponha-dados.${dataExport.format}`,
       expiresInSeconds: msToSeconds(ttlMs),
     })
 

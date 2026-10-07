@@ -1,4 +1,4 @@
-import { CONTENT_EDIT_WINDOW_MINUTES, minutesToMs } from "@ponto/config"
+import { CONTENT_EDIT_WINDOW_MINUTES, minutesToMs } from "@contraponha/config"
 import { describe, expect, it } from "vitest"
 
 import { isWithinEditWindow } from "./edit-window.js"

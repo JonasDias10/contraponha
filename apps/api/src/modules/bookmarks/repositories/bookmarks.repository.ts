@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { bookmarks, posts, type Database, type DatabaseExecutor } from "@ponto/database"
+import { bookmarks, posts, type Database, type DatabaseExecutor } from "@contraponha/database"
 import { and, desc, eq, isNull, lt, or, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

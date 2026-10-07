@@ -6,8 +6,8 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { BookmarkCount, Page, PostView } from "@ponto/types"
-import { bookmarkCountSchema, paginationQuerySchema, postPageSchema } from "@ponto/validation"
+import type { BookmarkCount, Page, PostView } from "@contraponha/types"
+import { bookmarkCountSchema, paginationQuerySchema, postPageSchema } from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

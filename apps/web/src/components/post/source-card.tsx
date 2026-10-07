@@ -1,4 +1,4 @@
-import type { ContentSource } from "@ponto/types"
+import type { ContentSource } from "@contraponha/types"
 import { BookText, ChevronRight } from "lucide-react"
 
 export interface SourceCardProps {

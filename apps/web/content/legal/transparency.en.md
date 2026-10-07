@@ -1,6 +1,6 @@
 # Transparency
 
-This page brings together how we make decisions that affect what you see and what can be published on Ponto.
+This page brings together how we make decisions that affect what you see and what can be published on Contraponha.
 
 ## What we publish
 

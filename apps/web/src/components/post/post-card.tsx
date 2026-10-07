@@ -1,6 +1,6 @@
 "use client"
 
-import type { FeedReason, PostView } from "@ponto/types"
+import type { FeedReason, PostView } from "@contraponha/types"
 import { History, Info, Pin } from "lucide-react"
 import Link from "next/link"
 

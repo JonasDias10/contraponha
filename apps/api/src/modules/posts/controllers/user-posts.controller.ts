@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query } from "@nestjs/common"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import type { Page, PostView } from "@ponto/types"
-import { handleSchema, paginationQuerySchema, postPageSchema } from "@ponto/validation"
+import type { Page, PostView } from "@contraponha/types"
+import { handleSchema, paginationQuerySchema, postPageSchema } from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"

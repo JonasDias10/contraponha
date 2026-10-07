@@ -1,6 +1,6 @@
 "use client"
 
-import { ReportStatus, type CommunityRule, type ReportView } from "@ponto/types"
+import { ReportStatus, type CommunityRule, type ReportView } from "@contraponha/types"
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Inbox } from "lucide-react"
 import Link from "next/link"

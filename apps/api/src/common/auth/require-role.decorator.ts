@@ -1,5 +1,5 @@
 import { SetMetadata } from "@nestjs/common"
-import type { UserRole } from "@ponto/types"
+import type { UserRole } from "@contraponha/types"
 
 export const REQUIRED_ROLE_KEY = "auth:requiredRole"
 

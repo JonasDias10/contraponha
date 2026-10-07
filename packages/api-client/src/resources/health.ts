@@ -1,5 +1,5 @@
-import type { LivenessReport, ReadinessReport } from "@ponto/types"
-import { livenessReportSchema, readinessReportSchema } from "@ponto/validation"
+import type { LivenessReport, ReadinessReport } from "@contraponha/types"
+import { livenessReportSchema, readinessReportSchema } from "@contraponha/validation"
 
 import type { HttpClient } from "../http.js"
 

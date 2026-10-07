@@ -1,6 +1,6 @@
 "use client"
 
-import type { CommentView } from "@ponto/types"
+import type { CommentView } from "@contraponha/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { ChevronDown } from "lucide-react"
 

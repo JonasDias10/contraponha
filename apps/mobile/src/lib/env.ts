@@ -1,4 +1,4 @@
-import { parseEnv } from "@ponto/config"
+import { parseEnv } from "@contraponha/config"
 import { z } from "zod"
 
 const mobileEnvSchema = z.object({

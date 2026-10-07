@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from "@nestjs/common"
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import type { FollowedAmong } from "@ponto/types"
-import { followedAmongQuerySchema, followedAmongSchema } from "@ponto/validation"
+import type { FollowedAmong } from "@contraponha/types"
+import { followedAmongQuerySchema, followedAmongSchema } from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

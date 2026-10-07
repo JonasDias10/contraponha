@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "Ponto",
-    "slug": "ponto",
-    "scheme": "ponto",
+    "name": "Contraponha",
+    "slug": "contraponha",
+    "scheme": "contraponha",
     "version": "0.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "app.ponto.mobile",
+      "bundleIdentifier": "app.contraponha.mobile",
       "supportsTablet": true
     },
     "android": {
-      "package": "app.ponto.mobile"
+      "package": "app.contraponha.mobile"
     },
     "plugins": ["expo-router", "expo-localization"],
     "experiments": {

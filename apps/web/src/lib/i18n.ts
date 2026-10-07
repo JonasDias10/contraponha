@@ -6,10 +6,10 @@ import {
   negotiateLocale,
   type Locale,
   type LocaleTranslator,
-} from "@ponto/i18n"
+} from "@contraponha/i18n"
 import { cookies, headers } from "next/headers"
 
-export const LOCALE_COOKIE = "ponto_locale"
+export const LOCALE_COOKIE = "contraponha_locale"
 
 // An explicit choice (language switcher or the account's language) wins over the browser's.
 export async function getRequestLocale(): Promise<Locale> {

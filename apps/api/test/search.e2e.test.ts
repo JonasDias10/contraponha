@@ -1,13 +1,13 @@
 import { randomBytes } from "node:crypto"
 
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { HIGHLIGHT_END, HIGHLIGHT_START } from "@ponto/types"
+import { HIGHLIGHT_END, HIGHLIGHT_START } from "@contraponha/types"
 import {
   contributionSearchPageSchema,
   postSearchPageSchema,
   profilePageSchema,
   topicListSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

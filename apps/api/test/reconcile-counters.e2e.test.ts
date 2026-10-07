@@ -1,5 +1,5 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { comments, posts, reconcileCounters, users } from "@ponto/database"
+import { comments, posts, reconcileCounters, users } from "@contraponha/database"
 import { eq } from "drizzle-orm"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"

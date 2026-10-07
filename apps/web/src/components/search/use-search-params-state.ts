@@ -1,7 +1,7 @@
 "use client"
 
-import { SEARCH_QUERY_MIN_LENGTH } from "@ponto/config"
-import { SearchPeriod, SearchSort } from "@ponto/types"
+import { SEARCH_QUERY_MIN_LENGTH } from "@contraponha/config"
+import { SearchPeriod, SearchSort } from "@contraponha/types"
 import type { Route } from "next"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 

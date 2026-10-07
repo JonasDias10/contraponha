@@ -6,8 +6,8 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { SessionListResponse } from "@ponto/types"
-import { sessionListSchema } from "@ponto/validation"
+import type { SessionListResponse } from "@contraponha/types"
+import { sessionListSchema } from "@contraponha/validation"
 import { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

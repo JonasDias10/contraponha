@@ -1,13 +1,13 @@
-name: ponto
+name: contraponha
 
 services:
   postgres:
     image: postgres:18-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-ponto}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ponto}
-      POSTGRES_DB: ${POSTGRES_DB:-ponto}
+      POSTGRES_USER: ${POSTGRES_USER:-contraponha}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-contraponha}
+      POSTGRES_DB: ${POSTGRES_DB:-contraponha}
       TZ: UTC
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -37,8 +37,8 @@ services:
     image: rustfs/rustfs:1.0.1
     restart: unless-stopped
     environment:
-      RUSTFS_ACCESS_KEY: ${STORAGE_ACCESS_KEY_ID:-ponto}
-      RUSTFS_SECRET_KEY: ${STORAGE_SECRET_ACCESS_KEY:-ponto-local-secret}
+      RUSTFS_ACCESS_KEY: ${STORAGE_ACCESS_KEY_ID:-contraponha}
+      RUSTFS_SECRET_KEY: ${STORAGE_SECRET_ACCESS_KEY:-contraponha-local-secret}
     ports:
       - "${STORAGE_PORT:-9000}:9000"
       - "${STORAGE_CONSOLE_PORT:-9001}:9001"

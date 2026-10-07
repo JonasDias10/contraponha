@@ -1,4 +1,4 @@
-import { HealthStatus, type DependencyHealth } from "@ponto/types"
+import { HealthStatus, type DependencyHealth } from "@contraponha/types"
 
 export interface ProbeDependencyParams {
   check: () => Promise<unknown>

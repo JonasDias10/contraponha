@@ -1,6 +1,6 @@
 "use client"
 
-import { MEDIA_ALLOWED_TYPES, MEDIA_MAX_BYTES, MEDIA_MAX_PER_POST } from "@ponto/config"
+import { MEDIA_ALLOWED_TYPES, MEDIA_MAX_BYTES, MEDIA_MAX_PER_POST } from "@contraponha/config"
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { toast } from "sonner"

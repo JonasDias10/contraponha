@@ -1,6 +1,6 @@
 "use client"
 
-import { SUPPORTED_LOCALES, type Locale } from "@ponto/i18n"
+import { SUPPORTED_LOCALES, type Locale } from "@contraponha/i18n"
 import { Globe, Monitor, Moon, Sun } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useTransition } from "react"

@@ -4,8 +4,8 @@ import {
   SOURCE_TITLE_MAX_LENGTH,
   SOURCE_URL_MAX_LENGTH,
   TOPIC_NAME_MAX_LENGTH,
-} from "@ponto/config"
-import { ReplyPolicy, type ContentSource } from "@ponto/types"
+} from "@contraponha/config"
+import { ReplyPolicy, type ContentSource } from "@contraponha/types"
 import { z } from "zod"
 
 // Only http(s) links: javascript:, data: and friends are refused by the protocol check.

@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common"
-import type { DatabaseExecutor, SessionRow } from "@ponto/database"
-import { ApiErrorCode, type IssuedSession, type SessionSummary } from "@ponto/types"
+import type { DatabaseExecutor, SessionRow } from "@contraponha/database"
+import { ApiErrorCode, type IssuedSession, type SessionSummary } from "@contraponha/types"
 
 import type { AuthContext } from "#src/common/auth/auth-context.js"
 import { AppError } from "#src/common/errors/app-error.js"

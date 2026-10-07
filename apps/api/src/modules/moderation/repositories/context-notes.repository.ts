@@ -4,7 +4,7 @@ import {
   type ContentSourceValue,
   type ContextNoteRow,
   type DatabaseExecutor,
-} from "@ponto/database"
+} from "@contraponha/database"
 import { and, eq, isNull } from "drizzle-orm"
 
 export interface ContextNoteData {

@@ -16,7 +16,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { CommentView, ContentRevisionList, Page } from "@ponto/types"
+import type { CommentView, ContentRevisionList, Page } from "@contraponha/types"
 import {
   commentPageSchema,
   commentViewSchema,
@@ -24,7 +24,7 @@ import {
   highlightCommentInputSchema,
   paginationQuerySchema,
   updateCommentInputSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"

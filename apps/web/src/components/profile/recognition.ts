@@ -1,5 +1,5 @@
-import type { Translate } from "@ponto/i18n"
-import type { Recognition } from "@ponto/types"
+import type { Translate } from "@contraponha/i18n"
+import type { Recognition } from "@contraponha/types"
 
 import { topicLabel } from "@/components/post/topic-tags"
 

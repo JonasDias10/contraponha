@@ -3,7 +3,7 @@ import "server-only"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 
-import { DEFAULT_LOCALE, type Locale } from "@ponto/i18n"
+import { DEFAULT_LOCALE, type Locale } from "@contraponha/i18n"
 
 export const LEGAL_PAGES = ["terms", "privacy", "guidelines", "about", "transparency"] as const
 

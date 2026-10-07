@@ -1,4 +1,4 @@
-import { minutesToMs, msToSeconds, secondsToMs } from "@ponto/config"
+import { minutesToMs, msToSeconds, secondsToMs } from "@contraponha/config"
 
 export const HEALTH_DEPENDENCY_TIMEOUT_MS = secondsToMs(2)
 export const REDIS_COMMAND_TIMEOUT_MS = secondsToMs(2)

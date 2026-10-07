@@ -1,12 +1,12 @@
 # Política de privacidad
 
-Esta es la política de privacidad de Ponto, escrita para ser leída. Explica qué datos personales tratamos, por qué, durante cuánto tiempo y cómo ejerces tus derechos previstos en la Ley General de Protección de Datos de Brasil (Ley n.º 13.709/2018, LGPD).
+Esta es la política de privacidad de Contraponha, escrita para ser leída. Explica qué datos personales tratamos, por qué, durante cuánto tiempo y cómo ejerces tus derechos previstos en la Ley General de Protección de Datos de Brasil (Ley n.º 13.709/2018, LGPD).
 
 Esta es una traducción. Si hay alguna diferencia, prevalece la versión en portugués.
 
 ## Quiénes somos
 
-Ponto es una red social brasileña. A efectos de la LGPD, somos el responsable de los datos personales tratados en el servicio. Para hablar con la persona encargada del tratamiento de datos, escribe a **[correo del encargado de datos]**.
+Contraponha es una red social brasileña. A efectos de la LGPD, somos el responsable de los datos personales tratados en el servicio. Para hablar con la persona encargada del tratamiento de datos, escribe a **[correo del encargado de datos]**.
 
 ## Qué recopilamos
 
@@ -58,7 +58,7 @@ Las contraseñas se guardan solo como hash (argon2id). Las sesiones se pueden ce
 
 ## Menores de edad
 
-Ponto es para personas de 16 años o más.
+Contraponha es para personas de 16 años o más.
 
 ## Cambios en esta política
 

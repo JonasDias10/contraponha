@@ -1,5 +1,5 @@
-import type { Locale, Translate } from "@ponto/i18n"
-import type { TopicView } from "@ponto/types"
+import type { Locale, Translate } from "@contraponha/i18n"
+import type { TopicView } from "@contraponha/types"
 
 import { formatCount } from "@/lib/format"
 

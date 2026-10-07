@@ -3,7 +3,7 @@ import {
   ReactionTargetType,
   type ReactionCounts,
   type ViewerReactionsResponse,
-} from "@ponto/types"
+} from "@contraponha/types"
 import { z } from "zod"
 
 export const VIEWER_REACTIONS_MAX_TARGETS = 100

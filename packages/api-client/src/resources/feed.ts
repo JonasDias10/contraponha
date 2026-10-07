@@ -1,5 +1,5 @@
-import type { DiscussionList, FeedItem, Page } from "@ponto/types"
-import { discussionListSchema, feedPageSchema, type PaginationQuery } from "@ponto/validation"
+import type { DiscussionList, FeedItem, Page } from "@contraponha/types"
+import { discussionListSchema, feedPageSchema, type PaginationQuery } from "@contraponha/validation"
 
 import { withQuery, type HttpClient } from "../http.js"
 

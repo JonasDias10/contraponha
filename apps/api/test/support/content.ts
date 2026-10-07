@@ -1,7 +1,12 @@
-import { minutesToMs } from "@ponto/config"
-import { comments, createDatabaseConnection, posts, type DatabaseConnection } from "@ponto/database"
-import type { CommentView, Page, PostView } from "@ponto/types"
-import { commentPageSchema, commentViewSchema, postViewSchema } from "@ponto/validation"
+import { minutesToMs } from "@contraponha/config"
+import {
+  comments,
+  createDatabaseConnection,
+  posts,
+  type DatabaseConnection,
+} from "@contraponha/database"
+import type { CommentView, Page, PostView } from "@contraponha/types"
+import { commentPageSchema, commentViewSchema, postViewSchema } from "@contraponha/validation"
 import { eq } from "drizzle-orm"
 import request from "supertest"
 import { inject } from "vitest"

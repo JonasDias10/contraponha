@@ -1,7 +1,7 @@
 "use client"
 
 import * as Popover from "@radix-ui/react-popover"
-import type { ProfileView } from "@ponto/types"
+import type { ProfileView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 import { CalendarDays, CircleCheck, Flag, Link2, MapPin, MoreHorizontal } from "lucide-react"
 import type { Route } from "next"

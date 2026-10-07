@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto"
 
-import { API_BASE_PATH, REQUEST_ID_HEADER } from "@ponto/config"
-import { isValidRequestId } from "@ponto/validation"
+import { API_BASE_PATH, REQUEST_ID_HEADER } from "@contraponha/config"
+import { isValidRequestId } from "@contraponha/validation"
 import type { Params } from "nestjs-pino"
 import { stdTimeFunctions } from "pino"
 
@@ -45,7 +45,7 @@ export function buildLoggerParams(config: AppConfig): Params {
   return {
     pinoHttp: {
       level: config.log.level,
-      base: { service: "ponto-api", env: config.nodeEnv },
+      base: { service: "contraponha-api", env: config.nodeEnv },
       timestamp: stdTimeFunctions.isoTime,
       formatters: { level: (label) => ({ level: label }) },
       redact: { paths: REDACTED_PATHS, censor: "[REDACTED]" },

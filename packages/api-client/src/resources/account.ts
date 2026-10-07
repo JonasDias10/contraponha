@@ -3,7 +3,7 @@ import type {
   DataExportDownload,
   DataExportList,
   DataExportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 import {
   accountDeletionStatusSchema,
   dataExportDownloadSchema,
@@ -11,7 +11,7 @@ import {
   dataExportViewSchema,
   type RequestDataExportInput,
   type ScheduleAccountDeletionInput,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 
 import { emptyResponseSchema, type HttpClient } from "../http.js"
 

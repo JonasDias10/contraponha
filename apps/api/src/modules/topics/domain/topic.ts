@@ -1,5 +1,5 @@
-import type { TopicRow } from "@ponto/database"
-import type { TopicSummary, TopicView } from "@ponto/types"
+import type { TopicRow } from "@contraponha/database"
+import type { TopicSummary, TopicView } from "@contraponha/types"
 
 export type Topic = TopicRow
 

@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common"
-import { getUniqueViolationConstraint } from "@ponto/database"
+import { getUniqueViolationConstraint } from "@contraponha/database"
 import {
   ApiErrorCode,
   ReportTargetType,
   type ReportReason,
   type ReportSubject,
   type ReportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { CommentsService } from "#src/modules/comments/services/comments.service.js"

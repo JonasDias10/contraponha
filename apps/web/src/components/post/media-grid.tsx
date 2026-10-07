@@ -1,4 +1,4 @@
-import type { MediaView } from "@ponto/types"
+import type { MediaView } from "@contraponha/types"
 
 import { cn } from "@/lib/cn"
 

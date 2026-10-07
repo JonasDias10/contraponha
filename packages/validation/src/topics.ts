@@ -1,4 +1,4 @@
-import type { TopicList, TopicSummary, TopicView } from "@ponto/types"
+import type { TopicList, TopicSummary, TopicView } from "@contraponha/types"
 import { z } from "zod"
 
 export const TOPIC_FOLLOWS_MAX_PER_REQUEST = 30

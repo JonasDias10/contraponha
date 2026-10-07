@@ -1,7 +1,7 @@
 "use client"
 
 import * as PopoverPrimitive from "@radix-ui/react-popover"
-import { httpUrlSchema } from "@ponto/validation"
+import { httpUrlSchema } from "@contraponha/validation"
 import type { Editor } from "@tiptap/react"
 import { Link2 } from "lucide-react"
 import { useState } from "react"

@@ -166,7 +166,7 @@ importers:
 
   .:
     devDependencies:
-      '@ponto/eslint-config':
+      '@contraponha/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
       eslint:
@@ -190,6 +190,21 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.1146.0
         version: 3.1146.0
+      '@contraponha/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@contraponha/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@contraponha/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@contraponha/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@contraponha/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       '@nestjs/common':
         specifier: ^12.1.2
         version: 12.1.2(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)
@@ -208,21 +223,6 @@ importers:
       '@node-rs/argon2':
         specifier: ^2.2.1
         version: 2.2.1
-      '@ponto/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@ponto/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      '@ponto/i18n':
-        specifier: workspace:*
-        version: link:../../packages/i18n
-      '@ponto/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@ponto/validation':
-        specifier: workspace:*
-        version: link:../../packages/validation
       drizzle-orm:
         specifier: ^0.45.3
         version: 0.45.3(@types/pg@8.23.1)(pg@8.23.1)
@@ -254,12 +254,12 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
+      '@contraponha/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       '@nestjs/testing':
         specifier: ^12.1.2
         version: 12.1.2(@nestjs/common@12.1.2(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.1.2)(@nestjs/platform-express@12.1.2)
-      '@ponto/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
       '@swc/core':
         specifier: ^1.16.13
         version: 1.16.13(@swc/helpers@0.5.23)
@@ -296,13 +296,13 @@ importers:
 
   apps/mobile:
     dependencies:
-      '@ponto/api-client':
+      '@contraponha/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@ponto/config':
+      '@contraponha/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@ponto/i18n':
+      '@contraponha/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
       expo:
@@ -339,7 +339,7 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@types/react':
@@ -351,24 +351,24 @@ importers:
 
   apps/web:
     dependencies:
-      '@hookform/resolvers':
-        specifier: ^5.9.1
-        version: 5.9.1(@sinclair/typebox@0.27.12)(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.2.18)(react@19.2.3))(zod@4.6.5)
-      '@ponto/api-client':
+      '@contraponha/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@ponto/config':
+      '@contraponha/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@ponto/i18n':
+      '@contraponha/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
-      '@ponto/types':
+      '@contraponha/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@ponto/validation':
+      '@contraponha/validation':
         specifier: workspace:*
         version: link:../../packages/validation
+      '@hookform/resolvers':
+        specifier: ^5.9.1
+        version: 5.9.1(@sinclair/typebox@0.27.12)(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.2.18)(react@19.2.3))(valibot@1.5.0(typescript@6.0.3))(zod@4.6.5)
       '@radix-ui/react-checkbox':
         specifier: ^1.3.11
         version: 1.3.11(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -457,7 +457,7 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@tailwindcss/postcss':
@@ -484,23 +484,23 @@ importers:
 
   packages/api-client:
     dependencies:
-      '@ponto/config':
+      '@contraponha/config':
         specifier: workspace:*
         version: link:../config
-      '@ponto/i18n':
+      '@contraponha/i18n':
         specifier: workspace:*
         version: link:../i18n
-      '@ponto/types':
+      '@contraponha/types':
         specifier: workspace:*
         version: link:../types
-      '@ponto/validation':
+      '@contraponha/validation':
         specifier: workspace:*
         version: link:../validation
       zod:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
@@ -516,7 +516,7 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
@@ -528,7 +528,7 @@ importers:
 
   packages/database:
     dependencies:
-      '@ponto/config':
+      '@contraponha/config':
         specifier: workspace:*
         version: link:../config
       drizzle-orm:
@@ -538,7 +538,7 @@ importers:
         specifier: ^8.23.1
         version: 8.23.1
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
@@ -592,7 +592,7 @@ importers:
 
   packages/i18n:
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
@@ -606,11 +606,11 @@ importers:
 
   packages/types:
     dependencies:
-      '@ponto/i18n':
+      '@contraponha/i18n':
         specifier: workspace:*
         version: link:../i18n
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
@@ -622,20 +622,20 @@ importers:
 
   packages/validation:
     dependencies:
-      '@ponto/config':
+      '@contraponha/config':
         specifier: workspace:*
         version: link:../config
-      '@ponto/i18n':
+      '@contraponha/i18n':
         specifier: workspace:*
         version: link:../i18n
-      '@ponto/types':
+      '@contraponha/types':
         specifier: workspace:*
         version: link:../types
       zod:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
-      '@ponto/tsconfig':
+      '@contraponha/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
@@ -8496,13 +8496,14 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@hookform/resolvers@5.9.1(@sinclair/typebox@0.27.12)(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.2.18)(react@19.2.3))(zod@4.6.5)':
+  '@hookform/resolvers@5.9.1(@sinclair/typebox@0.27.12)(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.2.18)(react@19.2.3))(valibot@1.5.0(typescript@6.0.3))(zod@4.6.5)':
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.89.0(@types/react@19.2.18)(react@19.2.3)
     optionalDependencies:
       '@sinclair/typebox': 0.27.12
       '@standard-schema/spec': 1.1.0
+      valibot: 1.5.0(typescript@6.0.3)
       zod: 4.6.5
 
   '@humanfs/core@0.19.2':

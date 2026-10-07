@@ -1,5 +1,5 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { livenessReportSchema, readinessReportSchema } from "@ponto/validation"
+import { livenessReportSchema, readinessReportSchema } from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

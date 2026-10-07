@@ -1,4 +1,4 @@
-import { daysToMs } from "@ponto/config"
+import { daysToMs } from "@contraponha/config"
 import { Inject, Injectable } from "@nestjs/common"
 import {
   follows,
@@ -8,7 +8,7 @@ import {
   topicFollows,
   topics,
   type Database,
-} from "@ponto/database"
+} from "@contraponha/database"
 import {
   and,
   desc,

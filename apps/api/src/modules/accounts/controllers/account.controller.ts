@@ -12,7 +12,7 @@ import type {
   DataExportDownload,
   DataExportList,
   DataExportView,
-} from "@ponto/types"
+} from "@contraponha/types"
 import {
   accountDeletionStatusSchema,
   dataExportDownloadSchema,
@@ -20,7 +20,7 @@ import {
   dataExportViewSchema,
   requestDataExportInputSchema,
   scheduleAccountDeletionInputSchema,
-} from "@ponto/validation"
+} from "@contraponha/validation"
 import type { z } from "zod"
 
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"

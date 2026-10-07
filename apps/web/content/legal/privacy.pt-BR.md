@@ -1,10 +1,10 @@
 # Política de privacidade
 
-Esta é a política de privacidade do Ponto, escrita para ser lida. Ela explica quais dados pessoais tratamos, por quê, por quanto tempo e como você exerce seus direitos previstos na Lei Geral de Proteção de Dados (Lei nº 13.709/2018, LGPD).
+Esta é a política de privacidade do Contraponha, escrita para ser lida. Ela explica quais dados pessoais tratamos, por quê, por quanto tempo e como você exerce seus direitos previstos na Lei Geral de Proteção de Dados (Lei nº 13.709/2018, LGPD).
 
 ## Quem somos
 
-O Ponto é uma rede social brasileira. Para os fins da LGPD, somos o controlador dos dados pessoais tratados no serviço. Para falar com a pessoa encarregada pelo tratamento de dados, escreva para **[e-mail do encarregado de dados]**.
+O Contraponha é uma rede social brasileira. Para os fins da LGPD, somos o controlador dos dados pessoais tratados no serviço. Para falar com a pessoa encarregada pelo tratamento de dados, escreva para **[e-mail do encarregado de dados]**.
 
 ## O que coletamos
 
@@ -56,7 +56,7 @@ Senhas são guardadas apenas como hash (argon2id). Sessões podem ser encerradas
 
 ## Menores de idade
 
-O Ponto é para pessoas com 16 anos ou mais.
+O Contraponha é para pessoas com 16 anos ou mais.
 
 ## Mudanças nesta política
 

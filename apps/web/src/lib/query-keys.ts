@@ -4,7 +4,7 @@ import type {
   ReportStatus,
   SearchPeriod,
   SearchSort,
-} from "@ponto/types"
+} from "@contraponha/types"
 
 export interface ContentSearchKey {
   q: string

@@ -1,5 +1,5 @@
-import { createTranslator } from "@ponto/i18n"
-import type { NotificationView, PublicProfile } from "@ponto/types"
+import { createTranslator } from "@contraponha/i18n"
+import type { NotificationView, PublicProfile } from "@contraponha/types"
 import { describe, expect, it } from "vitest"
 
 import { notificationText, periodOf } from "./notification-text"

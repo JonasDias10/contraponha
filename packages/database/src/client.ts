@@ -1,4 +1,4 @@
-import { DATABASE_CONNECTION_TIMEOUT_MS, DATABASE_STATEMENT_TIMEOUT_MS } from "@ponto/config"
+import { DATABASE_CONNECTION_TIMEOUT_MS, DATABASE_STATEMENT_TIMEOUT_MS } from "@contraponha/config"
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
 import pg from "pg"
 
@@ -26,7 +26,7 @@ export interface DatabaseConnection {
 
 export function createDatabaseConnection({
   url,
-  applicationName = "ponto",
+  applicationName = "contraponha",
   maxConnections = 10,
   connectionTimeoutMs = DATABASE_CONNECTION_TIMEOUT_MS,
   statementTimeoutMs = DATABASE_STATEMENT_TIMEOUT_MS,

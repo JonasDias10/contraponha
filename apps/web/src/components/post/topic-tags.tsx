@@ -1,4 +1,4 @@
-import type { TopicSummary } from "@ponto/types"
+import type { TopicSummary } from "@contraponha/types"
 import Link from "next/link"
 
 import { tagVariants } from "@/components/ui/badges"

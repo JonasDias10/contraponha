@@ -4,8 +4,8 @@ import {
   type CommunityRuleValue,
   type Database,
   type DatabaseExecutor,
-} from "@ponto/database"
-import type { ModerationActionType } from "@ponto/types"
+} from "@contraponha/database"
+import type { ModerationActionType } from "@contraponha/types"
 import { desc, lt } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"

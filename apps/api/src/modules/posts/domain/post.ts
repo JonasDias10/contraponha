@@ -1,4 +1,4 @@
-import { readReactionCounts, type PostRevisionRow, type PostRow } from "@ponto/database"
+import { readReactionCounts, type PostRevisionRow, type PostRow } from "@contraponha/database"
 import type {
   ContentRevision,
   ContextNoteView,
@@ -7,7 +7,7 @@ import type {
   PostView,
   PostViewerState,
   TopicSummary,
-} from "@ponto/types"
+} from "@contraponha/types"
 
 import { toExcerpt, toSourceViews } from "#src/common/content/sources.js"
 import { toPublicProfile, type User } from "#src/modules/users/domain/user.js"

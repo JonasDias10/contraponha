@@ -1,4 +1,4 @@
-import type { Locale } from "@ponto/i18n"
+import type { Locale } from "@contraponha/i18n"
 
 const MINUTE = 60
 const HOUR = 60 * MINUTE

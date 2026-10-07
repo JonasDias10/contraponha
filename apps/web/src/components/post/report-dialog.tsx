@@ -1,8 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ReportReason, ReportSubject, type ReportTargetType } from "@ponto/types"
-import { createReportInputSchema } from "@ponto/validation"
+import { ReportReason, ReportSubject, type ReportTargetType } from "@contraponha/types"
+import { createReportInputSchema } from "@contraponha/validation"
 import { useMutation } from "@tanstack/react-query"
 import { ShieldCheck } from "lucide-react"
 import { useState } from "react"

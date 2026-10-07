@@ -23,7 +23,7 @@ describe("createApiClient", () => {
       .mockResolvedValue(jsonResponse({ status: 200, body: report }))
 
     const client = createApiClient({
-      baseUrl: "https://api.ponto.test/",
+      baseUrl: "https://api.contraponha.test/",
       locale: "en",
       fetch: fetchMock,
     })
@@ -32,7 +32,7 @@ describe("createApiClient", () => {
 
     const [url, init] = fetchMock.mock.calls[0] ?? []
 
-    expect(url).toBe("https://api.ponto.test/api/v1/health/live")
+    expect(url).toBe("https://api.contraponha.test/api/v1/health/live")
 
     expect(init?.headers).toMatchObject({ "accept-language": "en" })
   })
@@ -48,7 +48,7 @@ describe("createApiClient", () => {
     }
 
     const client = createApiClient({
-      baseUrl: "https://api.ponto.test",
+      baseUrl: "https://api.contraponha.test",
       fetch: vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({ status: 503, body })),
     })
 
@@ -65,7 +65,7 @@ describe("createApiClient", () => {
 
   it("rejects responses that do not match the contract", async () => {
     const client = createApiClient({
-      baseUrl: "https://api.ponto.test",
+      baseUrl: "https://api.contraponha.test",
       fetch: vi
         .fn<typeof fetch>()
         .mockResolvedValue(jsonResponse({ status: 200, body: { status: "maybe" } })),
@@ -83,7 +83,7 @@ describe("createApiClient", () => {
 
     it("is true when the API reports itself ready", async () => {
       const client = createApiClient({
-        baseUrl: "https://api.ponto.test",
+        baseUrl: "https://api.contraponha.test",
         fetch: vi
           .fn<typeof fetch>()
           .mockResolvedValue(jsonResponse({ status: 200, body: readyReport })),
@@ -94,7 +94,7 @@ describe("createApiClient", () => {
 
     it("is false when the API is degraded or unreachable", async () => {
       const degraded = createApiClient({
-        baseUrl: "https://api.ponto.test",
+        baseUrl: "https://api.contraponha.test",
         fetch: vi.fn<typeof fetch>().mockResolvedValue(
           jsonResponse({
             status: 503,
@@ -106,7 +106,7 @@ describe("createApiClient", () => {
       })
 
       const unreachable = createApiClient({
-        baseUrl: "https://api.ponto.test",
+        baseUrl: "https://api.contraponha.test",
         fetch: vi.fn<typeof fetch>().mockRejectedValue(new TypeError("fetch failed")),
       })
 
@@ -121,7 +121,7 @@ describe("createApiClient", () => {
       controller.abort()
 
       const client = createApiClient({
-        baseUrl: "https://api.ponto.test",
+        baseUrl: "https://api.contraponha.test",
         fetch: vi.fn<typeof fetch>().mockRejectedValue(new DOMException("Aborted", "AbortError")),
       })
 
@@ -134,7 +134,7 @@ describe("createApiClient", () => {
       const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }))
 
       const client = createApiClient({
-        baseUrl: "https://api.ponto.test",
+        baseUrl: "https://api.contraponha.test",
         fetch: fetchMock,
         getSessionToken: () => "session-token-value",
       })
@@ -143,7 +143,7 @@ describe("createApiClient", () => {
 
       const [url, init] = fetchMock.mock.calls[0] ?? []
 
-      expect(url).toBe("https://api.ponto.test/api/v1/auth/logout")
+      expect(url).toBe("https://api.contraponha.test/api/v1/auth/logout")
 
       expect(init).toMatchObject({
         method: "POST",
@@ -155,7 +155,7 @@ describe("createApiClient", () => {
       const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 202 }))
 
       const client = createApiClient({
-        baseUrl: "https://api.ponto.test",
+        baseUrl: "https://api.contraponha.test",
         fetch: fetchMock,
         getSessionToken: () => null,
       })
@@ -178,7 +178,7 @@ describe("createApiClient", () => {
           Promise.resolve(jsonResponse({ status: 200, body: { items: [], nextCursor: null } })),
         )
 
-      const client = createApiClient({ baseUrl: "https://api.ponto.test", fetch: fetchMock })
+      const client = createApiClient({ baseUrl: "https://api.contraponha.test", fetch: fetchMock })
 
       await client.posts.listByUser({ handle: "ana", query: { limit: 10 } })
 
@@ -187,20 +187,20 @@ describe("createApiClient", () => {
       const urls = fetchMock.mock.calls.map(([url]) => url)
 
       expect(urls).toEqual([
-        "https://api.ponto.test/api/v1/users/ana/posts?limit=10",
-        "https://api.ponto.test/api/v1/users/ana/followers?cursor=abc&limit=5",
+        "https://api.contraponha.test/api/v1/users/ana/posts?limit=10",
+        "https://api.contraponha.test/api/v1/users/ana/followers?cursor=abc&limit=5",
       ])
     })
 
     it("targets the right collection when reacting", async () => {
       const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }))
-      const client = createApiClient({ baseUrl: "https://api.ponto.test", fetch: fetchMock })
+      const client = createApiClient({ baseUrl: "https://api.contraponha.test", fetch: fetchMock })
 
       await client.reactions.add({ targetType: "comment", targetId: "c1", kind: "changed_my_mind" })
 
       const [url, init] = fetchMock.mock.calls[0] ?? []
 
-      expect(url).toBe("https://api.ponto.test/api/v1/comments/c1/reactions/changed_my_mind")
+      expect(url).toBe("https://api.contraponha.test/api/v1/comments/c1/reactions/changed_my_mind")
 
       expect(init?.method).toBe("PUT")
     })

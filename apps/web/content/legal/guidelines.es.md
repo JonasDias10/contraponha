@@ -1,6 +1,6 @@
 # Normas de la comunidad
 
-Ponto existe para conversaciones que hacen avanzar la discusión. Discrepar es bienvenido; atacar a las personas, no. Estas normas dicen lo que esperamos de quienes participan y qué reglas aplica la moderación. Toda eliminación cita la regla usada, y la persona afectada siempre recibe la decisión.
+Contraponha existe para conversaciones que hacen avanzar la discusión. Discrepar es bienvenido; atacar a las personas, no. Estas normas dicen lo que esperamos de quienes participan y qué reglas aplica la moderación. Toda eliminación cita la regla usada, y la persona afectada siempre recibe la decisión.
 
 Esta es una traducción. Si hay alguna diferencia, prevalece la versión en portugués.
 
@@ -47,7 +47,7 @@ No publiques datos personales de otras personas sin autorización, como direcci�
 
 ### Contenido ilegal {#illegal_content}
 
-No uses Ponto para actividades ilegales según la ley brasileña, incluida la venta de productos prohibidos y la violación de derechos de autor.
+No uses Contraponha para actividades ilegales según la ley brasileña, incluida la venta de productos prohibidos y la violación de derechos de autor.
 
 ### Suplantación de identidad {#impersonation}
 

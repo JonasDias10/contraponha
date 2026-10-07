@@ -1,6 +1,6 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import type { NotificationView, Page } from "@ponto/types"
-import { notificationPageSchema, unreadNotificationCountSchema } from "@ponto/validation"
+import type { NotificationView, Page } from "@contraponha/types"
+import { notificationPageSchema, unreadNotificationCountSchema } from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

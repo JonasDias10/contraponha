@@ -1,5 +1,5 @@
 import { Global, Inject, Logger, Module, type OnApplicationShutdown } from "@nestjs/common"
-import { createDatabaseConnection, type DatabaseConnection } from "@ponto/database"
+import { createDatabaseConnection, type DatabaseConnection } from "@contraponha/database"
 
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 
@@ -16,7 +16,7 @@ const DATABASE_CONNECTION = Symbol("DATABASE_CONNECTION")
         const logger = new Logger("Database")
         return createDatabaseConnection({
           url: config.database.url,
-          applicationName: "ponto-api",
+          applicationName: "contraponha-api",
           maxConnections: config.database.poolMax,
           onPoolError: (error) => logger.error({ err: error }, "Idle PostgreSQL client error"),
         })

@@ -1,4 +1,4 @@
-import { CONTENT_EDIT_WINDOW_MINUTES, minutesToMs } from "@ponto/config"
+import { CONTENT_EDIT_WINDOW_MINUTES, minutesToMs } from "@contraponha/config"
 
 export interface IsWithinEditWindowParams {
   createdAt: Date

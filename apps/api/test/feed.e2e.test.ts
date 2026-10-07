@@ -1,6 +1,6 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import type { FeedItem, Page } from "@ponto/types"
-import { discussionListSchema, feedPageSchema, postViewSchema } from "@ponto/validation"
+import type { FeedItem, Page } from "@contraponha/types"
+import { discussionListSchema, feedPageSchema, postViewSchema } from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

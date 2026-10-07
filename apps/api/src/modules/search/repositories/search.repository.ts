@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { comments, follows, posts, users, type Database, type UserRow } from "@ponto/database"
-import { SearchSort } from "@ponto/types"
+import { comments, follows, posts, users, type Database, type UserRow } from "@contraponha/database"
+import { SearchSort } from "@contraponha/types"
 import {
   and,
   asc,

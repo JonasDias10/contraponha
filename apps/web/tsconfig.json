@@ -1,5 +1,5 @@
 {
-  "extends": "@ponto/tsconfig/nextjs.json",
+  "extends": "@contraponha/tsconfig/nextjs.json",
   "compilerOptions": {
     "types": ["node"],
     "paths": {

@@ -1,5 +1,5 @@
-import { envBoolean, envList } from "@ponto/config"
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@ponto/i18n"
+import { envBoolean, envList } from "@contraponha/config"
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@contraponha/i18n"
 import { z } from "zod"
 
 const localeSchema = z.enum(SUPPORTED_LOCALES)

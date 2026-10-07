@@ -1,6 +1,6 @@
 # Conteúdo e relações: posts, comentários, reações e follows
 
-Este documento descreve o núcleo social do Ponto: como posts, comentários, reações e follows são modelados, quais regras valem e por quê.
+Este documento descreve o núcleo social do Contraponha: como posts, comentários, reações e follows são modelados, quais regras valem e por quê.
 
 ## Decisões de produto
 
@@ -15,11 +15,11 @@ Este documento descreve o núcleo social do Ponto: como posts, comentários, rea
 | Reações    | `good_argument`, `insightful`, `agree`, `disagree`. Uma de cada por pessoa; `agree` e `disagree` se excluem |
 | Follows    | Unilateral, sem aprovação                                                                                   |
 
-Os limites de tamanho ficam em `@ponto/config` (`POST_BODY_MAX_LENGTH`, `COMMENT_BODY_MAX_LENGTH`) e são usados tanto pela validação (`@ponto/validation`) quanto pelos `CHECK` do banco. A janela de edição é `CONTENT_EDIT_WINDOW_MINUTES` em `apps/api/src/config/durations.ts`.
+Os limites de tamanho ficam em `@contraponha/config` (`POST_BODY_MAX_LENGTH`, `COMMENT_BODY_MAX_LENGTH`) e são usados tanto pela validação (`@contraponha/validation`) quanto pelos `CHECK` do banco. A janela de edição é `CONTENT_EDIT_WINDOW_MINUTES` em `apps/api/src/config/durations.ts`.
 
 ### Por que reações de qualidade separadas de concordância
 
-O diferencial do Ponto é favorecer bons argumentos, não só popularidade. Separar "isto é um bom argumento" de "concordo" permite reconhecer um argumento sólido mesmo discordando dele, e dá ao futuro ranking um sinal de qualidade que não é só opinião.
+O diferencial do Contraponha é favorecer bons argumentos, não só popularidade. Separar "isto é um bom argumento" de "concordo" permite reconhecer um argumento sólido mesmo discordando dele, e dá ao futuro ranking um sinal de qualidade que não é só opinião.
 
 ### Por que a janela de edição
 
@@ -67,12 +67,12 @@ Como a consistência é garantida:
 ### Concorrência
 
 - **Ordem de lock fixa.** Quando uma transação atualiza mais de uma linha de contador, ela trava as linhas sempre na mesma ordem: no follow, as duas linhas de `users` em ordem de id; em comentários, sempre o post antes do comentário. Sem isso, duas pessoas se seguindo no mesmo instante travavam o mesmo par de linhas em ordem inversa e geravam deadlock (medido: 7 de 8 tentativas falhavam com 500 antes da correção).
-- **Repetição automática.** Todas as transações passam por `runTransaction` (`@ponto/database`), que repete do início, com uma pausa curta e aleatória, quando o PostgreSQL aborta por deadlock (`40P01`) ou conflito de serialização (`40001`). É uma rede de segurança: com a ordem de lock correta, o teste de follows mútuos não registra nenhum deadlock.
+- **Repetição automática.** Todas as transações passam por `runTransaction` (`@contraponha/database`), que repete do início, com uma pausa curta e aleatória, quando o PostgreSQL aborta por deadlock (`40P01`) ou conflito de serialização (`40001`). É uma rede de segurança: com a ordem de lock correta, o teste de follows mútuos não registra nenhum deadlock.
 - **Limite conhecido: linha quente.** Cada incremento segura o lock da linha até o commit, então milhares de eventos por segundo no mesmo post ou na mesma conta entram em fila. Quando isso aparecer nas métricas, o próximo passo é tirar o contador da transação da requisição: incrementar no Redis (`INCRBY`) e gravar no PostgreSQL em lote a cada poucos segundos, com o número passando a ser eventualmente consistente. É o mesmo caminho que Instagram e Facebook seguiram (contador denormalizado, depois cache e escrita centralizada).
 
 ### Reconciliação
 
-As linhas de `follows`, `reactions` e `comments` são a fonte da verdade; os contadores são derivados. `reconcileCounters` (`@ponto/database`) recalcula todos os contadores a partir dessas linhas e corrige os que divergirem:
+As linhas de `follows`, `reactions` e `comments` são a fonte da verdade; os contadores são derivados. `reconcileCounters` (`@contraponha/database`) recalcula todos os contadores a partir dessas linhas e corrige os que divergirem:
 
 ```bash
 pnpm db:reconcile-counters
