@@ -1,6 +1,6 @@
 "use client"
 
-import { Compass, Search, Sunrise } from "lucide-react"
+import { Bookmark, Compass, Search, Sunrise } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 
@@ -76,8 +76,11 @@ export function HomeFeed(): React.JSX.Element {
                     {t("web.feed.exploreDiscussions")}
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
-                  <Link href="/saved">{t("web.nav.saved")}</Link>
+                <Button asChild>
+                  <Link href="/saved">
+                    <Bookmark aria-hidden className="size-4" />
+                    {t("web.nav.saved")}
+                  </Link>
                 </Button>
               </EmptyState>
             </Card>
