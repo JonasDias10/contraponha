@@ -64,16 +64,13 @@ export const web: Messages["web"] = {
     createAccount: "Crear cuenta gratis",
     readWithoutAccount: "Leer sin cuenta",
     dataNote: "Sin anuncios dirigidos. Tus datos se quedan en Brasil.",
-    sampleAuthor: "Rafael Tanaka",
-    sampleHeadline: "Economista, São Paulo",
-    sampleTime: "hace 3 h",
+    sampleBadge: "Ejemplo",
+    sampleTopic: "Movilidad urbana",
     sampleTitle:
       "Transporte gratuito en una gran ciudad: lo que las ciudades medianas permiten afirmar",
-    sampleHighlightLabel: "Destacada por el autor · trajo datos de campo",
-    sampleHighlightAuthor: "Joaquim Batista",
-    sampleHighlightPlace: "Belém",
+    sampleHighlightLabel: "Contribución destacada",
     sampleHighlightBody:
-      "Sin torniquete, el embarque es más rápido y todo el viaje se acorta. En un corredor lleno, eso vale tanto como un autobús nuevo.",
+      "Quien escribió el post puede destacar la respuesta que aportó algo nuevo, como un dato de campo o una fuente. Sube al principio de la discusión.",
     principlesTitle: "Hecho para pensar juntos",
     principlesLead:
       "Tres decisiones de producto que cambian el tipo de conversación que ocurre aquí.",
