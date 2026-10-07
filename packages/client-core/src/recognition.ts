@@ -1,7 +1,7 @@
 import type { Translate } from "@contraponha/i18n"
 import type { Recognition } from "@contraponha/types"
 
-import { topicLabel } from "@/components/post/topic-tags"
+import { topicLabel } from "./topics.js"
 
 export interface RecognitionTextParams {
   recognition: Recognition

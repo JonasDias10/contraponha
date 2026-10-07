@@ -1,6 +1,7 @@
 import type { Locale, Translate } from "@contraponha/i18n"
 import type { TopicView } from "@contraponha/types"
-import { formatCount } from "@contraponha/client-core"
+
+import { formatCount } from "./format.js"
 
 export interface TopicMetaParams {
   topic: TopicView

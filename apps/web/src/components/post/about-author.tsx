@@ -2,9 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { queryKeys } from "@contraponha/client-core"
+import { queryKeys, recognitionText } from "@contraponha/client-core"
 
-import { recognitionText } from "@/components/profile/recognition"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { Avatar } from "@/components/ui/avatar"

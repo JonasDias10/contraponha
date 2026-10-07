@@ -2,9 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { queryKeys } from "@contraponha/client-core"
+import { queryKeys, topicLabel } from "@contraponha/client-core"
 
-import { topicLabel } from "@/components/post/topic-tags"
 import { FollowButton } from "@/components/profile/follow-button"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"

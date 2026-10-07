@@ -5,15 +5,13 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { Hash, Search, X } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-import { queryKeys } from "@contraponha/client-core"
+import { queryKeys, topicLabel, topicMeta } from "@contraponha/client-core"
 
 import { ContributionCard } from "@/components/discussion/contribution-card"
 import { PostCardSkeleton } from "@/components/feed/feed-list"
 import { PostCard } from "@/components/post/post-card"
-import { topicLabel } from "@/components/post/topic-tags"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
-import { topicMeta } from "@/components/topics/topic-meta"
 import {
   SEARCH_TABS,
   useSearchState,

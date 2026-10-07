@@ -3,10 +3,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { Info } from "lucide-react"
 import Link from "next/link"
-import { queryKeys } from "@contraponha/client-core"
+import { queryKeys, topicLabel } from "@contraponha/client-core"
 
 import { SearchBox } from "@/components/search/search-box"
-import { topicLabel } from "@/components/post/topic-tags"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { useViewer } from "@/components/providers/viewer-provider"
