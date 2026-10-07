@@ -35,6 +35,7 @@ Valores em claro / escuro. O contraste é medido contra `surface`.
 | `line`                             | `#e3e6eb` | `#2a2e35` | Divisórias                                               | decorativo  |
 | `line-strong` / `lineStrong`       | `#838a97` | `#6b7380` | Borda de campos e controles                              | 3,4 · 3,6   |
 | `brand`                            | `#1f4fd8` | `#7d9cff` | Ação primária, links, foco, reação marcada               | 6,4 · 7,2   |
+| `brand-hover` / `brandHover`       | `#1a43b8` | `#9bb3ff` | Ação primária com cursor ou pressionada                  | 8,0 · 9,1   |
 | `brand-soft` / `brandSoft`         | `#ebf0fd` | `#1b2442` | Fundo de reação marcada, realce de busca                 | base        |
 | `on-brand` / `onBrand`             | `#ffffff` | `#0b1020` | Texto sobre `brand`                                      | 6,6 · 7,3   |
 | `accent`                           | `#b3441b` | `#f0905f` | Urucum: contribuição destacada                           | 5,4 · 7,8   |
@@ -43,6 +44,8 @@ Valores em claro / escuro. O contraste é medido contra `surface`.
 | `warning` (+ `-soft`)              | `#8a5a00` | `#e3b04f` | "Precisa de fonte", contexto adicionado                  | 5,7 · 9,4   |
 | `danger` (+ `-soft`)               | `#b42318` | `#ff8a7a` | Erro de formulário, ação destrutiva. Nunca em contadores | 6,4 · 8,1   |
 | `on-danger` / `onDanger`           | `#ffffff` | `#1a0b09` | Texto sobre `danger`                                     | 6,6 · 8,4   |
+| `inverse` / `on-inverse`           | `#14161a` | `#eceef2` | Toasts e tooltips (fundo invertido) e o texto sobre eles | 16,5 · 15,6 |
+| `scrim`                            | 48% tinta | 60% preto | Fundo atrás de diálogos e folhas                         | decorativo  |
 
 Mantivemos o azul que já estava no código (6,4:1 sobre o fundo) e adicionamos só um acento quente, para que cor sinalize valor e não urgência. Os verdes e vermelhos anteriores do mobile (`#10b981`, `#f43f5e`) não passavam AA como texto sobre fundo claro e foram substituídos.
 

@@ -13,6 +13,7 @@ const palettes = {
     line: "#e3e6eb",
     lineStrong: "#838a97",
     brand: "#1f4fd8",
+    brandHover: "#1a43b8",
     brandSoft: "#ebf0fd",
     onBrand: "#ffffff",
     accent: "#b3441b",
@@ -24,6 +25,9 @@ const palettes = {
     danger: "#b42318",
     dangerSoft: "#fdecea",
     onDanger: "#ffffff",
+    inverse: "#14161a",
+    onInverse: "#f3f4f6",
+    scrim: "rgba(20, 22, 26, 0.48)",
   },
   dark: {
     surface: "#111317",
@@ -35,6 +39,7 @@ const palettes = {
     line: "#2a2e35",
     lineStrong: "#6b7380",
     brand: "#7d9cff",
+    brandHover: "#9bb3ff",
     brandSoft: "#1b2442",
     onBrand: "#0b1020",
     accent: "#f0905f",
@@ -46,6 +51,9 @@ const palettes = {
     danger: "#ff8a7a",
     dangerSoft: "#2e1512",
     onDanger: "#1a0b09",
+    inverse: "#eceef2",
+    onInverse: "#14161a",
+    scrim: "rgba(0, 0, 0, 0.6)",
   },
 }
 
