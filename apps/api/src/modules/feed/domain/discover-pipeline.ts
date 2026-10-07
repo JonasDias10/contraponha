@@ -33,7 +33,9 @@ export const NO_EXCLUSIONS: ViewerExclusions = { postIds: new Set(), authorIds: 
 
 // Earlier sources win on duplicates, so a source that explains the pick (followed topic)
 // should come before the generic one.
-export function mergeCandidates(sources: readonly (readonly DiscoverCandidate[])[]): DiscoverCandidate[] {
+export function mergeCandidates(
+  sources: readonly (readonly DiscoverCandidate[])[],
+): DiscoverCandidate[] {
   const byPost = new Map<string, DiscoverCandidate>()
 
   for (const candidate of sources.flat())
@@ -66,7 +68,9 @@ export function scoreCandidates(candidates: readonly DiscoverCandidate[]): Score
 function sortByScore(candidates: readonly ScoredCandidate[]): ScoredCandidate[] {
   return candidates.toSorted((first, second) =>
     first.score === second.score
-      ? (first.postId < second.postId ? 1 : -1)
+      ? first.postId < second.postId
+        ? 1
+        : -1
       : second.score - first.score,
   )
 }

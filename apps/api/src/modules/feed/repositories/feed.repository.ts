@@ -204,13 +204,7 @@ export class FeedRepository {
     return this.db
       .select()
       .from(posts)
-      .where(
-        and(
-          recentActivePost(),
-          isNotNull(posts.title),
-          gt(posts.commentCount, 0),
-        ),
-      )
+      .where(and(recentActivePost(), isNotNull(posts.title), gt(posts.commentCount, 0)))
       .orderBy(desc(posts.commentCount), desc(posts.highlightedCommentCount), desc(posts.id))
       .limit(limit)
   }

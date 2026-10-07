@@ -109,12 +109,10 @@ export class FeedService {
     const views = await this.postsService.buildViews({ rows, viewerId })
     const matchedTopics = new Map(ranked.map((item) => [item.postId, item.matchedTopicSlug]))
 
-    const items = views.map(
-      (post): FeedItem => ({
-        post,
-        reason: discoverReason({ post, matchedTopicSlug: matchedTopics.get(post.id) ?? null }),
-      }),
-    )
+    const items = views.map((post): FeedItem => ({
+      post,
+      reason: discoverReason({ post, matchedTopicSlug: matchedTopics.get(post.id) ?? null }),
+    }))
 
     const nextOffset = offset + limit
 
