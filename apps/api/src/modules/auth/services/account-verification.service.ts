@@ -237,7 +237,13 @@ export class AccountVerificationService {
   }
 
   private toRecipient({ user, link }: ToRecipientParams): AccountEmailRecipient {
-    return { to: user.email, name: user.displayName, locale: userLocale(user), link }
+    return {
+      to: user.email,
+      name: user.displayName,
+      locale: userLocale(user),
+      link,
+      webAppUrl: this.config.webAppUrl,
+    }
   }
 
   private deliver(message: EmailMessage): void {
