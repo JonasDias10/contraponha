@@ -1,5 +1,6 @@
 import { createTranslator, type Locale, type MessageKey } from "@contraponha/i18n"
 
+import { renderEmailLayout } from "#src/infrastructure/email/email-layout.js"
 import type { EmailMessage } from "#src/infrastructure/email/email-sender.js"
 
 export interface AccountEmailRecipient {
@@ -7,23 +8,17 @@ export interface AccountEmailRecipient {
   name: string
   locale: Locale
   link: string
+  webAppUrl: string
 }
 
 interface EmailCopy {
   subject: MessageKey
+  title: MessageKey
   body: MessageKey
+  action: MessageKey
   expiry: MessageKey
   ignore: MessageKey
   expiryParams: Record<string, number>
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;")
 }
 
 interface BuildAccountEmailParams {
@@ -32,27 +27,33 @@ interface BuildAccountEmailParams {
 }
 
 function buildAccountEmail({ recipient, copy }: BuildAccountEmailParams): EmailMessage {
-  const { to, name, locale, link } = recipient
+  const { to, name, locale, link, webAppUrl } = recipient
   const t = createTranslator({ locale })
+  const greeting = t("emails.greeting", { name })
+  const title = t(copy.title)
+  const body = t(copy.body)
+  const expiry = t(copy.expiry, copy.expiryParams)
+  const ignore = t(copy.ignore)
+  const signature = t("emails.signature")
 
-  const paragraphs = [
-    t("emails.greeting", { name }),
-    t(copy.body),
-    link,
-    t(copy.expiry, copy.expiryParams),
-    t(copy.ignore),
-    t("emails.signature"),
-  ]
+  const html = renderEmailLayout({
+    lang: locale,
+    webAppUrl,
+    preheader: body,
+    title,
+    paragraphs: [greeting, body],
+    action: { label: t(copy.action), url: link },
+    note: expiry,
+    linkFallback: t("emails.linkFallback"),
+    ignore,
+    signature,
+    footer: t("emails.footer"),
+    tagline: t("emails.tagline"),
+  })
 
-  const html = paragraphs
-    .map((paragraph) =>
-      paragraph === link
-        ? `<p><a href="${escapeHtml(link)}">${escapeHtml(link)}</a></p>`
-        : `<p>${escapeHtml(paragraph)}</p>`,
-    )
-    .join("\n")
+  const text = [title, greeting, body, link, expiry, ignore, signature].join("\n\n")
 
-  return { to, subject: t(copy.subject), text: paragraphs.join("\n\n"), html }
+  return { to, subject: t(copy.subject), text, html }
 }
 
 export interface BuildEmailVerificationEmailParams {
@@ -68,7 +69,9 @@ export function buildEmailVerificationEmail({
     recipient,
     copy: {
       subject: "emails.verifyEmail.subject",
+      title: "emails.verifyEmail.title",
       body: "emails.verifyEmail.body",
+      action: "emails.verifyEmail.action",
       expiry: "emails.verifyEmail.expiry",
       ignore: "emails.verifyEmail.ignore",
       expiryParams: { hours: ttlHours },
@@ -89,30 +92,11 @@ export function buildPasswordResetEmail({
     recipient,
     copy: {
       subject: "emails.passwordReset.subject",
+      title: "emails.passwordReset.title",
       body: "emails.passwordReset.body",
+      action: "emails.passwordReset.action",
       expiry: "emails.passwordReset.expiry",
       ignore: "emails.passwordReset.ignore",
-      expiryParams: { minutes: ttlMinutes },
-    },
-  })
-}
-
-export interface BuildMagicLinkEmailParams {
-  recipient: AccountEmailRecipient
-  ttlMinutes: number
-}
-
-export function buildMagicLinkEmail({
-  recipient,
-  ttlMinutes,
-}: BuildMagicLinkEmailParams): EmailMessage {
-  return buildAccountEmail({
-    recipient,
-    copy: {
-      subject: "emails.magicLink.subject",
-      body: "emails.magicLink.body",
-      expiry: "emails.magicLink.expiry",
-      ignore: "emails.magicLink.ignore",
       expiryParams: { minutes: ttlMinutes },
     },
   })
@@ -131,7 +115,9 @@ export function buildDataExportReadyEmail({
     recipient,
     copy: {
       subject: "emails.dataExportReady.subject",
+      title: "emails.dataExportReady.title",
       body: "emails.dataExportReady.body",
+      action: "emails.dataExportReady.action",
       expiry: "emails.dataExportReady.expiry",
       ignore: "emails.dataExportReady.ignore",
       expiryParams: { days: retentionDays },

@@ -3,10 +3,8 @@
 import { ApiError } from "@contraponha/api-client"
 import type { AuthResponse, ValidationIssue } from "@contraponha/types"
 import {
-  confirmMagicLinkInputSchema,
   loginInputSchema,
   registerInputSchema,
-  type ConfirmMagicLinkInput,
   type LoginInput,
   type RegisterInput,
 } from "@contraponha/validation"
@@ -78,23 +76,6 @@ export async function signUp(input: RegisterInput): Promise<ActionResult> {
     await startSession(auth)
 
     return { ok: true }
-  } catch (error) {
-    return failure(error)
-  }
-}
-
-export async function signInWithMagicLink(
-  input: ConfirmMagicLinkInput,
-): Promise<SignInResult | ActionFailure> {
-  const parsed = confirmMagicLinkInputSchema.parse(input)
-  const locale = await getRequestLocale()
-
-  try {
-    const auth = await createServerApiClient(locale).auth.loginWithMagicLink(parsed)
-
-    await startSession(auth)
-
-    return { ok: true, isOnboarded: auth.user.isOnboarded }
   } catch (error) {
     return failure(error)
   }

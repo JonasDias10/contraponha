@@ -3,10 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { changePasswordInputSchema, type ChangePasswordInput } from "@contraponha/validation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Laptop } from "lucide-react"
+import { Laptop, LogOut } from "lucide-react"
+import { useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
+import { signOut } from "@/actions/auth"
 import { PasswordInput } from "@/components/auth/password-input"
 import { RelativeTime } from "@/components/post/relative-time"
 import { useApi } from "@/components/providers/app-providers"
@@ -25,6 +27,7 @@ export function AccountSettings(): React.JSX.Element {
       <EmailSection />
       <PasswordSection />
       <SessionsSection />
+      <SignOutSection />
     </>
   )
 }
@@ -196,6 +199,25 @@ function SessionsSection(): React.JSX.Element {
           {t("web.settings.endOtherSessions")}
         </Button>
       ) : null}
+    </SettingsSection>
+  )
+}
+
+function SignOutSection(): React.JSX.Element {
+  const { t } = useI18n()
+  const [isPending, startTransition] = useTransition()
+
+  return (
+    <SettingsSection title={t("web.settings.signOutTitle")} lead={t("web.settings.signOutLead")}>
+      <Button
+        variant="secondary"
+        className="w-full sm:w-auto sm:self-start"
+        isLoading={isPending}
+        onClick={() => startTransition(() => signOut())}
+      >
+        <LogOut aria-hidden className="size-4" />
+        {t("web.nav.signOut")}
+      </Button>
     </SettingsSection>
   )
 }

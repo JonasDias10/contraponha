@@ -102,7 +102,7 @@ export function EditHistory({ post }: EditHistoryProps): React.JSX.Element {
                   <summary className="cursor-pointer font-semibold text-brand">
                     {t("web.history.open")}
                   </summary>
-                  <div className="mt-2 flex flex-col gap-2 font-serif text-[15px] leading-relaxed text-muted">
+                  <div className="mt-2 flex flex-col gap-2 font-serif text-[15px]/relaxed text-muted">
                     {version.title ? <p className="font-semibold">{version.title}</p> : null}
                     <Markdown text={version.body} />
                   </div>

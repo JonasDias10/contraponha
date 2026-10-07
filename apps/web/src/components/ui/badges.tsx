@@ -52,5 +52,11 @@ export interface UnreadDotProps {
 }
 
 export function UnreadDot({ label }: UnreadDotProps): React.JSX.Element {
-  return <span role="img" aria-label={label} className="size-2 flex-none rounded-full bg-brand" />
+  return (
+    <span
+      role="img"
+      aria-label={label}
+      className="inline-block size-2 flex-none rounded-full bg-brand"
+    />
+  )
 }

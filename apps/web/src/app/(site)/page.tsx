@@ -1,12 +1,14 @@
-import { CircleCheck, History, Lightbulb, ShieldCheck, Star, Sunrise, X } from "lucide-react"
+import { CircleCheck, History, ShieldCheck, Star, Sunrise, X } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
 import { Logo } from "@/components/brand/logo"
-import { Avatar } from "@/components/ui/avatar"
+import { Chip } from "@/components/ui/badges"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/surfaces"
+import { cn } from "@/lib/cn"
 import { getRequestTranslator } from "@/lib/i18n"
+import { REACTION_ICONS, REACTION_ORDER } from "@/lib/reactions"
 import { getViewer } from "@/lib/viewer"
 
 export default async function LandingPage(): Promise<React.JSX.Element> {
@@ -56,27 +58,32 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
         </div>
         <div aria-hidden className="flex max-w-140 min-w-0 flex-[1_1_440px] flex-col gap-3">
           <Card className="flex flex-col gap-3.5 p-5 shadow-e2">
-            <div className="flex items-center gap-3">
-              <Avatar id="sample-author" name={t("web.landing.sampleAuthor")} />
-              <div className="flex flex-col">
-                <span className="font-semibold">{t("web.landing.sampleAuthor")}</span>
-                <span className="text-[13px] text-subtle">
-                  {t("web.landing.sampleHeadline")} · {t("web.landing.sampleTime")}
-                </span>
-              </div>
+            <div className="flex items-center gap-2">
+              <Chip>{t("web.landing.sampleBadge")}</Chip>
+              <span className="text-[13px] text-subtle">{t("web.landing.sampleTopic")}</span>
             </div>
             <p className="font-serif text-[21px] leading-snug font-semibold">
               {t("web.landing.sampleTitle")}
             </p>
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex h-10 items-center gap-2 rounded-full bg-brand-soft px-3.5 text-sm font-semibold text-brand">
-                <CircleCheck className="size-4.5" />
-                {t("web.reactions.good_argument")} <span>128</span>
-              </span>
-              <span className="inline-flex h-10 items-center gap-2 rounded-full border border-line px-3.5 text-sm font-medium">
-                <Lightbulb className="size-4.5 text-muted" />
-                {t("web.reactions.insightful")} <span className="text-subtle">64</span>
-              </span>
+              {REACTION_ORDER.map((kind, index) => {
+                const Icon = REACTION_ICONS[kind]
+
+                return (
+                  <span
+                    key={kind}
+                    className={cn(
+                      "inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-sm",
+                      index === 0
+                        ? "bg-brand-soft font-semibold text-brand"
+                        : "border border-line font-medium",
+                    )}
+                  >
+                    <Icon className={cn("size-4.5", index !== 0 && "text-muted")} />
+                    {t(`web.reactions.${kind}`)}
+                  </span>
+                )
+              })}
             </div>
           </Card>
           <div className="ml-8 flex flex-col gap-2 rounded-[12px] bg-accent-soft px-3.5 py-3">
@@ -84,13 +91,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
               <Star className="size-4" />
               {t("web.landing.sampleHighlightLabel")}
             </p>
-            <p className="text-[13px] text-subtle">
-              <span className="font-semibold text-ink">
-                {t("web.landing.sampleHighlightAuthor")}
-              </span>{" "}
-              · {t("web.landing.sampleHighlightPlace")}
-            </p>
-            <p className="font-serif text-base/relaxed">{t("web.landing.sampleHighlightBody")}</p>
+            <p className="text-[15px]/relaxed text-ink">{t("web.landing.sampleHighlightBody")}</p>
           </div>
         </div>
       </section>
@@ -141,7 +142,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
 
       <section className="border-t border-line py-24">
         <div className="mx-auto flex w-full max-w-300 flex-col items-center gap-5 px-4 text-center sm:px-8">
-          <Logo className="text-[56px]" />
+          <Logo className="text-[34px] sm:text-[56px]" />
           <p className="font-serif text-xl text-muted">{t("web.landing.finalLead")}</p>
           <Button asChild size="lg">
             <Link href="/signup">{t("web.landing.createAccount")}</Link>

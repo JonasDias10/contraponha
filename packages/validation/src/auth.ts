@@ -40,14 +40,6 @@ export const registerInputSchema = z.object({
   locale: localeSchema.optional(),
 })
 
-export const requestMagicLinkInputSchema = z.object({
-  email: emailSchema,
-})
-
-export const confirmMagicLinkInputSchema = z.object({
-  token: opaqueTokenSchema,
-})
-
 export const loginInputSchema = z.object({
   email: emailSchema,
   password: submittedPasswordSchema,
@@ -77,8 +69,6 @@ export type ChangePasswordInput = z.input<typeof changePasswordInputSchema>
 export type ConfirmEmailInput = z.input<typeof confirmEmailInputSchema>
 export type RequestPasswordResetInput = z.input<typeof requestPasswordResetInputSchema>
 export type ResetPasswordInput = z.input<typeof resetPasswordInputSchema>
-export type RequestMagicLinkInput = z.input<typeof requestMagicLinkInputSchema>
-export type ConfirmMagicLinkInput = z.input<typeof confirmMagicLinkInputSchema>
 
 export const authResponseSchema = z.object({
   user: privateProfileSchema,

@@ -8,7 +8,6 @@ export const SESSION_LAST_USED_WRITE_INTERVAL_MS = minutesToMs(5)
 
 export const EMAIL_VERIFICATION_TTL_HOURS = 24
 export const PASSWORD_RESET_TTL_MINUTES = 30
-export const MAGIC_LINK_TTL_MINUTES = 15
 
 export const MEDIA_UPLOAD_URL_TTL_MINUTES = 10
 

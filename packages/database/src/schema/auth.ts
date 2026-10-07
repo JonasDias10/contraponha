@@ -36,7 +36,6 @@ export const sessions = pgTable(
 export const verificationTokenPurpose = pgEnum("verification_token_purpose", [
   "email_verification",
   "password_reset",
-  "magic_link",
 ])
 
 export const verificationTokens = pgTable(

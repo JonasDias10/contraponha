@@ -36,6 +36,13 @@
       "when": 1791298731979,
       "tag": "0004_add_web_mvp_domain",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791384891298,
+      "tag": "0005_remove_magic_link_token_purpose",
+      "breakpoints": true
     }
   ]
 }

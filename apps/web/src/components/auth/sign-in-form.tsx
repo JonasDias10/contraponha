@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginInputSchema, type LoginInput } from "@contraponha/validation"
-import { Mail } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -86,17 +85,6 @@ export function SignInForm(): React.JSX.Element {
       </Link>
       <Button type="submit" size="lg" block isLoading={isSubmitting}>
         {t("web.auth.signIn")}
-      </Button>
-      <div className="flex items-center gap-3">
-        <hr className="h-px flex-1 border-0 bg-line" />
-        <span className="text-[13px] text-subtle">{t("web.common.or")}</span>
-        <hr className="h-px flex-1 border-0 bg-line" />
-      </div>
-      <Button asChild variant="secondary" size="lg" block>
-        <Link href="/login/link">
-          <Mail aria-hidden className="size-5" />
-          {t("web.auth.magicLink")}
-        </Link>
       </Button>
     </form>
   )

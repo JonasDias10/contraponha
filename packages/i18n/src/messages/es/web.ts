@@ -2,6 +2,8 @@ import type { Messages } from "../../types.js"
 
 export const web: Messages["web"] = {
   common: {
+    datePlaceholder: "dd/mm/aaaa",
+    openCalendar: "Abrir calendario",
     close: "Cerrar",
     cancel: "Cancelar",
     back: "Volver",
@@ -16,7 +18,6 @@ export const web: Messages["web"] = {
     retry: "Intentar de nuevo",
     seeAll: "Ver todo",
     optional: "opcional",
-    or: "o",
     copied: "Enlace copiado.",
     somethingWentWrong: "Algo salió mal. Inténtalo de nuevo.",
     you: "Tú",
@@ -44,6 +45,10 @@ export const web: Messages["web"] = {
   },
   footer: {
     label: "Pie de página",
+    productTitle: "Producto",
+    communityTitle: "Comunidad",
+    legalTitle: "Legal",
+    copyright: "© {year} Contraponha. Hecho en Brasil.",
     guidelines: "Normas de la comunidad",
     privacy: "Privacidad",
     terms: "Términos",
@@ -62,16 +67,13 @@ export const web: Messages["web"] = {
     createAccount: "Crear cuenta gratis",
     readWithoutAccount: "Leer sin cuenta",
     dataNote: "Sin anuncios dirigidos. Tus datos se quedan en Brasil.",
-    sampleAuthor: "Rafael Tanaka",
-    sampleHeadline: "Economista, São Paulo",
-    sampleTime: "hace 3 h",
+    sampleBadge: "Ejemplo",
+    sampleTopic: "Movilidad urbana",
     sampleTitle:
       "Transporte gratuito en una gran ciudad: lo que las ciudades medianas permiten afirmar",
-    sampleHighlightLabel: "Destacada por el autor · trajo datos de campo",
-    sampleHighlightAuthor: "Joaquim Batista",
-    sampleHighlightPlace: "Belém",
+    sampleHighlightLabel: "Contribución destacada",
     sampleHighlightBody:
-      "Sin torniquete, el embarque es más rápido y todo el viaje se acorta. En un corredor lleno, eso vale tanto como un autobús nuevo.",
+      "Quien escribió el post puede destacar la respuesta que aportó algo nuevo, como un dato de campo o una fuente. Sube al principio de la discusión.",
     principlesTitle: "Hecho para pensar juntos",
     principlesLead:
       "Tres decisiones de producto que cambian el tipo de conversación que ocurre aquí.",
@@ -96,10 +98,11 @@ export const web: Messages["web"] = {
     finalLead: "Empieza siguiendo tres temas. Lleva dos minutos.",
   },
   auth: {
-    asideQuote:
-      '"Cambié de opinión sobre el transporte gratuito leyendo una discusión aquí. No recuerdo la última vez que eso pasó en una red social."',
-    asideAuthor: "Thiago Albuquerque",
-    asideRole: "Médico de familia, Fortaleza",
+    asideTitle: "Aquí, lo que sube es lo que hace avanzar la conversación.",
+    asidePointReactions:
+      "Reacciones que dicen algo: buen argumento, esclarecedor, cambió mi visión.",
+    asidePointFeeds: "Feeds con reglas claras y el motivo de cada recomendación.",
+    asidePointTransparency: "Ediciones con historial público y moderación que cita la regla.",
     asideNote: "Tus datos se quedan en Brasil y puedes exportarlos o borrarlos cuando quieras.",
     signUpTitle: "Crea tu cuenta",
     haveAccount: "¿Ya tienes cuenta?",
@@ -127,14 +130,7 @@ export const web: Messages["web"] = {
     acceptTermsPrivacy: "Política de privacidad",
     acceptTermsAnd: "y las",
     acceptTermsGuidelines: "Normas de la comunidad",
-    magicLink: "Entrar con un enlace por correo",
-    magicLinkTitle: "Entrar sin contraseña",
-    magicLinkLead: "Enviamos un enlace de un solo uso a tu correo. Vale por 15 minutos.",
-    magicLinkSend: "Enviar enlace",
-    magicLinkSent:
-      "Si hay una cuenta con ese correo, el enlace llega en un momento. Revisa también el spam.",
-    magicLinkSigningIn: "Entrando en tu cuenta",
-    magicLinkInvalid: "Este enlace expiró o ya se usó. Pide uno nuevo.",
+    linkInvalid: "Este enlace expiró o ya se usó. Pide uno nuevo.",
     forgotPassword: "Olvidé mi contraseña",
     forgotTitle: "Restablecer contraseña",
     forgotLead: "Indica tu correo y te enviaremos un enlace para crear una nueva contraseña.",
@@ -571,6 +567,9 @@ export const web: Messages["web"] = {
     unknownDevice: "Dispositivo desconocido",
     endSession: "Cerrar",
     endOtherSessions: "Cerrar sesión en todos los demás dispositivos",
+    signOutTitle: "Cerrar sesión",
+    signOutLead:
+      "Cierra la sesión en este dispositivo. Para salir de los demás, usa Sesiones activas.",
     sessionsEnded: "Se cerraron las demás sesiones.",
     interestsTitle: "Intereses",
     interestsLead: "Temas que sigues. Definen lo que aparece en Descubrir.",

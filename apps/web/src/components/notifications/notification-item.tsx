@@ -102,20 +102,31 @@ export function NotificationItem({ notification }: NotificationItemProps): React
   }
 
   return (
-    <li className="flex items-start gap-3.5 border-t border-line px-5 py-4 first:border-t-0">
+    <li
+      className={cn(
+        "relative flex items-start gap-3 border-t border-line px-4 py-3.5 transition-colors first:border-t-0 hover:bg-surface-sunken sm:gap-3.5 sm:px-5 sm:py-4",
+        !notification.isRead && "bg-brand-soft/40",
+      )}
+    >
       <NotificationIcon notification={notification} />
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <p className={cn("text-[15px]", !notification.isRead && "font-medium")}>
           {notificationText({ notification, t })}
         </p>
         {notification.commentExcerpt ? (
-          <p className="font-serif text-sm text-muted">“{notification.commentExcerpt}”</p>
+          <p className="line-clamp-3 font-serif text-sm text-muted">
+            “{notification.commentExcerpt}”
+          </p>
         ) : (post?.title ?? post?.excerpt) ? (
-          <p className="text-sm text-muted">{post.title ?? post.excerpt}</p>
+          <p className="line-clamp-2 text-sm text-muted">{post.title ?? post.excerpt}</p>
         ) : null}
         <div className="flex flex-wrap items-center gap-3">
           {target ? (
-            <Link href={target} onClick={open} className="text-sm font-semibold text-brand">
+            <Link
+              href={target}
+              onClick={open}
+              className="text-sm font-semibold text-brand after:absolute after:inset-0"
+            >
               {isModeration
                 ? t("web.notifications.seeDecision")
                 : notification.type === "source_requested" && post

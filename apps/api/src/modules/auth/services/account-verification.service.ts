@@ -8,7 +8,6 @@ import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import {
   DATA_EXPORT_RETENTION_DAYS,
   EMAIL_VERIFICATION_TTL_HOURS,
-  MAGIC_LINK_TTL_MINUTES,
   PASSWORD_RESET_TTL_MINUTES,
 } from "#src/config/durations.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -16,14 +15,12 @@ import { EmailSender, type EmailMessage } from "#src/infrastructure/email/email-
 import {
   buildDataExportReadyEmail,
   buildEmailVerificationEmail,
-  buildMagicLinkEmail,
   buildPasswordResetEmail,
   type AccountEmailRecipient,
 } from "#src/modules/auth/domain/account-emails.js"
 import {
   DATA_SETTINGS_PATH,
   EMAIL_VERIFICATION_PATH,
-  MAGIC_LINK_PATH,
   PASSWORD_RESET_PATH,
 } from "#src/modules/auth/domain/account-links.js"
 import { generateOpaqueToken, hashOpaqueToken } from "#src/modules/auth/domain/opaque-token.js"
@@ -128,50 +125,6 @@ export class AccountVerificationService {
     )
   }
 
-  // Silent for unknown emails, so the endpoint does not reveal who has an account.
-  async requestMagicLink(email: string): Promise<void> {
-    const user = await this.usersService.findByEmail(email)
-
-    if (!user) return
-
-    const token = await this.issueToken({
-      userId: user.id,
-      purpose: "magic_link",
-      ttlMs: minutesToMs(MAGIC_LINK_TTL_MINUTES),
-    })
-
-    const link = this.buildLink({ path: MAGIC_LINK_PATH, token })
-
-    this.deliver(
-      buildMagicLinkEmail({
-        recipient: this.toRecipient({ user, link }),
-        ttlMinutes: MAGIC_LINK_TTL_MINUTES,
-      }),
-    )
-  }
-
-  // Opening the link proves access to the inbox, so it also verifies the email.
-  async consumeMagicLink(token: string): Promise<User> {
-    const userId = await runTransaction({
-      db: this.db,
-      work: async (tx) => {
-        const consumedBy = await this.verificationTokens.consume({
-          tokenHash: hashOpaqueToken(token),
-          purpose: "magic_link",
-          executor: tx,
-        })
-
-        if (!consumedBy) throw new AppError(ApiErrorCode.INVALID_TOKEN)
-
-        await this.usersService.markEmailVerified({ id: consumedBy, executor: tx })
-
-        return consumedBy
-      },
-    })
-
-    return this.usersService.getById(userId)
-  }
-
   async sendDataExportReady(userId: string): Promise<void> {
     const user = await this.usersService.getById(userId)
     const link = new URL(DATA_SETTINGS_PATH, this.config.webAppUrl).toString()
@@ -237,7 +190,13 @@ export class AccountVerificationService {
   }
 
   private toRecipient({ user, link }: ToRecipientParams): AccountEmailRecipient {
-    return { to: user.email, name: user.displayName, locale: userLocale(user), link }
+    return {
+      to: user.email,
+      name: user.displayName,
+      locale: userLocale(user),
+      link,
+      webAppUrl: this.config.webAppUrl,
+    }
   }
 
   private deliver(message: EmailMessage): void {
