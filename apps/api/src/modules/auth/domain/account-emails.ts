@@ -102,29 +102,6 @@ export function buildPasswordResetEmail({
   })
 }
 
-export interface BuildMagicLinkEmailParams {
-  recipient: AccountEmailRecipient
-  ttlMinutes: number
-}
-
-export function buildMagicLinkEmail({
-  recipient,
-  ttlMinutes,
-}: BuildMagicLinkEmailParams): EmailMessage {
-  return buildAccountEmail({
-    recipient,
-    copy: {
-      subject: "emails.magicLink.subject",
-      title: "emails.magicLink.title",
-      body: "emails.magicLink.body",
-      action: "emails.magicLink.action",
-      expiry: "emails.magicLink.expiry",
-      ignore: "emails.magicLink.ignore",
-      expiryParams: { minutes: ttlMinutes },
-    },
-  })
-}
-
 export interface BuildDataExportReadyEmailParams {
   recipient: AccountEmailRecipient
   retentionDays: number

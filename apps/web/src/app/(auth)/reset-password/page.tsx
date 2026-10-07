@@ -22,7 +22,7 @@ export default async function ResetPasswordPage({
       {typeof token === "string" ? (
         <ResetPasswordForm token={token} />
       ) : (
-        <FormBanner message={t("web.auth.magicLinkInvalid")} />
+        <FormBanner message={t("web.auth.linkInvalid")} />
       )}
     </>
   )

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 import { AuthHeading } from "@/components/auth/auth-heading"
+import { EmailVerification } from "@/components/auth/email-verification"
 import { FormBanner } from "@/components/auth/form-banner"
-import { TokenConfirmation } from "@/components/auth/token-confirmation"
 import { getRequestTranslator } from "@/lib/i18n"
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,7 +20,7 @@ export default async function VerifyEmailPage({
     <>
       <AuthHeading title={t("web.auth.verifyTitle")} />
       {typeof token === "string" ? (
-        <TokenConfirmation purpose="verify-email" token={token} />
+        <EmailVerification token={token} />
       ) : (
         <FormBanner message={t("web.auth.verifyInvalid")} />
       )}

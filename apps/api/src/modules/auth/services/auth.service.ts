@@ -43,11 +43,6 @@ export interface LoginParams {
   userAgent: string | undefined
 }
 
-export interface MagicLinkLoginParams {
-  token: string
-  userAgent: string | undefined
-}
-
 export interface ForgetCredentialsParams {
   userId: string
   executor: DatabaseExecutor
@@ -123,11 +118,6 @@ export class AuthService {
 
     if (!user || !isValid) throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
 
-    return this.startSession({ user, userAgent })
-  }
-
-  async loginWithMagicLink({ token, userAgent }: MagicLinkLoginParams): Promise<AuthResponse> {
-    const user = await this.accountVerification.consumeMagicLink(token)
     return this.startSession({ user, userAgent })
   }
 

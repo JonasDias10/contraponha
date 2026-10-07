@@ -27,7 +27,7 @@ apps/web/
     ├── app/                     App Router
     │   ├── layout.tsx           <html lang>, fontes, script de tema, providers
     │   ├── (site)/              Páginas públicas: landing e textos legais
-    │   ├── (auth)/              Cadastro, login (senha ou link mágico), senha e verificação de e-mail
+    │   ├── (auth)/              Cadastro, login, senha e verificação de e-mail
     │   ├── onboarding/          Escolha de tópicos e sugestões de pessoas
     │   ├── (app)/               Feed, post, perfil, seguidores, busca, notificações, salvos, configurações, moderação
     │   ├── (editor)/            Escrever e editar post

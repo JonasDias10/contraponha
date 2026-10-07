@@ -23,14 +23,6 @@ export const emails: Messages["emails"] = {
     ignore:
       "Si no solicitaste el restablecimiento, ignora este mensaje. Tu contraseña sigue siendo la misma.",
   },
-  magicLink: {
-    subject: "Tu enlace para entrar en Contraponha",
-    title: "Entra en Contraponha",
-    body: "Para entrar en tu cuenta sin contraseña, usa el botón de abajo.",
-    action: "Entrar",
-    expiry: "El enlace vale por {minutes} minutos y solo se puede usar una vez.",
-    ignore: "Si no pediste entrar, ignora este mensaje. Nadie entra en tu cuenta sin este enlace.",
-  },
   dataExportReady: {
     subject: "Tu exportación de datos de Contraponha está lista",
     title: "Tus datos están listos",

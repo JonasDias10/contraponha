@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 import { AuthHeading } from "@/components/auth/auth-heading"
-import { EmailRequestForm } from "@/components/auth/email-request-form"
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
 import { getRequestTranslator } from "@/lib/i18n"
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,7 +15,7 @@ export default async function ForgotPasswordPage(): Promise<React.JSX.Element> {
   return (
     <>
       <AuthHeading title={t("web.auth.forgotTitle")} lead={t("web.auth.forgotLead")} />
-      <EmailRequestForm purpose="password-reset" />
+      <ForgotPasswordForm />
     </>
   )
 }

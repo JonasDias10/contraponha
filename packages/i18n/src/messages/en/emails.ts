@@ -22,15 +22,6 @@ export const emails: Messages["emails"] = {
     expiry: "The link is valid for {minutes} minutes and can only be used once.",
     ignore: "If you did not request a reset, ignore this message. Your password stays the same.",
   },
-  magicLink: {
-    subject: "Your link to sign in to Contraponha",
-    title: "Sign in to Contraponha",
-    body: "To sign in to your account without a password, use the button below.",
-    action: "Sign in",
-    expiry: "The link is valid for {minutes} minutes and can be used only once.",
-    ignore:
-      "If you did not ask to sign in, ignore this message. Nobody gets into your account without this link.",
-  },
   dataExportReady: {
     subject: "Your Contraponha data export is ready",
     title: "Your data is ready",

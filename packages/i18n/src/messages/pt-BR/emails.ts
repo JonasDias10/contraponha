@@ -20,15 +20,6 @@ export const emails = {
     expiry: "O link vale por {minutes} minutos e só pode ser usado uma vez.",
     ignore: "Se você não pediu a redefinição, ignore esta mensagem. Sua senha continua a mesma.",
   },
-  magicLink: {
-    subject: "Seu link para entrar no Contraponha",
-    title: "Entre no Contraponha",
-    body: "Para entrar na sua conta sem senha, use o botão abaixo.",
-    action: "Entrar",
-    expiry: "O link vale por {minutes} minutos e só pode ser usado uma vez.",
-    ignore:
-      "Se você não pediu para entrar, ignore esta mensagem. Ninguém entra na sua conta sem este link.",
-  },
   dataExportReady: {
     subject: "Sua exportação de dados do Contraponha está pronta",
     title: "Seus dados estão prontos",

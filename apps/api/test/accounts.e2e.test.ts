@@ -2,7 +2,6 @@ import type { NestExpressApplication } from "@nestjs/platform-express"
 import { consents, users } from "@contraponha/database"
 import {
   accountDeletionStatusSchema,
-  authResponseSchema,
   commentPageSchema,
   dataExportDownloadSchema,
   dataExportListSchema,
@@ -55,30 +54,6 @@ describe("account and personal data", () => {
     ])
 
     expect(auth.user.birthDate).toBe("1990-05-17")
-  })
-
-  it("signs in with a one-time emailed link", async () => {
-    const { input } = await registerAccount({ server })
-
-    await request(server).post("/api/v1/auth/magic-link").send({ email: input.email }).expect(202)
-
-    await request(server)
-      .post("/api/v1/auth/magic-link")
-      .send({ email: "ninguem@example.com" })
-      .expect(202)
-
-    const token = emails.tokenSentTo(input.email)
-
-    const response = await request(server)
-      .post("/api/v1/auth/magic-link/confirm")
-      .send({ token })
-      .expect(200)
-
-    const signedIn = authResponseSchema.parse(response.body)
-
-    expect(signedIn.user.isEmailVerified).toBe(true)
-
-    await request(server).post("/api/v1/auth/magic-link/confirm").send({ token }).expect(400)
   })
 
   it("exports personal data to a private file and emails when it is ready", async () => {

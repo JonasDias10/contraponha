@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { MINIMUM_AGE_YEARS } from "@contraponha/config"
 import type { MessageKey } from "@contraponha/i18n"
 import { registerInputSchema } from "@contraponha/validation"
-import { Mail } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -257,17 +256,6 @@ export function SignUpForm(): React.JSX.Element {
       </div>
       <Button type="submit" size="lg" block isLoading={isSubmitting}>
         {t("web.common.continue")}
-      </Button>
-      <div className="flex items-center gap-3">
-        <hr className="h-px flex-1 border-0 bg-line" />
-        <span className="text-[13px] text-subtle">{t("web.common.or")}</span>
-        <hr className="h-px flex-1 border-0 bg-line" />
-      </div>
-      <Button asChild variant="secondary" size="lg" block>
-        <Link href="/login/link">
-          <Mail aria-hidden className="size-5" />
-          {t("web.auth.magicLink")}
-        </Link>
       </Button>
     </form>
   )
