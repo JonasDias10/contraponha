@@ -182,6 +182,14 @@ body {
   .prose-read strong {
     font-weight: 600;
   }
+
+  .prose-read p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    color: var(--color-subtle);
+    pointer-events: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

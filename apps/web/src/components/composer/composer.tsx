@@ -21,6 +21,7 @@ import {
 import { ImageStrip } from "@/components/composer/image-strip"
 import { PublishChecklist } from "@/components/composer/publish-checklist"
 import { SourcesField } from "@/components/composer/sources-field"
+import { toolButtonClasses } from "@/components/composer/tool-button"
 import { TopicsField } from "@/components/composer/topics-field"
 import { useApi } from "@/components/providers/app-providers"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -200,7 +201,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
                       aria-label={t("web.composer.image")}
                       title={t("web.composer.image")}
                       onClick={() => fileInputRef.current?.click()}
-                      className="grid size-9 place-items-center rounded-[8px] text-muted hover:bg-surface-sunken hover:text-ink"
+                      className={toolButtonClasses}
                     >
                       <ImagePlus aria-hidden className="size-[18px]" />
                     </button>
