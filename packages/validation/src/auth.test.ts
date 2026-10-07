@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { createPostInputSchema, registerInputSchema, updateProfileInputSchema } from "./index.js"
+import {
+  createPostInputSchema,
+  httpUrlSchema,
+  registerInputSchema,
+  updateProfileInputSchema,
+} from "./index.js"
 
 describe("registerInputSchema", () => {
   it("normalizes email and handle so uniqueness is case-insensitive", () => {
@@ -76,6 +81,10 @@ describe("sources and topics", () => {
     expect(valid.topics).toEqual(["TarifaZero"])
 
     expect(invalid.success).toBe(false)
+  })
+
+  it("rejects an empty link without throwing", () => {
+    expect(httpUrlSchema.safeParse("").success).toBe(false)
   })
 })
 

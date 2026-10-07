@@ -8,16 +8,12 @@ import {
 import { ReplyPolicy, type ContentSource } from "@ponto/types"
 import { z } from "zod"
 
-const HTTP_PROTOCOLS = new Set(["http:", "https:"])
-
+// Only http(s) links: javascript:, data: and friends are refused by the protocol check.
 export const httpUrlSchema = z
   .string()
   .trim()
   .max(SOURCE_URL_MAX_LENGTH)
-  .pipe(z.url())
-  .refine((value) => HTTP_PROTOCOLS.has(new URL(value).protocol), {
-    message: "Only http and https links are allowed",
-  })
+  .pipe(z.url({ protocol: /^https?$/ }))
 
 export const sourceInputSchema = z.object({
   url: httpUrlSchema,
