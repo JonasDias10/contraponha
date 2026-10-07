@@ -11,6 +11,13 @@ import { z } from "zod"
 
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
 import {
+  mergeCandidates,
+  NO_EXCLUSIONS,
+  rankDiscover,
+  type DiscoverCandidate,
+} from "#src/modules/feed/domain/discover-pipeline.js"
+import {
+  DISCOVER_CANDIDATES_PER_SOURCE,
   FEATURED_MAX_OFFSET,
   ONGOING_DISCUSSIONS_LIMIT,
 } from "#src/modules/feed/domain/featured-ranking.js"
@@ -85,17 +92,27 @@ export class FeedService {
   // Scores change between requests, so this feed pages by offset and stops at a cap.
   async discover({ viewerId, cursor, limit }: DiscoverFeedParams): Promise<Page<FeedItem>> {
     const offset = decodeCursor({ cursor, schema: offsetCursorSchema })?.offset ?? 0
-    const rows = await this.feedRepository.listDiscover({ viewerId, offset, limit: limit + 1 })
+    const candidates = await this.discoverCandidates(viewerId)
 
-    const views = await this.postsService.buildViews({
-      rows: rows.map(({ post }) => post),
-      viewerId,
-    })
+    const exclusions = viewerId
+      ? await this.feedRepository.listViewerExclusions({ viewerId, candidates })
+      : NO_EXCLUSIONS
 
-    const items = views.map((post, index): FeedItem => {
-      const matchedTopicSlug = rows[index]?.matchedTopicSlug ?? null
-      return { post, reason: discoverReason({ post, matchedTopicSlug }) }
-    })
+    const ranked = rankDiscover({ candidates, viewerId, exclusions }).slice(
+      offset,
+      offset + limit + 1,
+    )
+
+    const posts = await this.postsService.findByIds(ranked.map(({ postId }) => postId))
+    const postsById = new Map(posts.map((post) => [post.id, post]))
+    const rows = ranked.flatMap(({ postId }) => postsById.get(postId) ?? [])
+    const views = await this.postsService.buildViews({ rows, viewerId })
+    const matchedTopics = new Map(ranked.map((item) => [item.postId, item.matchedTopicSlug]))
+
+    const items = views.map((post): FeedItem => ({
+      post,
+      reason: discoverReason({ post, matchedTopicSlug: matchedTopics.get(post.id) ?? null }),
+    }))
 
     const nextOffset = offset + limit
 
@@ -140,6 +157,20 @@ export class FeedService {
           : [],
       ),
     }
+  }
+
+  // Followed topics come first so their copy of a post, which explains the pick, wins.
+  private async discoverCandidates(viewerId: string | undefined): Promise<DiscoverCandidate[]> {
+    const limit = DISCOVER_CANDIDATES_PER_SOURCE
+
+    const [followedTopics, quality] = await Promise.all([
+      viewerId
+        ? this.feedRepository.listFollowedTopicCandidates({ viewerId, limit })
+        : Promise.resolve([]),
+      this.feedRepository.listQualityCandidates(limit),
+    ])
+
+    return mergeCandidates([followedTopics, quality])
   }
 
   private chronologicalPage({ views, limit }: ChronologicalPageParams): Page<FeedItem> {
