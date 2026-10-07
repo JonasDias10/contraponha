@@ -136,6 +136,7 @@ export class FollowsService {
       followerId,
       followeeIds: userIds,
     })
+
     return { userIds: followed }
   }
 
