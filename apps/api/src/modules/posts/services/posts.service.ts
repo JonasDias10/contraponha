@@ -282,6 +282,10 @@ export class PostsService {
     )
   }
 
+  findByIds(postIds: readonly string[]): Promise<Post[]> {
+    return this.postsRepository.findByIds(postIds)
+  }
+
   async summaries(postIds: readonly string[]): Promise<Map<string, PostSummary>> {
     const rows = await this.postsRepository.findByIds(postIds)
     const authors = await this.usersService.findByIds(rows.map(({ authorId }) => authorId))
