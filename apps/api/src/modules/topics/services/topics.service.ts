@@ -1,17 +1,39 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { POST_TOPICS_MAX } from "@contraponha/config"
-import { runTransaction, type Database, type DatabaseExecutor } from "@contraponha/database"
-import { ApiErrorCode, type TopicList, type TopicSummary, type TopicView } from "@contraponha/types"
+import {
+  getUniqueViolationConstraint,
+  runTransaction,
+  TOPICS_SLUG_UNIQUE,
+  type Database,
+  type DatabaseExecutor,
+} from "@contraponha/database"
+import {
+  ApiErrorCode,
+  type AdminTopic,
+  type Page,
+  type TopicList,
+  type TopicSummary,
+  type TopicView,
+} from "@contraponha/types"
+import { z } from "zod"
 
 import { AppError } from "#src/common/errors/app-error.js"
+import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import {
   slugifyTopic,
+  toAdminTopic,
   toTopicSummary,
   toTopicView,
   type Topic,
 } from "#src/modules/topics/domain/topic.js"
-import { TopicsRepository } from "#src/modules/topics/repositories/topics.repository.js"
+import {
+  TopicsRepository,
+  type CreateTopicData,
+  type UpdateTopicParams,
+} from "#src/modules/topics/repositories/topics.repository.js"
+
+const topicCursorSchema = z.object({ id: z.uuid() })
 
 export interface ResolveTopicsParams {
   names: readonly string[]
@@ -63,6 +85,13 @@ export interface SearchTopicsParams {
   q: string
   limit: number
   viewerId?: string
+}
+
+export interface ListAllTopicsRequest {
+  q?: string
+  curated?: boolean
+  cursor?: string
+  limit: number
 }
 
 @Injectable()
@@ -217,5 +246,39 @@ export class TopicsService {
     return topics.map((topic) =>
       toTopicView({ topic, isFollowing: followed ? followed.has(topic.id) : null }),
     )
+  }
+
+  async listAll({ q, curated, cursor, limit }: ListAllTopicsRequest): Promise<Page<AdminTopic>> {
+    const position = decodeCursor({ cursor, schema: topicCursorSchema })
+
+    const rows = await this.topicsRepository.listAll({
+      q,
+      isCurated: curated,
+      beforeId: position?.id,
+      limit: limit + 1,
+    })
+
+    return buildPage({ rows, limit, toItem: toAdminTopic, toCursor: ({ id }) => ({ id }) })
+  }
+
+  async create(data: CreateTopicData): Promise<AdminTopic> {
+    try {
+      const topic = await this.topicsRepository.create(data)
+
+      return toAdminTopic(topic)
+    } catch (error) {
+      if (getUniqueViolationConstraint(error) === TOPICS_SLUG_UNIQUE)
+        throw new AppError(ApiErrorCode.CONFLICT, { cause: error, details: { field: "slug" } })
+
+      throw error
+    }
+  }
+
+  async update(params: UpdateTopicParams): Promise<AdminTopic> {
+    const topic = await this.topicsRepository.update(params)
+
+    if (!topic) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
+
+    return toAdminTopic(topic)
   }
 }

@@ -14,6 +14,7 @@ import { PushModule as PushInfrastructureModule } from "#src/infrastructure/push
 import { RedisModule } from "#src/infrastructure/redis/redis.module.js"
 import { StorageModule } from "#src/infrastructure/storage/storage.module.js"
 import { AccountsModule } from "#src/modules/accounts/accounts.module.js"
+import { AdminModule } from "#src/modules/admin/admin.module.js"
 import { AuthModule } from "#src/modules/auth/auth.module.js"
 import { BookmarksModule } from "#src/modules/bookmarks/bookmarks.module.js"
 import { CommentsModule } from "#src/modules/comments/comments.module.js"
@@ -60,6 +61,7 @@ export class AppModule {
         FeedModule,
         SearchModule,
         ModerationModule,
+        AdminModule,
         BookmarksModule,
         PeopleModule,
         AccountsModule,

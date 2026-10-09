@@ -1,4 +1,5 @@
 export * from "./accounts.js"
+export * from "./admin.js"
 export * from "./api-error.js"
 export * from "./auth.js"
 export * from "./comments.js"

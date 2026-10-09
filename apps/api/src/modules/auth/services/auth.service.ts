@@ -118,6 +118,16 @@ export class AuthService {
 
     if (!user || !isValid) throw new AppError(ApiErrorCode.INVALID_CREDENTIALS)
 
+    // Checked after the password, so a wrong password never reveals that an account is
+    // suspended.
+    const suspension = await this.usersService.activeSuspension(user.id)
+
+    if (suspension) {
+      throw new AppError(ApiErrorCode.ACCOUNT_SUSPENDED, {
+        details: { endsAt: suspension.endsAt?.toISOString() ?? null },
+      })
+    }
+
     return this.startSession({ user, userAgent })
   }
 

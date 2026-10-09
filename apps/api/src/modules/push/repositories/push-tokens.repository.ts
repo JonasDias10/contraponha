@@ -48,4 +48,8 @@ export class PushTokensRepository {
 
     await this.db.delete(pushTokens).where(inArray(pushTokens.token, [...tokens]))
   }
+
+  async deleteForUser(userId: string): Promise<void> {
+    await this.db.delete(pushTokens).where(eq(pushTokens.userId, userId))
+  }
 }

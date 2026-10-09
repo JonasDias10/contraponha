@@ -22,5 +22,6 @@ import { UsersModule } from "#src/modules/users/users.module.js"
     ReportsService,
     ModerationService,
   ],
+  exports: [ModerationActionsRepository, ModerationService],
 })
 export class ModerationModule {}

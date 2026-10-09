@@ -5,5 +5,6 @@ export const auth: Messages["auth"] = {
     invalidCredentials: "Incorrect email or password.",
     invalidToken: "This link is invalid or has expired. Please request a new one.",
     emailAlreadyInUse: "An account with this email already exists.",
+    accountSuspended: "This account is suspended for breaking the community guidelines.",
   },
 }

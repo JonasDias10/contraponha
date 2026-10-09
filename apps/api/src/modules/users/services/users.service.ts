@@ -10,7 +10,9 @@ import { ApiErrorCode } from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { isDeletedUser, isReservedHandle, type User } from "#src/modules/users/domain/user.js"
+import { isSuspensionActive, type Suspension } from "#src/modules/users/domain/suspension.js"
 import { ConsentsRepository } from "#src/modules/users/repositories/consents.repository.js"
+import { SuspensionsRepository } from "#src/modules/users/repositories/suspensions.repository.js"
 import {
   UsersRepository,
   type CreateUserData,
@@ -56,7 +58,14 @@ export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly consentsRepository: ConsentsRepository,
+    private readonly suspensionsRepository: SuspensionsRepository,
   ) {}
+
+  async activeSuspension(userId: string): Promise<Suspension | undefined> {
+    const open = await this.suspensionsRepository.findOpen(userId)
+
+    return open && isSuspensionActive({ suspension: open }) ? open : undefined
+  }
 
   // Records acceptance of the current version of every legal document.
   recordLegalConsents({ userId, executor }: RecordLegalConsentsParams): Promise<void> {

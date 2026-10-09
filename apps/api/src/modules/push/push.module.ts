@@ -10,6 +10,6 @@ import { PushService } from "#src/modules/push/services/push.service.js"
   imports: [NotificationsModule],
   controllers: [PushTokensController],
   providers: [PushTokensRepository, PushService, PushDispatchService],
-  exports: [PushDispatchService],
+  exports: [PushDispatchService, PushService],
 })
 export class PushModule {}

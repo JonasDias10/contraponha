@@ -52,6 +52,10 @@ export const ERROR_CATALOG: Record<ApiErrorCode, ErrorDefinition> = {
     status: HttpStatus.UNAUTHORIZED,
     messageKey: "auth.errors.invalidCredentials",
   },
+  [ApiErrorCode.ACCOUNT_SUSPENDED]: {
+    status: HttpStatus.FORBIDDEN,
+    messageKey: "auth.errors.accountSuspended",
+  },
   [ApiErrorCode.INVALID_TOKEN]: {
     status: HttpStatus.BAD_REQUEST,
     messageKey: "auth.errors.invalidToken",

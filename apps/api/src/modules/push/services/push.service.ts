@@ -47,6 +47,12 @@ export class PushService {
     return this.pushTokens.delete(params)
   }
 
+  // A suspended account keeps no device: its sessions are gone, so pushes would only
+  // reach a phone that can no longer open them.
+  forgetDevices(userId: string): Promise<void> {
+    return this.pushTokens.deleteForUser(userId)
+  }
+
   // Sends one batch and reports whether there may be more. A notification is claimed
   // before sending, so a failed send is logged and not retried (no duplicate pushes).
   async dispatchDue(): Promise<boolean> {

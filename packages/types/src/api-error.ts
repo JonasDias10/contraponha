@@ -20,6 +20,7 @@ export const ApiErrorCode = {
   REACTION_LIMIT_REACHED: "REACTION_LIMIT_REACHED",
   REPLIES_RESTRICTED: "REPLIES_RESTRICTED",
   DATA_EXPORT_IN_PROGRESS: "DATA_EXPORT_IN_PROGRESS",
+  ACCOUNT_SUSPENDED: "ACCOUNT_SUSPENDED",
 } as const
 
 export type ApiErrorCode = (typeof ApiErrorCode)[keyof typeof ApiErrorCode]
