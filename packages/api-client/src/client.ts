@@ -1,5 +1,6 @@
 import { createHttpClient, type HttpClientOptions } from "./http.js"
 import { createAccountResource, type AccountResource } from "./resources/account.js"
+import { createAdminResource, type AdminResource } from "./resources/admin.js"
 import { createAuthResource, type AuthResource } from "./resources/auth.js"
 import { createCommentsResource, type CommentsResource } from "./resources/comments.js"
 import { createFeedResource, type FeedResource } from "./resources/feed.js"
@@ -21,6 +22,7 @@ export type ApiClientOptions = HttpClientOptions
 
 export interface ApiClient {
   account: AccountResource
+  admin: AdminResource
   auth: AuthResource
   comments: CommentsResource
   feed: FeedResource
@@ -41,6 +43,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
 
   return {
     account: createAccountResource(request),
+    admin: createAdminResource(request),
     auth: createAuthResource(request),
     comments: createCommentsResource(request),
     feed: createFeedResource(request),

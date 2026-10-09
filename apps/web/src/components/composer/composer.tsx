@@ -25,15 +25,18 @@ import { PublishChecklist } from "@/components/composer/publish-checklist"
 import { SourcesField } from "@/components/composer/sources-field"
 import { toolButtonClasses } from "@/components/composer/tool-button"
 import { TopicsField } from "@/components/composer/topics-field"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Chip } from "@/components/ui/badges"
-import { Button } from "@/components/ui/button"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Field, Input } from "@/components/ui/field"
-import { Banner } from "@/components/ui/surfaces"
+import {
+  Avatar,
+  Banner,
+  Button,
+  Chip,
+  ConfirmDialog,
+  Field,
+  Input,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { useImageUploads } from "@/hooks/use-image-upload"
 import { readDraft, useLocalDraft } from "@/hooks/use-local-draft"
 import { paths } from "@/lib/paths"
@@ -173,7 +176,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
           </h1>
           {viewer ? (
             <p className="flex items-center gap-3 text-sm text-muted">
-              <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+              <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
               {t("web.composer.publishingAs", { name: viewer.displayName })}
             </p>
           ) : null}
@@ -255,6 +258,9 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
       </div>
 
       <ConfirmDialog
+        cancelLabel={t("web.common.cancel")}
+
+        closeLabel={t("web.common.close")}
         open={isLeaving}
         onOpenChange={setIsLeaving}
         title={t("web.composer.discardTitle")}

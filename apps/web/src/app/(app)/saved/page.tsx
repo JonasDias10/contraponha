@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 import { AppShell } from "@/components/layout/app-shell"
 import { SavedPosts } from "@/components/feed/saved-posts"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { requireViewer } from "@/lib/viewer"
 
 export async function generateMetadata(): Promise<Metadata> {

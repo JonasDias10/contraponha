@@ -50,6 +50,9 @@ export const notifications = pgTable(
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     // Digest hours delay when a notification shows up; moderation decisions never wait.
     visibleAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    // Set when the push for this notification was handed off (or skipped); null rows that
+    // are visible and unread are still waiting for the push dispatcher.
+    pushedAt: timestamp({ withTimezone: true }),
   },
   (table) => [
     index("notifications_recipient_visible_at_id_idx").on(
@@ -63,6 +66,9 @@ export const notifications = pgTable(
     index("notifications_unread_recipient_id_idx")
       .on(table.recipientId)
       .where(sql`${table.readAt} is null`),
+    index("notifications_push_pending_idx")
+      .on(table.visibleAt)
+      .where(sql`${table.pushedAt} is null`),
   ],
 )
 

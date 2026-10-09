@@ -50,6 +50,7 @@ export function toPublicProfile(user: User): PublicProfile {
     location: isDeleted ? null : user.location,
     website: isDeleted ? null : user.website,
     pronouns: isDeleted ? null : user.pronouns,
+    avatarUrl: isDeleted ? null : user.avatarUrl,
     followerCount: user.followerCount,
     followingCount: user.followingCount,
     postCount: user.postCount,

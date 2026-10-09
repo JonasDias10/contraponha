@@ -87,6 +87,10 @@ export interface SavePreferencesParams {
   data: Partial<Omit<NotificationPreferencesRow, "userId" | "updatedAt">>
 }
 
+export interface ClaimDuePushesParams {
+  limit: number
+}
+
 function isVisible(): SQL {
   return lte(notifications.visibleAt, sql`now()`)
 }
@@ -185,21 +189,7 @@ export class NotificationsRepository {
     before,
     limit,
   }: ListNotificationsParams): Promise<NotificationContextRow[]> {
-    return this.db
-      .select({
-        notification: notifications,
-        postTitle: posts.title,
-        postBody: posts.body,
-        postAuthorId: posts.authorId,
-        postDeletedAt: posts.deletedAt,
-        commentBody: comments.body,
-        actionRule: moderationActions.rule,
-        actionType: moderationActions.type,
-      })
-      .from(notifications)
-      .leftJoin(posts, eq(posts.id, notifications.postId))
-      .leftJoin(comments, eq(comments.id, notifications.commentId))
-      .leftJoin(moderationActions, eq(moderationActions.id, notifications.moderationActionId))
+    return this.selectWithContext()
       .where(
         and(
           eq(notifications.recipientId, recipientId),
@@ -271,5 +261,51 @@ export class NotificationsRepository {
       .where(or(eq(notifications.recipientId, userId), eq(notifications.actorId, userId)))
 
     await executor.delete(notificationPreferences).where(eq(notificationPreferences.userId, userId))
+  }
+
+  // Marks visible, unread notifications whose push has not been sent as handled and
+  // returns them. SKIP LOCKED lets several API instances dispatch without sending twice.
+  async claimDuePushes({ limit }: ClaimDuePushesParams): Promise<NotificationContextRow[]> {
+    const due = this.db
+      .select({ id: notifications.id })
+      .from(notifications)
+      .where(and(isNull(notifications.pushedAt), isVisible(), isNull(notifications.readAt)))
+      .orderBy(notifications.visibleAt)
+      .limit(limit)
+      .for("update", { skipLocked: true })
+
+    const claimed = await this.db
+      .update(notifications)
+      .set({ pushedAt: sql`now()` })
+      .where(inArray(notifications.id, due))
+      .returning({ id: notifications.id })
+
+    if (claimed.length === 0) return []
+
+    return this.selectWithContext().where(
+      inArray(
+        notifications.id,
+        claimed.map(({ id }) => id),
+      ),
+    )
+  }
+
+  private selectWithContext() {
+    return this.db
+      .select({
+        notification: notifications,
+        postTitle: posts.title,
+        postBody: posts.body,
+        postAuthorId: posts.authorId,
+        postDeletedAt: posts.deletedAt,
+        commentBody: comments.body,
+        actionRule: moderationActions.rule,
+        actionType: moderationActions.type,
+      })
+      .from(notifications)
+      .leftJoin(posts, eq(posts.id, notifications.postId))
+      .leftJoin(comments, eq(comments.id, notifications.commentId))
+      .leftJoin(moderationActions, eq(moderationActions.id, notifications.moderationActionId))
+      .$dynamic()
   }
 }

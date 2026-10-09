@@ -48,7 +48,7 @@ export function AuthorLine({
         {isDeleted ? (
           <View style={[styles.deleted, { backgroundColor: palette.surfaceSunken }]} />
         ) : (
-          <Avatar id={author.id} name={author.displayName} size={size} />
+          <Avatar id={author.id} name={author.displayName} src={author.avatarUrl} size={size} />
         )}
         <View style={styles.text}>
           <View style={styles.nameRow}>

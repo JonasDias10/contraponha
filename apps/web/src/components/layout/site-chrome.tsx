@@ -3,8 +3,8 @@ import Link from "next/link"
 
 import { Logo } from "@/components/brand/logo"
 import { LocaleSwitcher, ThemeSwitcher } from "@/components/layout/preference-switchers"
-import { Button } from "@/components/ui/button"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
+import { Button } from "@contraponha/web-ui"
 import { getViewer } from "@/lib/viewer"
 
 interface FooterLink {

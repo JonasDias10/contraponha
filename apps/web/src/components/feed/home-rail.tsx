@@ -6,11 +6,7 @@ import Link from "next/link"
 import { queryKeys, topicLabel } from "@contraponha/client-core"
 
 import { SearchBox } from "@/components/search/search-box"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { tagVariants } from "@/components/ui/badges"
-import { Card, Panel } from "@/components/ui/surfaces"
+import { Card, Panel, tagVariants, useApi, useI18n, useViewer } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export function HomeRail(): React.JSX.Element {

@@ -1,0 +1,38 @@
+{
+  "name": "@contraponha/next-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    }
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf build .turbo"
+  },
+  "dependencies": {
+    "@contraponha/api-client": "workspace:*",
+    "@contraponha/i18n": "workspace:*",
+    "@contraponha/types": "workspace:*",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@contraponha/tsconfig": "workspace:*",
+    "next": "^16.3.8",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "typescript": "~6.0.3"
+  },
+  "peerDependencies": {
+    "next": "^16.3.8"
+  }
+}

@@ -1,5 +1,5 @@
 import type { TopicRow } from "@contraponha/database"
-import type { TopicSummary, TopicView } from "@contraponha/types"
+import type { AdminTopic, TopicSummary, TopicView } from "@contraponha/types"
 
 export type Topic = TopicRow
 
@@ -32,5 +32,17 @@ export function toTopicView({ topic, isFollowing }: ToTopicViewParams): TopicVie
     postCount: topic.postCount,
     followerCount: topic.followerCount,
     viewer: isFollowing === null ? null : { isFollowing },
+  }
+}
+
+export function toAdminTopic(topic: Topic): AdminTopic {
+  return {
+    id: topic.id,
+    slug: topic.slug,
+    name: topic.name,
+    isCurated: topic.isCurated,
+    postCount: topic.postCount,
+    followerCount: topic.followerCount,
+    createdAt: topic.createdAt.toISOString(),
   }
 }

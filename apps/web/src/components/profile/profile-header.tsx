@@ -21,14 +21,19 @@ import { formatCount, formatMonthYear, queryKeys, recognitionText } from "@contr
 import { signOut } from "@/actions/auth"
 import { ReportDialog } from "@/components/post/report-dialog"
 import { FollowButton } from "@/components/profile/follow-button"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Chip } from "@/components/ui/badges"
-import { Button } from "@/components/ui/button"
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
-import { Panel } from "@/components/ui/surfaces"
+import {
+  Avatar,
+  Button,
+  Chip,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+  Panel,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface ProfileHeaderProps {
@@ -92,7 +97,7 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
   return (
     <section className="flex flex-col gap-5 pt-4">
       <div className="flex flex-wrap items-start gap-6">
-        <Avatar id={profile.id} name={profile.displayName} size="xxl" />
+        <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} size="xxl" />
         <div className="flex min-w-65 flex-1 flex-col gap-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
@@ -218,6 +223,7 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
                     key={person.id}
                     id={person.id}
                     name={person.displayName}
+                    src={person.avatarUrl}
                     size="xs"
                     className={index > 0 ? "-ml-2 ring-2 ring-surface" : "ring-2 ring-surface"}
                   />

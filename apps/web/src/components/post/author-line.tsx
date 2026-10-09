@@ -3,10 +3,7 @@
 import type { PublicProfile } from "@contraponha/types"
 import Link from "next/link"
 
-import { RelativeTime } from "@/components/post/relative-time"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Chip } from "@/components/ui/badges"
+import { Avatar, Chip, RelativeTime, useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface AuthorLineProps {
@@ -50,7 +47,7 @@ export function AuthorLine({
         </span>
       ) : (
         <Link href={paths.profile(author.handle)} tabIndex={-1} aria-hidden>
-          <Avatar id={author.id} name={author.displayName} size={size} />
+          <Avatar id={author.id} name={author.displayName} src={author.avatarUrl} size={size} />
         </Link>
       )}
       <div className="flex min-w-0 flex-1 flex-col">

@@ -32,6 +32,7 @@ import {
   NotificationsRepository,
   type SavePreferencesParams,
 } from "#src/modules/notifications/repositories/notifications.repository.js"
+import type { User } from "#src/modules/users/domain/user.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const notificationCursorSchema = z.object({ visibleAt: z.iso.datetime(), id: z.uuid() })
@@ -75,6 +76,11 @@ interface StoreNotificationParams {
   params: NotifyParams
   visibleAt: Date
   executor: DatabaseExecutor
+}
+
+export interface DuePush {
+  recipient: User
+  notification: NotificationView
 }
 
 export interface PurgeNotificationsParams {
@@ -158,6 +164,29 @@ export class NotificationsService {
         visibleAt: notification.visibleAt.toISOString(),
         id: notification.id,
       }),
+    })
+  }
+
+  // Claims notifications that became visible and still need a push, with what is needed
+  // to write it: the recipient (language) and the same view the app shows.
+  async claimDuePushes(limit: number): Promise<DuePush[]> {
+    const rows = await this.notificationsRepository.claimDuePushes({ limit })
+
+    const userIds = rows.flatMap(({ notification, postAuthorId }) =>
+      [
+        notification.recipientId,
+        notification.actorId,
+        notification.previousActorId,
+        postAuthorId,
+      ].filter((id): id is string => id !== null),
+    )
+
+    const users = await this.usersService.findByIds(userIds)
+
+    return rows.flatMap((row) => {
+      const recipient = users.get(row.notification.recipientId)
+
+      return recipient ? [{ recipient, notification: toNotificationView({ row, users }) }] : []
     })
   }
 

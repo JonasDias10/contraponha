@@ -1,4 +1,4 @@
-import type { MediaUploadTicket } from "@contraponha/types"
+import type { MediaPurpose, MediaUploadTicket } from "@contraponha/types"
 import { mediaUploadTicketSchema } from "@contraponha/validation"
 import request from "supertest"
 
@@ -15,6 +15,7 @@ export interface RequestUploadParams {
   token: string
   mimeType?: string
   sizeBytes: number
+  purpose?: MediaPurpose
 }
 
 export interface PutObjectParams {
@@ -26,6 +27,7 @@ export interface UploadImageParams {
   server: App
   token: string
   content?: Buffer
+  purpose?: MediaPurpose
 }
 
 export async function requestUpload({
@@ -33,11 +35,12 @@ export async function requestUpload({
   token,
   mimeType = "image/png",
   sizeBytes,
+  purpose,
 }: RequestUploadParams): Promise<MediaUploadTicket> {
   const response = await request(server)
     .post("/api/v1/media/uploads")
     .set(bearer(token))
-    .send({ mimeType, sizeBytes })
+    .send({ mimeType, sizeBytes, purpose })
     .expect(201)
 
   return mediaUploadTicketSchema.parse(response.body)
@@ -57,8 +60,9 @@ export async function uploadImage({
   server,
   token,
   content = PNG_BYTES,
+  purpose,
 }: UploadImageParams): Promise<string> {
-  const ticket = await requestUpload({ server, token, sizeBytes: content.length })
+  const ticket = await requestUpload({ server, token, sizeBytes: content.length, purpose })
   const status = await putObject({ ticket, content })
 
   if (status !== 200) throw new Error(`Upload failed with status ${status}`)

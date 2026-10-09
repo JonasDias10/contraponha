@@ -9,7 +9,7 @@ import { HomeRail } from "@/components/feed/home-rail"
 import { TopicPage } from "@/components/feed/topic-page"
 import { AppShell } from "@/components/layout/app-shell"
 import { createServerApiClient } from "@/lib/api"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { getServerQueryClient } from "@/lib/server-query"
 
 const loadTopic = cache(async (slug: string) => {

@@ -8,11 +8,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { signIn } from "@/actions/auth"
-import { FormBanner } from "@/components/auth/form-banner"
-import { PasswordInput } from "@/components/auth/password-input"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { Field, Input } from "@/components/ui/field"
+import { Button, Field, FormBanner, Input, PasswordInput, useI18n } from "@contraponha/web-ui"
 
 export function SignInForm(): React.JSX.Element {
   const { t } = useI18n()

@@ -3,7 +3,12 @@ import { randomUUID } from "node:crypto"
 import { Injectable, Logger } from "@nestjs/common"
 import { minutesToMs, msToSeconds } from "@contraponha/config"
 import type { DatabaseExecutor } from "@contraponha/database"
-import { ApiErrorCode, type MediaUploadTicket, type MediaView } from "@contraponha/types"
+import {
+  ApiErrorCode,
+  MediaPurpose,
+  type MediaUploadTicket,
+  type MediaView,
+} from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { MEDIA_UPLOAD_URL_TTL_MINUTES } from "#src/config/durations.js"
@@ -21,10 +26,43 @@ const EXTENSION_BY_TYPE: Record<string, string> = {
   "image/webp": "webp",
 }
 
+const PREFIX_BY_PURPOSE: Record<MediaPurpose, string> = {
+  [MediaPurpose.POST]: "posts/",
+  [MediaPurpose.AVATAR]: "avatars/",
+}
+
 export interface CreateUploadParams {
   ownerId: string
   mimeType: string
   sizeBytes: number
+  purpose: MediaPurpose
+}
+
+export interface VerifyProfilePhotoParams {
+  ownerId: string
+  mediaId: string
+}
+
+interface IsUsableParams {
+  asset: MediaAsset
+  ownerId: string
+  purpose: MediaPurpose
+}
+
+export interface UseAsProfilePhotoParams {
+  ownerId: string
+  mediaId: string
+  executor: DatabaseExecutor
+}
+
+export interface ProfilePhotoChange {
+  url: string
+  replacedKeys: string[]
+}
+
+export interface RemoveProfilePhotoParams {
+  ownerId: string
+  executor: DatabaseExecutor
 }
 
 export interface VerifyUploadsParams {
@@ -61,8 +99,10 @@ export class MediaService {
     ownerId,
     mimeType,
     sizeBytes,
+    purpose,
   }: CreateUploadParams): Promise<MediaUploadTicket> {
-    const storageKey = `posts/${ownerId}/${randomUUID()}.${EXTENSION_BY_TYPE[mimeType] ?? "bin"}`
+    const extension = EXTENSION_BY_TYPE[mimeType] ?? "bin"
+    const storageKey = `${PREFIX_BY_PURPOSE[purpose]}${ownerId}/${randomUUID()}.${extension}`
     const asset = await this.mediaRepository.create({ ownerId, storageKey, mimeType, sizeBytes })
     const ttlMs = minutesToMs(MEDIA_UPLOAD_URL_TTL_MINUTES)
 
@@ -91,13 +131,43 @@ export class MediaService {
 
     const isEveryAssetUsable =
       assets.length === mediaIds.length &&
-      assets.every((asset) => asset.ownerId === ownerId && asset.status === "pending")
+      assets.every((asset) => this.isUsable({ asset, ownerId, purpose: MediaPurpose.POST }))
 
     if (!isEveryAssetUsable) throw new AppError(ApiErrorCode.MEDIA_INVALID)
 
     const checks = await Promise.all(assets.map((asset) => this.isStoredImage(asset)))
 
     if (checks.includes(false)) throw new AppError(ApiErrorCode.MEDIA_INVALID)
+  }
+
+  async verifyProfilePhoto({ ownerId, mediaId }: VerifyProfilePhotoParams): Promise<void> {
+    const [asset] = await this.mediaRepository.findByIds([mediaId])
+
+    if (!asset || !this.isUsable({ asset, ownerId, purpose: MediaPurpose.AVATAR }))
+      throw new AppError(ApiErrorCode.MEDIA_INVALID)
+
+    const isImage = await this.isStoredImage(asset)
+
+    if (!isImage) throw new AppError(ApiErrorCode.MEDIA_INVALID)
+  }
+
+  // Must run in the transaction that updates the user row, which serializes concurrent
+  // changes so each person keeps at most one profile photo.
+  async useAsProfilePhoto({
+    ownerId,
+    mediaId,
+    executor,
+  }: UseAsProfilePhotoParams): Promise<ProfilePhotoChange> {
+    const replacedKeys = await this.mediaRepository.deleteProfilePhotos({ ownerId, executor })
+    const asset = await this.mediaRepository.markAsProfilePhoto({ mediaId, executor })
+
+    if (!asset) throw new AppError(ApiErrorCode.MEDIA_INVALID)
+
+    return { url: this.storage.publicUrl(asset.storageKey), replacedKeys }
+  }
+
+  removeProfilePhoto({ ownerId, executor }: RemoveProfilePhotoParams): Promise<string[]> {
+    return this.mediaRepository.deleteProfilePhotos({ ownerId, executor })
   }
 
   attachToPost({ mediaIds, postId, executor }: AttachToPostParams): Promise<void> {
@@ -139,6 +209,14 @@ export class MediaService {
     } catch (error) {
       this.logger.error({ err: error, count: storageKeys.length }, "Failed to delete media objects")
     }
+  }
+
+  private isUsable({ asset, ownerId, purpose }: IsUsableParams): boolean {
+    return (
+      asset.ownerId === ownerId &&
+      asset.status === "pending" &&
+      asset.storageKey.startsWith(PREFIX_BY_PURPOSE[purpose])
+    )
   }
 
   private async isStoredImage(asset: MediaAsset): Promise<boolean> {

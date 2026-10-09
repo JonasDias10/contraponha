@@ -7,7 +7,7 @@ import { HomeFeed } from "@/components/feed/home-feed"
 import { HomeRail } from "@/components/feed/home-rail"
 import { AppShell } from "@/components/layout/app-shell"
 import { createServerApiClient } from "@/lib/api"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { getServerQueryClient } from "@/lib/server-query"
 import { getViewer } from "@/lib/viewer"
 

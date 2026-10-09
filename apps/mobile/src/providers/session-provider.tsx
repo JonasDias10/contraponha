@@ -95,15 +95,25 @@ export function SessionProvider({ children }: SessionProviderProps): React.JSX.E
     [queryClient],
   )
 
+  const unregisterPush = useCallback(async (): Promise<void> => {
+    const pushToken = await readStored(STORAGE_KEYS.pushToken)
+
+    await writeStored({ key: STORAGE_KEYS.pushToken, value: null })
+
+    if (pushToken) await api.notifications.unregisterPushToken(pushToken)
+  }, [api])
+
   const signOut = useCallback(async (): Promise<void> => {
     try {
+      await unregisterPush().catch(() => undefined)
+
       await api.auth.logout()
     } catch {
       // The local session is cleared even when the server is unreachable.
     } finally {
       await clearLocalSession()
     }
-  }, [api, clearLocalSession])
+  }, [api, clearLocalSession, unregisterPush])
 
   const value = useMemo<SessionContextValue>(
     () => ({ api, requestLocale, isSignedIn, isRestoring, signIn, signOut }),

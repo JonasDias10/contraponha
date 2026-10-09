@@ -10,9 +10,11 @@ import type { AppConfig } from "#src/config/app-config.js"
 import { ConfigModule } from "#src/config/config.module.js"
 import { DatabaseModule } from "#src/infrastructure/database/database.module.js"
 import { EmailModule } from "#src/infrastructure/email/email.module.js"
+import { PushModule as PushInfrastructureModule } from "#src/infrastructure/push/push.module.js"
 import { RedisModule } from "#src/infrastructure/redis/redis.module.js"
 import { StorageModule } from "#src/infrastructure/storage/storage.module.js"
 import { AccountsModule } from "#src/modules/accounts/accounts.module.js"
+import { AdminModule } from "#src/modules/admin/admin.module.js"
 import { AuthModule } from "#src/modules/auth/auth.module.js"
 import { BookmarksModule } from "#src/modules/bookmarks/bookmarks.module.js"
 import { CommentsModule } from "#src/modules/comments/comments.module.js"
@@ -25,6 +27,7 @@ import { SessionAuthGuard } from "#src/modules/auth/guards/session-auth.guard.js
 import { HealthModule } from "#src/modules/health/health.module.js"
 import { PeopleModule } from "#src/modules/people/people.module.js"
 import { PostsModule } from "#src/modules/posts/posts.module.js"
+import { PushModule } from "#src/modules/push/push.module.js"
 import { ReactionsModule } from "#src/modules/reactions/reactions.module.js"
 import { SearchModule } from "#src/modules/search/search.module.js"
 import { TopicsModule } from "#src/modules/topics/topics.module.js"
@@ -42,6 +45,7 @@ export class AppModule {
         DatabaseModule,
         RedisModule,
         EmailModule,
+        PushInfrastructureModule,
         StorageModule,
         HealthModule,
         UsersModule,
@@ -53,9 +57,11 @@ export class AppModule {
         FollowsModule,
         MediaModule,
         NotificationsModule,
+        PushModule,
         FeedModule,
         SearchModule,
         ModerationModule,
+        AdminModule,
         BookmarksModule,
         PeopleModule,
         AccountsModule,

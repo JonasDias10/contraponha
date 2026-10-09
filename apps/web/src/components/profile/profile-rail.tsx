@@ -5,12 +5,7 @@ import Link from "next/link"
 import { queryKeys, topicLabel } from "@contraponha/client-core"
 
 import { FollowButton } from "@/components/profile/follow-button"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { tagVariants } from "@/components/ui/badges"
-import { Card } from "@/components/ui/surfaces"
+import { Avatar, Card, tagVariants, useApi, useI18n, useViewer } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface ProfileRailProps {
@@ -67,7 +62,7 @@ export function ProfileRail({ handle }: ProfileRailProps): React.JSX.Element {
               key={person.id}
               className="flex items-start gap-3 border-t border-line px-4 py-3 first-of-type:border-t-0"
             >
-              <Avatar id={person.id} name={person.displayName} size="sm" />
+              <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} size="sm" />
               <Link
                 href={paths.profile(person.handle)}
                 className="flex min-w-0 flex-1 flex-col text-ink no-underline"

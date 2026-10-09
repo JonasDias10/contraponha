@@ -26,7 +26,13 @@
       "expo-image",
       "expo-web-browser",
       "@react-native-community/datetimepicker",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      [
+        "expo-notifications",
+        {
+          "color": "#fbfbfa"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

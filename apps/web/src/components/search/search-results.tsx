@@ -15,13 +15,8 @@ import {
 import { ContributionCard } from "@/components/discussion/contribution-card"
 import { PostCardSkeleton } from "@/components/feed/feed-list"
 import { PostCard } from "@/components/post/post-card"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { Avatar, Button, Card, cn, EmptyState, useApi, useI18n } from "@contraponha/web-ui"
 import { useSearchState, type SearchState } from "@/components/search/use-search-params-state"
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, EmptyState } from "@/components/ui/surfaces"
-import { cn } from "@/lib/cn"
 import { paths } from "@/lib/paths"
 
 const FIRST_PAGE: string | undefined = undefined
@@ -270,7 +265,7 @@ function PeopleResults({ state, limit }: LimitedResultsProps): React.JSX.Element
         {people.map((person) => (
           <Link key={person.id} href={paths.profile(person.handle)} className="no-underline">
             <Card className="flex h-full flex-col gap-2 p-4 text-ink hover:border-line-strong">
-              <Avatar id={person.id} name={person.displayName} />
+              <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} />
               <span className="font-semibold">{person.displayName}</span>
               <span className="text-[13px] text-subtle">
                 {person.headline ?? `@${person.handle}`}

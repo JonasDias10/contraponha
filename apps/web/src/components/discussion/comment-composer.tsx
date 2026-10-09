@@ -11,13 +11,16 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { errorMessage, queryKeys } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Input, Textarea } from "@/components/ui/field"
-import { Card } from "@/components/ui/surfaces"
+import {
+  Avatar,
+  Button,
+  Card,
+  Input,
+  Textarea,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 
 const commentFormSchema = z.object({
   body: commentBodySchema,
@@ -95,7 +98,7 @@ export function CommentComposer({
         className="flex flex-col gap-3"
       >
         <div className="flex items-start gap-3">
-          <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+          <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
           <label className="flex-1">
             <span className="sr-only">
               {parentId ? t("web.comment.replyPlaceholder") : t("web.post.composerPlaceholder")}

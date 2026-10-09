@@ -6,12 +6,7 @@ import { BookText, MessageSquare, ShieldCheck, Star } from "lucide-react"
 import Link from "next/link"
 import { notificationText, queryKeys } from "@contraponha/client-core"
 
-import { RelativeTime } from "@/components/post/relative-time"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { UnreadDot } from "@/components/ui/badges"
-import { cn } from "@/lib/cn"
+import { Avatar, cn, RelativeTime, UnreadDot, useApi, useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 interface IconProps {
@@ -54,11 +49,17 @@ function NotificationIcon({ notification }: IconProps): React.JSX.Element {
 
       return (
         <span aria-hidden className="flex flex-none">
-          <Avatar id={first.id} name={first.displayName} size={second ? "sm" : "md"} />
+          <Avatar
+            id={first.id}
+            name={first.displayName}
+            src={first.avatarUrl}
+            size={second ? "sm" : "md"}
+          />
           {second ? (
             <Avatar
               id={second.id}
               name={second.displayName}
+              src={second.avatarUrl}
               size="sm"
               className="-ml-2 ring-2 ring-surface-raised"
             />

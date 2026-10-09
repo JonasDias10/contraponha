@@ -36,6 +36,7 @@ export class AccountDataRepository {
         location: users.location,
         website: users.website,
         pronouns: users.pronouns,
+        avatarUrl: users.avatarUrl,
         birthDate: users.birthDate,
         locale: users.locale,
         timezone: users.timezone,

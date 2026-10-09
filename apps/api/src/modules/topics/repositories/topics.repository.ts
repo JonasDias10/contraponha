@@ -6,7 +6,7 @@ import {
   type Database,
   type DatabaseExecutor,
 } from "@contraponha/database"
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, asc, desc, eq, ilike, inArray, lt, or, sql } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import type { Topic } from "#src/modules/topics/domain/topic.js"
@@ -56,6 +56,25 @@ export interface PostTopicRow {
 export interface SearchTopicsParams {
   q: string
   limit: number
+}
+
+export interface ListAllTopicsParams {
+  q: string | undefined
+  isCurated: boolean | undefined
+  beforeId: string | undefined
+  limit: number
+}
+
+export interface CreateTopicData {
+  slug: string
+  name: string
+  isCurated: boolean
+}
+
+export interface UpdateTopicParams {
+  slug: string
+  data: Partial<Pick<Topic, "name" | "isCurated">>
+  executor?: DatabaseExecutor
 }
 
 @Injectable()
@@ -224,5 +243,36 @@ export class TopicsRepository {
           removed.map(({ topicId }) => topicId),
         ),
       )
+  }
+
+  listAll({ q, isCurated, beforeId, limit }: ListAllTopicsParams): Promise<Topic[]> {
+    const pattern = q ? `%${q}%` : undefined
+
+    return this.db
+      .select()
+      .from(topics)
+      .where(
+        and(
+          pattern ? or(ilike(topics.name, pattern), ilike(topics.slug, pattern)) : undefined,
+          isCurated === undefined ? undefined : eq(topics.isCurated, isCurated),
+          beforeId ? lt(topics.id, beforeId) : undefined,
+        ),
+      )
+      .orderBy(desc(topics.id))
+      .limit(limit)
+  }
+
+  async create(data: CreateTopicData): Promise<Topic> {
+    const [topic] = await this.db.insert(topics).values(data).returning()
+
+    if (!topic) throw new Error("Insert into topics returned no row")
+
+    return topic
+  }
+
+  async update({ slug, data, executor = this.db }: UpdateTopicParams): Promise<Topic | undefined> {
+    const [topic] = await executor.update(topics).set(data).where(eq(topics.slug, slug)).returning()
+
+    return topic
   }
 }

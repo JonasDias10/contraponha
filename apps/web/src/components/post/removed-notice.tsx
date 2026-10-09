@@ -4,7 +4,7 @@ import type { CommunityRule, ContentRemoval } from "@contraponha/types"
 import { ShieldAlert } from "lucide-react"
 import Link from "next/link"
 
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface RemovedNoticeProps {

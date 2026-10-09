@@ -21,6 +21,7 @@ import { useEffect } from "react"
 import { AppState, Platform } from "react-native"
 
 import { useColorSchemeName, usePalette } from "@/hooks/use-palette"
+import { usePushNotifications } from "@/hooks/use-push-notifications"
 import { AppProviders } from "@/providers/app-providers"
 import { usePreferences } from "@/providers/preferences-provider"
 import { useSession, useViewerQuery } from "@/providers/session-provider"
@@ -40,6 +41,8 @@ function RootNavigator(): React.JSX.Element | null {
   const { viewer, isLoading } = useViewerQuery()
   const isReady = preferences.isLoaded && !isRestoring && !isLoading
   const needsOnboarding = viewer !== null && !viewer.isOnboarded
+
+  usePushNotifications(isReady && isSignedIn && viewer !== null && !needsOnboarding)
 
   useEffect(() => {
     void SystemUI.setBackgroundColorAsync(palette.surface)

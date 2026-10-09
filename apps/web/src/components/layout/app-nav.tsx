@@ -21,12 +21,17 @@ import { useUnreadCount } from "@contraponha/client-core/react"
 
 import { signOut } from "@/actions/auth"
 import { Logo } from "@/components/brand/logo"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
-import { cn } from "@/lib/cn"
+import {
+  Avatar,
+  Button,
+  cn,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 interface NavItem {
@@ -62,6 +67,9 @@ interface BottomNavItem {
   label: MessageKey
   Icon: LucideIcon
 }
+
+// The moderation queue and the admin tools live in the hub, a separate app.
+const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL
 
 function isCurrent({ pathname, href }: IsCurrentParams): boolean {
   return pathname === href || pathname.startsWith(`${href}/`)
@@ -105,17 +113,16 @@ export function SideNav(): React.JSX.Element {
             </Link>
           )
         })}
-        {isModerator ? (
-          <Link
-            href="/moderation"
-            className={cn(
-              "flex h-12 items-center gap-3.5 rounded-[12px] px-3.5 text-base font-medium text-ink no-underline hover:bg-surface-sunken",
-              isCurrent({ pathname, href: "/moderation" }) && "bg-surface-sunken font-semibold",
-            )}
+        {isModerator && HUB_URL ? (
+          <a
+            href={HUB_URL}
+            target="_blank"
+            rel="noopener"
+            className="flex h-12 items-center gap-3.5 rounded-[12px] px-3.5 text-base font-medium text-ink no-underline hover:bg-surface-sunken"
           >
             <Shield aria-hidden className="size-5 text-muted" />
             {t("web.nav.moderation")}
-          </Link>
+          </a>
         ) : null}
       </div>
       {viewer ? (
@@ -154,7 +161,7 @@ function AccountMenu(): React.JSX.Element | null {
         aria-label={t("web.nav.accountMenu")}
         className="mt-auto flex items-center gap-3 rounded-[12px] px-1.5 py-2 text-left hover:bg-surface-sunken"
       >
-        <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+        <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
         <span className="flex min-w-0 flex-col">
           <span className="truncate text-sm font-semibold">{viewer.displayName}</span>
           <span className="truncate text-[13px] text-subtle">@{viewer.handle}</span>

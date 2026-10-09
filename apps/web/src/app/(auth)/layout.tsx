@@ -1,7 +1,7 @@
 import { Check } from "lucide-react"
 
 import { Logo } from "@/components/brand/logo"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 
 const ASIDE_POINTS = [
   "web.auth.asidePointReactions",

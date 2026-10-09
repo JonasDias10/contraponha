@@ -6,10 +6,15 @@ import { REACTION_ORDER } from "@contraponha/client-core"
 import { useReactions } from "@contraponha/client-core/react"
 
 import { commentActionClasses } from "@/components/discussion/comment-actions"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
-import { cn } from "@/lib/cn"
+import {
+  cn,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { REACTION_ICONS } from "@/lib/reactions"
 
 export interface CommentReactionsProps {

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow"
-import { ViewerProvider } from "@/components/providers/viewer-provider"
-import { getRequestTranslator } from "@/lib/i18n"
+import { ViewerProvider } from "@contraponha/web-ui"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { requireViewer } from "@/lib/viewer"
 
 export async function generateMetadata(): Promise<Metadata> {

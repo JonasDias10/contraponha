@@ -25,11 +25,16 @@ import {
 
 import { ContextNoteDialog } from "@/components/post/context-note-dialog"
 import { ReportDialog } from "@/components/post/report-dialog"
-import { RuleSelect } from "@/components/post/rule-select"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
+import {
+  ConfirmDialog,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+  RuleSelect,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 type OpenDialog = "delete" | "report" | "remove" | "context" | null
@@ -122,6 +127,9 @@ export function PostMenu({ post, afterDelete }: PostMenuProps): React.JSX.Elemen
       </Menu>
 
       <ConfirmDialog
+        cancelLabel={t("web.common.cancel")}
+
+        closeLabel={t("web.common.close")}
         open={dialog === "delete"}
         onOpenChange={closeDialog}
         title={t("web.post.deleteTitle")}
@@ -140,6 +148,9 @@ export function PostMenu({ post, afterDelete }: PostMenuProps): React.JSX.Elemen
       />
 
       <ConfirmDialog
+        cancelLabel={t("web.common.cancel")}
+
+        closeLabel={t("web.common.close")}
         open={dialog === "remove"}
         onOpenChange={closeDialog}
         title={t("web.moderation.removeTitle")}

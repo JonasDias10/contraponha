@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm, useWatch } from "react-hook-form"
 
+import { ProfilePhotoField } from "@/components/settings/profile-photo-field"
 import { SettingsScreen } from "@/components/settings/settings-screen"
 import { SettingsSection } from "@/components/settings/settings-section"
 import { Button } from "@/components/ui/button"
@@ -61,6 +62,7 @@ export default function ProfileSettingsScreen(): React.JSX.Element {
   return (
     <SettingsScreen title={t("web.settings.profile")}>
       <SettingsSection title={t("web.settings.profileTitle")} lead={t("web.settings.profileLead")}>
+        <ProfilePhotoField viewer={viewer} />
         <Controller
           control={control}
           name="displayName"

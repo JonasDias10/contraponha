@@ -1,6 +1,6 @@
 import type { MediaView } from "@contraponha/types"
 
-import { cn } from "@/lib/cn"
+import { cn } from "@contraponha/web-ui"
 
 export interface MediaGridProps {
   media: MediaView[]

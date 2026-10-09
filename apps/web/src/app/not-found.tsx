@@ -2,9 +2,8 @@ import { SearchX } from "lucide-react"
 import Link from "next/link"
 
 import { Logo } from "@/components/brand/logo"
-import { Button } from "@/components/ui/button"
-import { EmptyState } from "@/components/ui/surfaces"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
+import { Button, EmptyState } from "@contraponha/web-ui"
 
 export default async function NotFound(): Promise<React.JSX.Element> {
   const { t } = await getRequestTranslator()

@@ -9,15 +9,21 @@ import { toast } from "sonner"
 import { errorMessage, formatDate, formatDateTime, queryKeys } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
+import {
+  Banner,
+  Button,
+  Checkbox,
+  ConfirmDialog,
+  Field,
+  Input,
+  Segmented,
+  SegmentedItem,
+  SegmentedList,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { SettingsSection } from "@/components/settings/settings-section"
-import { Button } from "@/components/ui/button"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Checkbox, Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
-import { Field, Input } from "@/components/ui/field"
-import { Banner } from "@/components/ui/surfaces"
 
 const SECTION_KEYS = {
   [DataExportSection.CONTENT]: "web.settings.exportContent",
@@ -243,6 +249,8 @@ function DeleteSection(): React.JSX.Element | null {
         <span className="text-[13px] text-subtle">{t("web.settings.deleteConfirmHint")}</span>
       </div>
       <ConfirmDialog
+        cancelLabel={t("web.common.cancel")}
+        closeLabel={t("web.common.close")}
         open={isOpen}
         onOpenChange={setIsOpen}
         title={t("web.settings.deleteDialogTitle")}

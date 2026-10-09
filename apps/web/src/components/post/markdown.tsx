@@ -1,6 +1,6 @@
 import ReactMarkdown, { type Components } from "react-markdown"
 
-import { cn } from "@/lib/cn"
+import { cn } from "@contraponha/web-ui"
 
 const ALLOWED_ELEMENTS = [
   "p",

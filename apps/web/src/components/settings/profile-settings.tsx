@@ -20,12 +20,9 @@ import {
   type ProfileFormValues,
 } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
+import { Button, Field, Input, Textarea, useApi, useI18n, useViewer } from "@contraponha/web-ui"
+import { ProfilePhotoField } from "@/components/settings/profile-photo-field"
 import { SettingsSection } from "@/components/settings/settings-section"
-import { Button } from "@/components/ui/button"
-import { Field, Input, Textarea } from "@/components/ui/field"
 
 export function ProfileSettings(): React.JSX.Element | null {
   const viewer = useViewer()
@@ -73,6 +70,7 @@ function ProfileForm({ viewer }: ProfileFormProps): React.JSX.Element {
 
   return (
     <SettingsSection title={t("web.settings.profileTitle")} lead={t("web.settings.profileLead")}>
+      <ProfilePhotoField viewer={viewer} />
       <form
         noValidate
         onSubmit={(event) => void handleSubmit((values) => save.mutate(values))(event)}

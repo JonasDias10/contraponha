@@ -3,9 +3,7 @@
 import type { TopicView } from "@contraponha/types"
 import { Check } from "lucide-react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { tagVariants } from "@/components/ui/badges"
-import { cn } from "@/lib/cn"
+import { cn, tagVariants, useI18n } from "@contraponha/web-ui"
 
 export interface InterestsPickerProps {
   topics: TopicView[]

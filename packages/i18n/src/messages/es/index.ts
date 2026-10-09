@@ -5,6 +5,7 @@ import { common } from "./common.js"
 import { content } from "./content.js"
 import { emails } from "./emails.js"
 import { follows } from "./follows.js"
+import { hub } from "./hub.js"
 import { media } from "./media.js"
 import { moderation } from "./moderation.js"
 import { notifications } from "./notifications.js"
@@ -18,6 +19,7 @@ export const es: PartialMessages = {
   content,
   emails,
   follows,
+  hub,
   media,
   moderation,
   notifications,

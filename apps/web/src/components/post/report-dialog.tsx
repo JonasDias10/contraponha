@@ -11,13 +11,21 @@ import { toast } from "sonner"
 import type { z } from "zod"
 import { errorMessage } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { RadioGroup, RadioItem } from "@/components/ui/controls"
-import { Field, Textarea } from "@/components/ui/field"
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/overlays"
-import { Banner, Panel } from "@/components/ui/surfaces"
+import {
+  Banner,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  Field,
+  Panel,
+  RadioGroup,
+  RadioItem,
+  Textarea,
+  useApi,
+  useI18n,
+} from "@contraponha/web-ui"
 
 const REASONS = [
   ReportReason.SPAM,

@@ -3,8 +3,7 @@
 import { ReactionKind, type ReactionCounts } from "@contraponha/types"
 import { REACTION_ORDER } from "@contraponha/client-core"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { cn } from "@/lib/cn"
+import { cn, useI18n } from "@contraponha/web-ui"
 import { REACTION_ICONS } from "@/lib/reactions"
 
 export interface ReactionBarProps {

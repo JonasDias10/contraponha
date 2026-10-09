@@ -7,12 +7,8 @@ import { ONBOARDING_TOTAL_STEPS, useOnboardingFlow } from "@contraponha/client-c
 
 import { Logo } from "@/components/brand/logo"
 import { FollowButton } from "@/components/profile/follow-button"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { Avatar, Button, Card, cn, useI18n } from "@contraponha/web-ui"
 import { InterestsPicker } from "@/components/topics/interests-picker"
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/surfaces"
-import { cn } from "@/lib/cn"
 
 export function OnboardingFlow(): React.JSX.Element {
   const { t } = useI18n()
@@ -79,7 +75,7 @@ export function OnboardingFlow(): React.JSX.Element {
                 {flow.suggestions.map(({ profile, recognition }) => (
                   <Card key={profile.id} className="flex flex-col gap-3 p-5">
                     <div className="flex items-center gap-3">
-                      <Avatar id={profile.id} name={profile.displayName} />
+                      <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} />
                       <div className="flex min-w-0 flex-1 flex-col">
                         <span className="truncate font-semibold">{profile.displayName}</span>
                         <span className="text-[13px] text-subtle">@{profile.handle}</span>

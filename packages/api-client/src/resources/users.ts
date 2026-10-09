@@ -9,6 +9,7 @@ import {
   privateProfileSchema,
   profileViewSchema,
   suggestedPeopleSchema,
+  type SetAvatarInput,
   type UpdateProfileInput,
 } from "@contraponha/validation"
 
@@ -17,6 +18,8 @@ import type { HttpClient } from "../http.js"
 export interface UsersResource {
   me(): Promise<PrivateProfile>
   updateMe(input: UpdateProfileInput): Promise<PrivateProfile>
+  setAvatar(input: SetAvatarInput): Promise<PrivateProfile>
+  removeAvatar(): Promise<PrivateProfile>
   completeOnboarding(): Promise<PrivateProfile>
   getByHandle(handle: string): Promise<ProfileView>
   followedBy(handle: string): Promise<FollowedByPreview>
@@ -28,6 +31,15 @@ export function createUsersResource(request: HttpClient): UsersResource {
     me: () => request({ method: "GET", path: "/users/me", schema: privateProfileSchema }),
     updateMe: (input) =>
       request({ method: "PATCH", path: "/users/me", body: input, schema: privateProfileSchema }),
+    setAvatar: (input) =>
+      request({
+        method: "PUT",
+        path: "/users/me/avatar",
+        body: input,
+        schema: privateProfileSchema,
+      }),
+    removeAvatar: () =>
+      request({ method: "DELETE", path: "/users/me/avatar", schema: privateProfileSchema }),
     completeOnboarding: () =>
       request({ method: "POST", path: "/users/me/onboarding", schema: privateProfileSchema }),
     getByHandle: (handle) =>

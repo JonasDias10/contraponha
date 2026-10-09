@@ -6,7 +6,7 @@ import { notFound } from "next/navigation"
 import { cache } from "react"
 
 import { createServerApiClient } from "./api"
-import { getRequestTranslator } from "./i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 
 // Cached per request: metadata and the page share one API call.
 export const loadProfile = cache(async (handle: string): Promise<ProfileView> => {

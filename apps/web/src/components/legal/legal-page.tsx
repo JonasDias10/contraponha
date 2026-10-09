@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { formatDate } from "@contraponha/client-core"
 
 import { LegalDocument } from "@/components/legal/legal-document"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { loadLegalDocument, type LegalPage } from "@/lib/legal"
 
 const TITLE_KEYS = {

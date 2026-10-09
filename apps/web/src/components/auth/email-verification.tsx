@@ -4,10 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { CircleCheck, Loader2 } from "lucide-react"
 import Link from "next/link"
 
-import { FormBanner } from "@/components/auth/form-banner"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
+import { Button, FormBanner, useApi, useI18n } from "@contraponha/web-ui"
 
 export interface EmailVerificationProps {
   token: string

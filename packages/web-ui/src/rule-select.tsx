@@ -1,0 +1,39 @@
+"use client"
+
+import { CommunityRule } from "@contraponha/types"
+
+import { RadioGroup, RadioItem } from "./controls.js"
+import { useI18n } from "./i18n-provider.js"
+
+export const RULES = Object.values(CommunityRule)
+
+export interface RuleSelectProps {
+  value: CommunityRule | undefined
+  onChange: (rule: CommunityRule) => void
+}
+
+function isRule(value: string): value is CommunityRule {
+  return RULES.some((rule) => rule === value)
+}
+
+export function RuleSelect({ value, onChange }: RuleSelectProps): React.JSX.Element {
+  const { t } = useI18n()
+
+  return (
+    <RadioGroup
+      value={value}
+      onValueChange={(next) => {
+        if (isRule(next)) onChange(next)
+      }}
+      aria-label={t("web.moderation.rule")}
+      className="grid gap-3 sm:grid-cols-2"
+    >
+      {RULES.map((rule) => (
+        <label key={rule} className="flex items-start gap-3 text-sm">
+          <RadioItem value={rule} />
+          {t(`web.rules.${rule}`)}
+        </label>
+      ))}
+    </RadioGroup>
+  )
+}

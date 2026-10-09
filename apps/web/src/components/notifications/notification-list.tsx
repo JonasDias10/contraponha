@@ -9,11 +9,18 @@ import { periodOf, queryKeys } from "@contraponha/client-core"
 import type { NotificationPeriod } from "@contraponha/client-core"
 
 import { NotificationItem } from "@/components/notifications/notification-item"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
-import { Banner, Card, EmptyState, Skeleton } from "@/components/ui/surfaces"
+import {
+  Banner,
+  Button,
+  Card,
+  EmptyState,
+  Segmented,
+  SegmentedItem,
+  SegmentedList,
+  Skeleton,
+  useApi,
+  useI18n,
+} from "@contraponha/web-ui"
 
 const FIRST_PAGE: string | undefined = undefined
 const PERIODS: NotificationPeriod[] = ["today", "thisWeek", "earlier"]

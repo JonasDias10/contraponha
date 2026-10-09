@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
 import { Instrument_Sans, Literata } from "next/font/google"
 
-import { AppProviders } from "@/components/providers/app-providers"
-import { getRequestTranslator } from "@/lib/i18n"
-import { THEME_BOOT_SCRIPT } from "@/lib/theme"
+import { AppProviders, THEME_BOOT_SCRIPT } from "@contraponha/web-ui"
+import { getRequestTranslator } from "@contraponha/next-server"
 
 import "./globals.css"
 

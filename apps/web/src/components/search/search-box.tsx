@@ -4,7 +4,7 @@ import { Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export function SearchBox(): React.JSX.Element {

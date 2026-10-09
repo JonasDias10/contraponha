@@ -4,11 +4,8 @@ import type { PostView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 import { formatDateTime, queryKeys, toVersions } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
+import { Card, cn, useApi, useI18n } from "@contraponha/web-ui"
 import { Markdown } from "@/components/post/markdown"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Card } from "@/components/ui/surfaces"
-import { cn } from "@/lib/cn"
 
 export interface EditHistoryProps {
   post: PostView

@@ -17,7 +17,7 @@ import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 
 import {
   ObjectStorage,
-  PUBLIC_OBJECT_PREFIX,
+  PUBLIC_OBJECT_PREFIXES,
   type CreateDownloadUrlParams,
   type CreateUploadUrlParams,
   type PutObjectParams,
@@ -134,7 +134,7 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
     return `${this.config.media.publicBaseUrl}/${key}`
   }
 
-  // The policy is reapplied on every start so it always matches PUBLIC_OBJECT_PREFIX.
+  // The policy is reapplied on every start so it always matches PUBLIC_OBJECT_PREFIXES.
   private async ensurePublicBucket(): Promise<void> {
     const exists = await this.bucketExists()
 
@@ -147,7 +147,9 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
           Effect: "Allow",
           Principal: "*",
           Action: ["s3:GetObject"],
-          Resource: [`arn:aws:s3:::${this.bucket}/${PUBLIC_OBJECT_PREFIX}*`],
+          Resource: PUBLIC_OBJECT_PREFIXES.map(
+            (prefix) => `arn:aws:s3:::${this.bucket}/${prefix}*`,
+          ),
         },
       ],
     }

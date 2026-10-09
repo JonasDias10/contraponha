@@ -6,9 +6,7 @@ import { useFieldArray, type FieldErrors, type UseFormRegister } from "react-hoo
 import { type ComposerValues } from "@contraponha/client-core"
 
 import { type ComposerControl } from "@/components/composer/composer-schema"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/field"
+import { Button, Input, useI18n } from "@contraponha/web-ui"
 
 export interface SourcesFieldProps {
   control: ComposerControl

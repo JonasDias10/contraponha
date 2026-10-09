@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useI18n } from "@contraponha/web-ui"
 import type { UploadedImage } from "@/hooks/use-image-upload"
 
 export interface ImageStripProps {

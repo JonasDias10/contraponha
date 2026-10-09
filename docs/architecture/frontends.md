@@ -1,6 +1,6 @@
-# Frontends (apps/web e apps/mobile)
+# Frontends (apps/web, apps/hub e apps/mobile)
 
-Os dois clientes do Contraponha compartilham contrato, traduções e cliente HTTP com a API. Este documento descreve a estrutura de cada um e as regras para manter o que é comum de fato comum.
+Os clientes do Contraponha compartilham contrato, traduções e cliente HTTP com a API. O web e o mobile são o produto; o hub é a área de moderação e administração. Este documento descreve a estrutura de cada um e as regras para manter o que é comum de fato comum.
 
 ## O que é compartilhado
 
@@ -24,7 +24,16 @@ Tudo que os dois clientes fazem igual e não depende de plataforma:
 
 Os dois pontos de entrada existem porque o barrel puro é importado por Server Components do web, que não podem carregar `createContext` nem hooks.
 
-Componentes visuais **não** são compartilhados. Web usa HTML + Tailwind e mobile usa componentes nativos + `StyleSheet`. Um pacote de UI compartilhado só faz sentido se, no futuro, adotarmos uma solução que renderize nos dois (por exemplo, React Native Web), e essa decisão ainda não foi tomada. O que é compartilhado visualmente são os **tokens semânticos** (cores, fontes, raios e elevação), hoje definidos em `globals.css` (web) e `src/lib/theme.ts` (mobile) com os mesmos valores. Valores, regras de uso e justificativas estão em [docs/design/design-system.md](../design/design-system.md).
+### `@contraponha/web-ui` e `@contraponha/next-server`
+
+Web e hub são dois apps Next.js com o mesmo visual e a mesma forma de falar com a API, então o que é igual entre eles mora em dois pacotes:
+
+- **`@contraponha/web-ui`**: primitivos visuais (botão, campos, avatar, diálogos, menus, abas, chips, banners), `RuleSelect`, `RelativeTime`, `Wordmark`, os providers de cliente (`AppProviders` com TanStack Query, cliente da API e toasts; `I18nProvider`; `ViewerProvider`), o script de tema e o CSS com os tokens do design system (`@contraponha/web-ui/styles.css`). Os componentes recebem todos os rótulos por props ou pelo `useI18n`, sem textos fixos. Cada app importa o CSS no seu `globals.css` e declara `@source` apontando para o pacote, para o Tailwind gerar as classes usadas por ele.
+- **`@contraponha/next-server`** (só servidor): cookie de sessão, idioma da requisição, o proxy `/api/v1` (`createApiProxy`), o cliente da API assinado com o cookie, `fetchViewer`, `endSession` e `toActionFailure` para server actions. Cada app só faz a ligação com o seu `API_URL`.
+
+Componentes de tela (feed, post, fila de denúncias) continuam em cada app.
+
+Componentes visuais **não** são compartilhados entre os apps Next e o mobile. Web usa HTML + Tailwind e mobile usa componentes nativos + `StyleSheet`. Um pacote de UI compartilhado só faz sentido se, no futuro, adotarmos uma solução que renderize nos dois (por exemplo, React Native Web), e essa decisão ainda não foi tomada. O que é compartilhado visualmente são os **tokens semânticos** (cores, fontes, raios e elevação), hoje definidos em `globals.css` (web) e `src/lib/theme.ts` (mobile) com os mesmos valores. Valores, regras de uso e justificativas estão em [docs/design/design-system.md](../design/design-system.md).
 
 ## apps/web (Next.js)
 
@@ -63,6 +72,7 @@ apps/web/
 - **Componentes de cliente** usam o mesmo `@contraponha/api-client` com `baseUrl` vazio: as chamadas vão para `/api/v1/...` no próprio web, e o route handler `app/api/v1/[...path]` repassa para `API_URL` com o token do cookie. Requisições que alteram estado só passam se a origem for a mesma (proteção contra CSRF além do `SameSite`).
 - Por isso `API_URL` continua sendo variável de servidor e a API não precisa liberar CORS para o web. O CORS do bucket de mídia, por outro lado, precisa aceitar a origem do web, porque o upload vai direto do navegador para o storage (ver [media.md](media.md)).
 - Páginas que exigem conta chamam `requireViewer()`, que redireciona para `/login`.
+- Cookie, proxy e cliente de servidor vêm de `@contraponha/next-server`, os mesmos do hub.
 
 ### Dados no cliente
 
@@ -80,10 +90,37 @@ apps/web/
 - Primitivos acessíveis do **Radix** (diálogos, menus, abas, popovers), variantes com `cva`, ícones `lucide-react`, toasts com `sonner`.
 - Markdown de posts e contribuições renderizado com `react-markdown` num subconjunto seguro (sem HTML bruto); textos legais usam também `remark-gfm` para tabelas.
 - Fontes Literata (texto) e Instrument Sans (interface) via `next/font`.
-- **Tema** claro, escuro ou automático. Um script pequeno (`THEME_BOOT_SCRIPT`, em `lib/theme.ts`) roda antes da primeira pintura e aplica a classe `dark`, evitando o flash de tema errado. Substitui o `next-themes`, que gerava aviso de script no React 19.2.
+- **Tema** claro, escuro ou automático. Um script pequeno (`THEME_BOOT_SCRIPT`, em `@contraponha/web-ui`) roda antes da primeira pintura e aplica a classe `dark`, evitando o flash de tema errado. Substitui o `next-themes`, que gerava aviso de script no React 19.2.
 - **Idioma.** O cookie `contraponha_locale` (seletor no rodapé ou idioma da conta) tem prioridade sobre o `Accept-Language`. Os textos estão no namespace `web` de `@contraponha/i18n`, em pt-BR, en e es. Textos legais traduzidos dizem que a versão em português prevalece.
 - **Rotas tipadas** (`typedRoutes`) fazem `<Link href>` inválido falhar no typecheck; URLs dinâmicas são montadas em `lib/paths.ts`.
 - Porta padrão: **3001** (a API usa a 3000).
+
+## apps/hub (Next.js)
+
+Moderação e administração, num app separado do produto: outro domínio, outro deploy, sem indexação (`robots: noindex`), e o produto não carrega nada dele.
+
+```text
+apps/hub/src/
+├── app/
+│   ├── login/                   Entrar (só moderação e administração)
+│   ├── (hub)/                   Layout com requireStaff() e navegação
+│   │   ├── page.tsx             Visão geral: totais e atividade diária
+│   │   ├── users/               Busca de contas e detalhe (suspender, encerrar, remover foto, papel)
+│   │   ├── moderation/          Fila de denúncias e registro de ações
+│   │   └── topics/              Curadoria de tópicos (só admin)
+│   └── api/v1/[...path]/        Proxy autenticado para a API (mesmo do web)
+├── actions/auth.ts              Entrar e sair
+├── components/                  Dashboard, contas, moderação, tópicos, navegação
+└── lib/                         env, cliente de servidor, viewer, chaves de cache, links para o web
+```
+
+- **Acesso.** O login usa a mesma API e o mesmo cookie do web, mas só guarda a sessão de quem é `moderator` ou `admin`; para os demais, a sessão recém-criada é encerrada na hora e o formulário explica que a conta não tem acesso. Todas as páginas passam por `requireStaff()`; tópicos exigem `requireAdmin()`. A API confere o papel em toda chamada, então esconder telas é só conveniência.
+- **Ações sobre contas** seguem `canActOn` (de `@contraponha/client-core`), a mesma regra que a API aplica: só sobre quem tem papel menor, nunca sobre si.
+- **Links para o produto** (abrir post, ver perfil) usam `NEXT_PUBLIC_WEB_URL` e abrem em outra aba.
+- **Textos** no namespace `hub` de `@contraponha/i18n` (pt-BR, en, es), reaproveitando `web.moderation`, `web.rules` e `web.common`.
+- **Gráficos** da visão geral são pequenos múltiplos (um gráfico por métrica, uma cor, um eixo), com o valor do dia ao passar o mouse e uma tabela equivalente para leitores de tela.
+- No web e no mobile, moderadores veem um atalho para o hub (`NEXT_PUBLIC_HUB_URL`, `EXPO_PUBLIC_HUB_URL`). As ações em contexto (remover post ou contribuição, nota de contexto) continuam no web e no mobile.
+- Porta padrão: **3002**.
 
 ## apps/mobile (Expo)
 
@@ -99,8 +136,8 @@ apps/mobile/
     │   ├── reset-password.tsx   Link de redefinição (contraponha://reset-password?token=)
     │   ├── verify-email.tsx     Link de confirmação de e-mail
     │   └── (app)/               Abas (início, busca, escrever, notificações, perfil), post,
-    │                            histórico, edição, perfis, seguidores, tópicos, salvos,
-    │                            configurações e moderação
+    │                            histórico, edição, perfis, seguidores, tópicos, salvos
+    │                            e configurações
     ├── components/              Componentes nativos por área (post, discussion, composer, ui...)
     ├── hooks/                   Paleta do tema, upload de imagens, rascunho no aparelho
     ├── providers/               Preferências, sessão, idioma, toast e ClientContext

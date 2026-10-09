@@ -4,8 +4,7 @@ import type { PublicProfile } from "@contraponha/types"
 import Link from "next/link"
 
 import { FollowButton } from "@/components/profile/follow-button"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar, useViewer } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface PersonRowProps {
@@ -20,7 +19,7 @@ export function PersonRow({ person, isFollowing }: PersonRowProps): React.JSX.El
   return (
     <li className="flex items-start gap-3 border-t border-line px-5 py-4 first:border-t-0">
       <Link href={paths.profile(person.handle)} tabIndex={-1} aria-hidden>
-        <Avatar id={person.id} name={person.displayName} />
+        <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <Link

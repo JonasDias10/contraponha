@@ -1,5 +1,6 @@
 import { canModerate } from "@contraponha/client-core"
 import { router, type Href } from "expo-router"
+import * as WebBrowser from "expo-web-browser"
 import {
   Bell,
   BookOpen,
@@ -25,6 +26,7 @@ import { Screen, ScreenHeader, ScrollContent } from "@/components/ui/screen"
 import { Card, Divider } from "@/components/ui/surfaces"
 import { AppText } from "@/components/ui/text"
 import { usePalette } from "@/hooks/use-palette"
+import { getMobileEnv } from "@/lib/env"
 import { useI18n } from "@/providers/i18n-provider"
 import { useRequiredViewer, useSession } from "@/providers/session-provider"
 import { space, TOUCH_TARGET } from "@/lib/theme"
@@ -74,6 +76,7 @@ export default function SettingsIndex(): React.JSX.Element {
   const viewer = useRequiredViewer()
   const { signOut } = useSession()
   const go = (href: Href) => () => router.push(href)
+  const hubUrl = getMobileEnv().EXPO_PUBLIC_HUB_URL
 
   const sections: MenuEntry[] = [
     {
@@ -111,13 +114,13 @@ export default function SettingsIndex(): React.JSX.Element {
 
   const places: MenuEntry[] = [
     { key: "saved", label: t("web.nav.saved"), icon: Bookmark, onPress: go("/saved") },
-    ...(canModerate(viewer)
+    ...(canModerate(viewer) && hubUrl
       ? [
           {
             key: "moderation",
             label: t("web.nav.moderation"),
             icon: ShieldCheck,
-            onPress: go("/moderation"),
+            onPress: () => void WebBrowser.openBrowserAsync(hubUrl),
           },
         ]
       : []),

@@ -1,6 +1,5 @@
 import { BottomNav, SideNav } from "@/components/layout/app-nav"
-import { ViewerProvider } from "@/components/providers/viewer-provider"
-import { cn } from "@/lib/cn"
+import { cn, ViewerProvider } from "@contraponha/web-ui"
 import { getViewer } from "@/lib/viewer"
 
 export interface AppShellProps {

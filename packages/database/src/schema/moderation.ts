@@ -37,6 +37,10 @@ export const moderationActionType = pgEnum("moderation_action_type", [
   "role_changed",
   "context_added",
   "context_removed",
+  "user_suspended",
+  "suspension_lifted",
+  "avatar_removed",
+  "topic_updated",
 ])
 
 export const reportSubject = pgEnum("report_subject", ["me", "someone_else", "group"])
@@ -127,6 +131,38 @@ export const contextNotes = pgTable(
   ],
 )
 
+// A suspension ends sessions and blocks sign-in until endsAt; a null endsAt is a permanent
+// ban. Lifting one early sets liftedAt. Each person has at most one row not yet lifted.
+export const suspensions = pgTable(
+  "suspensions",
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    moderatorId: uuid().references(() => users.id, { onDelete: "set null" }),
+    rule: text().$type<CommunityRuleValue>().notNull(),
+    note: text(),
+    endsAt: timestamp({ withTimezone: true }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    liftedAt: timestamp({ withTimezone: true }),
+    liftedById: uuid().references(() => users.id, { onDelete: "set null" }),
+  },
+  (table) => [
+    uniqueIndex("suspensions_open_user_unique")
+      .on(table.userId)
+      .where(sql`${table.liftedAt} is null`),
+    index("suspensions_user_id_created_at_idx").on(table.userId, table.createdAt),
+    check(
+      "suspensions_ends_after_start",
+      sql`${table.endsAt} is null or ${table.endsAt} > ${table.createdAt}`,
+    ),
+  ],
+)
+
+export type SuspensionRow = typeof suspensions.$inferSelect
 export type ContextNoteRow = typeof contextNotes.$inferSelect
 export type ReportRow = typeof reports.$inferSelect
 export type ModerationActionRow = typeof moderationActions.$inferSelect

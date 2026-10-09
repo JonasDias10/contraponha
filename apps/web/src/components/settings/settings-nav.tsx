@@ -5,8 +5,7 @@ import type { Route } from "next"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { cn } from "@/lib/cn"
+import { cn, useI18n } from "@contraponha/web-ui"
 
 interface Section {
   href: Route
