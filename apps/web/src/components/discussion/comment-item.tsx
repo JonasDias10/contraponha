@@ -46,7 +46,12 @@ export function CommentItem({
     <div id={`c-${comment.id}`} className="grid grid-cols-[32px_minmax(0,1fr)] gap-x-3 pt-4">
       <div className="flex flex-col items-center gap-1.5">
         {comment.author && !comment.author.isDeleted ? (
-          <Avatar id={comment.author.id} name={comment.author.displayName} size="sm" />
+          <Avatar
+            id={comment.author.id}
+            name={comment.author.displayName}
+            src={comment.author.avatarUrl}
+            size="sm"
+          />
         ) : (
           <span aria-hidden className="size-8 rounded-full bg-surface-sunken" />
         )}

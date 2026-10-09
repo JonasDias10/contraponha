@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/cn"
 
 const avatarVariants = cva(
-  "inline-grid flex-none place-items-center rounded-full font-semibold tracking-[0.01em]",
+  "relative inline-grid flex-none place-items-center overflow-hidden rounded-full font-semibold tracking-[0.01em]",
   {
     variants: {
       size: {
@@ -40,11 +40,13 @@ function initialsOf(name: string): string {
 export interface AvatarProps extends VariantProps<typeof avatarVariants> {
   id: string
   name: string
+  src?: string | null
   className?: string
 }
 
 // Initials over one of six fixed tones derived from the id, so a person keeps their color.
-export function Avatar({ id, name, size, className }: AvatarProps): React.JSX.Element {
+// A photo covers the initials; the empty alt keeps a broken image from showing an icon.
+export function Avatar({ id, name, src, size, className }: AvatarProps): React.JSX.Element {
   const tone = toneOf(id)
 
   return (
@@ -54,6 +56,10 @@ export function Avatar({ id, name, size, className }: AvatarProps): React.JSX.El
       style={{ background: `var(--av-${tone}-bg)`, color: `var(--av-${tone}-ink)` }}
     >
       {initialsOf(name) || "·"}
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element -- bucket host varies per environment
+        <img src={src} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+      ) : null}
     </span>
   )
 }

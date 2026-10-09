@@ -50,7 +50,7 @@ export function AuthorLine({
         </span>
       ) : (
         <Link href={paths.profile(author.handle)} tabIndex={-1} aria-hidden>
-          <Avatar id={author.id} name={author.displayName} size={size} />
+          <Avatar id={author.id} name={author.displayName} src={author.avatarUrl} size={size} />
         </Link>
       )}
       <div className="flex min-w-0 flex-1 flex-col">

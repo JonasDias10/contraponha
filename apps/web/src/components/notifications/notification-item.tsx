@@ -54,11 +54,17 @@ function NotificationIcon({ notification }: IconProps): React.JSX.Element {
 
       return (
         <span aria-hidden className="flex flex-none">
-          <Avatar id={first.id} name={first.displayName} size={second ? "sm" : "md"} />
+          <Avatar
+            id={first.id}
+            name={first.displayName}
+            src={first.avatarUrl}
+            size={second ? "sm" : "md"}
+          />
           {second ? (
             <Avatar
               id={second.id}
               name={second.displayName}
+              src={second.avatarUrl}
               size="sm"
               className="-ml-2 ring-2 ring-surface-raised"
             />

@@ -70,7 +70,7 @@ export default function OnboardingScreen(): React.JSX.Element {
               flow.suggestions.map(({ profile, recognition }) => (
                 <Card key={profile.id} style={styles.person}>
                   <View style={styles.row}>
-                    <Avatar id={profile.id} name={profile.displayName} />
+                    <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} />
                     <View style={styles.flex}>
                       <AppText variant="bodyStrong" numberOfLines={1}>
                         {profile.displayName}

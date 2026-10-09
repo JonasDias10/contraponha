@@ -38,6 +38,7 @@ export type AdjustFollowCountsParams = IncrementFollowCountsParams
 export interface UpdateProfileParams {
   id: string
   data: UpdateUserData
+  executor?: DatabaseExecutor
 }
 
 export interface CreateUserParams {
@@ -117,8 +118,8 @@ export class UsersService {
     }
   }
 
-  async updateProfile({ id, data }: UpdateProfileParams): Promise<User> {
-    const user = await this.usersRepository.update({ id, data })
+  async updateProfile({ id, data, executor }: UpdateProfileParams): Promise<User> {
+    const user = await this.usersRepository.update({ id, data, executor })
 
     if (!user) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
 

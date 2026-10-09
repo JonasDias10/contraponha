@@ -28,6 +28,16 @@ export interface DeleteMediaForOwnerParams {
   executor: DatabaseExecutor
 }
 
+export interface DeleteProfilePhotosParams {
+  ownerId: string
+  executor: DatabaseExecutor
+}
+
+export interface MarkAsProfilePhotoParams {
+  mediaId: string
+  executor: DatabaseExecutor
+}
+
 @Injectable()
 export class MediaRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
@@ -84,5 +94,27 @@ export class MediaRepository {
       .returning({ storageKey: mediaAssets.storageKey })
 
     return removed.map(({ storageKey }) => storageKey)
+  }
+
+  async deleteProfilePhotos({ ownerId, executor }: DeleteProfilePhotosParams): Promise<string[]> {
+    const removed = await executor
+      .delete(mediaAssets)
+      .where(and(eq(mediaAssets.ownerId, ownerId), eq(mediaAssets.status, "profile")))
+      .returning({ storageKey: mediaAssets.storageKey })
+
+    return removed.map(({ storageKey }) => storageKey)
+  }
+
+  async markAsProfilePhoto({
+    mediaId,
+    executor,
+  }: MarkAsProfilePhotoParams): Promise<MediaAsset | undefined> {
+    const [asset] = await executor
+      .update(mediaAssets)
+      .set({ status: "profile", attachedAt: new Date() })
+      .where(and(eq(mediaAssets.id, mediaId), eq(mediaAssets.status, "pending")))
+      .returning()
+
+    return asset
   }
 }

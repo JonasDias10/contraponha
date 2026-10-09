@@ -26,7 +26,7 @@ export function PersonRow({ person, isFollowing }: PersonRowProps): React.JSX.El
         onPress={() => router.push(paths.profile(person.handle))}
         style={styles.main}
       >
-        <Avatar id={person.id} name={person.displayName} />
+        <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} />
         <View style={styles.text}>
           <AppText variant="bodyStrong" numberOfLines={1}>
             {person.displayName}

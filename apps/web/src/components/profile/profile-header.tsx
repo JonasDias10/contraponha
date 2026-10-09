@@ -92,7 +92,7 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
   return (
     <section className="flex flex-col gap-5 pt-4">
       <div className="flex flex-wrap items-start gap-6">
-        <Avatar id={profile.id} name={profile.displayName} size="xxl" />
+        <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} size="xxl" />
         <div className="flex min-w-65 flex-1 flex-col gap-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
@@ -218,6 +218,7 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
                     key={person.id}
                     id={person.id}
                     name={person.displayName}
+                    src={person.avatarUrl}
                     size="xs"
                     className={index > 0 ? "-ml-2 ring-2 ring-surface" : "ring-2 ring-surface"}
                   />

@@ -32,9 +32,9 @@ export interface CreateDownloadUrlParams {
   expiresInSeconds: number
 }
 
-// Only objects under this prefix are publicly readable; everything else (data exports)
+// Only objects under these prefixes are publicly readable; everything else (data exports)
 // is private and downloaded through short-lived signed URLs.
-export const PUBLIC_OBJECT_PREFIX = "posts/"
+export const PUBLIC_OBJECT_PREFIXES = ["posts/", "avatars/"] as const
 
 // Provider-neutral object storage. The S3 implementation works with any S3-compatible
 // service, including providers with Brazilian regions.

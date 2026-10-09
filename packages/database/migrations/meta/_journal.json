@@ -43,6 +43,13 @@
       "when": 1791384891298,
       "tag": "0005_remove_magic_link_token_purpose",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791559980629,
+      "tag": "0006_add_profile_photo",
+      "breakpoints": true
     }
   ]
 }

@@ -154,7 +154,7 @@ function AccountMenu(): React.JSX.Element | null {
         aria-label={t("web.nav.accountMenu")}
         className="mt-auto flex items-center gap-3 rounded-[12px] px-1.5 py-2 text-left hover:bg-surface-sunken"
       >
-        <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+        <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
         <span className="flex min-w-0 flex-col">
           <span className="truncate text-sm font-semibold">{viewer.displayName}</span>
           <span className="truncate text-[13px] text-subtle">@{viewer.handle}</span>

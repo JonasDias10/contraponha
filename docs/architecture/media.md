@@ -22,6 +22,18 @@ cliente                         API                              storage (S3)
 3. Ao criar o post com `mediaIds`, a API confere, para cada id: dono, status `pending`, tamanho real (`HEAD`) e **assinatura binária** (magic bytes de JPEG, PNG ou WebP). Um HTML renomeado para `.png` é recusado com `MEDIA_INVALID`.
 4. As mídias são anexadas ao post na mesma transação, na ordem enviada. Uma mídia não pode ser reutilizada.
 
+## Foto de perfil
+
+A foto de perfil usa o mesmo upload direto, com `purpose: "avatar"` em `POST /media/uploads`:
+
+1. O cliente recorta a imagem em quadrado e a reduz para `AVATAR_SIZE_PX` (512 px) em JPEG antes de enviar (canvas no web, `expo-image-picker` + `expo-image-manipulator` no mobile). A API aceita no máximo `AVATAR_MAX_BYTES` (1 MB).
+2. A chave fica em `avatars/<id do dono>/<uuid>.<ext>`.
+3. `PUT /users/me/avatar { mediaId }` confere dono, status `pending`, prefixo `avatars/`, tamanho e assinatura binária, como nos posts. Um upload de post não vira foto, e uma foto não pode ser anexada a um post.
+4. Na mesma transação, a linha do usuário é atualizada primeiro (o lock serializa trocas simultâneas), a foto anterior sai de `media_assets`, a nova passa para o status `profile` e `users.avatar_url` recebe a URL pública. O objeto antigo é apagado do storage depois do commit, em melhor esforço.
+5. `DELETE /users/me/avatar` remove a foto do mesmo jeito.
+
+`avatar_url` guarda a URL completa para que todos os perfis da API (`toPublicProfile`) continuem puros, sem acesso ao storage. Se `MEDIA_PUBLIC_BASE_URL` mudar (por exemplo, ao colocar uma CDN), atualize a coluna com um `UPDATE` que troque a base. Na exclusão de conta, a foto sai com as outras mídias da pessoa e `avatar_url` volta a `null`.
+
 Ao remover um post (pelo autor ou pela moderação), as linhas de `media_assets` são apagadas na transação e os objetos são apagados do storage **depois do commit**, em melhor esforço: se o storage falhar, o post continua removido e o objeto fica órfão (um job de limpeza resolve isso quando existir).
 
 Uploads `pending` nunca anexados também ficam para esse job de limpeza.
@@ -43,8 +55,8 @@ A aplicação depende da classe abstrata `ObjectStorage` (`src/infrastructure/st
 
 Em desenvolvimento e no CI o storage é o [RustFS](https://rustfs.com), compatível com S3, no docker-compose (API em `:9000`, console em `:9001`). As imagens do MinIO deixaram de ser publicadas no Docker Hub, por isso a troca.
 
-As imagens são públicas por URL: o conteúdo de posts já é público. A chave do objeto é `posts/<id do dono>/<uuid>.<ext>`: imprevisível e sem o nome original do arquivo.
+As imagens são públicas por URL: o conteúdo de posts e as fotos de perfil já são públicos. A chave do objeto é `posts/<id do dono>/<uuid>.<ext>` ou `avatars/<id do dono>/<uuid>.<ext>`: imprevisível e sem o nome original do arquivo.
 
-Só o prefixo `posts/` é público. A política do bucket libera `GetObject` apenas nele e é reaplicada a cada inicialização, então ela sempre acompanha o código. As exportações de dados (LGPD) ficam no mesmo bucket em `exports/<id do dono>/`, sem acesso público: o download usa uma URL pré-assinada de 10 minutos, gerada só para a dona da exportação.
+Só os prefixos `posts/` e `avatars/` são públicos (`PUBLIC_OBJECT_PREFIXES`). A política do bucket libera `GetObject` apenas neles e é reaplicada a cada inicialização, então ela sempre acompanha o código. As exportações de dados (LGPD) ficam no mesmo bucket em `exports/<id do dono>/`, sem acesso público: o download usa uma URL pré-assinada de 10 minutos, gerada só para a dona da exportação.
 
 Como o navegador envia a imagem direto para o bucket, o CORS do bucket aceita `PUT` e `GET` vindos de `WEB_APP_URL` e de `CORS_ORIGINS`. Em produção, com `STORAGE_AUTO_CREATE_BUCKET` desligado, configure a mesma política e o mesmo CORS no provedor.

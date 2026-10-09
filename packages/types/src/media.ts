@@ -1,3 +1,10 @@
+export const MediaPurpose = {
+  POST: "post",
+  AVATAR: "avatar",
+} as const
+
+export type MediaPurpose = (typeof MediaPurpose)[keyof typeof MediaPurpose]
+
 export interface MediaView {
   id: string
   url: string

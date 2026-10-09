@@ -187,7 +187,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
       >
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
           <View style={styles.byline}>
-            <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+            <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
             <AppText variant="small" tone="muted">
               {t("web.composer.publishingAs", { name: viewer.displayName })}
             </AppText>

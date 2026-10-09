@@ -19,6 +19,7 @@ export interface PublicProfile {
   location: string | null
   website: string | null
   pronouns: string | null
+  avatarUrl: string | null
   followerCount: number
   followingCount: number
   postCount: number

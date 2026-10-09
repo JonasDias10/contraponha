@@ -89,6 +89,7 @@ export const publicProfileSchema = z.object({
   location: z.string().nullable(),
   website: z.string().nullable(),
   pronouns: z.string().nullable(),
+  avatarUrl: z.url().nullable(),
   followerCount: z.number().int().nonnegative(),
   followingCount: z.number().int().nonnegative(),
   postCount: z.number().int().nonnegative(),

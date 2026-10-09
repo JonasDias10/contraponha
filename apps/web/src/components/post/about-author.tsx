@@ -34,7 +34,7 @@ export function AboutAuthor({ handle }: AboutAuthorProps): React.JSX.Element | n
         href={paths.profile(profile.handle)}
         className="flex items-center gap-3 text-ink no-underline"
       >
-        <Avatar id={profile.id} name={profile.displayName} />
+        <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} />
         <span className="flex flex-col">
           <span className="font-semibold">{profile.displayName}</span>
           <span className="text-[13px] text-subtle">@{profile.handle}</span>

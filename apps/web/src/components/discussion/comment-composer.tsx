@@ -95,7 +95,7 @@ export function CommentComposer({
         className="flex flex-col gap-3"
       >
         <div className="flex items-start gap-3">
-          <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+          <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
           <label className="flex-1">
             <span className="sr-only">
               {parentId ? t("web.comment.replyPlaceholder") : t("web.post.composerPlaceholder")}

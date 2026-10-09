@@ -79,7 +79,7 @@ export function OnboardingFlow(): React.JSX.Element {
                 {flow.suggestions.map(({ profile, recognition }) => (
                   <Card key={profile.id} className="flex flex-col gap-3 p-5">
                     <div className="flex items-center gap-3">
-                      <Avatar id={profile.id} name={profile.displayName} />
+                      <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} />
                       <div className="flex min-w-0 flex-1 flex-col">
                         <span className="truncate font-semibold">{profile.displayName}</span>
                         <span className="text-[13px] text-subtle">@{profile.handle}</span>

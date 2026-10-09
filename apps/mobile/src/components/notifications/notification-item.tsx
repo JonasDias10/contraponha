@@ -64,10 +64,15 @@ function NotificationIcon({ notification }: IconProps): React.JSX.Element {
 
       return (
         <View style={styles.faces}>
-          <Avatar id={first.id} name={first.displayName} size={second ? "sm" : "md"} />
+          <Avatar
+            id={first.id}
+            name={first.displayName}
+            src={first.avatarUrl}
+            size={second ? "sm" : "md"}
+          />
           {second ? (
             <View style={[styles.second, { borderColor: palette.surface }]}>
-              <Avatar id={second.id} name={second.displayName} size="sm" />
+              <Avatar id={second.id} name={second.displayName} src={second.avatarUrl} size="sm" />
             </View>
           ) : null}
         </View>

@@ -270,7 +270,7 @@ function PeopleResults({ state, limit }: LimitedResultsProps): React.JSX.Element
         {people.map((person) => (
           <Link key={person.id} href={paths.profile(person.handle)} className="no-underline">
             <Card className="flex h-full flex-col gap-2 p-4 text-ink hover:border-line-strong">
-              <Avatar id={person.id} name={person.displayName} />
+              <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} />
               <span className="font-semibold">{person.displayName}</span>
               <span className="text-[13px] text-subtle">
                 {person.headline ?? `@${person.handle}`}

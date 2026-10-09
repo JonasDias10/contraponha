@@ -173,7 +173,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
           </h1>
           {viewer ? (
             <p className="flex items-center gap-3 text-sm text-muted">
-              <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+              <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
               {t("web.composer.publishingAs", { name: viewer.displayName })}
             </p>
           ) : null}

@@ -14,7 +14,7 @@ import {
 import { posts } from "./posts.js"
 import { users } from "./users.js"
 
-export const mediaStatus = pgEnum("media_status", ["pending", "attached"])
+export const mediaStatus = pgEnum("media_status", ["pending", "attached", "profile"])
 
 export const mediaAssets = pgTable(
   "media_assets",

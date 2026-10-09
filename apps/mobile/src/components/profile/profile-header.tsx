@@ -117,7 +117,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps): React.JSX.Elemen
   return (
     <View style={styles.header}>
       <View style={styles.top}>
-        <Avatar id={profile.id} name={profile.displayName} size="xl" />
+        <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} size="xl" />
         <View style={styles.actions}>
           {isSelf ? (
             <Button
@@ -210,7 +210,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps): React.JSX.Elemen
                 key={person.id}
                 style={[styles.face, index > 0 && styles.overlap, { borderColor: palette.surface }]}
               >
-                <Avatar id={person.id} name={person.displayName} size="xs" />
+                <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} size="xs" />
               </View>
             ))}
           </View>

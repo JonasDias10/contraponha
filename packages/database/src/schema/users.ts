@@ -32,6 +32,7 @@ export const users = pgTable(
     location: text(),
     website: text(),
     pronouns: text(),
+    avatarUrl: text(),
     birthDate: date(),
     locale: text().notNull().default("pt-BR"),
     timezone: text().notNull().default("America/Sao_Paulo"),

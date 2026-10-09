@@ -22,6 +22,7 @@ export type UpdateUserData = Partial<
     | "locale"
     | "timezone"
     | "onboardedAt"
+    | "avatarUrl"
   >
 >
 
@@ -68,6 +69,7 @@ export interface MarkEmailVerifiedParams {
 export interface UpdateUserParams {
   id: string
   data: UpdateUserData
+  executor?: DatabaseExecutor
 }
 
 export interface CreateUserParams {
@@ -120,8 +122,8 @@ export class UsersRepository {
     return user
   }
 
-  async update({ id, data }: UpdateUserParams): Promise<User | undefined> {
-    const [user] = await this.db.update(users).set(data).where(eq(users.id, id)).returning()
+  async update({ id, data, executor = this.db }: UpdateUserParams): Promise<User | undefined> {
+    const [user] = await executor.update(users).set(data).where(eq(users.id, id)).returning()
     return user
   }
 
@@ -171,6 +173,7 @@ export class UsersRepository {
         location: null,
         website: null,
         pronouns: null,
+        avatarUrl: null,
         birthDate: null,
         role: "member",
         followerCount: 0,

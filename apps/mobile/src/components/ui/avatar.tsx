@@ -1,3 +1,4 @@
+import { Image } from "expo-image"
 import { StyleSheet, Text, View } from "react-native"
 
 import { usePalette } from "@/hooks/use-palette"
@@ -32,11 +33,13 @@ function initialsOf(name: string): string {
 export interface AvatarProps {
   id: string
   name: string
+  src?: string | null
   size?: AvatarSize
 }
 
 // Initials over one of six fixed tones derived from the id, so a person keeps their color.
-export function Avatar({ id, name, size = "md" }: AvatarProps): React.JSX.Element {
+// A photo covers the initials and they show through while it loads or if it fails.
+export function Avatar({ id, name, src, size = "md" }: AvatarProps): React.JSX.Element {
   const palette = usePalette()
   const tone = palette.avatars[toneOf(id)] ?? palette.avatars[0]
   const { box, font } = SIZES[size]
@@ -56,10 +59,13 @@ export function Avatar({ id, name, size = "md" }: AvatarProps): React.JSX.Elemen
       >
         {initialsOf(name) || "·"}
       </Text>
+      {src ? (
+        <Image source={{ uri: src }} style={StyleSheet.absoluteFill} contentFit="cover" />
+      ) : null}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  base: { borderRadius: 999, alignItems: "center", justifyContent: "center" },
+  base: { borderRadius: 999, alignItems: "center", justifyContent: "center", overflow: "hidden" },
 })

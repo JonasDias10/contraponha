@@ -84,7 +84,7 @@ export function CommentComposer({
   return (
     <Card style={styles.card}>
       <View style={styles.row}>
-        <Avatar id={viewer.id} name={viewer.displayName} size="sm" />
+        <Avatar id={viewer.id} name={viewer.displayName} src={viewer.avatarUrl} size="sm" />
         <Controller
           control={control}
           name="body"

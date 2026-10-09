@@ -67,7 +67,7 @@ export function ProfileRail({ handle }: ProfileRailProps): React.JSX.Element {
               key={person.id}
               className="flex items-start gap-3 border-t border-line px-4 py-3 first-of-type:border-t-0"
             >
-              <Avatar id={person.id} name={person.displayName} size="sm" />
+              <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} size="sm" />
               <Link
                 href={paths.profile(person.handle)}
                 className="flex min-w-0 flex-1 flex-col text-ink no-underline"
