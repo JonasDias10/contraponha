@@ -112,6 +112,8 @@ export const web: Messages["web"] = {
     nameHint: "How people will see you. A nickname is fine.",
     handle: "Username",
     handleHint: "Letters, numbers and _. Shows as @username.",
+    handleChecking: "Checking availability...",
+    handleAvailable: "@{handle} is available.",
     email: "Email",
     emailHint: "Used only for sign-in and account notices.",
     password: "Password",

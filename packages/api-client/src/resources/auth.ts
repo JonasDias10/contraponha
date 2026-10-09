@@ -1,6 +1,7 @@
-import type { AuthResponse, SessionSummary } from "@contraponha/types"
+import type { AuthResponse, HandleAvailability, SessionSummary } from "@contraponha/types"
 import {
   authResponseSchema,
+  handleAvailabilitySchema,
   sessionListSchema,
   type ChangePasswordInput,
   type ConfirmEmailInput,
@@ -14,6 +15,7 @@ import { emptyResponseSchema, type HttpClient } from "../http.js"
 
 export interface AuthResource {
   register(input: RegisterInput): Promise<AuthResponse>
+  handleAvailability(handle: string): Promise<HandleAvailability>
   login(input: LoginInput): Promise<AuthResponse>
   logout(): Promise<void>
   changePassword(input: ChangePasswordInput): Promise<void>
@@ -40,6 +42,12 @@ export function createAuthResource(request: HttpClient): AuthResource {
   return {
     register: (input) =>
       request({ method: "POST", path: "/auth/register", body: input, schema: authResponseSchema }),
+    handleAvailability: (handle) =>
+      request({
+        method: "GET",
+        path: `/auth/handles/${encodeURIComponent(handle)}/availability`,
+        schema: handleAvailabilitySchema,
+      }),
     login: (input) =>
       request({ method: "POST", path: "/auth/login", body: input, schema: authResponseSchema }),
     logout: () => send({ method: "POST", path: "/auth/logout" }),

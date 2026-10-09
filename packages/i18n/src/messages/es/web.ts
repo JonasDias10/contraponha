@@ -114,6 +114,8 @@ export const web: Messages["web"] = {
     nameHint: "Cómo te verán las personas. Puede ser un apodo.",
     handle: "Nombre de usuario",
     handleHint: "Letras, números y _. Aparece como @usuario.",
+    handleChecking: "Comprobando disponibilidad...",
+    handleAvailable: "@{handle} está disponible.",
     email: "Correo electrónico",
     emailHint: "Solo lo usamos para el inicio de sesión y avisos de la cuenta.",
     password: "Contraseña",

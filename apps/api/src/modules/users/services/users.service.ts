@@ -85,6 +85,15 @@ export class UsersService {
     return user
   }
 
+  // Deleted accounts keep their tombstone handle, so any existing row makes it unavailable.
+  async isHandleAvailable(handle: string): Promise<boolean> {
+    if (isReservedHandle(handle)) return false
+
+    const user = await this.usersRepository.findByHandle(handle)
+
+    return !user
+  }
+
   findByHandles(params: FindByHandlesParams): Promise<User[]> {
     return this.usersRepository.findByHandles(params)
   }

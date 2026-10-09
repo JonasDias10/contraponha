@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
-import { passwordStrength } from "@contraponha/client-core"
+import { handleFieldMessages, passwordStrength } from "@contraponha/client-core"
+import { useHandleAvailability } from "@contraponha/client-core/react"
 
 import { signUp } from "@/actions/auth"
 import { FormBanner } from "@/components/auth/form-banner"
@@ -94,8 +95,18 @@ export function SignUpForm(): React.JSX.Element {
   const password = useWatch({ control, name: "password" })
   const strength = password ? STRENGTH_STYLE[passwordStrength(password)] : null
 
+  const handle = useWatch({ control, name: "handle" })
+  const handleAvailability = useHandleAvailability(handle)
+  const handleMessages = handleFieldMessages({ availability: handleAvailability, t })
+
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     setServerError(null)
+
+    if (handleAvailability.status === "taken") {
+      setError("handle", { type: "server" }, { shouldFocus: true })
+
+      return
+    }
 
     const result = await signUp({ ...values, acceptedTerms: true })
 
@@ -136,8 +147,9 @@ export function SignUpForm(): React.JSX.Element {
       </Field>
       <Field
         label={t("web.auth.handle")}
-        hint={t("web.auth.handleHint")}
-        error={fieldError("handle")}
+        hint={handleMessages.hint}
+        error={handleMessages.error ?? fieldError("handle")}
+        success={handleMessages.success}
       >
         {({ id, describedBy, isInvalid }) => (
           <div className={cn("relative")}>

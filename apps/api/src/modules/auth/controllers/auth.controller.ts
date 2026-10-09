@@ -1,4 +1,14 @@
-import { Body, Controller, Headers, HttpCode, HttpStatus, Post, Put } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+} from "@nestjs/common"
 import {
   ApiAcceptedResponse,
   ApiBearerAuth,
@@ -8,11 +18,13 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { AuthResponse } from "@contraponha/types"
+import type { AuthResponse, HandleAvailability } from "@contraponha/types"
 import {
   authResponseSchema,
   changePasswordInputSchema,
   confirmEmailInputSchema,
+  handleAvailabilitySchema,
+  handleSchema,
   loginInputSchema,
   registerInputSchema,
   requestPasswordResetInputSchema,
@@ -58,6 +70,18 @@ export class AuthController {
     @Headers("accept-language") acceptLanguage: string | undefined,
   ): Promise<AuthResponse> {
     return this.authService.register({ input: body, client: { userAgent, acceptLanguage } })
+  }
+
+  @Public()
+  @Get("handles/:handle/availability")
+  @ApiOperation({ summary: "Whether a username can be taken by a new account" })
+  @ApiOkResponse({ schema: toOpenApiSchema(handleAvailabilitySchema) })
+  async handleAvailability(
+    @Param("handle", new ZodValidationPipe(handleSchema)) handle: string,
+  ): Promise<HandleAvailability> {
+    const isAvailable = await this.usersService.isHandleAvailable(handle)
+
+    return { handle, isAvailable }
   }
 
   @Public()

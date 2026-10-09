@@ -1,5 +1,7 @@
 export * from "./client-context.js"
+export * from "./use-debounced-value.js"
 export * from "./use-follow.js"
+export * from "./use-handle-availability.js"
 export * from "./use-moderation.js"
 export * from "./use-notification-preferences.js"
 export * from "./use-onboarding-flow.js"
