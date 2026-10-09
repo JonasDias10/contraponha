@@ -9,6 +9,7 @@ import {
   notificationPreferencesSchema,
   unreadNotificationCountSchema,
   type NotificationListQuery,
+  type RegisterPushTokenInput,
   type UpdateNotificationPreferencesInput,
 } from "@contraponha/validation"
 
@@ -21,6 +22,8 @@ export interface NotificationsResource {
   markAllRead(): Promise<void>
   getPreferences(): Promise<NotificationPreferences>
   updatePreferences(input: UpdateNotificationPreferencesInput): Promise<NotificationPreferences>
+  registerPushToken(input: RegisterPushTokenInput): Promise<void>
+  unregisterPushToken(token: string): Promise<void>
 }
 
 export function createNotificationsResource(request: HttpClient): NotificationsResource {
@@ -57,6 +60,21 @@ export function createNotificationsResource(request: HttpClient): NotificationsR
         body: input,
         schema: notificationPreferencesSchema,
       }),
+    registerPushToken: async (input) => {
+      await request({
+        method: "PUT",
+        path: "/me/push-tokens",
+        body: input,
+        schema: emptyResponseSchema,
+      })
+    },
+    unregisterPushToken: async (token) => {
+      await request({
+        method: "DELETE",
+        path: `/me/push-tokens/${encodeURIComponent(token)}`,
+        schema: emptyResponseSchema,
+      })
+    },
     markAllRead: async () => {
       await request({
         method: "POST",

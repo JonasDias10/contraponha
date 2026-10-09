@@ -162,7 +162,8 @@ contraponha/
 - [Autenticação e contas](docs/architecture/auth.md): sessões, senhas, e-mails de conta e proteções contra abuso.
 - [Conteúdo e relações](docs/architecture/content.md): posts, comentários, reações, follows, contadores e paginação.
 - [Feed, busca e notificações](docs/architecture/discovery.md): ranking dos destaques, full-text search e regras de notificação.
-- [Mídia](docs/architecture/media.md): upload direto ao storage, validação de imagens e configuração S3.
+- [Mídia](docs/architecture/media.md): upload direto ao storage, validação de imagens, foto de perfil e configuração S3.
+- [Push](docs/architecture/push.md): notificações push no mobile pelo serviço da Expo.
 - [Moderação](docs/architecture/moderation.md): papéis, denúncias, remoção de conteúdo e auditoria.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
 - [Frontends](docs/architecture/frontends.md): web e mobile, e como usam os pacotes compartilhados.

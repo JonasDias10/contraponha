@@ -1,6 +1,7 @@
 import {
   NotificationFilter,
   NotificationType,
+  PushPlatform,
   type NotificationPreferences,
   type NotificationView,
   type UnreadNotificationCount,
@@ -77,3 +78,16 @@ export const updateNotificationPreferencesInputSchema = z
 export type UpdateNotificationPreferencesInput = z.input<
   typeof updateNotificationPreferencesInputSchema
 >
+
+// Expo push tokens look like ExponentPushToken[...] (or ExpoPushToken[...]).
+export const pushTokenSchema = z
+  .string()
+  .max(200)
+  .regex(/^Expo(nent)?PushToken\[[^\]]+\]$/)
+
+export const registerPushTokenInputSchema = z.object({
+  token: pushTokenSchema,
+  platform: z.enum(PushPlatform),
+})
+
+export type RegisterPushTokenInput = z.input<typeof registerPushTokenInputSchema>

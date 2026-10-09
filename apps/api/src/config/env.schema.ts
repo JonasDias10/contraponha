@@ -46,6 +46,9 @@ export const envSchema = z
 
     BACKGROUND_JOBS_ENABLED: envBoolean.default(true),
 
+    PUSH_ENABLED: envBoolean.default(true),
+    EXPO_ACCESS_TOKEN: z.string().min(1).optional(),
+
     DEFAULT_LOCALE: localeSchema.default(DEFAULT_LOCALE),
     SUPPORTED_LOCALES: envList.pipe(z.array(localeSchema).min(1)).default([...SUPPORTED_LOCALES]),
   })

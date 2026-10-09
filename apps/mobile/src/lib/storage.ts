@@ -4,6 +4,7 @@ export const STORAGE_KEYS = {
   sessionToken: "contraponha.session",
   theme: "contraponha.theme",
   locale: "contraponha.locale",
+  pushToken: "contraponha.push-token",
 } as const
 
 type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]

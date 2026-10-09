@@ -59,6 +59,10 @@ export interface AppConfig {
   backgroundJobs: {
     enabled: boolean
   }
+  push: {
+    enabled: boolean
+    expoAccessToken: string | undefined
+  }
   email: {
     from: string
     smtp: {
@@ -128,6 +132,10 @@ export function loadAppConfig(source: EnvSource): AppConfig {
     },
     backgroundJobs: {
       enabled: env.BACKGROUND_JOBS_ENABLED,
+    },
+    push: {
+      enabled: env.PUSH_ENABLED,
+      expoAccessToken: env.EXPO_ACCESS_TOKEN,
     },
     email: {
       from: env.EMAIL_FROM,

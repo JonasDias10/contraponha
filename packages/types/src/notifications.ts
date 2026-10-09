@@ -56,3 +56,19 @@ export interface NotificationPreferences {
 export interface UnreadNotificationCount {
   count: number
 }
+
+export const PushPlatform = {
+  IOS: "ios",
+  ANDROID: "android",
+} as const
+
+export type PushPlatform = (typeof PushPlatform)[keyof typeof PushPlatform]
+
+// Sent with every push so the app can open the right screen when it is tapped.
+export interface PushNotificationData {
+  notificationId: string
+  type: NotificationType
+  postId: string | null
+  commentId: string | null
+  actorHandle: string | null
+}

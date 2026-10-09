@@ -6,12 +6,15 @@ import { AppModule } from "#src/app.module.js"
 import { configureApp } from "#src/app.setup.js"
 import { loadAppConfig } from "#src/config/app-config.js"
 import { EmailSender } from "#src/infrastructure/email/email-sender.js"
+import { PushSender } from "#src/infrastructure/push/push-sender.js"
 import { CapturingEmailSender } from "./capturing-email-sender.js"
+import { CapturingPushSender } from "./capturing-push-sender.js"
 import { ProbeController } from "./probe.controller.js"
 
 export interface TestApp {
   app: NestExpressApplication
   emails: CapturingEmailSender
+  pushes: CapturingPushSender
 }
 
 export async function createTestApp(envOverrides: Record<string, string> = {}): Promise<TestApp> {
@@ -27,6 +30,7 @@ export async function createTestApp(envOverrides: Record<string, string> = {}): 
   })
 
   const emails = new CapturingEmailSender()
+  const pushes = new CapturingPushSender()
 
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule.forRoot(config)],
@@ -34,6 +38,8 @@ export async function createTestApp(envOverrides: Record<string, string> = {}): 
   })
     .overrideProvider(EmailSender)
     .useValue(emails)
+    .overrideProvider(PushSender)
+    .useValue(pushes)
     .compile()
 
   const app = moduleRef.createNestApplication<NestExpressApplication>({ bufferLogs: true })
@@ -42,5 +48,5 @@ export async function createTestApp(envOverrides: Record<string, string> = {}): 
 
   await app.init()
 
-  return { app, emails }
+  return { app, emails, pushes }
 }
