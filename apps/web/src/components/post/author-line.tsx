@@ -3,10 +3,7 @@
 import type { PublicProfile } from "@contraponha/types"
 import Link from "next/link"
 
-import { RelativeTime } from "@/components/post/relative-time"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Chip } from "@/components/ui/badges"
+import { Avatar, Chip, RelativeTime, useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface AuthorLineProps {

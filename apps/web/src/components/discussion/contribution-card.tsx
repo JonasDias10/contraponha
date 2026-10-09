@@ -8,7 +8,7 @@ import { HighlightedText } from "@/components/search/highlighted-text"
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
 import { ReactionSummary } from "@/components/post/reaction-bar"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface ContributionCardProps {

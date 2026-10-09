@@ -6,10 +6,8 @@ import type { Editor } from "@tiptap/react"
 import { Link2 } from "lucide-react"
 import { useState } from "react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
+import { Button, Input, useI18n } from "@contraponha/web-ui"
 import { toolButtonClasses } from "@/components/composer/tool-button"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/field"
 
 export interface LinkPopoverProps {
   editor: Editor

@@ -7,9 +7,8 @@ import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 
 import { changeLocale } from "@/actions/preferences"
-import { useIsClient } from "@/hooks/use-is-client"
+import { useI18n, useIsClient } from "@contraponha/web-ui"
 import { useTheme } from "@/hooks/use-theme"
-import { useI18n } from "@/components/providers/i18n-provider"
 
 export function LocaleSwitcher(): React.JSX.Element {
   const { locale, t } = useI18n()

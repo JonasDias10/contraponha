@@ -1,5 +1,4 @@
-import { Card } from "@/components/ui/surfaces"
-import { cn } from "@/lib/cn"
+import { Card, cn } from "@contraponha/web-ui"
 
 export interface SettingsSectionProps {
   title: string

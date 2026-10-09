@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation"
 import { queryKeys } from "@contraponha/client-core"
 import { useFollowMutation } from "@contraponha/client-core/react"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Button, type ButtonProps } from "@/components/ui/button"
+import { Button, type ButtonProps, useApi, useI18n, useViewer } from "@contraponha/web-ui"
 
 export interface FollowButtonProps {
   handle: string

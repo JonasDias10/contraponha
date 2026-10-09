@@ -8,7 +8,7 @@ import { useEffect } from "react"
 
 import { BodyToolbar } from "@/components/composer/body-toolbar"
 import { Markdown } from "@/components/post/markdown"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useI18n } from "@contraponha/web-ui"
 
 export interface BodyEditorProps {
   value: string

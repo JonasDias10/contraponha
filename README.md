@@ -97,7 +97,7 @@ O passo a passo completo, com solução de problemas, está em [docs/development
 
 ## Configuração
 
-Toda configuração vem de variáveis de ambiente. Cada app segue a convenção do seu framework: a API e o Docker Compose leem o [`.env`](.env.example) da raiz, o web lê [`apps/web/.env`](apps/web/.env.example) e o mobile lê [`apps/mobile/.env`](apps/mobile/.env.example). A API valida as variáveis na inicialização e encerra com uma mensagem objetiva se algo estiver ausente ou inválido:
+Toda configuração vem de variáveis de ambiente. Cada app segue a convenção do seu framework: a API e o Docker Compose leem o [`.env`](.env.example) da raiz, o web lê [`apps/web/.env`](apps/web/.env.example), o hub lê [`apps/hub/.env`](apps/hub/.env.example) e o mobile lê [`apps/mobile/.env`](apps/mobile/.env.example). A API valida as variáveis na inicialização e encerra com uma mensagem objetiva se algo estiver ausente ou inválido:
 
 ```text
 Invalid environment configuration:
@@ -112,9 +112,10 @@ Todos os comandos rodam a partir da raiz.
 
 | Comando                      | O que faz                                                                                 |
 | ---------------------------- | ----------------------------------------------------------------------------------------- |
-| `pnpm dev`                   | Sobe API e web em modo watch (compila os pacotes antes)                                   |
+| `pnpm dev`                   | Sobe API, web e hub em modo watch (compila os pacotes antes)                              |
 | `pnpm dev:api`               | Só a API                                                                                  |
 | `pnpm dev:web`               | Só o web (porta 3001)                                                                     |
+| `pnpm dev:hub`               | Só o hub de moderação e administração (porta 3002)                                        |
 | `pnpm dev:mobile`            | Expo CLI do mobile (`i` abre iOS, `a` abre Android)                                       |
 | `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                          |
 | `pnpm test`                  | Testes unitários (não precisam de Docker)                                                 |
@@ -137,17 +138,21 @@ Todos os comandos rodam a partir da raiz.
 contraponha/
 ├── apps/
 │   ├── api/                  API NestJS
+│   ├── hub/                  Moderação e administração (Next.js)
 │   ├── mobile/               App iOS/Android (Expo)
 │   └── web/                  App web (Next.js)
 ├── packages/
-│   ├── api-client/           Cliente HTTP tipado para web e mobile
+│   ├── api-client/           Cliente HTTP tipado para web, hub e mobile
+│   ├── client-core/          Lógica de cliente compartilhada (formatação, hooks do TanStack Query)
 │   ├── config/               Constantes HTTP globais e parser de variáveis de ambiente
 │   ├── database/             Drizzle, conexão, schema e migrations
 │   ├── eslint-config/        Configuração compartilhada do ESLint
 │   ├── i18n/                 Catálogos de mensagens, negociação de idioma e tradutor
+│   ├── next-server/          Sessão em cookie, idioma, proxy /api/v1 e cliente de servidor (web e hub)
 │   ├── tsconfig/             Bases de tsconfig (library, node, nestjs, nextjs)
 │   ├── types/                Tipos de contrato da API (sem regras de negócio)
-│   └── validation/           Schemas Zod compartilhados
+│   ├── validation/           Schemas Zod compartilhados
+│   └── web-ui/               Componentes e tokens visuais compartilhados por web e hub
 ├── docs/
 │   ├── architecture/         Visão geral, backend, domínios e i18n
 │   └── development/          Setup e fluxo de desenvolvimento
@@ -164,9 +169,9 @@ contraponha/
 - [Feed, busca e notificações](docs/architecture/discovery.md): ranking dos destaques, full-text search e regras de notificação.
 - [Mídia](docs/architecture/media.md): upload direto ao storage, validação de imagens, foto de perfil e configuração S3.
 - [Push](docs/architecture/push.md): notificações push no mobile pelo serviço da Expo.
-- [Moderação](docs/architecture/moderation.md): papéis, denúncias, remoção de conteúdo e auditoria.
+- [Moderação](docs/architecture/moderation.md): papéis, denúncias, suspensões, hub de administração e auditoria.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
-- [Frontends](docs/architecture/frontends.md): web e mobile, e como usam os pacotes compartilhados.
+- [Frontends](docs/architecture/frontends.md): web, hub e mobile, e como usam os pacotes compartilhados.
 - [Setup de desenvolvimento](docs/development/setup.md): ambiente local, testes e banco de dados.
 - [Como contribuir](CONTRIBUTING.md).
 

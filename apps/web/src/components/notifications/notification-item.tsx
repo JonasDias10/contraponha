@@ -6,12 +6,7 @@ import { BookText, MessageSquare, ShieldCheck, Star } from "lucide-react"
 import Link from "next/link"
 import { notificationText, queryKeys } from "@contraponha/client-core"
 
-import { RelativeTime } from "@/components/post/relative-time"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { UnreadDot } from "@/components/ui/badges"
-import { cn } from "@/lib/cn"
+import { Avatar, cn, RelativeTime, UnreadDot, useApi, useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 interface IconProps {

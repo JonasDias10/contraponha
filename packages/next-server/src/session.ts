@@ -1,6 +1,6 @@
 import "server-only"
 
-import { cookies } from "next/headers"
+import { cookies } from "next/headers.js"
 
 export const SESSION_COOKIE = "contraponha_session"
 

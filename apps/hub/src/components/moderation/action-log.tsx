@@ -1,15 +1,10 @@
 "use client"
 
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
 import { formatDateTime, queryKeys } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/surfaces"
-import { paths } from "@/lib/paths"
+import { Button, Card, useApi, useI18n } from "@contraponha/web-ui"
+import { webLinks } from "@/lib/web-links"
 
 const FIRST_PAGE: string | undefined = undefined
 
@@ -28,13 +23,7 @@ export function ActionLog(): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button asChild variant="ghost" className="-ml-2.5 self-start px-2.5">
-        <Link href="/moderation">
-          <ArrowLeft aria-hidden className="size-5" />
-          {t("web.moderation.queue")}
-        </Link>
-      </Button>
-      <h1 className="font-serif text-[25px] font-semibold">{t("web.moderation.actions")}</h1>
+      <h1 className="font-serif text-[28px] font-semibold">{t("web.moderation.actions")}</h1>
       <Card className="overflow-hidden">
         <ol>
           {actions.map((action) => (
@@ -50,9 +39,14 @@ export function ActionLog(): React.JSX.Element {
               </p>
               {action.note ? <p className="text-sm">{action.note}</p> : null}
               {action.postId ? (
-                <Link href={paths.post(action.postId)} className="text-sm text-brand">
+                <a
+                  href={webLinks.post(action.postId)}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-sm text-brand"
+                >
                   {t("web.moderation.openTarget")}
-                </Link>
+                </a>
               ) : null}
             </li>
           ))}

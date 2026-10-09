@@ -2,7 +2,7 @@
 
 import { useTopicInterests } from "@contraponha/client-core/react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useI18n } from "@contraponha/web-ui"
 import { SettingsSection } from "@/components/settings/settings-section"
 import { InterestsPicker } from "@/components/topics/interests-picker"
 

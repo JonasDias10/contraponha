@@ -7,12 +7,8 @@ import { ONBOARDING_TOTAL_STEPS, useOnboardingFlow } from "@contraponha/client-c
 
 import { Logo } from "@/components/brand/logo"
 import { FollowButton } from "@/components/profile/follow-button"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { Avatar, Button, Card, cn, useI18n } from "@contraponha/web-ui"
 import { InterestsPicker } from "@/components/topics/interests-picker"
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/surfaces"
-import { cn } from "@/lib/cn"
 
 export function OnboardingFlow(): React.JSX.Element {
   const { t } = useI18n()

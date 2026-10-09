@@ -14,8 +14,7 @@ import {
   parseDateInput,
 } from "@contraponha/client-core"
 
-import { Input } from "@/components/ui/field"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { Input, useI18n } from "@contraponha/web-ui"
 
 const CALENDAR_LOCALES = { "pt-BR": ptBR, en: enUS, es }
 

@@ -7,9 +7,10 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "turbo run dev --filter=@contraponha/api --filter=@contraponha/web",
+    "dev": "turbo run dev --filter=@contraponha/api --filter=@contraponha/web --filter=@contraponha/hub",
     "dev:api": "turbo run dev --filter=@contraponha/api",
     "dev:web": "turbo run dev --filter=@contraponha/web",
+    "dev:hub": "turbo run dev --filter=@contraponha/hub",
     "dev:mobile": "turbo run build --filter=@contraponha/mobile^... && pnpm --filter @contraponha/mobile dev",
     "build": "turbo run build",
     "test": "turbo run test",

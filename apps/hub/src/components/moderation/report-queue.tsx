@@ -8,16 +8,23 @@ import { useState } from "react"
 import { queryKeys } from "@contraponha/client-core"
 import { useResolveReportMutation } from "@contraponha/client-core/react"
 
-import { RelativeTime } from "@/components/post/relative-time"
-import { RuleSelect } from "@/components/post/rule-select"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Chip } from "@/components/ui/badges"
-import { Button } from "@/components/ui/button"
-import { Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
-import { Field, Input } from "@/components/ui/field"
-import { Card, EmptyState, Panel } from "@/components/ui/surfaces"
-import { paths } from "@/lib/paths"
+import {
+  Button,
+  Card,
+  Chip,
+  EmptyState,
+  Field,
+  Input,
+  Panel,
+  RelativeTime,
+  RuleSelect,
+  Segmented,
+  SegmentedItem,
+  SegmentedList,
+  useApi,
+  useI18n,
+} from "@contraponha/web-ui"
+import { webLinks } from "@/lib/web-links"
 
 const FIRST_PAGE: string | undefined = undefined
 
@@ -42,7 +49,7 @@ export function ReportQueue(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-serif text-[25px] font-semibold">{t("web.moderation.queue")}</h1>
+        <h1 className="font-serif text-[28px] font-semibold">{t("web.moderation.queue")}</h1>
         <Segmented value={status} onValueChange={(value) => isStatus(value) && setStatus(value)}>
           <SegmentedList>
             <SegmentedItem value={ReportStatus.OPEN}>{t("web.moderation.open")}</SegmentedItem>
@@ -55,9 +62,6 @@ export function ReportQueue(): React.JSX.Element {
           </SegmentedList>
         </Segmented>
       </div>
-      <Link href="/moderation/actions" className="self-start text-sm font-semibold text-brand">
-        {t("web.moderation.actions")}
-      </Link>
       {reports.length === 0 && !query.isPending ? (
         <Card>
           <EmptyState
@@ -95,9 +99,9 @@ function ReportCard({ report }: ReportCardProps): React.JSX.Element {
 
   const target =
     report.targetType === "post"
-      ? paths.post(report.targetId)
+      ? webLinks.post(report.targetId)
       : report.targetType === "user" && report.targetAuthor
-        ? paths.profile(report.targetAuthor.handle)
+        ? webLinks.profile(report.targetAuthor.handle)
         : null
 
   return (
@@ -116,15 +120,23 @@ function ReportCard({ report }: ReportCardProps): React.JSX.Element {
         <Panel className="px-4 py-3 font-serif text-base/relaxed">“{report.excerpt}”</Panel>
       ) : null}
       {report.targetAuthor ? (
-        <p className="text-sm text-muted">
+        <Link
+          href={`/users/${report.targetAuthor.handle}`}
+          className="self-start text-sm text-muted"
+        >
           {report.targetAuthor.displayName} · @{report.targetAuthor.handle}
-        </p>
+        </Link>
       ) : null}
       {report.details ? <p className="text-sm">{report.details}</p> : null}
       {target ? (
-        <Link href={target} className="self-start text-sm font-semibold text-brand">
+        <a
+          href={target}
+          target="_blank"
+          rel="noopener"
+          className="self-start text-sm font-semibold text-brand"
+        >
           {t("web.moderation.openTarget")}
-        </Link>
+        </a>
       ) : null}
       {report.status === "open" ? (
         <div className="flex flex-col gap-4 border-t border-line pt-4">

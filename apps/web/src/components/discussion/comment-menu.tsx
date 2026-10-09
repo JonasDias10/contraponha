@@ -11,13 +11,18 @@ import { useRemoveContentMutation } from "@contraponha/client-core/react"
 import { commentActionClasses } from "@/components/discussion/comment-actions"
 import { HighlightDialog } from "@/components/discussion/highlight-dialog"
 import { ReportDialog } from "@/components/post/report-dialog"
-import { RuleSelect } from "@/components/post/rule-select"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
-import { cn } from "@/lib/cn"
+import {
+  cn,
+  ConfirmDialog,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+  RuleSelect,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 
 const EXCERPT_LENGTH = 200
 
@@ -117,6 +122,9 @@ export function CommentMenu({ comment, postAuthorId }: CommentMenuProps): React.
       </Menu>
 
       <ConfirmDialog
+        cancelLabel={t("web.common.cancel")}
+
+        closeLabel={t("web.common.close")}
         open={dialog === "delete"}
         onOpenChange={closeOnDismiss}
         title={t("web.comment.deleteTitle")}
@@ -126,6 +134,8 @@ export function CommentMenu({ comment, postAuthorId }: CommentMenuProps): React.
         onConfirm={() => remove.mutate()}
       />
       <ConfirmDialog
+        cancelLabel={t("web.common.cancel")}
+        closeLabel={t("web.common.close")}
         open={dialog === "remove"}
         onOpenChange={closeOnDismiss}
         title={t("web.moderation.removeTitle")}

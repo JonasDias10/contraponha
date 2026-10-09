@@ -4,8 +4,7 @@ import type { PublicProfile } from "@contraponha/types"
 import Link from "next/link"
 
 import { FollowButton } from "@/components/profile/follow-button"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar, useViewer } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface PersonRowProps {

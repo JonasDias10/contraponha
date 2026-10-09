@@ -19,12 +19,7 @@ import { RemovedNotice } from "@/components/post/removed-notice"
 import { SourceCard } from "@/components/post/source-card"
 import { TopicTags } from "@/components/post/topic-tags"
 import { FollowButton } from "@/components/profile/follow-button"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Button } from "@/components/ui/button"
-import { Banner } from "@/components/ui/surfaces"
-import { cn } from "@/lib/cn"
+import { Banner, Button, cn, useApi, useI18n, useViewer } from "@contraponha/web-ui"
 
 export interface PostDetailProps {
   postId: string

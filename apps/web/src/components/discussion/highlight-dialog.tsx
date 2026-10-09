@@ -6,11 +6,17 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { errorMessage, queryKeys } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { Field, Input } from "@/components/ui/field"
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/overlays"
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  Field,
+  Input,
+  useApi,
+  useI18n,
+} from "@contraponha/web-ui"
 
 export interface HighlightDialogProps {
   commentId: string

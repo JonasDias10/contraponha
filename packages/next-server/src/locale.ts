@@ -7,7 +7,7 @@ import {
   type Locale,
   type LocaleTranslator,
 } from "@contraponha/i18n"
-import { cookies, headers } from "next/headers"
+import { cookies, headers } from "next/headers.js"
 
 export const LOCALE_COOKIE = "contraponha_locale"
 

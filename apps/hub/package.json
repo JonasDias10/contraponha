@@ -1,0 +1,43 @@
+{
+  "name": "@contraponha/hub",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3002",
+    "build": "next build",
+    "start": "next start --port 3002",
+    "typecheck": "next typegen && tsc --noEmit",
+    "lint": "next typegen && eslint .",
+    "clean": "rm -rf .next .turbo"
+  },
+  "dependencies": {
+    "@contraponha/api-client": "workspace:*",
+    "@contraponha/client-core": "workspace:*",
+    "@contraponha/config": "workspace:*",
+    "@contraponha/i18n": "workspace:*",
+    "@contraponha/next-server": "workspace:*",
+    "@contraponha/types": "workspace:*",
+    "@contraponha/validation": "workspace:*",
+    "@contraponha/web-ui": "workspace:*",
+    "@hookform/resolvers": "^5.9.1",
+    "@tanstack/react-query": "^5.104.1",
+    "lucide-react": "^1.52.0",
+    "next": "^16.3.8",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.89.0",
+    "server-only": "^0.0.1",
+    "sonner": "^2.0.8",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@contraponha/tsconfig": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.20.5",
+    "@types/react": "~19.2.18",
+    "@types/react-dom": "~19.2.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.3"
+  }
+}

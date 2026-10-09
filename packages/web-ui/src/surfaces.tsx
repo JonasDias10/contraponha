@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import { CircleAlert, Info, TriangleAlert } from "lucide-react"
 
-import { cn } from "@/lib/cn"
+import { cn } from "./cn.js"
 
 export function Card({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element {
   return (

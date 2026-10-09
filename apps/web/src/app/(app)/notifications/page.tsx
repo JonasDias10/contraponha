@@ -3,8 +3,8 @@ import type { Metadata } from "next"
 import { AppShell } from "@/components/layout/app-shell"
 import { NotificationList } from "@/components/notifications/notification-list"
 import { NotificationPreferencesForm } from "@/components/notifications/notification-preferences"
-import { Card } from "@/components/ui/surfaces"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
+import { Card } from "@contraponha/web-ui"
 import { requireViewer } from "@/lib/viewer"
 
 export async function generateMetadata(): Promise<Metadata> {

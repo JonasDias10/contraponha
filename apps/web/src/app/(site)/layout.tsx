@@ -1,5 +1,5 @@
 import { SiteFooter, SiteHeader } from "@/components/layout/site-chrome"
-import { ViewerProvider } from "@/components/providers/viewer-provider"
+import { ViewerProvider } from "@contraponha/web-ui"
 import { getViewer } from "@/lib/viewer"
 
 interface SiteLayoutProps {

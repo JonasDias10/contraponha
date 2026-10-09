@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 import { AppShell } from "@/components/layout/app-shell"
 import { ConnectionsList } from "@/components/profile/connections-list"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { loadProfile } from "@/lib/load-profile"
 
 export async function generateMetadata({

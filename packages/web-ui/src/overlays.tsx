@@ -4,7 +4,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import * as DropdownPrimitive from "@radix-ui/react-dropdown-menu"
 import { X } from "lucide-react"
 
-import { cn } from "@/lib/cn"
+import { cn } from "./cn.js"
 
 export const Dialog = DialogPrimitive.Root
 export const DialogTrigger = DialogPrimitive.Trigger

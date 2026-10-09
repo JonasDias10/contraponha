@@ -13,9 +13,7 @@ import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
 import { RemovedNotice } from "@/components/post/removed-notice"
 import { SourceCard } from "@/components/post/source-card"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar, useI18n, useViewer } from "@contraponha/web-ui"
 
 export interface CommentItemProps {
   comment: CommentView

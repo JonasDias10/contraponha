@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/cn"
+import { cn } from "./cn.js"
 
 export const tagVariants = cva(
   "inline-flex items-center gap-1.5 rounded-full border font-medium whitespace-nowrap no-underline",

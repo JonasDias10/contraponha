@@ -6,9 +6,7 @@ import { useProfilePhoto } from "@contraponha/client-core/react"
 import { useRef } from "react"
 import { toast } from "sonner"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar, Button, useI18n } from "@contraponha/web-ui"
 import { squareJpeg } from "@/lib/square-image"
 
 interface ProfilePhotoFieldProps {

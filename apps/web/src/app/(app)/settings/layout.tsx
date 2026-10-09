@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell"
 import { SettingsNav } from "@/components/settings/settings-nav"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { requireViewer } from "@/lib/viewer"
 
 interface SettingsLayoutProps {

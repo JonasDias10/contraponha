@@ -13,14 +13,17 @@ import { handleFieldMessages, passwordStrength } from "@contraponha/client-core"
 import { useHandleAvailability } from "@contraponha/client-core/react"
 
 import { signUp } from "@/actions/auth"
-import { FormBanner } from "@/components/auth/form-banner"
-import { PasswordInput } from "@/components/auth/password-input"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/controls"
+import {
+  Button,
+  Checkbox,
+  cn,
+  Field,
+  FormBanner,
+  Input,
+  PasswordInput,
+  useI18n,
+} from "@contraponha/web-ui"
 import { DatePicker } from "@/components/ui/date-picker"
-import { Field, Input } from "@/components/ui/field"
-import { cn } from "@/lib/cn"
 
 // The checkbox starts unchecked, so the form holds a boolean and the shared schema's
 // literal true is checked on submit.

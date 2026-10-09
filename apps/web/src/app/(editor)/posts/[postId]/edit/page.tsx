@@ -4,9 +4,9 @@ import { notFound, redirect } from "next/navigation"
 import { isWithinEditWindow } from "@contraponha/client-core"
 
 import { Composer } from "@/components/composer/composer"
-import { ViewerProvider } from "@/components/providers/viewer-provider"
+import { ViewerProvider } from "@contraponha/web-ui"
 import { createServerApiClient } from "@/lib/api"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { paths } from "@/lib/paths"
 import { requireViewer } from "@/lib/viewer"
 

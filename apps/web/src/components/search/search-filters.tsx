@@ -3,11 +3,8 @@
 import { SearchPeriod, SearchSort } from "@contraponha/types"
 import { Filter } from "lucide-react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
+import { Card, Checkbox, RadioGroup, RadioItem, useI18n, useViewer } from "@contraponha/web-ui"
 import { useSearchState } from "@/components/search/use-search-params-state"
-import { Checkbox, RadioGroup, RadioItem } from "@/components/ui/controls"
-import { Card } from "@/components/ui/surfaces"
 
 const PERIOD_KEYS = {
   [SearchPeriod.ANY]: "web.search.periodAny",

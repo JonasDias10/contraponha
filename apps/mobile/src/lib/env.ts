@@ -4,6 +4,7 @@ import { z } from "zod"
 const mobileEnvSchema = z.object({
   EXPO_PUBLIC_API_URL: z.url(),
   EXPO_PUBLIC_WEB_URL: z.url(),
+  EXPO_PUBLIC_HUB_URL: z.url().optional(),
 })
 
 export type MobileEnv = z.output<typeof mobileEnvSchema>
@@ -15,6 +16,7 @@ export function getMobileEnv(): MobileEnv {
     source: {
       EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
       EXPO_PUBLIC_WEB_URL: process.env.EXPO_PUBLIC_WEB_URL,
+      EXPO_PUBLIC_HUB_URL: process.env.EXPO_PUBLIC_HUB_URL,
     },
   })
 }

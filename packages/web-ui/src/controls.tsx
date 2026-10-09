@@ -6,7 +6,7 @@ import * as SwitchPrimitive from "@radix-ui/react-switch"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
 import { Check } from "lucide-react"
 
-import { cn } from "@/lib/cn"
+import { cn } from "./cn.js"
 
 export function Switch({
   className,

@@ -4,6 +4,7 @@ import { common } from "./common.js"
 import { content } from "./content.js"
 import { emails } from "./emails.js"
 import { follows } from "./follows.js"
+import { hub } from "./hub.js"
 import { media } from "./media.js"
 import { moderation } from "./moderation.js"
 import { notifications } from "./notifications.js"
@@ -17,6 +18,7 @@ export const ptBR = {
   content,
   emails,
   follows,
+  hub,
   media,
   moderation,
   notifications,

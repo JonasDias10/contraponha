@@ -10,15 +10,17 @@ import { toast } from "sonner"
 import { errorMessage, queryKeys } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
-import { PasswordInput } from "@/components/auth/password-input"
-import { RelativeTime } from "@/components/post/relative-time"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
+import {
+  Button,
+  Chip,
+  Field,
+  PasswordInput,
+  RelativeTime,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { SettingsSection } from "@/components/settings/settings-section"
-import { Chip } from "@/components/ui/badges"
-import { Button } from "@/components/ui/button"
-import { Field } from "@/components/ui/field"
 
 export function AccountSettings(): React.JSX.Element {
   return (

@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 
 import { AuthHeading } from "@/components/auth/auth-heading"
 import { EmailVerification } from "@/components/auth/email-verification"
-import { FormBanner } from "@/components/auth/form-banner"
-import { getRequestTranslator } from "@/lib/i18n"
+import { FormBanner } from "@contraponha/web-ui"
+import { getRequestTranslator } from "@contraponha/next-server"
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getRequestTranslator()

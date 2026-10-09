@@ -2,9 +2,7 @@
 
 import { WifiOff } from "lucide-react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { EmptyState } from "@/components/ui/surfaces"
+import { Button, EmptyState, useI18n } from "@contraponha/web-ui"
 
 interface ErrorPageProps {
   retry: () => void

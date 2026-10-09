@@ -3,9 +3,9 @@
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { inputClasses } from "@/components/ui/field"
-import { cn } from "@/lib/cn"
+import { cn } from "./cn.js"
+import { inputClasses } from "./field.js"
+import { useI18n } from "./i18n-provider.js"
 
 export function PasswordInput({
   className,

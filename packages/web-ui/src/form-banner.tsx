@@ -1,4 +1,4 @@
-import { Banner } from "@/components/ui/surfaces"
+import { Banner } from "./surfaces.js"
 
 export interface FormBannerProps {
   message: string | null

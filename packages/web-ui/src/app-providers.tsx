@@ -8,9 +8,8 @@ import { isRetryable } from "@contraponha/client-core"
 import { ClientContext } from "@contraponha/client-core/react"
 import { toast, Toaster } from "sonner"
 
-import { createBrowserApiClient } from "@/lib/api-browser"
-
-import { I18nProvider, useI18n } from "./i18n-provider"
+import { createBrowserApiClient } from "./api-browser.js"
+import { I18nProvider, useI18n } from "./i18n-provider.js"
 
 const ApiContext = createContext<ApiClient | null>(null)
 

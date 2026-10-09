@@ -10,7 +10,7 @@ import { AboutAuthor } from "@/components/post/about-author"
 import { EditHistory } from "@/components/post/edit-history"
 import { PostDetail } from "@/components/post/post-detail"
 import { createServerApiClient } from "@/lib/api"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { getServerQueryClient } from "@/lib/server-query"
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i

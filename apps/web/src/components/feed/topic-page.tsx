@@ -6,11 +6,7 @@ import { useRouter } from "next/navigation"
 import { queryKeys, topicLabel, topicMeta } from "@contraponha/client-core"
 
 import { FeedList } from "@/components/feed/feed-list"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Button } from "@/components/ui/button"
-import { Card, EmptyState } from "@/components/ui/surfaces"
+import { Button, Card, EmptyState, useApi, useI18n, useViewer } from "@contraponha/web-ui"
 
 export interface TopicPageProps {
   slug: string

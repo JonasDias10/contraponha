@@ -21,14 +21,19 @@ import { formatCount, formatMonthYear, queryKeys, recognitionText } from "@contr
 import { signOut } from "@/actions/auth"
 import { ReportDialog } from "@/components/post/report-dialog"
 import { FollowButton } from "@/components/profile/follow-button"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Chip } from "@/components/ui/badges"
-import { Button } from "@/components/ui/button"
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/overlays"
-import { Panel } from "@/components/ui/surfaces"
+import {
+  Avatar,
+  Button,
+  Chip,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+  Panel,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface ProfileHeaderProps {

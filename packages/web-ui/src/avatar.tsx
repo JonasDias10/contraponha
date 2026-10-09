@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/cn"
+import { cn } from "./cn.js"
 
 const avatarVariants = cva(
   "relative inline-grid flex-none place-items-center overflow-hidden rounded-full font-semibold tracking-[0.01em]",
@@ -57,7 +57,7 @@ export function Avatar({ id, name, src, size, className }: AvatarProps): React.J
     >
       {initialsOf(name) || "·"}
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element -- bucket host varies per environment
+        // A plain img: the bucket host varies per environment, so next/image is not used.
         <img src={src} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
       ) : null}
     </span>

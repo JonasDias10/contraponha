@@ -1,7 +1,7 @@
 import { CircleAlert, CircleCheck } from "lucide-react"
 import { useId } from "react"
 
-import { cn } from "@/lib/cn"
+import { cn } from "./cn.js"
 
 export const inputClasses =
   "flex h-11 w-full items-center gap-2 rounded-md border border-line-strong bg-surface-raised px-3.5 text-[15px] text-ink placeholder:text-subtle focus-visible:border-brand aria-invalid:border-2 aria-invalid:border-danger disabled:opacity-60"

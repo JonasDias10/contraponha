@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useSyncExternalStore } from "react"
 
-import { THEME_STORAGE_KEY, THEMES, type Theme } from "@/lib/theme"
+import { type Theme, THEME_STORAGE_KEY, THEMES } from "@contraponha/web-ui"
 
 const DARK_QUERY = "(prefers-color-scheme: dark)"
 const CHANGE_EVENT = "contraponha:theme-change"

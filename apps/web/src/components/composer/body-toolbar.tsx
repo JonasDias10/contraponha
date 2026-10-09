@@ -5,7 +5,7 @@ import { Bold, Italic, List, Quote, type LucideIcon } from "lucide-react"
 
 import { LinkPopover } from "@/components/composer/link-popover"
 import { toolButtonClasses } from "@/components/composer/tool-button"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useI18n } from "@contraponha/web-ui"
 
 type FormatName = "bold" | "italic" | "bulletList" | "blockquote"
 

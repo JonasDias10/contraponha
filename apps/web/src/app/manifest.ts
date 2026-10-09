@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const { t } = await getRequestTranslator()

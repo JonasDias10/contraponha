@@ -6,12 +6,16 @@ import Link from "next/link"
 import { queryKeys } from "@contraponha/client-core"
 
 import { PersonRow } from "@/components/profile/person-row"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { Button } from "@/components/ui/button"
-import { Card, EmptyState, Skeleton } from "@/components/ui/surfaces"
-import { cn } from "@/lib/cn"
+import {
+  Button,
+  Card,
+  cn,
+  EmptyState,
+  Skeleton,
+  useApi,
+  useI18n,
+  useViewer,
+} from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 const FIRST_PAGE: string | undefined = undefined

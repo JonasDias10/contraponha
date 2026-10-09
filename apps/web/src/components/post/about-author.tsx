@@ -4,10 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { queryKeys, recognitionText } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Avatar } from "@/components/ui/avatar"
-import { Card } from "@/components/ui/surfaces"
+import { Avatar, Card, useApi, useI18n } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface AboutAuthorProps {

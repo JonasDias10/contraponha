@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "@contraponha/web-ui/styles.css";
+
+/* Classes used by the shared components must be generated here too. */
+@source "../../../../packages/web-ui/src";

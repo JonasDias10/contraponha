@@ -2,7 +2,7 @@ import type { TopicSummary } from "@contraponha/types"
 import { topicLabel } from "@contraponha/client-core"
 import Link from "next/link"
 
-import { tagVariants } from "@/components/ui/badges"
+import { tagVariants } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface TopicTagsProps {

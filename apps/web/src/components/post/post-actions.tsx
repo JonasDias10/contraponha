@@ -11,9 +11,7 @@ import type { ReactionsState } from "@contraponha/client-core/react"
 
 import { ReactionBar } from "@/components/post/reaction-bar"
 import { REACTION_ICONS } from "@/lib/reactions"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { useViewer } from "@/components/providers/viewer-provider"
-import { cn } from "@/lib/cn"
+import { cn, useI18n, useViewer } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 const actClasses =

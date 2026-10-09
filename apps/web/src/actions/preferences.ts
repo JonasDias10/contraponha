@@ -3,8 +3,7 @@
 import { isLocale } from "@contraponha/i18n"
 
 import { createServerApiClient } from "@/lib/api"
-import { storeLocale } from "@/lib/i18n"
-import { getSessionToken } from "@/lib/session"
+import { getSessionToken, storeLocale } from "@contraponha/next-server"
 
 // Remembers the language in a cookie and, when signed in, in the account (emails follow it).
 export async function changeLocale(locale: string): Promise<void> {

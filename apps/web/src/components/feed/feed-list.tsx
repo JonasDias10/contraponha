@@ -5,9 +5,7 @@ import { useInfiniteQuery, type QueryKey } from "@tanstack/react-query"
 import { WifiOff } from "lucide-react"
 
 import { PostCard } from "@/components/post/post-card"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { EmptyState, Skeleton } from "@/components/ui/surfaces"
+import { Button, EmptyState, Skeleton, useI18n } from "@contraponha/web-ui"
 
 const FIRST_PAGE: string | undefined = undefined
 

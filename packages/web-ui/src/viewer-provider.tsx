@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { createContext, useContext } from "react"
 import { queryKeys } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
+import { useApi } from "./app-providers.js"
 
 const ViewerSeedContext = createContext<PrivateProfile | null>(null)
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 import { DataSettings } from "@/components/settings/data-settings"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getRequestTranslator()

@@ -2,8 +2,8 @@
 
 import { CommunityRule } from "@contraponha/types"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { RadioGroup, RadioItem } from "@/components/ui/controls"
+import { RadioGroup, RadioItem } from "./controls.js"
+import { useI18n } from "./i18n-provider.js"
 
 export const RULES = Object.values(CommunityRule)
 

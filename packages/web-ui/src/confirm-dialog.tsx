@@ -1,14 +1,7 @@
 "use client"
 
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/overlays"
+import { Button } from "./button.js"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "./overlays.js"
 
 export interface ConfirmDialogProps {
   open: boolean
@@ -16,6 +9,8 @@ export interface ConfirmDialogProps {
   title: string
   description: string
   confirmLabel: string
+  cancelLabel: string
+  closeLabel: string
   onConfirm: () => void
   isPending?: boolean
   tone?: "danger" | "primary"
@@ -28,16 +23,16 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  cancelLabel,
+  closeLabel,
   onConfirm,
   isPending = false,
   tone = "danger",
   children,
 }: ConfirmDialogProps): React.JSX.Element {
-  const { t } = useI18n()
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent closeLabel={t("web.common.close")}>
+      <DialogContent closeLabel={closeLabel}>
         <DialogTitle className="pr-8 font-serif text-[25px] leading-tight font-semibold">
           {title}
         </DialogTitle>
@@ -45,7 +40,7 @@ export function ConfirmDialog({
         {children}
         <div className="flex flex-wrap justify-end gap-3">
           <DialogClose asChild>
-            <Button variant="ghost">{t("web.common.cancel")}</Button>
+            <Button variant="ghost">{cancelLabel}</Button>
           </DialogClose>
           <Button variant={tone} onClick={onConfirm} isLoading={isPending}>
             {confirmLabel}

@@ -6,8 +6,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { errorMessage } from "@contraponha/client-core"
 
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
+import { useApi, useI18n } from "@contraponha/web-ui"
 
 export interface UploadedImage {
   mediaId: string

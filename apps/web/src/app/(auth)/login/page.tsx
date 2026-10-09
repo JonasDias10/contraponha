@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 
 import { AuthHeading } from "@/components/auth/auth-heading"
 import { SignInForm } from "@/components/auth/sign-in-form"
-import { getRequestTranslator } from "@/lib/i18n"
+import { getRequestTranslator } from "@contraponha/next-server"
 import { getViewer } from "@/lib/viewer"
 
 export async function generateMetadata(): Promise<Metadata> {

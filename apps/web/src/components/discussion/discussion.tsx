@@ -8,11 +8,17 @@ import { queryKeys } from "@contraponha/client-core"
 
 import { CommentComposer } from "@/components/discussion/comment-composer"
 import { CommentItem } from "@/components/discussion/comment-item"
-import { useApi } from "@/components/providers/app-providers"
-import { useI18n } from "@/components/providers/i18n-provider"
-import { Button } from "@/components/ui/button"
-import { Segmented, SegmentedItem, SegmentedList } from "@/components/ui/controls"
-import { Banner, EmptyState, Skeleton } from "@/components/ui/surfaces"
+import {
+  Banner,
+  Button,
+  EmptyState,
+  Segmented,
+  SegmentedItem,
+  SegmentedList,
+  Skeleton,
+  useApi,
+  useI18n,
+} from "@contraponha/web-ui"
 
 const FIRST_PAGE: string | undefined = undefined
 
