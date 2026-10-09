@@ -33,6 +33,37 @@ describe("auth", () => {
     await app.close()
   })
 
+  describe("handle availability", () => {
+    const availability = (handle: string): request.Test =>
+      request(server).get(`/api/v1/auth/handles/${encodeURIComponent(handle)}/availability`)
+
+    it("reports a free handle as available", async () => {
+      const { handle } = newAccountInput()
+
+      const response = await availability(handle).expect(200)
+
+      expect(response.body).toEqual({ handle, isAvailable: true })
+    })
+
+    it("reports a taken handle as unavailable, ignoring case", async () => {
+      const { input } = await registerAccount({ server })
+
+      const response = await availability(input.handle.toUpperCase()).expect(200)
+
+      expect(response.body).toEqual({ handle: input.handle, isAvailable: false })
+    })
+
+    it("reports reserved handles as unavailable", async () => {
+      const response = await availability("admin").expect(200)
+
+      expect(response.body.isAvailable).toBe(false)
+    })
+
+    it("rejects malformed handles", async () => {
+      await availability("a!").expect(400)
+    })
+  })
+
   describe("registration", () => {
     it("creates the account, starts a session and emails a verification link", async () => {
       const { input, auth } = await registerAccount({ server })

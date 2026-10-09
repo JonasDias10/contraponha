@@ -1,4 +1,5 @@
-import { errorMessage, validationIssues } from "@contraponha/client-core"
+import { errorMessage, handleFieldMessages, validationIssues } from "@contraponha/client-core"
+import { useHandleAvailability } from "@contraponha/client-core/react"
 import { MINIMUM_AGE_YEARS } from "@contraponha/config"
 import type { MessageKey } from "@contraponha/i18n"
 import { registerInputSchema } from "@contraponha/validation"
@@ -81,6 +82,10 @@ export default function SignUpScreen(): React.JSX.Element {
 
   const password = useWatch({ control, name: "password" })
 
+  const handle = useWatch({ control, name: "handle" })
+  const handleAvailability = useHandleAvailability(handle)
+  const handleMessages = handleFieldMessages({ availability: handleAvailability, t })
+
   const fieldError = (name: FieldName): string | undefined => {
     const key = FIELD_MESSAGES[name]
 
@@ -89,6 +94,12 @@ export default function SignUpScreen(): React.JSX.Element {
 
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     setServerError(null)
+
+    if (handleAvailability.status === "taken") {
+      setError("handle", { type: "server" }, { shouldFocus: true })
+
+      return
+    }
 
     try {
       const auth = await api.auth.register({ ...values, acceptedTerms: true, locale })
@@ -139,8 +150,8 @@ export default function SignUpScreen(): React.JSX.Element {
           render={({ field }) => (
             <TextField
               label={t("web.auth.handle")}
-              hint={t("web.auth.handleHint")}
-              error={fieldError("handle")}
+              hint={handleMessages.success ?? handleMessages.hint}
+              error={handleMessages.error ?? fieldError("handle")}
               prefix="@"
               value={field.value}
               onChangeText={(text) => field.onChange(text.toLowerCase())}

@@ -1,4 +1,9 @@
-import type { AuthResponse, SessionListResponse, SessionSummary } from "@contraponha/types"
+import type {
+  AuthResponse,
+  HandleAvailability,
+  SessionListResponse,
+  SessionSummary,
+} from "@contraponha/types"
 import { ageInYears, MINIMUM_AGE_YEARS } from "@contraponha/config"
 import { z } from "zod"
 
@@ -77,6 +82,11 @@ export const authResponseSchema = z.object({
     expiresAt: z.iso.datetime(),
   }),
 }) satisfies z.ZodType<AuthResponse>
+
+export const handleAvailabilitySchema = z.object({
+  handle: z.string(),
+  isAvailable: z.boolean(),
+}) satisfies z.ZodType<HandleAvailability>
 
 export const sessionSummarySchema = z.object({
   id: z.uuid(),

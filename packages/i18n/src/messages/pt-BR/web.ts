@@ -109,6 +109,8 @@ export const web = {
     nameHint: "Como as pessoas vão te ver. Pode ser apelido.",
     handle: "Nome de usuário",
     handleHint: "Letras, números e _. Aparece como @usuario.",
+    handleChecking: "Verificando disponibilidade...",
+    handleAvailable: "@{handle} está disponível.",
     email: "E-mail",
     emailHint: "Usamos só para login e avisos da conta.",
     password: "Senha",

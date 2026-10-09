@@ -10,6 +10,11 @@ export interface AuthResponse {
   session: IssuedSession
 }
 
+export interface HandleAvailability {
+  handle: string
+  isAvailable: boolean
+}
+
 export interface SessionListResponse {
   sessions: SessionSummary[]
 }
