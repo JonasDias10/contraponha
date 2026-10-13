@@ -3,6 +3,7 @@ import {
   check,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   smallint,
@@ -13,6 +14,12 @@ import {
 
 import { posts } from "./posts.js"
 import { users } from "./users.js"
+
+export interface MediaVariantValue {
+  key: string
+  width: number
+  height: number
+}
 
 export const mediaStatus = pgEnum("media_status", ["pending", "attached", "profile"])
 
@@ -31,6 +38,11 @@ export const mediaAssets = pgTable(
     mimeType: text().notNull(),
     sizeBytes: integer().notNull(),
     status: mediaStatus().notNull().default("pending"),
+    // Filled when a post image is processed: the original's oriented size and the WebP
+    // variants served instead of it (the original, with its EXIF data, is deleted).
+    width: integer(),
+    height: integer(),
+    variants: jsonb().$type<MediaVariantValue[]>(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     attachedAt: timestamp({ withTimezone: true }),
   },

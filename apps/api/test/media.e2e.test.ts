@@ -39,7 +39,13 @@ describe("media", () => {
 
     expect(post.media).toHaveLength(1)
 
-    expect(media).toMatchObject({ id: mediaId, mimeType: "image/png", sizeBytes: PNG_BYTES.length })
+    expect(media).toMatchObject({
+      id: mediaId,
+      mimeType: "image/webp",
+      width: 4,
+      height: 4,
+      variants: [{ width: 4, height: 4 }],
+    })
 
     const served = await fetch(media?.url ?? "")
     const servedBody = await served.arrayBuffer()
@@ -47,7 +53,45 @@ describe("media", () => {
 
     expect(served.status).toBe(200)
 
-    expect(servedBytes.equals(PNG_BYTES)).toBe(true)
+    expect(served.headers.get("content-type")).toBe("image/webp")
+
+    expect(servedBytes.subarray(8, 12).toString("ascii")).toBe("WEBP")
+  })
+
+  it("deletes the original upload once the variants exist", async () => {
+    const { auth } = await registerAccount({ server })
+
+    const ticket = await requestUpload({
+      server,
+      token: auth.session.token,
+      sizeBytes: PNG_BYTES.length,
+    })
+
+    await putObject({ ticket, content: PNG_BYTES })
+
+    await request(server)
+      .post("/api/v1/posts")
+      .set(bearer(auth.session.token))
+      .send({ body: "Com imagem", mediaIds: [ticket.mediaId] })
+      .expect(201)
+
+    const original = await fetch(ticket.uploadUrl.split("?")[0] ?? "")
+
+    expect([403, 404]).toContain(original.status)
+  })
+
+  it("refuses files that are not decodable images", async () => {
+    const { auth } = await registerAccount({ server })
+    const broken = Buffer.concat([PNG_BYTES.subarray(0, 16), Buffer.alloc(40)])
+    const mediaId = await uploadImage({ server, token: auth.session.token, content: broken })
+
+    const response = await request(server)
+      .post("/api/v1/posts")
+      .set(bearer(auth.session.token))
+      .send({ body: "Com imagem", mediaIds: [mediaId] })
+      .expect(400)
+
+    expect(response.body.error.code).toBe("MEDIA_INVALID")
   })
 
   it("validates type and size before issuing an upload URL", async () => {

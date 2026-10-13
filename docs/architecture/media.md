@@ -22,6 +22,25 @@ cliente                         API                              storage (S3)
 3. Ao criar o post com `mediaIds`, a API confere, para cada id: dono, status `pending`, tamanho real (`HEAD`) e **assinatura binária** (magic bytes de JPEG, PNG ou WebP). Um HTML renomeado para `.png` é recusado com `MEDIA_INVALID`.
 4. As mídias são anexadas ao post na mesma transação, na ordem enviada. Uma mídia não pode ser reutilizada.
 
+## Processamento das imagens dos posts
+
+Antes de gravar o post, a API baixa cada upload e o processa com o `sharp` (`renderVariants`):
+
+1. **Orienta** a imagem pelo EXIF e **descarta todos os metadados** (câmera, data, localização GPS).
+2. **Gera versões WebP** nas larguras de `MEDIA_VARIANT_WIDTHS` (640 e 1600 px), com qualidade `MEDIA_VARIANT_QUALITY` (80) e sem nunca ampliar: uma foto pequena gera menos versões. Imagens acima de 40 megapixels são recusadas (proteção contra arquivos que explodem ao descomprimir), e arquivos que não decodificam respondem `MEDIA_INVALID`.
+3. Grava as versões em `posts/<dono>/<uuid>-w<largura>.webp` com `Cache-Control: public, max-age=31536000, immutable`, porque cada chave é única e nunca muda.
+4. Guarda em `media_assets` a largura e a altura da imagem orientada e a lista de versões (`variants`). Depois do commit, **o original é apagado**: só as versões, sem metadados, ficam públicas.
+
+As imagens são processadas em paralelo durante a criação do post (algumas centenas de milissegundos para quatro fotos de celular), então um post nunca aparece com imagem pendente.
+
+`MediaView` traz `url` (a maior versão), `width`, `height` e `variants` (da menor para a maior). O web monta `srcset` e reserva o espaço com `width`/`height`, evitando que a página pule enquanto carrega; o mobile passa as versões ao `expo-image`, que escolhe a menor que serve para o tamanho da tela. Imagens antigas, de antes do processamento, continuam com a `url` do upload e `variants` vazio.
+
+## CDN
+
+`MEDIA_PUBLIC_BASE_URL` é a base de todas as URLs públicas. Em produção, aponte para uma CDN na frente do bucket (Cloudflare, CloudFront, Bunny ou a CDN do próprio provedor S3), com o bucket como origem e só os prefixos `posts/` e `avatars/` liberados. As versões das imagens já saem com cache imutável; para as fotos de perfil, configure na CDN um TTL longo, porque cada troca de foto gera uma chave nova.
+
+Se a base mudar (por exemplo, ao trocar de CDN), as fotos de perfil precisam de um `UPDATE` em `users.avatar_url` (ver abaixo); as imagens de posts não, porque as URLs são montadas na leitura.
+
 ## Foto de perfil
 
 A foto de perfil usa o mesmo upload direto, com `purpose: "avatar"` em `POST /media/uploads`:

@@ -79,10 +79,24 @@ export class S3ObjectStorage extends ObjectStorage implements OnModuleInit {
     return { url, headers: { "content-type": contentType } }
   }
 
-  async put({ key, body, contentType }: PutObjectParams): Promise<void> {
+  async put({ key, body, contentType, cacheControl }: PutObjectParams): Promise<void> {
     await this.client.send(
-      new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: body, ContentType: contentType }),
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+        CacheControl: cacheControl,
+      }),
     )
+  }
+
+  async read(key: string): Promise<Uint8Array> {
+    const object = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key }))
+
+    if (!object.Body) return new Uint8Array()
+
+    return object.Body.transformToByteArray()
   }
 
   createDownloadUrl({ key, fileName, expiresInSeconds }: CreateDownloadUrlParams): Promise<string> {

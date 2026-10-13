@@ -178,7 +178,7 @@ export class PostsService {
   async create(params: CreatePostParams): Promise<PostView> {
     const { authorId, mediaIds } = params
 
-    await this.mediaService.verifyUploads({ ownerId: authorId, mediaIds })
+    const media = await this.mediaService.prepareForPost({ ownerId: authorId, mediaIds })
 
     const post = await runTransaction({
       db: this.db,
@@ -194,7 +194,7 @@ export class PostsService {
           executor: tx,
         })
 
-        await this.mediaService.attachToPost({ mediaIds, postId: created.id, executor: tx })
+        await this.mediaService.attachToPost({ media, postId: created.id, executor: tx })
 
         const topics = await this.topicsService.resolveForPost({
           names: params.topics,
@@ -216,6 +216,8 @@ export class PostsService {
         return created
       },
     })
+
+    await this.mediaService.discardOriginals(media)
 
     return this.requireView({ post, viewerId: authorId })
   }
