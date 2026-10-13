@@ -3,6 +3,7 @@ import { daysToMs } from "@contraponha/config"
 import type {
   FollowedByPreview,
   ProfileView,
+  ProfileViewerState,
   Recognition,
   SuggestedPeople,
 } from "@contraponha/types"
@@ -17,6 +18,7 @@ import {
 import { PeopleRepository } from "#src/modules/people/repositories/people.repository.js"
 import { toTopicSummary } from "#src/modules/topics/domain/topic.js"
 import { toPublicProfile } from "#src/modules/users/domain/user.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const SUGGESTION_WINDOW_DAYS = 90
@@ -24,6 +26,11 @@ const SUGGESTION_WINDOW_DAYS = 90
 export interface ProfileRequest {
   handle: string
   viewerId: string | undefined
+}
+
+interface ViewerStateParams {
+  viewerId: string
+  userId: string
 }
 
 export interface FollowedByRequest {
@@ -36,6 +43,7 @@ export class PeopleService {
   constructor(
     private readonly peopleRepository: PeopleRepository,
     private readonly usersService: UsersService,
+    private readonly relations: UserRelationsService,
   ) {}
 
   async profile({ handle, viewerId }: ProfileRequest): Promise<ProfileView> {
@@ -49,7 +57,7 @@ export class PeopleService {
 
     const viewer =
       viewerId && viewerId !== user.id
-        ? await this.peopleRepository.followState({ viewerId, userId: user.id })
+        ? await this.viewerState({ viewerId, userId: user.id })
         : null
 
     return {
@@ -99,5 +107,14 @@ export class PeopleService {
     })
 
     return toRecognition({ received, topics: recognized.map(toTopicSummary) })
+  }
+
+  private async viewerState({ viewerId, userId }: ViewerStateParams): Promise<ProfileViewerState> {
+    const [follow, relation] = await Promise.all([
+      this.peopleRepository.followState({ viewerId, userId }),
+      this.relations.flags({ actorId: viewerId, targetId: userId }),
+    ])
+
+    return { ...follow, ...relation }
   }
 }

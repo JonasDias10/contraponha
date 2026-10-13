@@ -105,6 +105,19 @@ Todas as referências a `users` usam `ON DELETE CASCADE`, então excluir uma con
 - Comentários removidos só aparecem na listagem enquanto tiverem respostas; respostas removidas não aparecem.
 - Não é possível editar, reagir ou comentar em conteúdo removido (`RESOURCE_NOT_FOUND`).
 
+## Bloquear e silenciar
+
+| Rota                                  | Efeito                                        |
+| ------------------------------------- | --------------------------------------------- |
+| `PUT` / `DELETE /users/:handle/block` | Bloqueia ou desbloqueia (idempotente)         |
+| `PUT` / `DELETE /users/:handle/mute`  | Silencia ou reativa (idempotente)             |
+| `GET /me/blocks`, `GET /me/mutes`     | Quem a pessoa bloqueou ou silenciou, paginado |
+
+- **Bloqueio vale nos dois sentidos.** Desfaz os follows entre as duas pessoas (com os contadores) e impede seguir, comentar, responder e reagir: a API responde `INTERACTION_BLOCKED` (403). Nenhuma das duas vê posts, contribuições ou o perfil da outra em feeds, busca e sugestões; abrindo o perfil direto, as listas de posts e contribuições vêm vazias e o perfil traz `viewer.isBlocking` ou `viewer.isBlockedBy`.
+- **Silenciar só afeta quem silenciou.** Os posts e as contribuições da pessoa somem dos feeds, da busca e das discussões, e as notificações vindas dela deixam de chegar. A pessoa silenciada não percebe nada. O perfil dela continua visível para quem silenciou, para poder desfazer.
+- **Um filtro só.** Todas as consultas de leitura usam `isVisibleAuthor({ column, viewerId })` do `@contraponha/database`, que exclui bloqueios nos dois sentidos e silenciamentos de quem está vendo. As escritas passam por `UserRelationsService.assertCanInteract`, e as notificações por `isNotificationAllowed`.
+- Ninguém é avisado de um bloqueio. Conteúdo antigo continua existindo; ele só deixa de aparecer entre as duas pessoas.
+
 ## Paginação
 
 Todas as listas usam cursor opaco:

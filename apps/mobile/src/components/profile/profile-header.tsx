@@ -1,8 +1,10 @@
 import { formatCount, formatMonthYear, queryKeys, recognitionText } from "@contraponha/client-core"
 import type { ProfileView } from "@contraponha/types"
+import { useRelationMutation } from "@contraponha/client-core/react"
 import { useQuery } from "@tanstack/react-query"
 import { router } from "expo-router"
 import {
+  Ban,
   CalendarDays,
   CircleCheck,
   Flag,
@@ -12,6 +14,7 @@ import {
   MoreHorizontal,
   Share2,
   SlidersHorizontal,
+  VolumeX,
 } from "lucide-react-native"
 import { useState } from "react"
 import { Alert, Pressable, Share, StyleSheet, View } from "react-native"
@@ -23,6 +26,7 @@ import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Chip } from "@/components/ui/chip"
 import { IconButton } from "@/components/ui/icon-button"
+import { Banner } from "@/components/ui/surfaces"
 import { AppText } from "@/components/ui/text"
 import { usePalette } from "@/hooks/use-palette"
 import { useI18n } from "@/providers/i18n-provider"
@@ -51,6 +55,11 @@ export function ProfileHeader({ profile }: ProfileHeaderProps): React.JSX.Elemen
   const { signOut } = useSession()
   const [panel, setPanel] = useState<"menu" | "report" | null>(null)
   const isSelf = viewer?.id === profile.id
+  const relation = useRelationMutation()
+  const { handle } = profile
+  const isBlocking = profile.viewer?.isBlocking ?? false
+  const isMuting = profile.viewer?.isMuting ?? false
+  const isBlocked = isBlocking || (profile.viewer?.isBlockedBy ?? false)
 
   const followedBy = useQuery({
     queryKey: queryKeys.followedBy(profile.handle),
@@ -91,6 +100,40 @@ export function ProfileHeader({ profile }: ProfileHeaderProps): React.JSX.Elemen
       ]
     : [
         { key: "share", label: t("web.post.share"), icon: Share2, onPress: share },
+        ...(isBlocking
+          ? []
+          : [
+              {
+                key: "mute",
+                label: isMuting
+                  ? t("web.relations.unmute", { handle })
+                  : t("web.relations.mute", { handle }),
+                icon: VolumeX,
+                onPress: () => relation.mutate({ handle, kind: "mute", isOn: !isMuting }),
+              },
+            ]),
+        {
+          key: "block",
+          label: isBlocking
+            ? t("web.relations.unblock", { handle })
+            : t("web.relations.block", { handle }),
+          icon: Ban,
+          onPress: () =>
+            isBlocking
+              ? relation.mutate({ handle, kind: "block", isOn: false })
+              : Alert.alert(
+                  t("web.relations.blockTitle", { handle }),
+                  t("web.relations.blockBody"),
+                  [
+                    { text: t("web.common.cancel"), style: "cancel" },
+                    {
+                      text: t("web.relations.blockConfirm"),
+                      style: "destructive",
+                      onPress: () => relation.mutate({ handle, kind: "block", isOn: true }),
+                    },
+                  ],
+                ),
+        },
         {
           key: "report",
           label: t("web.profile.report"),
@@ -126,7 +169,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps): React.JSX.Elemen
               label={t("web.profile.editProfile")}
               onPress={() => router.push("/settings/profile")}
             />
-          ) : (
+          ) : isBlocked ? null : (
             <FollowButton
               handle={profile.handle}
               initialIsFollowing={profile.viewer?.isFollowing}
@@ -150,8 +193,13 @@ export function ProfileHeader({ profile }: ProfileHeaderProps): React.JSX.Elemen
             {profile.pronouns ? ` · ${profile.pronouns}` : ""}
           </AppText>
           {profile.viewer?.isFollowedBy ? <Chip label={t("web.profile.followsYou")} /> : null}
+          {isMuting ? <Chip label={t("web.relations.mutedChip")} /> : null}
         </View>
       </View>
+      {isBlocking ? <Banner tone="info">{t("web.relations.youBlocked")}</Banner> : null}
+      {profile.viewer?.isBlockedBy ? (
+        <Banner tone="info">{t("web.relations.blockedYou")}</Banner>
+      ) : null}
       {profile.bio ? <AppText variant="reading">{profile.bio}</AppText> : null}
       <View style={styles.details}>
         {profile.headline ? (

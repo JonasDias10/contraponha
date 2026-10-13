@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query"
 import {
   CalendarDays,
   CircleCheck,
-  Flag,
   Link2,
   LogOut,
   MapPin,
@@ -15,14 +14,14 @@ import {
 } from "lucide-react"
 import type { Route } from "next"
 import Link from "next/link"
-import { useState } from "react"
 import { formatCount, formatMonthYear, queryKeys, recognitionText } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
-import { ReportDialog } from "@/components/post/report-dialog"
 import { FollowButton } from "@/components/profile/follow-button"
+import { ProfileActionsMenu } from "@/components/profile/profile-actions-menu"
 import {
   Avatar,
+  Banner,
   Button,
   Chip,
   Menu,
@@ -67,8 +66,8 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
   const { t, locale } = useI18n()
   const api = useApi()
   const viewer = useViewer()
-  const [isReporting, setIsReporting] = useState(false)
   const isSelf = viewer?.id === profile.id
+  const isBlocked = Boolean(profile.viewer?.isBlocking || profile.viewer?.isBlockedBy)
 
   const followedBy = useQuery({
     queryKey: queryKeys.followedBy(profile.handle),
@@ -108,6 +107,7 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
                 @{profile.handle}
                 {profile.pronouns ? <span>· {profile.pronouns}</span> : null}
                 {profile.viewer?.isFollowedBy ? <Chip>{t("web.profile.followsYou")}</Chip> : null}
+                {profile.viewer?.isMuting ? <Chip>{t("web.relations.mutedChip")}</Chip> : null}
               </p>
             </div>
             <div className="flex gap-2">
@@ -143,25 +143,13 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
                 </>
               ) : (
                 <>
-                  {viewer ? (
-                    <Menu>
-                      <MenuTrigger asChild>
-                        <Button variant="secondary" size="icon" aria-label={t("web.post.options")}>
-                          <MoreHorizontal aria-hidden className="size-5" />
-                        </Button>
-                      </MenuTrigger>
-                      <MenuContent>
-                        <MenuItem tone="danger" onSelect={() => setIsReporting(true)}>
-                          <Flag aria-hidden className="size-4" />
-                          {t("web.profile.report")}
-                        </MenuItem>
-                      </MenuContent>
-                    </Menu>
-                  ) : null}
-                  <FollowButton
-                    handle={profile.handle}
-                    initialIsFollowing={profile.viewer?.isFollowing}
-                  />
+                  {viewer ? <ProfileActionsMenu profile={profile} /> : null}
+                  {isBlocked ? null : (
+                    <FollowButton
+                      handle={profile.handle}
+                      initialIsFollowing={profile.viewer?.isFollowing}
+                    />
+                  )}
                 </>
               )}
             </div>
@@ -258,12 +246,12 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
           </Popover.Root>
         </Panel>
       ) : null}
-      <ReportDialog
-        targetType="user"
-        targetId={profile.id}
-        open={isReporting}
-        onOpenChange={setIsReporting}
-      />
+      {profile.viewer?.isBlocking ? (
+        <Banner tone="info">{t("web.relations.youBlocked")}</Banner>
+      ) : null}
+      {profile.viewer?.isBlockedBy ? (
+        <Banner tone="info">{t("web.relations.blockedYou")}</Banner>
+      ) : null}
     </section>
   )
 }

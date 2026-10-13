@@ -105,7 +105,15 @@ export const recognitionSchema = z.object({
 export const profileViewSchema = publicProfileSchema.extend({
   recognition: recognitionSchema.nullable(),
   topics: z.array(topicSummarySchema),
-  viewer: z.object({ isFollowing: z.boolean(), isFollowedBy: z.boolean() }).nullable(),
+  viewer: z
+    .object({
+      isFollowing: z.boolean(),
+      isFollowedBy: z.boolean(),
+      isBlocking: z.boolean(),
+      isBlockedBy: z.boolean(),
+      isMuting: z.boolean(),
+    })
+    .nullable(),
 }) satisfies z.ZodType<ProfileView>
 
 export const followedByPreviewSchema = z.object({

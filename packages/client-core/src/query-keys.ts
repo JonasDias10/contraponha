@@ -33,6 +33,11 @@ export interface ConnectionsKeyParams {
 // One place for every cache key, so invalidations after mutations stay consistent.
 export const queryKeys = {
   me: ["me"] as const,
+  relations: {
+    all: ["relations"] as const,
+    blocks: ["relations", "blocks"] as const,
+    mutes: ["relations", "mutes"] as const,
+  },
   handleAvailability: (handle: string) => ["handle-availability", handle] as const,
   feed: {
     all: ["feed"] as const,

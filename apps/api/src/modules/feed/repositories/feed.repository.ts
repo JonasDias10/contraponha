@@ -1,13 +1,14 @@
 import { daysToMs } from "@contraponha/config"
 import { Inject, Injectable } from "@nestjs/common"
 import {
+  type Database,
   follows,
-  postTopics,
+  isVisibleAuthor,
   posts,
+  postTopics,
   reports,
   topicFollows,
   topics,
-  type Database,
 } from "@contraponha/database"
 import {
   and,
@@ -49,6 +50,11 @@ export interface ListFollowedTopicCandidatesParams {
   limit: number
 }
 
+export interface ListQualityCandidatesParams {
+  viewerId: string | undefined
+  limit: number
+}
+
 export interface ListViewerExclusionsParams {
   viewerId: string
   candidates: readonly DiscoverCandidate[]
@@ -56,6 +62,7 @@ export interface ListViewerExclusionsParams {
 
 export interface ListTopicPostsParams {
   topicId: string
+  viewerId: string | undefined
   beforeId: string | undefined
   limit: number
 }
@@ -105,6 +112,7 @@ export class FeedRepository {
         and(
           isNull(posts.deletedAt),
           or(eq(posts.authorId, userId), inArray(posts.authorId, followedAuthors)),
+          isVisibleAuthor({ column: posts.authorId, viewerId: userId }),
           beforeId ? lt(posts.id, beforeId) : undefined,
         ),
       )
@@ -113,11 +121,14 @@ export class FeedRepository {
   }
 
   // Source: the best recent posts by quality with time decay, whatever their topic.
-  listQualityCandidates(limit: number): Promise<DiscoverCandidate[]> {
+  listQualityCandidates({
+    viewerId,
+    limit,
+  }: ListQualityCandidatesParams): Promise<DiscoverCandidate[]> {
     return this.db
       .select({ ...candidateColumns, matchedTopicSlug: sql<string | null>`null::text` })
       .from(posts)
-      .where(recentActivePost())
+      .where(and(recentActivePost(), isVisibleAuthor({ column: posts.authorId, viewerId })))
       .orderBy(desc(qualityScore), desc(posts.id))
       .limit(limit)
   }
@@ -146,7 +157,13 @@ export class FeedRepository {
         matchedTopicSlug: sql<string | null>`(${firstFollowedTopic})`,
       })
       .from(posts)
-      .where(and(recentActivePost(), exists(firstFollowedTopic)))
+      .where(
+        and(
+          recentActivePost(),
+          exists(firstFollowedTopic),
+          isVisibleAuthor({ column: posts.authorId, viewerId }),
+        ),
+      )
       .orderBy(desc(qualityScore), desc(posts.id))
       .limit(limit)
   }
@@ -182,7 +199,7 @@ export class FeedRepository {
     }
   }
 
-  listByTopic({ topicId, beforeId, limit }: ListTopicPostsParams): Promise<Post[]> {
+  listByTopic({ topicId, viewerId, beforeId, limit }: ListTopicPostsParams): Promise<Post[]> {
     return this.db
       .select({ post: posts })
       .from(postTopics)
@@ -191,6 +208,7 @@ export class FeedRepository {
         and(
           eq(postTopics.topicId, topicId),
           isNull(posts.deletedAt),
+          isVisibleAuthor({ column: posts.authorId, viewerId }),
           beforeId ? lt(posts.id, beforeId) : undefined,
         ),
       )

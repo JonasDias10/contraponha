@@ -1,15 +1,16 @@
 import { Inject, Injectable } from "@nestjs/common"
 import {
   comments,
+  type Database,
   follows,
+  isVisibleAuthor,
   posts,
   postTopics,
   topicFollows,
-  topics,
-  users,
-  type Database,
   type TopicRow,
+  topics,
   type UserRow,
+  users,
 } from "@contraponha/database"
 import { and, count, desc, eq, gt, inArray, isNull, ne, notInArray, sql } from "drizzle-orm"
 
@@ -179,6 +180,7 @@ export class PeopleRepository {
           gt(posts.createdAt, since),
           ne(posts.authorId, viewerId),
           notInArray(posts.authorId, followedUserIds),
+          isVisibleAuthor({ column: posts.authorId, viewerId }),
           hasTopics
             ? inArray(
                 posts.id,

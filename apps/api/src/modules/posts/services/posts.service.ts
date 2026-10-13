@@ -44,6 +44,7 @@ import { PostContextRepository } from "#src/modules/posts/repositories/post-cont
 import { PostRevisionsRepository } from "#src/modules/posts/repositories/post-revisions.repository.js"
 import { PostsRepository } from "#src/modules/posts/repositories/posts.repository.js"
 import { TopicsService } from "#src/modules/topics/services/topics.service.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const postCursorSchema = z.object({ id: z.uuid() })
@@ -171,6 +172,7 @@ export class PostsService {
     private readonly mediaService: MediaService,
     private readonly topicsService: TopicsService,
     private readonly notificationsService: NotificationsService,
+    private readonly relations: UserRelationsService,
   ) {}
 
   async create(params: CreatePostParams): Promise<PostView> {
@@ -234,6 +236,11 @@ export class PostsService {
     viewerId,
   }: ListPostsByHandleParams): Promise<Page<PostView>> {
     const author = await this.usersService.getByHandle(handle)
+
+    const isBlocked = await this.relations.isBlockedBetween({ viewerId, userId: author.id })
+
+    if (isBlocked) return { items: [], nextCursor: null }
+
     const position = decodeCursor({ cursor, schema: postCursorSchema })
     const pinned = await this.postsRepository.findPinnedByAuthor(author.id)
 

@@ -2,6 +2,7 @@ import { canModerate } from "@contraponha/client-core"
 import { router, type Href } from "expo-router"
 import * as WebBrowser from "expo-web-browser"
 import {
+  Ban,
   Bell,
   BookOpen,
   Bookmark,
@@ -102,6 +103,12 @@ export default function SettingsIndex(): React.JSX.Element {
       label: t("web.settings.interests"),
       icon: Hash,
       onPress: go("/settings/interests"),
+    },
+    {
+      key: "privacy",
+      label: t("web.relations.settingsTitle"),
+      icon: Ban,
+      onPress: go("/settings/privacy"),
     },
     { key: "data", label: t("web.settings.data"), icon: Database, onPress: go("/settings/data") },
     {

@@ -30,6 +30,7 @@ export type {
   ReactionRequest,
   ReactionsResource,
 } from "./resources/reactions.js"
+export type { RelationsResource } from "./resources/relations.js"
 export type { SearchResource } from "./resources/search.js"
 export type { TopicsResource } from "./resources/topics.js"
 export type { UsersResource } from "./resources/users.js"

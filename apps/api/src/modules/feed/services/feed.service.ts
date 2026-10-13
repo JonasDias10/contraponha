@@ -132,6 +132,7 @@ export class FeedService {
 
     const rows = await this.feedRepository.listByTopic({
       topicId: topic.id,
+      viewerId,
       beforeId: position?.id,
       limit: limit + 1,
     })
@@ -167,7 +168,7 @@ export class FeedService {
       viewerId
         ? this.feedRepository.listFollowedTopicCandidates({ viewerId, limit })
         : Promise.resolve([]),
-      this.feedRepository.listQualityCandidates(limit),
+      this.feedRepository.listQualityCandidates({ viewerId, limit }),
     ])
 
     return mergeCandidates([followedTopics, quality])

@@ -29,6 +29,7 @@ import { PeopleModule } from "#src/modules/people/people.module.js"
 import { PostsModule } from "#src/modules/posts/posts.module.js"
 import { PushModule } from "#src/modules/push/push.module.js"
 import { ReactionsModule } from "#src/modules/reactions/reactions.module.js"
+import { RelationsModule } from "#src/modules/relations/relations.module.js"
 import { SearchModule } from "#src/modules/search/search.module.js"
 import { TopicsModule } from "#src/modules/topics/topics.module.js"
 import { UsersModule } from "#src/modules/users/users.module.js"
@@ -55,6 +56,7 @@ export class AppModule {
         CommentsModule,
         ReactionsModule,
         FollowsModule,
+        RelationsModule,
         MediaModule,
         NotificationsModule,
         PushModule,

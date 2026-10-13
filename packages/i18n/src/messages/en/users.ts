@@ -4,5 +4,6 @@ export const users: Messages["users"] = {
   errors: {
     dataExportInProgress: "An export is already in progress. Wait for the email with the link.",
     handleUnavailable: "This username is not available.",
+    interactionBlocked: "You can't interact with this account.",
   },
 }

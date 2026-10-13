@@ -40,9 +40,15 @@ export class SearchController {
   @ApiOperation({ summary: "People by handle, name or headline, tolerant to typos" })
   @ApiOkResponse({ schema: toOpenApiSchema(profilePageSchema) })
   users(
+    @CurrentViewer() viewer: AuthContext | undefined,
     @Query(searchPipe) query: z.output<typeof searchQuerySchema>,
   ): Promise<Page<PublicProfile>> {
-    return this.searchService.users({ query: query.q, cursor: query.cursor, limit: query.limit })
+    return this.searchService.users({
+      query: query.q,
+      viewerId: viewer?.userId,
+      cursor: query.cursor,
+      limit: query.limit,
+    })
   }
 
   @Get("posts")

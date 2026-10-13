@@ -14,6 +14,7 @@ import {
 } from "./resources/notifications.js"
 import { createPostsResource, type PostsResource } from "./resources/posts.js"
 import { createReactionsResource, type ReactionsResource } from "./resources/reactions.js"
+import { createRelationsResource, type RelationsResource } from "./resources/relations.js"
 import { createSearchResource, type SearchResource } from "./resources/search.js"
 import { createTopicsResource, type TopicsResource } from "./resources/topics.js"
 import { createUsersResource, type UsersResource } from "./resources/users.js"
@@ -33,6 +34,7 @@ export interface ApiClient {
   notifications: NotificationsResource
   posts: PostsResource
   reactions: ReactionsResource
+  relations: RelationsResource
   search: SearchResource
   topics: TopicsResource
   users: UsersResource
@@ -54,6 +56,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     notifications: createNotificationsResource(request),
     posts: createPostsResource(request),
     reactions: createReactionsResource(request),
+    relations: createRelationsResource(request),
     search: createSearchResource(request),
     topics: createTopicsResource(request),
     users: createUsersResource(request),

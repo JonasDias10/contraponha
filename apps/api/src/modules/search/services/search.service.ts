@@ -31,6 +31,7 @@ const searchCursorSchema = z.object({
 
 export interface SearchRequest {
   query: string
+  viewerId: string | undefined
   cursor: string | undefined
   limit: number
 }
@@ -97,9 +98,16 @@ export class SearchService {
     private readonly topicsService: TopicsService,
   ) {}
 
-  async users({ query, cursor, limit }: SearchRequest): Promise<Page<PublicProfile>> {
+  async users({ query, viewerId, cursor, limit }: SearchRequest): Promise<Page<PublicProfile>> {
     const offset = decodeCursor({ cursor, schema: searchCursorSchema })?.offset ?? 0
-    const rows = await this.searchRepository.searchUsers({ query, offset, limit: limit + 1 })
+
+    const rows = await this.searchRepository.searchUsers({
+      query,
+      viewerId,
+      offset,
+      limit: limit + 1,
+    })
+
     return toSearchPage({ items: rows.map(toPublicProfile), offset, limit })
   }
 
@@ -114,6 +122,7 @@ export class SearchService {
 
     const rows = await this.searchRepository.searchPosts({
       query,
+      viewerId,
       offset,
       limit: limit + 1,
       filters: toContentFilters({ filters, viewerId }),
@@ -140,6 +149,7 @@ export class SearchService {
 
     const rows = await this.searchRepository.searchComments({
       query,
+      viewerId,
       offset,
       limit: limit + 1,
       filters: toContentFilters({ filters, viewerId }),

@@ -17,6 +17,7 @@ const SECTIONS: Section[] = [
   { href: "/settings/account", label: "web.settings.account" },
   { href: "/settings/notifications", label: "web.settings.notifications" },
   { href: "/settings/interests", label: "web.settings.interests" },
+  { href: "/settings/privacy", label: "web.relations.settingsTitle" },
   { href: "/settings/data", label: "web.settings.data" },
   { href: "/settings/appearance", label: "web.settings.appearance" },
 ]

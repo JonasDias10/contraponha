@@ -37,6 +37,7 @@ import { CommentsRepository } from "#src/modules/comments/repositories/comments.
 import { NotificationsService } from "#src/modules/notifications/services/notifications.service.js"
 import { isWithinEditWindow } from "#src/modules/posts/domain/edit-window.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const idCursorSchema = z.object({ id: z.uuid() })
@@ -163,6 +164,7 @@ export class CommentsService {
     private readonly postsService: PostsService,
     private readonly usersService: UsersService,
     private readonly notificationsService: NotificationsService,
+    private readonly relations: UserRelationsService,
   ) {}
 
   async create({
@@ -177,6 +179,9 @@ export class CommentsService {
     await this.postsService.assertCanReply({ post, userId: authorId })
 
     const root = await this.resolveThreadRoot({ postId, parentId })
+
+    for (const targetId of new Set([post.authorId, root?.authorId ?? post.authorId]))
+      await this.relations.assertCanInteract({ actorId: authorId, targetId })
 
     const comment = await runTransaction({
       db: this.db,
@@ -238,6 +243,7 @@ export class CommentsService {
 
       const rows = await this.commentsRepository.listTopLevelByRecency({
         postId,
+        viewerId,
         beforeId: position?.id,
         limit: limit + 1,
       })
@@ -250,6 +256,7 @@ export class CommentsService {
 
     const rows = await this.commentsRepository.listTopLevelByRelevance({
       postId,
+      viewerId,
       offset,
       limit: limit + 1,
     })
@@ -277,6 +284,7 @@ export class CommentsService {
     const position = decodeCursor({ cursor, schema: idCursorSchema })
 
     const rows = await this.commentsRepository.listReplies({
+      viewerId,
       parentId: threadRootId(parent),
       afterId: position?.id,
       limit: limit + 1,
@@ -294,6 +302,11 @@ export class CommentsService {
     viewerId,
   }: ListContributionsParams): Promise<Page<ContributionView>> {
     const author = await this.usersService.getByHandle(handle)
+
+    const isBlocked = await this.relations.isBlockedBetween({ viewerId, userId: author.id })
+
+    if (isBlocked) return { items: [], nextCursor: null }
+
     const position = decodeCursor({ cursor, schema: idCursorSchema })
 
     const rows = await this.commentsRepository.listByAuthor({
