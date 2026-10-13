@@ -169,6 +169,7 @@ contraponha/
 - [Feed, busca e notificações](docs/architecture/discovery.md): ranking dos destaques, full-text search e regras de notificação.
 - [Mídia](docs/architecture/media.md): upload direto ao storage, validação de imagens, foto de perfil e configuração S3.
 - [Push](docs/architecture/push.md): notificações push no mobile pelo serviço da Expo.
+- [Observabilidade](docs/architecture/observability.md): Sentry na API, no web, no hub e no mobile.
 - [Moderação](docs/architecture/moderation.md): papéis, denúncias, suspensões, hub de administração e auditoria.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
 - [Frontends](docs/architecture/frontends.md): web, hub e mobile, e como usam os pacotes compartilhados.

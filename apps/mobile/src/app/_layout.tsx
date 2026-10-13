@@ -1,4 +1,5 @@
 import "@/lib/polyfills"
+import "@/lib/sentry"
 
 import {
   InstrumentSans_400Regular,
@@ -12,6 +13,7 @@ import {
   Literata_600SemiBold,
   Literata_700Bold,
 } from "@expo-google-fonts/literata"
+import * as Sentry from "@sentry/react-native"
 import { focusManager } from "@tanstack/react-query"
 import { useFonts } from "expo-font"
 import { SplashScreen, Stack } from "expo-router"
@@ -76,7 +78,7 @@ function RootNavigator(): React.JSX.Element | null {
   )
 }
 
-export default function RootLayout(): React.JSX.Element | null {
+function RootLayout(): React.JSX.Element | null {
   const [fontsLoaded, fontError] = useFonts({
     InstrumentSans_400Regular,
     InstrumentSans_500Medium,
@@ -96,3 +98,5 @@ export default function RootLayout(): React.JSX.Element | null {
     </AppProviders>
   )
 }
+
+export default Sentry.wrap(RootLayout)

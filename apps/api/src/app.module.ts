@@ -1,6 +1,7 @@
 import { Module, type DynamicModule } from "@nestjs/common"
 import { APP_FILTER, APP_GUARD } from "@nestjs/core"
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler"
+import { SentryModule } from "@sentry/nestjs/setup"
 import { LoggerModule } from "nestjs-pino"
 
 import { AllExceptionsFilter } from "#src/common/errors/all-exceptions.filter.js"
@@ -40,6 +41,7 @@ export class AppModule {
     return {
       module: AppModule,
       imports: [
+        SentryModule.forRoot(),
         ConfigModule.forRoot(config),
         LoggerModule.forRoot(buildLoggerParams(config)),
         ThrottlerModule.forRoot(buildThrottlers(config)),

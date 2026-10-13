@@ -46,6 +46,11 @@ export const envSchema = z
 
     BACKGROUND_JOBS_ENABLED: envBoolean.default(true),
 
+    SENTRY_DSN: z.url().optional(),
+    SENTRY_ENVIRONMENT: z.string().min(1).optional(),
+    SENTRY_RELEASE: z.string().min(1).optional(),
+    SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).optional(),
+
     PUSH_ENABLED: envBoolean.default(true),
     EXPO_ACCESS_TOKEN: z.string().min(1).optional(),
 

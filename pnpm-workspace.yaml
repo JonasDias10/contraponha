@@ -3,6 +3,7 @@ packages:
   - packages/*
 allowBuilds:
   "@scarf/scarf": false
+  "@sentry/cli": true
   "@swc/core": true
   core-js: false
   esbuild: true
