@@ -356,6 +356,12 @@ export const web = {
       "A janela de edição de 30 minutos acabou. Para mudar o conteúdo, exclua e publique de novo.",
     newPost: "Novo post",
   },
+  realtime: {
+    newPosts: "{count} posts novos",
+    newPosts_one: "{count} post novo",
+    newComments: "{count} contribuições novas",
+    newComments_one: "{count} contribuição nova",
+  },
   relations: {
     block: "Bloquear @{handle}",
     unblock: "Desbloquear @{handle}",

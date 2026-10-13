@@ -1,4 +1,5 @@
 import { queryKeys } from "@contraponha/client-core"
+import { usePendingFeedPosts } from "@contraponha/client-core/react"
 import type { FeedItem } from "@contraponha/types"
 import { router } from "expo-router"
 import { Bookmark, Compass, Sunrise } from "lucide-react-native"
@@ -6,6 +7,7 @@ import { useState } from "react"
 import { StyleSheet, View, type ListRenderItem } from "react-native"
 
 import { InfiniteList } from "@/components/feed/infinite-list"
+import { NewItemsPill } from "@/components/feed/new-items-pill"
 import { PostCard } from "@/components/post/post-card"
 import { Button } from "@/components/ui/button"
 import { Screen } from "@/components/ui/screen"
@@ -24,6 +26,7 @@ export default function HomeScreen(): React.JSX.Element {
   const api = useApi()
   const palette = usePalette()
   const [tab, setTab] = useState<HomeTab>("following")
+  const pending = usePendingFeedPosts()
 
   const header = (
     <View style={styles.header}>
@@ -50,6 +53,12 @@ export default function HomeScreen(): React.JSX.Element {
 
   return (
     <Screen>
+      {tab === "following" && pending.count > 0 ? (
+        <NewItemsPill
+          label={t("web.realtime.newPosts", { count: pending.count })}
+          onReveal={() => void pending.reveal()}
+        />
+      ) : null}
       {tab === "following" ? (
         <InfiniteList
           key="following"

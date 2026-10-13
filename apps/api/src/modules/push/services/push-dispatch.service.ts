@@ -10,8 +10,9 @@ import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { PUSH_DISPATCH_INTERVAL_MS } from "#src/config/durations.js"
 import { PushService } from "#src/modules/push/services/push.service.js"
 
-// Polls for notifications that became visible (right away, or at a digest hour) and sends
-// their pushes. Runs on its own short interval so pushes are not held by slower jobs.
+// Polls for notifications that became visible (right away, or at a digest hour) and delivers
+// them: realtime events always, pushes when PUSH_ENABLED. Runs on its own short interval so
+// delivery is not held by slower jobs.
 @Injectable()
 export class PushDispatchService implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger(PushDispatchService.name)
@@ -24,7 +25,7 @@ export class PushDispatchService implements OnApplicationBootstrap, OnApplicatio
   ) {}
 
   onApplicationBootstrap(): void {
-    if (!this.config.backgroundJobs.enabled || !this.config.push.enabled) return
+    if (!this.config.backgroundJobs.enabled) return
 
     this.timer = setInterval(() => {
       this.running ??= this.runOnce().finally(() => {

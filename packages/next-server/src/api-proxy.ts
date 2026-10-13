@@ -3,7 +3,15 @@ import type { NextRequest } from "next/server.js"
 import { SESSION_COOKIE } from "./session.js"
 
 const FORWARDED_REQUEST_HEADERS = ["accept", "accept-language", "content-type"] as const
-const FORWARDED_RESPONSE_HEADERS = ["content-type", "x-request-id", "retry-after"] as const
+
+const FORWARDED_RESPONSE_HEADERS = [
+  "content-type",
+  "cache-control",
+  "x-accel-buffering",
+  "x-request-id",
+  "retry-after",
+] as const
+
 const SAFE_METHODS = new Set(["GET", "HEAD"])
 
 // Same-origin check for state-changing requests: the session cookie is SameSite=Lax, and
@@ -58,11 +66,14 @@ export function createApiProxy({ getApiUrl }: CreateApiProxyParams): ApiProxyHan
 
     const body = SAFE_METHODS.has(request.method) ? undefined : await request.arrayBuffer()
 
+    // The browser's abort signal also closes the upstream request, which matters for event
+    // streams that would otherwise stay open on the API.
     const upstream = await fetch(target, {
       method: request.method,
       headers,
       body,
       cache: "no-store",
+      signal: request.signal,
     })
 
     const responseHeaders = new Headers()

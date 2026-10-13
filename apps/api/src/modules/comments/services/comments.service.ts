@@ -21,6 +21,7 @@ import { z } from "zod"
 
 import { toSourceValues, type SourceInput } from "#src/common/content/sources.js"
 import { AppError } from "#src/common/errors/app-error.js"
+import { RealtimeBus } from "#src/infrastructure/realtime/realtime-bus.js"
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import {
@@ -165,6 +166,7 @@ export class CommentsService {
     private readonly usersService: UsersService,
     private readonly notificationsService: NotificationsService,
     private readonly relations: UserRelationsService,
+    private readonly realtime: RealtimeBus,
   ) {}
 
   async create({
@@ -224,6 +226,13 @@ export class CommentsService {
 
         return created
       },
+    })
+
+    this.realtime.publishComment({
+      postId,
+      commentId: comment.id,
+      parentId: comment.parentId,
+      authorId,
     })
 
     return this.requireView({ comment, viewerId: authorId })

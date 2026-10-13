@@ -27,6 +27,7 @@ import {
   type SourceInput,
 } from "#src/common/content/sources.js"
 import { AppError } from "#src/common/errors/app-error.js"
+import { RealtimeBus } from "#src/infrastructure/realtime/realtime-bus.js"
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { MediaService } from "#src/modules/media/services/media.service.js"
@@ -173,6 +174,7 @@ export class PostsService {
     private readonly topicsService: TopicsService,
     private readonly notificationsService: NotificationsService,
     private readonly relations: UserRelationsService,
+    private readonly realtime: RealtimeBus,
   ) {}
 
   async create(params: CreatePostParams): Promise<PostView> {
@@ -218,6 +220,8 @@ export class PostsService {
     })
 
     await this.mediaService.discardOriginals(media)
+
+    this.realtime.publishPost({ postId: post.id, authorId })
 
     return this.requireView({ post, viewerId: authorId })
   }

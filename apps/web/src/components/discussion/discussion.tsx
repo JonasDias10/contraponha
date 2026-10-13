@@ -5,9 +5,11 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { MessageSquare } from "lucide-react"
 import { useState } from "react"
 import { queryKeys } from "@contraponha/client-core"
+import { usePendingComments, usePostRealtime } from "@contraponha/client-core/react"
 
 import { CommentComposer } from "@/components/discussion/comment-composer"
 import { CommentItem } from "@/components/discussion/comment-item"
+import { NewItemsPill } from "@/components/feed/new-items-pill"
 import {
   Banner,
   Button,
@@ -18,6 +20,7 @@ import {
   Skeleton,
   useApi,
   useI18n,
+  useViewer,
 } from "@contraponha/web-ui"
 
 const FIRST_PAGE: string | undefined = undefined
@@ -41,7 +44,11 @@ export function Discussion({
 }: DiscussionProps): React.JSX.Element {
   const { t } = useI18n()
   const api = useApi()
+  const viewer = useViewer()
   const [sort, setSort] = useState<CommentSort>(CommentSort.RELEVANT)
+  const pending = usePendingComments(postId)
+
+  usePostRealtime({ postId, isEnabled: viewer !== null })
 
   const query = useInfiniteQuery({
     queryKey: queryKeys.comments({ postId, sort }),
@@ -77,6 +84,12 @@ export function Discussion({
           </SegmentedList>
         </Segmented>
       </div>
+      {pending.count > 0 ? (
+        <NewItemsPill
+          label={t("web.realtime.newComments", { count: pending.count })}
+          onReveal={() => void pending.reveal()}
+        />
+      ) : null}
       {canReply ? (
         <CommentComposer postId={postId} />
       ) : (

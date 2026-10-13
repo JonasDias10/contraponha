@@ -362,6 +362,12 @@ export const web: Messages["web"] = {
       "Terminó el plazo de edición de 30 minutos. Para cambiar el contenido, elimínalo y publícalo de nuevo.",
     newPost: "Nuevo post",
   },
+  realtime: {
+    newPosts: "{count} posts nuevos",
+    newPosts_one: "{count} post nuevo",
+    newComments: "{count} contribuciones nuevas",
+    newComments_one: "{count} contribución nueva",
+  },
   relations: {
     block: "Bloquear a @{handle}",
     unblock: "Desbloquear a @{handle}",

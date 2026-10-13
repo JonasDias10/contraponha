@@ -359,6 +359,12 @@ export const web: Messages["web"] = {
       "The 30-minute edit window is over. To change the content, delete it and publish again.",
     newPost: "New post",
   },
+  realtime: {
+    newPosts: "{count} new posts",
+    newPosts_one: "{count} new post",
+    newComments: "{count} new contributions",
+    newComments_one: "{count} new contribution",
+  },
   relations: {
     block: "Block @{handle}",
     unblock: "Unblock @{handle}",

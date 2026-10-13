@@ -1,4 +1,5 @@
 import { queryKeys } from "@contraponha/client-core"
+import { usePendingComments, usePostRealtime } from "@contraponha/client-core/react"
 import { CommentSort, type CommentView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 import { useLocalSearchParams } from "expo-router"
@@ -9,6 +10,7 @@ import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native"
 import { CommentComposer } from "@/components/discussion/comment-composer"
 import { CommentItem } from "@/components/discussion/comment-item"
 import { InfiniteList } from "@/components/feed/infinite-list"
+import { NewItemsPill } from "@/components/feed/new-items-pill"
 import { PostArticle } from "@/components/post/post-article"
 import { Screen, ScreenHeader } from "@/components/ui/screen"
 import { Segmented } from "@/components/ui/segmented"
@@ -25,6 +27,9 @@ export default function PostScreen(): React.JSX.Element {
   const api = useApi()
   const palette = usePalette()
   const [sort, setSort] = useState<CommentSort>(CommentSort.RELEVANT)
+  const pending = usePendingComments(postId)
+
+  usePostRealtime({ postId, isEnabled: true })
 
   const query = useQuery({
     queryKey: queryKeys.post(postId),
@@ -75,6 +80,12 @@ export default function PostScreen(): React.JSX.Element {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.fill}
         >
+          {pending.count > 0 ? (
+            <NewItemsPill
+              label={t("web.realtime.newComments", { count: pending.count })}
+              onReveal={() => void pending.reveal()}
+            />
+          ) : null}
           <InfiniteList<CommentView>
             key={sort}
             queryKey={queryKeys.comments({ postId, sort })}

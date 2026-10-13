@@ -12,6 +12,7 @@ import { ConfigModule } from "#src/config/config.module.js"
 import { DatabaseModule } from "#src/infrastructure/database/database.module.js"
 import { EmailModule } from "#src/infrastructure/email/email.module.js"
 import { PushModule as PushInfrastructureModule } from "#src/infrastructure/push/push.module.js"
+import { RealtimeInfrastructureModule } from "#src/infrastructure/realtime/realtime.module.js"
 import { RedisModule } from "#src/infrastructure/redis/redis.module.js"
 import { StorageModule } from "#src/infrastructure/storage/storage.module.js"
 import { AccountsModule } from "#src/modules/accounts/accounts.module.js"
@@ -30,6 +31,7 @@ import { PeopleModule } from "#src/modules/people/people.module.js"
 import { PostsModule } from "#src/modules/posts/posts.module.js"
 import { PushModule } from "#src/modules/push/push.module.js"
 import { ReactionsModule } from "#src/modules/reactions/reactions.module.js"
+import { RealtimeModule } from "#src/modules/realtime/realtime.module.js"
 import { RelationsModule } from "#src/modules/relations/relations.module.js"
 import { SearchModule } from "#src/modules/search/search.module.js"
 import { TopicsModule } from "#src/modules/topics/topics.module.js"
@@ -47,6 +49,7 @@ export class AppModule {
         ThrottlerModule.forRoot(buildThrottlers(config)),
         DatabaseModule,
         RedisModule,
+        RealtimeInfrastructureModule,
         EmailModule,
         PushInfrastructureModule,
         StorageModule,
@@ -59,6 +62,7 @@ export class AppModule {
         ReactionsModule,
         FollowsModule,
         RelationsModule,
+        RealtimeModule,
         MediaModule,
         NotificationsModule,
         PushModule,
