@@ -7,6 +7,7 @@ import { Pressable, Share, StyleSheet, View } from "react-native"
 
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
+import { LinkPreviewCard } from "@/components/post/link-preview-card"
 import { MediaGrid } from "@/components/post/media-grid"
 import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import { PostMenu } from "@/components/post/post-menu"
@@ -111,6 +112,7 @@ export function PostArticle({ post }: PostArticleProps): React.JSX.Element {
       <Markdown text={post.body ?? ""} fontSize={18} />
       <MediaGrid media={post.media} />
       {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
+      {post.linkPreview ? <LinkPreviewCard preview={post.linkPreview} /> : null}
       {post.sources.length > 0 ? (
         <View style={styles.sources} accessibilityLabel={t("web.post.sourcesLabel")}>
           {post.sources.map((source) => (

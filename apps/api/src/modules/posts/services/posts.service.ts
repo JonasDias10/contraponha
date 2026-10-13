@@ -29,6 +29,8 @@ import {
 } from "#src/common/content/sources.js"
 import { AppError } from "#src/common/errors/app-error.js"
 import { RealtimeBus } from "#src/infrastructure/realtime/realtime-bus.js"
+import { previewUrlOf } from "#src/modules/link-previews/domain/preview-url.js"
+import { LinkPreviewsService } from "#src/modules/link-previews/services/link-previews.service.js"
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { MediaService } from "#src/modules/media/services/media.service.js"
@@ -199,6 +201,7 @@ export class PostsService {
     private readonly relations: UserRelationsService,
     private readonly realtime: RealtimeBus,
     private readonly repostsRepository: RepostsRepository,
+    private readonly linkPreviews: LinkPreviewsService,
   ) {}
 
   async create(params: CreatePostParams): Promise<PostView> {
@@ -255,6 +258,8 @@ export class PostsService {
 
     this.realtime.publishPost({ postId: post.id, authorId })
 
+    this.linkPreviews.refreshInBackground(previewUrlOf(post))
+
     return this.requireView({ post, viewerId: authorId })
   }
 
@@ -310,6 +315,11 @@ export class PostsService {
     const revisionCounts = await this.revisionsRepository.countByPosts(postIds)
     const contextNotes = await this.contextNotesFor(postIds)
     const quotedPosts = await this.quotedPostsFor(rows)
+    const previewUrls = new Map(rows.map((post) => [post.id, previewUrlOf(post)]))
+
+    const previews = await this.linkPreviews.viewsFor(
+      [...previewUrls.values()].filter((url): url is string => url !== null),
+    )
 
     const viewerStates = viewerId
       ? await this.viewerStates({ rows, viewerId })
@@ -324,6 +334,7 @@ export class PostsService {
         contextNote: contextNotes.get(post.id) ?? null,
         revisionCount: revisionCounts.get(post.id) ?? 0,
         quotedPost: post.quotedPostId ? (quotedPosts.get(post.quotedPostId) ?? null) : null,
+        linkPreview: previews.get(previewUrls.get(post.id) ?? "") ?? null,
         viewer: viewerStates.get(post.id) ?? null,
       }),
     )
@@ -398,6 +409,8 @@ export class PostsService {
     })
 
     if (!updated) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
+
+    this.linkPreviews.refreshInBackground(previewUrlOf(updated))
 
     return this.requireView({ post: updated, viewerId: userId })
   }

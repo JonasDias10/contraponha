@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common"
 
+import { LinkPreviewsModule } from "#src/modules/link-previews/link-previews.module.js"
 import { MediaModule } from "#src/modules/media/media.module.js"
 import { NotificationsModule } from "#src/modules/notifications/notifications.module.js"
 import { TopicsModule } from "#src/modules/topics/topics.module.js"
@@ -15,7 +16,7 @@ import { PostsService } from "#src/modules/posts/services/posts.service.js"
 import { RepostsService } from "#src/modules/posts/services/reposts.service.js"
 
 @Module({
-  imports: [UsersModule, MediaModule, TopicsModule, NotificationsModule],
+  imports: [UsersModule, MediaModule, TopicsModule, NotificationsModule, LinkPreviewsModule],
   controllers: [PostsController, UserPostsController],
   providers: [
     PostsRepository,

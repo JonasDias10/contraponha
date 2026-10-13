@@ -13,6 +13,7 @@ import { useBookmarkMutation, useReactions } from "@contraponha/client-core/reac
 import { Discussion } from "@/components/discussion/discussion"
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
+import { LinkPreviewCard } from "@/components/post/link-preview-card"
 import { MediaGrid } from "@/components/post/media-grid"
 import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import { RepostMenu } from "@/components/post/repost-menu"
@@ -136,6 +137,7 @@ function PostArticle({ post }: PostArticleProps): React.JSX.Element {
           <Markdown text={post.body ?? ""} className="text-[19px] leading-[1.68]" />
           <MediaGrid media={post.media} altPrefix={t("web.composer.image")} />
           {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
+          {post.linkPreview ? <LinkPreviewCard preview={post.linkPreview} /> : null}
           {post.sources.length > 0 ? (
             <div className="flex flex-col gap-2">
               <h2 className="sr-only">{t("web.post.sourcesLabel")}</h2>

@@ -1,33 +1,13 @@
-import { ApiError } from "@contraponha/api-client"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
-import { cache } from "react"
 import { queryKeys } from "@contraponha/client-core"
 
 import { AppShell } from "@/components/layout/app-shell"
 import { AboutAuthor } from "@/components/post/about-author"
 import { EditHistory } from "@/components/post/edit-history"
 import { PostDetail } from "@/components/post/post-detail"
-import { createServerApiClient } from "@/lib/api"
-import { getRequestTranslator } from "@contraponha/next-server"
+import { loadPost } from "@/lib/load-post"
 import { getServerQueryClient } from "@/lib/server-query"
-
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-const loadPost = cache(async (postId: string) => {
-  if (!UUID_PATTERN.test(postId)) notFound()
-
-  const { locale } = await getRequestTranslator()
-
-  try {
-    return await createServerApiClient(locale).posts.get(postId)
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) notFound()
-
-    throw error
-  }
-})
 
 export async function generateMetadata({
   params,
@@ -36,10 +16,21 @@ export async function generateMetadata({
   const post = await loadPost(postId)
   const description = post.body?.slice(0, 160) ?? undefined
 
+  const title = post.title ?? post.author?.displayName
+
   return {
-    title: post.title ?? post.author?.displayName,
+    title,
     description,
-    openGraph: { title: post.title ?? undefined, description, type: "article" },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      url: `/posts/${post.id}`,
+      publishedTime: post.createdAt,
+      authors: post.author ? [`/u/${post.author.handle}`] : undefined,
+    },
+    twitter: { card: "summary_large_image", title, description },
+    alternates: { canonical: `/posts/${post.id}` },
   }
 }
 

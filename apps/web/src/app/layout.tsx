@@ -20,12 +20,17 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 })
 
+// Public address of the site, so shared links and images use absolute URLs.
+const SITE_URL = process.env.SITE_URL
+
 export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getRequestTranslator()
+  const { t, locale } = await getRequestTranslator()
 
   return {
+    metadataBase: SITE_URL ? new URL(SITE_URL) : undefined,
     title: { default: t("app.name"), template: `%s · ${t("app.name")}` },
     description: t("app.tagline"),
+    openGraph: { siteName: t("app.name"), locale },
   }
 }
 

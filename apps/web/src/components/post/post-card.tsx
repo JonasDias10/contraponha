@@ -7,6 +7,7 @@ import { readingMinutes, topicLabel } from "@contraponha/client-core"
 import { useReactions } from "@contraponha/client-core/react"
 
 import { AuthorLine } from "@/components/post/author-line"
+import { LinkPreviewCard } from "@/components/post/link-preview-card"
 import { Markdown } from "@/components/post/markdown"
 import { MediaGrid } from "@/components/post/media-grid"
 import { PostActions } from "@/components/post/post-actions"
@@ -128,7 +129,10 @@ export function PostCard({
       ) : null}
       <MediaGrid media={post.media} altPrefix={t("web.composer.image")} />
       {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
-      {firstSource ? <SourceCard source={firstSource} /> : null}
+      {post.linkPreview ? <LinkPreviewCard preview={post.linkPreview} /> : null}
+      {firstSource && firstSource.url !== post.linkPreview?.url ? (
+        <SourceCard source={firstSource} />
+      ) : null}
       <ReactionSummary counts={reactions.counts} commentCount={post.commentCount} />
       <PostActions post={post} reactions={reactions} />
     </article>

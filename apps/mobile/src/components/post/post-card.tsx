@@ -7,6 +7,7 @@ import { Pressable, StyleSheet, View } from "react-native"
 
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
+import { LinkPreviewCard } from "@/components/post/link-preview-card"
 import { MediaGrid } from "@/components/post/media-grid"
 import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import { PostActions } from "@/components/post/post-actions"
@@ -135,7 +136,10 @@ export function PostCard({
       </Pressable>
       <MediaGrid media={post.media} />
       {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
-      {firstSource ? <SourceCard source={firstSource} /> : null}
+      {post.linkPreview ? <LinkPreviewCard preview={post.linkPreview} /> : null}
+      {firstSource && firstSource.url !== post.linkPreview?.url ? (
+        <SourceCard source={firstSource} />
+      ) : null}
       <ReactionSummary counts={reactions.counts} commentCount={post.commentCount} />
       <PostActions post={post} reactions={reactions} />
     </Card>

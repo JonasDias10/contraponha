@@ -19,6 +19,17 @@ export interface PostViewerState {
   hasReposted: boolean
 }
 
+// Open Graph card for the post's first link, read and stored by the server.
+export interface LinkPreviewView {
+  url: string
+  title: string | null
+  description: string | null
+  siteName: string | null
+  imageUrl: string | null
+  imageWidth: number | null
+  imageHeight: number | null
+}
+
 // The post embedded in a quote. Removed originals keep only their id and the flag.
 export interface QuotedPostView {
   id: string
@@ -48,6 +59,7 @@ export interface PostView {
   repostCount: number
   quoteCount: number
   quotedPost: QuotedPostView | null
+  linkPreview: LinkPreviewView | null
   reactionCounts: ReactionCounts
   createdAt: string
   editedAt: string | null

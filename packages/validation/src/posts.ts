@@ -10,6 +10,7 @@ import {
   type ContentRevisionList,
   type PostSummary,
   type PostView,
+  type LinkPreviewView,
   type QuotedPostView,
 } from "@contraponha/types"
 import { z } from "zod"
@@ -73,6 +74,16 @@ export const quotedPostSchema = z.object({
   isDeleted: z.boolean(),
 }) satisfies z.ZodType<QuotedPostView>
 
+export const linkPreviewSchema = z.object({
+  url: z.url(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  siteName: z.string().nullable(),
+  imageUrl: z.url().nullable(),
+  imageWidth: z.number().int().positive().nullable(),
+  imageHeight: z.number().int().positive().nullable(),
+}) satisfies z.ZodType<LinkPreviewView>
+
 export const postViewSchema = z.object({
   id: z.uuid(),
   author: publicProfileSchema.nullable(),
@@ -92,6 +103,7 @@ export const postViewSchema = z.object({
   repostCount: z.number().int().nonnegative(),
   quoteCount: z.number().int().nonnegative(),
   quotedPost: quotedPostSchema.nullable(),
+  linkPreview: linkPreviewSchema.nullable(),
   reactionCounts: reactionCountsSchema,
   createdAt: z.iso.datetime(),
   editedAt: z.iso.datetime().nullable(),

@@ -119,6 +119,19 @@ Todas as referências a `users` usam `ON DELETE CASCADE`, então excluir uma con
 - Bloqueios valem aqui também: não dá para republicar nem citar quem está num bloqueio com você (`INTERACTION_BLOCKED`), e reposts de autores ou de pessoas ocultas não aparecem.
 - Notificações novas: `post_reposted` (agrupada, segue a preferência de reações) e `post_quoted` (segue a preferência de menções e aponta para a citação).
 
+## Prévia de links
+
+O primeiro link de um post (a primeira fonte citada ou, sem fontes, o primeiro link do texto) ganha um cartão com título, descrição, site e imagem, lidos do Open Graph da página.
+
+- **Fora do caminho da publicação.** Depois de salvar ou editar o post, a API busca a prévia em segundo plano; o cartão aparece na próxima leitura. Prévias ficam em `link_previews`, uma por URL, compartilhadas por todos os posts com o mesmo link, e são renovadas depois de 7 dias (1 dia para links que falharam).
+- **Proteção contra SSRF.** O `safeFetch` só aceita http(s), sem credenciais na URL, e só conecta a endereços públicos: a checagem roda no endereço efetivamente conectado (inclusive após cada um dos no máximo 3 redirecionamentos), o que fecha a brecha de DNS rebinding, e IPs literais privados são recusados antes. Páginas são lidas até 512 KB, imagens até 5 MB, com 5 s de limite.
+- **Imagem copiada, nunca hotlink.** A imagem do Open Graph é baixada, reorientada, sem metadados e reduzida para WebP de 600 px em `posts/previews/`. Quem lê o post não carrega nada do site de origem, e uma imagem quebrada ou enorme lá não quebra o cartão.
+- Nos testes, `RemoteFetcher` é trocado por um falso com respostas prontas.
+
+## Compartilhar fora do Contraponha
+
+Posts e perfis têm Open Graph e Twitter Card completos (`summary_large_image`), com a URL canônica, e uma imagem 1200×630 gerada na hora (`opengraph-image.tsx`, com `ImageResponse`): a marca, o título (ou o começo do texto) e o autor. `SITE_URL` no web define a base das URLs absolutas.
+
 ## Bloquear e silenciar
 
 | Rota                                  | Efeito                                        |

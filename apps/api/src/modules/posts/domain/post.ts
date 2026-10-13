@@ -1,6 +1,7 @@
 import { readReactionCounts, type PostRevisionRow, type PostRow } from "@contraponha/database"
 import type {
   ContentRevision,
+  LinkPreviewView,
   ContextNoteView,
   MediaView,
   PostSummary,
@@ -29,6 +30,7 @@ export interface ToPostViewParams {
   contextNote: ContextNoteView | null
   revisionCount: number
   quotedPost: QuotedPostView | null
+  linkPreview: LinkPreviewView | null
   viewer: PostViewerState | null
 }
 
@@ -40,6 +42,7 @@ export function toPostView({
   contextNote,
   revisionCount,
   quotedPost,
+  linkPreview,
   viewer,
 }: ToPostViewParams): PostView {
   const isDeleted = !isActivePost(post)
@@ -63,6 +66,7 @@ export function toPostView({
     repostCount: post.repostCount,
     quoteCount: post.quoteCount,
     quotedPost: isDeleted ? null : quotedPost,
+    linkPreview: isDeleted ? null : linkPreview,
     reactionCounts: readReactionCounts(post),
     createdAt: post.createdAt.toISOString(),
     editedAt: post.editedAt?.toISOString() ?? null,
