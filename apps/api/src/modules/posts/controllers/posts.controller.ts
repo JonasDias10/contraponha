@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from "@nestjs/common"
 import {
   ApiBearerAuth,
@@ -17,10 +18,12 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import { ReplyPolicy, type ContentRevisionList, type PostView } from "@contraponha/types"
+import { ReplyPolicy, type ContentRevisionList, type Page, type PostView } from "@contraponha/types"
 import {
   contentRevisionListSchema,
   createPostInputSchema,
+  paginationQuerySchema,
+  postPageSchema,
   postViewSchema,
   updatePostInputSchema,
 } from "@contraponha/validation"
@@ -37,12 +40,16 @@ import {
 import { UuidParam } from "#src/common/validation/uuid-param.decorator.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
+import { RepostsService } from "#src/modules/posts/services/reposts.service.js"
 
 @ApiTags("posts")
 @ApiStandardErrors()
 @Controller("posts")
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly repostsService: RepostsService,
+  ) {}
 
   @Post()
   @ApiBearerAuth(SESSION_SECURITY_SCHEME)
@@ -62,6 +69,7 @@ export class PostsController {
       topics: body.topics ?? [],
       replyPolicy: body.replyPolicy ?? ReplyPolicy.EVERYONE,
       mediaIds: body.mediaIds ?? [],
+      quotedPostId: body.quotedPostId ?? null,
     })
   }
 
@@ -117,6 +125,37 @@ export class PostsController {
   @ApiNoContentResponse()
   delete(@CurrentAuth() auth: AuthContext, @UuidParam("postId") postId: string): Promise<void> {
     return this.postsService.delete({ postId, userId: auth.userId })
+  }
+
+  @Put(":postId/repost")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth(SESSION_SECURITY_SCHEME)
+  @ApiOperation({ summary: "Repost to your followers (idempotent)" })
+  @ApiNoContentResponse()
+  repost(@CurrentAuth() auth: AuthContext, @UuidParam("postId") postId: string): Promise<void> {
+    return this.repostsService.repost({ userId: auth.userId, postId })
+  }
+
+  @Delete(":postId/repost")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth(SESSION_SECURITY_SCHEME)
+  @ApiOperation({ summary: "Undo a repost (idempotent)" })
+  @ApiNoContentResponse()
+  unrepost(@CurrentAuth() auth: AuthContext, @UuidParam("postId") postId: string): Promise<void> {
+    return this.repostsService.unrepost({ userId: auth.userId, postId })
+  }
+
+  @Public()
+  @Get(":postId/quotes")
+  @ApiOperation({ summary: "Posts that quote this one, newest first" })
+  @ApiOkResponse({ schema: toOpenApiSchema(postPageSchema) })
+  quotes(
+    @CurrentViewer() viewer: AuthContext | undefined,
+    @UuidParam("postId") postId: string,
+    @Query(new ZodValidationPipe(paginationQuerySchema))
+    query: z.output<typeof paginationQuerySchema>,
+  ): Promise<Page<PostView>> {
+    return this.postsService.listQuotes({ postId, viewerId: viewer?.userId, ...query })
   }
 
   @Public()

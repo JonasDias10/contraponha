@@ -105,6 +105,20 @@ Todas as referências a `users` usam `ON DELETE CASCADE`, então excluir uma con
 - Comentários removidos só aparecem na listagem enquanto tiverem respostas; respostas removidas não aparecem.
 - Não é possível editar, reagir ou comentar em conteúdo removido (`RESOURCE_NOT_FOUND`).
 
+## Republicar e citar
+
+| Rota                                   | Efeito                                       |
+| -------------------------------------- | -------------------------------------------- |
+| `PUT` / `DELETE /posts/:postId/repost` | Republica ou desfaz (idempotente)            |
+| `POST /posts` com `quotedPostId`       | Cria um post que cita outro                  |
+| `GET /posts/:postId/quotes`            | Posts que citam este, mais recentes primeiro |
+
+- **Republicar** compartilha o post como está com quem segue a pessoa. O feed Seguindo junta posts e reposts de quem a pessoa segue (e os dela), ordenados pela hora da atividade, com cursor `(activityAt, id)`. Cada item traz `repostedBy`; um post compartilhado por várias pessoas aparece uma vez por página, na atividade mais recente.
+- **Citar** cria um post novo com `quoted_post_id`. O post citado vem embutido (`quotedPost`); se o original for removido, a citação continua e mostra só o aviso. `ON DELETE SET NULL` mantém a citação até se o original for apagado de vez.
+- `posts.repost_count` e `posts.quote_count` são contadores denormalizados, mantidos na mesma transação e incluídos no `db:reconcile-counters`. Remover uma citação baixa o `quote_count` do original; a exclusão de conta desfaz os reposts da pessoa.
+- Bloqueios valem aqui também: não dá para republicar nem citar quem está num bloqueio com você (`INTERACTION_BLOCKED`), e reposts de autores ou de pessoas ocultas não aparecem.
+- Notificações novas: `post_reposted` (agrupada, segue a preferência de reações) e `post_quoted` (segue a preferência de menções e aponta para a citação).
+
 ## Bloquear e silenciar
 
 | Rota                                  | Efeito                                        |

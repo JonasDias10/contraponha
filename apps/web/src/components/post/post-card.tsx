@@ -1,7 +1,7 @@
 "use client"
 
-import type { FeedReason, PostView } from "@contraponha/types"
-import { History, Info, Pin } from "lucide-react"
+import type { FeedReason, PostView, PublicProfile } from "@contraponha/types"
+import { History, Info, Pin, Repeat2 } from "lucide-react"
 import Link from "next/link"
 import { readingMinutes, topicLabel } from "@contraponha/client-core"
 import { useReactions } from "@contraponha/client-core/react"
@@ -11,6 +11,7 @@ import { Markdown } from "@/components/post/markdown"
 import { MediaGrid } from "@/components/post/media-grid"
 import { PostActions } from "@/components/post/post-actions"
 import { PostMenu } from "@/components/post/post-menu"
+import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import { ReactionSummary } from "@/components/post/reaction-bar"
 import { RemovedNotice } from "@/components/post/removed-notice"
 import { SourceCard } from "@/components/post/source-card"
@@ -23,6 +24,7 @@ const EXCERPT_LENGTH = 320
 export interface PostCardProps {
   post: PostView
   reason?: FeedReason | null
+  repostedBy?: PublicProfile | null
   highlight?: string | null
 }
 
@@ -44,7 +46,12 @@ function WhyLine({ reason }: WhyLineProps): React.JSX.Element {
 }
 
 // The feed reads like a magazine: a flat card where the text takes most of the space.
-export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.Element {
+export function PostCard({
+  post,
+  reason,
+  repostedBy,
+  highlight,
+}: PostCardProps): React.JSX.Element {
   const { t } = useI18n()
 
   const reactions = useReactions({
@@ -69,6 +76,12 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
 
   return (
     <article className="flex animate-rise-in flex-col gap-3.5 rounded-lg border border-line bg-surface-raised p-5 transition-shadow hover:shadow-e1">
+      {repostedBy ? (
+        <p className="flex items-center gap-1.5 text-[12.5px] font-medium text-subtle">
+          <Repeat2 aria-hidden className="size-3.5" />
+          {t("web.repost.repostedBy", { name: repostedBy.displayName })}
+        </p>
+      ) : null}
       {reason ? <WhyLine reason={reason} /> : null}
       {post.isPinned ? (
         <p className="flex items-center gap-1.5 text-[12.5px] text-subtle">
@@ -114,6 +127,7 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
         </Link>
       ) : null}
       <MediaGrid media={post.media} altPrefix={t("web.composer.image")} />
+      {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
       {firstSource ? <SourceCard source={firstSource} /> : null}
       <ReactionSummary counts={reactions.counts} commentCount={post.commentCount} />
       <PostActions post={post} reactions={reactions} />

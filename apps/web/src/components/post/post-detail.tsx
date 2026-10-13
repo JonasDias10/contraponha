@@ -3,6 +3,7 @@
 import type { PostView } from "@contraponha/types"
 import { useQuery } from "@tanstack/react-query"
 import { ArrowLeft, Bookmark, History, Share } from "lucide-react"
+import type { Route } from "next"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -13,6 +14,8 @@ import { Discussion } from "@/components/discussion/discussion"
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
 import { MediaGrid } from "@/components/post/media-grid"
+import { QuotedPostCard } from "@/components/post/quoted-post-card"
+import { RepostMenu } from "@/components/post/repost-menu"
 import { PostMenu } from "@/components/post/post-menu"
 import { ReactionBar } from "@/components/post/reaction-bar"
 import { RemovedNotice } from "@/components/post/removed-notice"
@@ -132,6 +135,7 @@ function PostArticle({ post }: PostArticleProps): React.JSX.Element {
           </p>
           <Markdown text={post.body ?? ""} className="text-[19px] leading-[1.68]" />
           <MediaGrid media={post.media} altPrefix={t("web.composer.image")} />
+          {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
           {post.sources.length > 0 ? (
             <div className="flex flex-col gap-2">
               <h2 className="sr-only">{t("web.post.sourcesLabel")}</h2>
@@ -141,6 +145,18 @@ function PostArticle({ post }: PostArticleProps): React.JSX.Element {
             </div>
           ) : null}
           <TopicTags topics={post.topics} />
+          {post.repostCount > 0 || post.quoteCount > 0 ? (
+            <p className="flex gap-4 text-sm text-muted">
+              {post.repostCount > 0 ? (
+                <span>{t("web.repost.reposts", { count: post.repostCount })}</span>
+              ) : null}
+              {post.quoteCount > 0 ? (
+                <Link href={`/posts/${post.id}/quotes` as Route} className="text-brand">
+                  {t("web.repost.quotes", { count: post.quoteCount })}
+                </Link>
+              ) : null}
+            </p>
+          ) : null}
           <div className="flex flex-wrap items-center justify-between gap-2">
             {viewer ? (
               <ReactionBar
@@ -154,6 +170,10 @@ function PostArticle({ post }: PostArticleProps): React.JSX.Element {
               </Link>
             )}
             <div className="flex gap-1">
+              <RepostMenu
+                post={post}
+                className="inline-flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-md px-2.5 text-sm text-muted hover:bg-surface-sunken"
+              />
               {viewer ? (
                 <Button
                   variant="ghost"

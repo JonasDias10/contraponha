@@ -24,7 +24,12 @@ export type {
   ResolveReportRequest,
 } from "./resources/moderation.js"
 export type { NotificationsResource } from "./resources/notifications.js"
-export type { ListUserPostsRequest, PostsResource, UpdatePostRequest } from "./resources/posts.js"
+export type {
+  ListQuotesRequest,
+  ListUserPostsRequest,
+  PostsResource,
+  UpdatePostRequest,
+} from "./resources/posts.js"
 export type {
   ListMyReactionsRequest,
   ReactionRequest,

@@ -48,7 +48,7 @@ export default function HomeScreen(): React.JSX.Element {
   )
 
   const renderItem: ListRenderItem<FeedItem> = ({ item }) => (
-    <PostCard post={item.post} reason={item.reason} />
+    <PostCard post={item.post} reason={item.reason} repostedBy={item.repostedBy} />
   )
 
   return (

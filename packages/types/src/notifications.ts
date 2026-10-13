@@ -13,6 +13,8 @@ export const NotificationType = {
   SOURCE_REQUESTED: "source_requested",
   CONTENT_REMOVED: "content_removed",
   REPORT_RESOLVED: "report_resolved",
+  POST_REPOSTED: "post_reposted",
+  POST_QUOTED: "post_quoted",
 } as const
 
 export const NotificationFilter = {

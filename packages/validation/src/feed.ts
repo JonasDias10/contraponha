@@ -4,12 +4,14 @@ import { z } from "zod"
 import { pageSchema } from "./pagination.js"
 import { postViewSchema } from "./posts.js"
 import { topicSummarySchema } from "./topics.js"
+import { publicProfileSchema } from "./users.js"
 
 export const feedItemSchema = z.object({
   post: postViewSchema,
   reason: z
     .object({ type: z.enum(FeedReasonType), topic: topicSummarySchema.nullable() })
     .nullable(),
+  repostedBy: publicProfileSchema.nullable(),
 }) satisfies z.ZodType<FeedItem>
 
 export const feedPageSchema = pageSchema(feedItemSchema)

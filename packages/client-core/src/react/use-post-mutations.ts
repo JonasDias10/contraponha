@@ -11,6 +11,11 @@ export interface BookmarkChange {
   isSaving: boolean
 }
 
+export interface RepostChange {
+  postId: string
+  isReposting: boolean
+}
+
 export interface PinChange {
   postId: string
   isPinning: boolean
@@ -39,6 +44,20 @@ export function useBookmarkMutation(): UseMutationResult<void, Error, BookmarkCh
   return useMutation({
     mutationFn: ({ postId, isSaving }: BookmarkChange) =>
       isSaving ? api.posts.bookmark(postId) : api.posts.removeBookmark(postId),
+    onError: (error) => notify.error(errorMessage({ error, t })),
+    onSettled: (_data, _error, { postId }) => refresh(postId),
+  })
+}
+
+export function useRepostMutation(): UseMutationResult<void, Error, RepostChange> {
+  const { api, t, notify } = useClient()
+  const refresh = useRefreshPostLists()
+
+  return useMutation({
+    mutationFn: ({ postId, isReposting }: RepostChange) =>
+      isReposting ? api.posts.repost(postId) : api.posts.unrepost(postId),
+    onSuccess: (_data, { isReposting }) =>
+      notify.success(isReposting ? t("web.repost.done") : t("web.repost.undone")),
     onError: (error) => notify.error(errorMessage({ error, t })),
     onSettled: (_data, _error, { postId }) => refresh(postId),
   })

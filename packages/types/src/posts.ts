@@ -16,6 +16,17 @@ export interface PostViewerState {
   reactions: ReactionKind[]
   isBookmarked: boolean
   canReply: boolean
+  hasReposted: boolean
+}
+
+// The post embedded in a quote. Removed originals keep only their id and the flag.
+export interface QuotedPostView {
+  id: string
+  title: string | null
+  excerpt: string | null
+  author: PublicProfile | null
+  createdAt: string
+  isDeleted: boolean
 }
 
 export interface PostView {
@@ -34,6 +45,9 @@ export interface PostView {
   media: MediaView[]
   commentCount: number
   highlightedCommentCount: number
+  repostCount: number
+  quoteCount: number
+  quotedPost: QuotedPostView | null
   reactionCounts: ReactionCounts
   createdAt: string
   editedAt: string | null

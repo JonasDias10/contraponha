@@ -7,6 +7,7 @@ import {
   posts,
   postTopics,
   reports,
+  reposts,
   topicFollows,
   topics,
 } from "@contraponha/database"
@@ -25,6 +26,8 @@ import {
   type SQL,
 } from "drizzle-orm"
 
+import { z } from "zod"
+
 import { FEED_FEATURED_WINDOW_DAYS } from "#src/config/durations.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import {
@@ -39,11 +42,31 @@ import {
 } from "#src/modules/feed/domain/featured-ranking.js"
 import type { Post } from "#src/modules/posts/domain/post.js"
 
+export interface FollowingActivityPosition {
+  at: Date
+  id: string
+}
+
 export interface ListFollowingFeedParams {
   userId: string
-  beforeId: string | undefined
+  before: FollowingActivityPosition | undefined
   limit: number
 }
+
+// One row of the Following feed: a post, or a repost of it by someone the viewer follows.
+export interface FollowingActivity {
+  postId: string
+  reposterId: string | null
+  at: Date
+  activityId: string
+}
+
+const followingActivitySchema = z.object({
+  post_id: z.uuid(),
+  reposter_id: z.uuid().nullable(),
+  activity_at: z.coerce.date(),
+  activity_id: z.uuid(),
+})
 
 export interface ListFollowedTopicCandidatesParams {
   viewerId: string
@@ -99,25 +122,47 @@ function recentActivePost(): SQL | undefined {
 export class FeedRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  listFollowing({ userId, beforeId, limit }: ListFollowingFeedParams): Promise<Post[]> {
-    const followedAuthors = this.db
-      .select({ id: follows.followeeId })
-      .from(follows)
-      .where(eq(follows.followerId, userId))
+  // Posts by people the viewer follows (and their own), plus what those people reposted,
+  // newest activity first. Authors and reposters hidden from the viewer are left out.
+  async listFollowing({
+    userId,
+    before,
+    limit,
+  }: ListFollowingFeedParams): Promise<FollowingActivity[]> {
+    const followed = sql`(select ${follows.followeeId} from ${follows} where ${follows.followerId} = ${userId})`
+    const sharers = sql`(${reposts.userId} = ${userId} or ${reposts.userId} in ${followed})`
 
-    return this.db
-      .select()
-      .from(posts)
-      .where(
-        and(
-          isNull(posts.deletedAt),
-          or(eq(posts.authorId, userId), inArray(posts.authorId, followedAuthors)),
-          isVisibleAuthor({ column: posts.authorId, viewerId: userId }),
-          beforeId ? lt(posts.id, beforeId) : undefined,
-        ),
-      )
-      .orderBy(desc(posts.id))
-      .limit(limit)
+    const result = await this.db.execute(sql`
+      select * from (
+        select ${posts.id} as post_id, null::uuid as reposter_id,
+               ${posts.createdAt} as activity_at, ${posts.id} as activity_id
+        from ${posts}
+        where ${posts.deletedAt} is null
+          and (${posts.authorId} = ${userId} or ${posts.authorId} in ${followed})
+          and ${isVisibleAuthor({ column: posts.authorId, viewerId: userId })}
+        union all
+        select ${reposts.postId}, ${reposts.userId}, ${reposts.createdAt}, ${reposts.id}
+        from ${reposts}
+        join ${posts} on ${posts.id} = ${reposts.postId}
+        where ${posts.deletedAt} is null
+          and ${sharers}
+          and ${isVisibleAuthor({ column: posts.authorId, viewerId: userId })}
+          and ${isVisibleAuthor({ column: reposts.userId, viewerId: userId })}
+      ) feed
+      ${before ? sql`where (activity_at, activity_id) < (${before.at}, ${before.id})` : sql``}
+      order by activity_at desc, activity_id desc
+      limit ${limit}
+    `)
+
+    return z
+      .array(followingActivitySchema)
+      .parse(result.rows)
+      .map((row) => ({
+        postId: row.post_id,
+        reposterId: row.reposter_id,
+        at: row.activity_at,
+        activityId: row.activity_id,
+      }))
   }
 
   // Source: the best recent posts by quality with time decay, whatever their topic.

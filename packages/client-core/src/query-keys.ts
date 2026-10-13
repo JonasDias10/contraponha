@@ -51,6 +51,7 @@ export const queryKeys = {
     discussions: ["feed", "discussions"] as const,
   },
   post: (postId: string) => ["post", postId] as const,
+  quotes: (postId: string) => ["post", postId, "quotes"] as const,
   postRevisions: (postId: string) => ["post", postId, "revisions"] as const,
   comments: ({ postId, sort }: CommentsKeyParams) => ["comments", postId, sort] as const,
   commentsOfPost: (postId: string) => ["comments", postId] as const,

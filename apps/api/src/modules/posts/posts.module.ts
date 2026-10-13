@@ -10,12 +10,21 @@ import { UserPostsController } from "#src/modules/posts/controllers/user-posts.c
 import { PostContextRepository } from "#src/modules/posts/repositories/post-context.repository.js"
 import { PostRevisionsRepository } from "#src/modules/posts/repositories/post-revisions.repository.js"
 import { PostsRepository } from "#src/modules/posts/repositories/posts.repository.js"
+import { RepostsRepository } from "#src/modules/posts/repositories/reposts.repository.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
+import { RepostsService } from "#src/modules/posts/services/reposts.service.js"
 
 @Module({
   imports: [UsersModule, MediaModule, TopicsModule, NotificationsModule],
   controllers: [PostsController, UserPostsController],
-  providers: [PostsRepository, PostRevisionsRepository, PostContextRepository, PostsService],
-  exports: [PostsService],
+  providers: [
+    PostsRepository,
+    PostRevisionsRepository,
+    PostContextRepository,
+    RepostsRepository,
+    PostsService,
+    RepostsService,
+  ],
+  exports: [PostsService, RepostsService],
 })
 export class PostsModule {}

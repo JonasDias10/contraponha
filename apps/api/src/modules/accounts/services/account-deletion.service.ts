@@ -16,6 +16,7 @@ import { FollowsService } from "#src/modules/follows/services/follows.service.js
 import { MediaService } from "#src/modules/media/services/media.service.js"
 import { NotificationsService } from "#src/modules/notifications/services/notifications.service.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
+import { RepostsService } from "#src/modules/posts/services/reposts.service.js"
 import { ReactionsService } from "#src/modules/reactions/services/reactions.service.js"
 import { TopicsService } from "#src/modules/topics/services/topics.service.js"
 import type { User } from "#src/modules/users/domain/user.js"
@@ -44,6 +45,7 @@ export class AccountDeletionService {
   private readonly logger = new Logger(AccountDeletionService.name)
 
   constructor(
+    private readonly repostsService: RepostsService,
     @Inject(DATABASE) private readonly db: Database,
     private readonly storage: ObjectStorage,
     private readonly usersService: UsersService,
@@ -133,6 +135,8 @@ export class AccountDeletionService {
           await this.commentsService.purgeAuthor({ authorId: user.id, executor: tx })
 
         await this.reactionsService.purgeUser({ userId: user.id, executor: tx })
+
+        await this.repostsService.purgeUser({ userId: user.id, executor: tx })
 
         await this.followsService.purgeUser({ userId: user.id, executor: tx })
 

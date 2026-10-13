@@ -26,6 +26,8 @@ export const notificationType = pgEnum("notification_type", [
   "source_requested",
   "content_removed",
   "report_resolved",
+  "post_reposted",
+  "post_quoted",
 ])
 
 export const notifications = pgTable(

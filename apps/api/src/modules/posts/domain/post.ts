@@ -6,6 +6,7 @@ import type {
   PostSummary,
   PostView,
   PostViewerState,
+  QuotedPostView,
   TopicSummary,
 } from "@contraponha/types"
 
@@ -27,6 +28,7 @@ export interface ToPostViewParams {
   topics: TopicSummary[]
   contextNote: ContextNoteView | null
   revisionCount: number
+  quotedPost: QuotedPostView | null
   viewer: PostViewerState | null
 }
 
@@ -37,6 +39,7 @@ export function toPostView({
   topics,
   contextNote,
   revisionCount,
+  quotedPost,
   viewer,
 }: ToPostViewParams): PostView {
   const isDeleted = !isActivePost(post)
@@ -57,6 +60,9 @@ export function toPostView({
     media: isDeleted ? [] : media,
     commentCount: post.commentCount,
     highlightedCommentCount: post.highlightedCommentCount,
+    repostCount: post.repostCount,
+    quoteCount: post.quoteCount,
+    quotedPost: isDeleted ? null : quotedPost,
     reactionCounts: readReactionCounts(post),
     createdAt: post.createdAt.toISOString(),
     editedAt: post.editedAt?.toISOString() ?? null,
@@ -78,6 +84,14 @@ export function toPostSummary({ post, author }: ToPostSummaryParams): PostSummar
     title: isDeleted ? null : post.title,
     excerpt: isDeleted ? null : toExcerpt(post.body),
     author: isDeleted || !author ? null : toPublicProfile(author),
+  }
+}
+
+export function toQuotedPostView({ post, author }: ToPostSummaryParams): QuotedPostView {
+  return {
+    ...toPostSummary({ post, author }),
+    createdAt: post.createdAt.toISOString(),
+    isDeleted: !isActivePost(post),
   }
 }
 

@@ -78,6 +78,13 @@
       "when": 1791903876575,
       "tag": "0010_add_media_variants",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791904643763,
+      "tag": "0011_add_reposts_and_quotes",
+      "breakpoints": true
     }
   ]
 }
