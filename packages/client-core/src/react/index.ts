@@ -1,6 +1,7 @@
 export * from "./client-context.js"
 export * from "./use-bookmark-count.js"
 export * from "./use-debounced-value.js"
+export * from "./use-email-confirmation.js"
 export * from "./use-follow.js"
 export * from "./use-handle-availability.js"
 export * from "./use-moderation.js"

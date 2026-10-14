@@ -1,5 +1,6 @@
 import { queryKeys } from "@contraponha/client-core"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useEmailConfirmation } from "@contraponha/client-core/react"
+import { useQueryClient } from "@tanstack/react-query"
 import { router, useLocalSearchParams } from "expo-router"
 import { CircleCheck } from "lucide-react-native"
 import { useEffect } from "react"
@@ -11,25 +12,15 @@ import { Banner, LoadingView } from "@/components/ui/surfaces"
 import { AppText } from "@/components/ui/text"
 import { usePalette } from "@/hooks/use-palette"
 import { useI18n } from "@/providers/i18n-provider"
-import { useApi } from "@/providers/session-provider"
 import { space } from "@/lib/theme"
 
 export default function VerifyEmailScreen(): React.JSX.Element {
   const { t } = useI18n()
-  const api = useApi()
   const palette = usePalette()
   const queryClient = useQueryClient()
   const { token } = useLocalSearchParams<{ token?: string }>()
 
-  // Tokens are single-use: a query keyed by the token runs exactly once.
-  const query = useQuery({
-    queryKey: ["email-verification", token],
-    queryFn: () => api.auth.confirmEmail({ token: token ?? "" }),
-    enabled: Boolean(token),
-    retry: false,
-    staleTime: Number.POSITIVE_INFINITY,
-    gcTime: Number.POSITIVE_INFINITY,
-  })
+  const query = useEmailConfirmation(token)
 
   useEffect(() => {
     if (query.isSuccess) void queryClient.invalidateQueries({ queryKey: queryKeys.me })
