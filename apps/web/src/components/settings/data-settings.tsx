@@ -6,11 +6,10 @@ import { Download, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
-import { errorMessage, formatDate, formatDateTime, queryKeys } from "@contraponha/client-core"
+import { errorMessage, formatDateTime, queryKeys } from "@contraponha/client-core"
 
 import { signOut } from "@/actions/auth"
 import {
-  Banner,
   Button,
   Checkbox,
   ConfirmDialog,
@@ -206,7 +205,7 @@ function KeptSection(): React.JSX.Element {
 }
 
 function DeleteSection(): React.JSX.Element | null {
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const api = useApi()
   const viewer = useViewer()
   const [isOpen, setIsOpen] = useState(false)
@@ -227,13 +226,6 @@ function DeleteSection(): React.JSX.Element | null {
       icon={<Trash2 aria-hidden className="size-6 text-danger" />}
       tone="danger"
     >
-      {viewer.deletionScheduledAt ? (
-        <Banner tone="warning">
-          {t("web.settings.deletionScheduled", {
-            date: formatDate({ value: viewer.deletionScheduledAt, locale }),
-          })}
-        </Banner>
-      ) : null}
       <p>{t("web.settings.deleteBody")}</p>
       <label className="flex items-start gap-3 text-sm">
         <Checkbox

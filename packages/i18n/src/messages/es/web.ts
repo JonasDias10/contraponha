@@ -574,6 +574,8 @@ export const web: Messages["web"] = {
   },
   saved: {
     title: "Guardados",
+    count: "{count} publicaciones guardadas",
+    count_one: "{count} publicación guardada",
     lead: "Tus guardados son privados. Nadie más ve esta lista.",
     emptyTitle: "Tu lista de lectura empieza aquí",
     emptyBody: "Toca Guardar en un post para leerlo con calma después.",
@@ -718,9 +720,6 @@ export const web: Messages["web"] = {
       "Se cierra tu sesión en todos los dispositivos ahora. En 30 días se borra todo. Para cancelar, basta con entrar de nuevo antes.",
     deleteConfirmLabel: "Escribe @{handle} para confirmar",
     deleteConfirm: "Eliminar cuenta",
-    deletionScheduled:
-      "Tu cuenta se eliminará el {date}. Entra de nuevo antes de esa fecha para cancelar.",
-    cancelDeletion: "Cancelar eliminación",
   },
   moderation: {
     title: "Moderación",

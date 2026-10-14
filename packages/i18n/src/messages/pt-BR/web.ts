@@ -569,6 +569,8 @@ export const web = {
   },
   saved: {
     title: "Salvos",
+    count: "{count} posts salvos",
+    count_one: "{count} post salvo",
     lead: "Seus salvos são privados. Ninguém mais vê esta lista.",
     emptyTitle: "Sua lista de leitura começa aqui",
     emptyBody: "Toque em Salvar num post para ler com calma depois.",
@@ -712,9 +714,6 @@ export const web = {
       "Você sai de todos os dispositivos agora. Em 30 dias, tudo é apagado. Para cancelar, basta entrar de novo antes disso.",
     deleteConfirmLabel: "Digite @{handle} para confirmar",
     deleteConfirm: "Excluir conta",
-    deletionScheduled:
-      "Sua conta será excluída em {date}. Entre de novo antes disso para cancelar.",
-    cancelDeletion: "Cancelar exclusão",
   },
   moderation: {
     title: "Moderação",

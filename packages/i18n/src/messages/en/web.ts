@@ -571,6 +571,8 @@ export const web: Messages["web"] = {
   },
   saved: {
     title: "Saved",
+    count: "{count} saved posts",
+    count_one: "{count} saved post",
     lead: "Your saved posts are private. Nobody else sees this list.",
     emptyTitle: "Your reading list starts here",
     emptyBody: "Tap Save on a post to read it calmly later.",
@@ -712,9 +714,6 @@ export const web: Messages["web"] = {
       "You are signed out of every device now. In 30 days, everything is deleted. To cancel, just sign in again before then.",
     deleteConfirmLabel: "Type @{handle} to confirm",
     deleteConfirm: "Delete account",
-    deletionScheduled:
-      "Your account will be deleted on {date}. Sign in again before then to cancel.",
-    cancelDeletion: "Cancel deletion",
   },
   moderation: {
     title: "Moderation",

@@ -207,15 +207,20 @@ export class AuthService {
 
   // Signing in during the 30-day grace period cancels a scheduled account deletion.
   private async startSession({ user, userAgent }: StartSessionParams): Promise<AuthResponse> {
-    const active = user.deletionScheduledAt
-      ? await this.usersService.scheduleDeletion({
-          id: user.id,
-          scheduledFor: null,
-          deleteContributions: false,
-        })
-      : user
-
+    const active = user.deletionScheduledAt ? await this.cancelDeletion(user) : user
     const session = await this.sessionsService.issue({ userId: active.id, userAgent })
     return { user: toPrivateProfile(active), session }
+  }
+
+  private async cancelDeletion(user: User): Promise<User> {
+    const restored = await this.usersService.scheduleDeletion({
+      id: user.id,
+      scheduledFor: null,
+      deleteContributions: false,
+    })
+
+    this.accountVerification.sendDeletionCancelled(restored)
+
+    return restored
   }
 }

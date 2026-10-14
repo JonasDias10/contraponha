@@ -18,7 +18,7 @@ interface EmailCopy {
   action: MessageKey
   expiry: MessageKey
   ignore: MessageKey
-  expiryParams: Record<string, number>
+  expiryParams?: Record<string, number>
 }
 
 interface BuildAccountEmailParams {
@@ -121,6 +121,20 @@ export function buildDataExportReadyEmail({
       expiry: "emails.dataExportReady.expiry",
       ignore: "emails.dataExportReady.ignore",
       expiryParams: { days: retentionDays },
+    },
+  })
+}
+
+export function buildDeletionCancelledEmail(recipient: AccountEmailRecipient): EmailMessage {
+  return buildAccountEmail({
+    recipient,
+    copy: {
+      subject: "emails.deletionCancelled.subject",
+      title: "emails.deletionCancelled.title",
+      body: "emails.deletionCancelled.body",
+      action: "emails.deletionCancelled.action",
+      expiry: "emails.deletionCancelled.expiry",
+      ignore: "emails.deletionCancelled.ignore",
     },
   })
 }

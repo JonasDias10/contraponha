@@ -62,11 +62,6 @@ export class AccountDeletionService {
     private readonly exportsRepository: DataExportsRepository,
   ) {}
 
-  async status(userId: string): Promise<AccountDeletionStatus> {
-    const user = await this.usersService.getById(userId)
-    return toStatus(user)
-  }
-
   // Asking for deletion signs the person out everywhere; signing in again within the grace
   // period cancels it. The handle must be typed back as confirmation.
   async schedule({
@@ -96,16 +91,6 @@ export class AccountDeletionService {
     await this.sessionsService.evictFromCache(revoked)
 
     return toStatus(scheduled)
-  }
-
-  async cancel(userId: string): Promise<AccountDeletionStatus> {
-    const user = await this.usersService.scheduleDeletion({
-      id: userId,
-      scheduledFor: null,
-      deleteContributions: false,
-    })
-
-    return toStatus(user)
   }
 
   // Deletes the accounts whose grace period is over. Returns how many were deleted.

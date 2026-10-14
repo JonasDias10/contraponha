@@ -32,4 +32,13 @@ export const emails: Messages["emails"] = {
     ignore:
       "Si no pediste esta exportación, cambia tu contraseña y cierra las otras sesiones en Configuración.",
   },
+  deletionCancelled: {
+    subject: "Se canceló la eliminación de tu cuenta de Contraponha",
+    title: "Tu cuenta ya no se eliminará",
+    body: "Alguien entró en tu cuenta durante el plazo de 30 días, así que se canceló la eliminación que estaba programada.",
+    action: "Abrir Cuenta",
+    expiry: "Si aún quieres eliminar la cuenta, vuelve a pedirlo en Configuración, en Tus datos.",
+    ignore:
+      "Si no fuiste tú quien entró, cambia tu contraseña y cierra las otras sesiones en Configuración.",
+  },
 }

@@ -1,4 +1,5 @@
 import { queryKeys } from "@contraponha/client-core"
+import { useBookmarkCount } from "@contraponha/client-core/react"
 import type { PostView } from "@contraponha/types"
 import { router } from "expo-router"
 import { Inbox } from "lucide-react-native"
@@ -19,6 +20,7 @@ export default function SavedScreen(): React.JSX.Element {
   const { t } = useI18n()
   const api = useApi()
   const palette = usePalette()
+  const count = useBookmarkCount()
 
   return (
     <Screen>
@@ -31,6 +33,9 @@ export default function SavedScreen(): React.JSX.Element {
         isSeparated
         header={
           <View style={styles.header}>
+            {count ? (
+              <AppText variant="smallStrong">{t("web.saved.count", { count })}</AppText>
+            ) : null}
             <AppText variant="caption" tone="subtle">
               {t("web.saved.lead")}
             </AppText>
@@ -58,5 +63,5 @@ export default function SavedScreen(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  header: { marginBottom: space.lg },
+  header: { marginBottom: space.lg, gap: space.xs },
 })

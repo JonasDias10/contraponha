@@ -1,11 +1,6 @@
-import {
-  ReactionTargetType,
-  type ReactionKind,
-  type ViewerReactionsResponse,
-} from "@contraponha/types"
-import { viewerReactionsResponseSchema } from "@contraponha/validation"
+import { ReactionTargetType, type ReactionKind } from "@contraponha/types"
 
-import { emptyResponseSchema, withQuery, type HttpClient } from "../http.js"
+import { emptyResponseSchema, type HttpClient } from "../http.js"
 
 export interface ReactionRequest {
   targetType: ReactionTargetType
@@ -13,15 +8,9 @@ export interface ReactionRequest {
   kind: ReactionKind
 }
 
-export interface ListMyReactionsRequest {
-  targetType: ReactionTargetType
-  targetIds: readonly string[]
-}
-
 export interface ReactionsResource {
   add(request: ReactionRequest): Promise<void>
   remove(request: ReactionRequest): Promise<void>
-  listMine(request: ListMyReactionsRequest): Promise<ViewerReactionsResponse>
 }
 
 function reactionPath({ targetType, targetId, kind }: ReactionRequest): string {
@@ -37,14 +26,5 @@ export function createReactionsResource(request: HttpClient): ReactionsResource 
     remove: async (reaction) => {
       await request({ method: "DELETE", path: reactionPath(reaction), schema: emptyResponseSchema })
     },
-    listMine: ({ targetType, targetIds }) =>
-      request({
-        method: "GET",
-        path: withQuery({
-          path: "/reactions/mine",
-          query: { targetType, targetIds: targetIds.join(",") },
-        }),
-        schema: viewerReactionsResponseSchema,
-      }),
   }
 }

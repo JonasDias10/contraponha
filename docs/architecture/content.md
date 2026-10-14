@@ -162,32 +162,29 @@ Todas as listas usam cursor opaco:
 
 Todas sob `/api/v1`.
 
-| Método e rota                                 | Sessão | Descrição                                     |
-| --------------------------------------------- | ------ | --------------------------------------------- |
-| `POST /posts`                                 | sim    | Publica um post                               |
-| `GET /posts/:postId`                          | não    | Lê um post (ou o marcador de removido)        |
-| `PATCH /posts/:postId`                        | autor  | Edita dentro da janela                        |
-| `DELETE /posts/:postId`                       | autor  | Remove                                        |
-| `GET /posts/:postId/revisions`                | não    | Versões anteriores                            |
-| `GET /users/:handle/posts`                    | não    | Posts do usuário, mais recentes primeiro      |
-| `POST /posts/:postId/comments`                | sim    | Comenta ou responde (`parentId`)              |
-| `GET /posts/:postId/comments`                 | não    | Comentários raiz, mais antigos primeiro       |
-| `GET /comments/:commentId/replies`            | não    | Respostas da thread                           |
-| `PATCH /comments/:commentId`                  | autor  | Edita dentro da janela                        |
-| `DELETE /comments/:commentId`                 | autor  | Remove                                        |
-| `GET /comments/:commentId/revisions`          | não    | Versões anteriores                            |
-| `PUT /posts/:postId/reactions/:kind`          | sim    | Reage (idempotente)                           |
-| `DELETE /posts/:postId/reactions/:kind`       | sim    | Remove a reação (idempotente)                 |
-| `PUT /comments/:commentId/reactions/:kind`    | sim    | Reage a um comentário                         |
-| `DELETE /comments/:commentId/reactions/:kind` | sim    | Remove a reação                               |
-| `GET /reactions/mine?targetType=&targetIds=`  | sim    | Reações da pessoa em até 100 alvos de uma vez |
-| `PUT /users/:handle/follow`                   | sim    | Segue (idempotente)                           |
-| `DELETE /users/:handle/follow`                | sim    | Deixa de seguir (idempotente)                 |
-| `GET /users/:handle/follow`                   | sim    | `{ isFollowing }`                             |
-| `GET /users/:handle/followers`                | não    | Seguidores, mais recentes primeiro            |
-| `GET /users/:handle/following`                | não    | Quem o usuário segue                          |
-
-`GET /reactions/mine` existe para que listas (como o feed) busquem as reações da pessoa em lote, em vez de uma requisição por item.
+| Método e rota                                 | Sessão | Descrição                                |
+| --------------------------------------------- | ------ | ---------------------------------------- |
+| `POST /posts`                                 | sim    | Publica um post                          |
+| `GET /posts/:postId`                          | não    | Lê um post (ou o marcador de removido)   |
+| `PATCH /posts/:postId`                        | autor  | Edita dentro da janela                   |
+| `DELETE /posts/:postId`                       | autor  | Remove                                   |
+| `GET /posts/:postId/revisions`                | não    | Versões anteriores                       |
+| `GET /users/:handle/posts`                    | não    | Posts do usuário, mais recentes primeiro |
+| `POST /posts/:postId/comments`                | sim    | Comenta ou responde (`parentId`)         |
+| `GET /posts/:postId/comments`                 | não    | Comentários raiz, mais antigos primeiro  |
+| `GET /comments/:commentId/replies`            | não    | Respostas da thread                      |
+| `PATCH /comments/:commentId`                  | autor  | Edita dentro da janela                   |
+| `DELETE /comments/:commentId`                 | autor  | Remove                                   |
+| `GET /comments/:commentId/revisions`          | não    | Versões anteriores                       |
+| `PUT /posts/:postId/reactions/:kind`          | sim    | Reage (idempotente)                      |
+| `DELETE /posts/:postId/reactions/:kind`       | sim    | Remove a reação (idempotente)            |
+| `PUT /comments/:commentId/reactions/:kind`    | sim    | Reage a um comentário                    |
+| `DELETE /comments/:commentId/reactions/:kind` | sim    | Remove a reação                          |
+| `PUT /users/:handle/follow`                   | sim    | Segue (idempotente)                      |
+| `DELETE /users/:handle/follow`                | sim    | Deixa de seguir (idempotente)            |
+| `GET /users/:handle/follow`                   | sim    | `{ isFollowing }`                        |
+| `GET /users/:handle/followers`                | não    | Seguidores, mais recentes primeiro       |
+| `GET /users/:handle/following`                | não    | Quem o usuário segue                     |
 
 ## Códigos de erro novos
 

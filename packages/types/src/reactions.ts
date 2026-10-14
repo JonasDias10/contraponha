@@ -15,12 +15,3 @@ export const ReactionTargetType = {
 } as const
 
 export type ReactionTargetType = (typeof ReactionTargetType)[keyof typeof ReactionTargetType]
-
-export interface ViewerReactions {
-  targetId: string
-  kinds: ReactionKind[]
-}
-
-export interface ViewerReactionsResponse {
-  reactions: ViewerReactions[]
-}

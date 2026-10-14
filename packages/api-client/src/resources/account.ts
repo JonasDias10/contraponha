@@ -19,9 +19,7 @@ export interface AccountResource {
   requestDataExport(input: RequestDataExportInput): Promise<DataExportView>
   listDataExports(): Promise<DataExportList>
   downloadDataExport(exportId: string): Promise<DataExportDownload>
-  deletionStatus(): Promise<AccountDeletionStatus>
   scheduleDeletion(input: ScheduleAccountDeletionInput): Promise<AccountDeletionStatus>
-  cancelDeletion(): Promise<AccountDeletionStatus>
   resetRecommendations(): Promise<void>
 }
 
@@ -42,8 +40,6 @@ export function createAccountResource(request: HttpClient): AccountResource {
         path: `/me/data-exports/${encodeURIComponent(exportId)}/download`,
         schema: dataExportDownloadSchema,
       }),
-    deletionStatus: () =>
-      request({ method: "GET", path: "/me/deletion", schema: accountDeletionStatusSchema }),
     scheduleDeletion: (input) =>
       request({
         method: "PUT",
@@ -51,8 +47,6 @@ export function createAccountResource(request: HttpClient): AccountResource {
         body: input,
         schema: accountDeletionStatusSchema,
       }),
-    cancelDeletion: () =>
-      request({ method: "DELETE", path: "/me/deletion", schema: accountDeletionStatusSchema }),
     resetRecommendations: async () => {
       await request({
         method: "POST",

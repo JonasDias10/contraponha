@@ -1,4 +1,4 @@
-import { errorMessage, formatDate, formatDateTime, queryKeys } from "@contraponha/client-core"
+import { errorMessage, formatDateTime, queryKeys } from "@contraponha/client-core"
 import { DataExportSection, type DataExportFormat } from "@contraponha/types"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import * as WebBrowser from "expo-web-browser"
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/choice"
 import { Segmented } from "@/components/ui/segmented"
 import { Sheet } from "@/components/ui/sheet"
-import { Banner, Divider } from "@/components/ui/surfaces"
+import { Divider } from "@/components/ui/surfaces"
 import { AppText } from "@/components/ui/text"
 import { TextField } from "@/components/ui/text-field"
 import { TextLink } from "@/components/ui/text-link"
@@ -191,7 +191,7 @@ function KeptSection(): React.JSX.Element {
 }
 
 function DeleteSection(): React.JSX.Element {
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const api = useApi()
   const viewer = useRequiredViewer()
   const toast = useToast()
@@ -213,13 +213,6 @@ function DeleteSection(): React.JSX.Element {
       icon={<Trash2 size={22} color={palette.danger} />}
       tone="danger"
     >
-      {viewer.deletionScheduledAt ? (
-        <Banner tone="warning">
-          {t("web.settings.deletionScheduled", {
-            date: formatDate({ value: viewer.deletionScheduledAt, locale }),
-          })}
-        </Banner>
-      ) : null}
       <AppText variant="small">{t("web.settings.deleteBody")}</AppText>
       <Checkbox isChecked={deleteContributions} onChange={setDeleteContributions}>
         <AppText variant="small">{t("web.settings.deleteContributions")}</AppText>
