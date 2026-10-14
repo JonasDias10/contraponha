@@ -156,7 +156,12 @@ export function Composer({ post, quoted }: ComposerProps): React.JSX.Element {
       onSubmit={(event) => void handleSubmit((input) => publish.mutate(input))(event)}
     >
       <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-surface px-4 sm:px-8">
-        <Button variant="ghost" className="-ml-2.5 px-2.5" onClick={leave}>
+        <Button
+          variant="ghost"
+          className="-ml-2.5 px-2.5"
+          aria-label={t("web.composer.exit")}
+          onClick={leave}
+        >
           <ArrowLeft aria-hidden className="size-5" />
           <span className="hidden sm:inline">{t("web.composer.exit")}</span>
         </Button>
