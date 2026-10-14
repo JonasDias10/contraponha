@@ -5,6 +5,7 @@ import { UsersController } from "#src/modules/users/controllers/users.controller
 import { ConsentsRepository } from "#src/modules/users/repositories/consents.repository.js"
 import { UsersRepository } from "#src/modules/users/repositories/users.repository.js"
 import { RoleGuard } from "#src/modules/users/guards/role.guard.js"
+import { WriteGuard } from "#src/modules/users/guards/write.guard.js"
 import { SuspensionsRepository } from "#src/modules/users/repositories/suspensions.repository.js"
 import { UserRelationsRepository } from "#src/modules/users/repositories/user-relations.repository.js"
 import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
@@ -23,6 +24,7 @@ import { UsersService } from "#src/modules/users/services/users.service.js"
     UsersService,
     ProfilePhotoService,
     RoleGuard,
+    WriteGuard,
   ],
   exports: [
     UsersService,
@@ -31,6 +33,7 @@ import { UsersService } from "#src/modules/users/services/users.service.js"
     UserRelationsRepository,
     UserRelationsService,
     RoleGuard,
+    WriteGuard,
   ],
 })
 export class UsersModule {}

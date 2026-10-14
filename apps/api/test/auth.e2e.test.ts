@@ -13,6 +13,7 @@ import { afterAll, beforeAll, describe, expect, inject, it } from "vitest"
 import { bearer, login, newAccountInput, registerAccount, type App } from "./support/accounts.js"
 import type { CapturingEmailSender } from "./support/capturing-email-sender.js"
 import { createTestApp } from "./support/create-test-app.js"
+import { BOT_TOKEN } from "./support/fake-human-verifier.js"
 
 describe("auth", () => {
   let app: NestExpressApplication
@@ -115,6 +116,15 @@ describe("auth", () => {
       expect(sameEmail.body.error.code).toBe("EMAIL_ALREADY_IN_USE")
 
       expect(sameHandle.body.error.code).toBe("HANDLE_UNAVAILABLE")
+    })
+
+    it("refuses sign-ups that fail the human check", async () => {
+      const response = await request(server)
+        .post("/api/v1/auth/register")
+        .send({ ...newAccountInput(), humanCheckToken: BOT_TOKEN })
+        .expect(400)
+
+      expect(response.body.error.code).toBe("HUMAN_CHECK_FAILED")
     })
 
     it("refuses reserved handles", async () => {
@@ -313,7 +323,7 @@ describe("auth", () => {
 
   describe("email verification", () => {
     it("verifies the email once with the emailed token", async () => {
-      const { input, auth } = await registerAccount({ server })
+      const { input, auth } = await registerAccount({ server, isEmailVerified: false })
       const token = emails.tokenSentTo(input.email)
 
       await request(server)
@@ -337,7 +347,7 @@ describe("auth", () => {
     })
 
     it("invalidates the previous link when a new one is requested", async () => {
-      const { input, auth } = await registerAccount({ server })
+      const { input, auth } = await registerAccount({ server, isEmailVerified: false })
       const firstToken = emails.tokenSentTo(input.email)
 
       await request(server)

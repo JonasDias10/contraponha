@@ -27,6 +27,8 @@ export const envSchema = z
     SESSION_TTL_DAYS: z.coerce.number().int().positive().max(365).default(30),
     AUTH_RATE_LIMIT_TTL_SECONDS: z.coerce.number().int().positive().default(900),
     AUTH_RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(10),
+    WRITE_LIMIT_MULTIPLIER: z.coerce.number().positive().default(1),
+    TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
 
     SMTP_HOST: z.string().min(1),
     SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),

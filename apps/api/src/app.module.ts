@@ -12,6 +12,7 @@ import { ConfigModule } from "#src/config/config.module.js"
 import { DatabaseModule } from "#src/infrastructure/database/database.module.js"
 import { EmailModule } from "#src/infrastructure/email/email.module.js"
 import { HttpInfrastructureModule } from "#src/infrastructure/http/http.module.js"
+import { HumanCheckModule } from "#src/infrastructure/human-check/human-check.module.js"
 import { PushModule as PushInfrastructureModule } from "#src/infrastructure/push/push.module.js"
 import { RealtimeInfrastructureModule } from "#src/infrastructure/realtime/realtime.module.js"
 import { RedisModule } from "#src/infrastructure/redis/redis.module.js"
@@ -53,6 +54,7 @@ export class AppModule {
         RealtimeInfrastructureModule,
         EmailModule,
         HttpInfrastructureModule,
+        HumanCheckModule,
         PushInfrastructureModule,
         StorageModule,
         HealthModule,

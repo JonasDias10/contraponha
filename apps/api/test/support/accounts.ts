@@ -44,15 +44,35 @@ export type AuthorizationHeader = {
 export interface RegisterAccountParams {
   server: App
   overrides?: Partial<AccountInput>
+  // Publishing needs a confirmed email; most tests start from a confirmed account.
+  isEmailVerified?: boolean
 }
 
 export async function registerAccount({
   server,
   overrides = {},
+  isEmailVerified = true,
 }: RegisterAccountParams): Promise<RegisteredAccount> {
   const input = newAccountInput(overrides)
   const response = await request(server).post("/api/v1/auth/register").send(input).expect(201)
-  return { input, auth: authResponseSchema.parse(response.body) }
+  const auth = authResponseSchema.parse(response.body)
+
+  if (isEmailVerified) await markEmailVerified(auth.user.id)
+
+  return { input, auth }
+}
+
+async function markEmailVerified(userId: string): Promise<void> {
+  const connection = createDatabaseConnection({ url: inject("testDatabaseUrl") })
+
+  try {
+    await connection.db
+      .update(users)
+      .set({ emailVerifiedAt: new Date() })
+      .where(eq(users.id, userId))
+  } finally {
+    await connection.close()
+  }
 }
 
 export interface LoginParams {

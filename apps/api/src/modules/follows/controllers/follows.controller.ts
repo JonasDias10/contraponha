@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Put, Query } from "@nestjs/common"
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiNoContentResponse,
@@ -15,6 +25,7 @@ import {
 } from "@contraponha/validation"
 import type { z } from "zod"
 
+import { Write } from "#src/common/auth/write-action.decorator.js"
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"
 import {
@@ -24,6 +35,8 @@ import {
 } from "#src/common/openapi/swagger.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { FollowsService } from "#src/modules/follows/services/follows.service.js"
+import { WriteAction } from "#src/modules/users/domain/write-limits.js"
+import { WriteGuard } from "#src/modules/users/guards/write.guard.js"
 
 const handlePipe = new ZodValidationPipe(handleSchema)
 const paginationPipe = new ZodValidationPipe(paginationQuerySchema)
@@ -35,6 +48,8 @@ export class FollowsController {
   constructor(private readonly followsService: FollowsService) {}
 
   @Put("follow")
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.FOLLOW)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth(SESSION_SECURITY_SCHEME)
   @ApiOperation({ summary: "Follow a user (idempotent)" })

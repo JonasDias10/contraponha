@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Put, Query } from "@nestjs/common"
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiNoContentResponse,
@@ -18,6 +28,7 @@ import {
 } from "@contraponha/validation"
 import type { z } from "zod"
 
+import { Write } from "#src/common/auth/write-action.decorator.js"
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
 import {
   ApiStandardErrors,
@@ -27,6 +38,8 @@ import {
 import { UuidParam } from "#src/common/validation/uuid-param.decorator.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { ReactionsService } from "#src/modules/reactions/services/reactions.service.js"
+import { WriteAction } from "#src/modules/users/domain/write-limits.js"
+import { WriteGuard } from "#src/modules/users/guards/write.guard.js"
 
 const kindPipe = new ZodValidationPipe(reactionKindSchema)
 
@@ -38,6 +51,8 @@ export class ReactionsController {
   constructor(private readonly reactionsService: ReactionsService) {}
 
   @Put("posts/:postId/reactions/:kind")
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.REACTION)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "React to a post (idempotent; at most 2 reactions per person)" })
   @ApiNoContentResponse()
@@ -70,6 +85,8 @@ export class ReactionsController {
   }
 
   @Put("comments/:commentId/reactions/:kind")
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.REACTION)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "React to a comment (idempotent; at most 2 reactions per person)" })
   @ApiNoContentResponse()

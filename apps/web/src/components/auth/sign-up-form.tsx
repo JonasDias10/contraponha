@@ -6,13 +6,16 @@ import type { MessageKey } from "@contraponha/i18n"
 import { registerInputSchema } from "@contraponha/validation"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
 import { handleFieldMessages, passwordStrength } from "@contraponha/client-core"
 import { useHandleAvailability } from "@contraponha/client-core/react"
 
+import type { TurnstileInstance } from "@marsidev/react-turnstile"
+
 import { signUp } from "@/actions/auth"
+import { HumanCheck, TURNSTILE_SITE_KEY } from "@/components/auth/human-check"
 import {
   Button,
   Checkbox,
@@ -69,6 +72,8 @@ export function SignUpForm(): React.JSX.Element {
   const { t } = useI18n()
   const router = useRouter()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [humanToken, setHumanToken] = useState<string | null>(null)
+  const turnstile = useRef<TurnstileInstance>(undefined)
 
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpFormSchema),
@@ -111,7 +116,17 @@ export function SignUpForm(): React.JSX.Element {
       return
     }
 
-    const result = await signUp({ ...values, acceptedTerms: true })
+    const result = await signUp({
+      ...values,
+      acceptedTerms: true,
+      humanCheckToken: humanToken ?? undefined,
+    })
+
+    if (!result.ok) {
+      turnstile.current?.reset()
+
+      setHumanToken(null)
+    }
 
     if (result.ok) {
       router.push("/onboarding")
@@ -269,7 +284,14 @@ export function SignUpForm(): React.JSX.Element {
           </p>
         ) : null}
       </div>
-      <Button type="submit" size="lg" block isLoading={isSubmitting}>
+      <HumanCheck ref={turnstile} onToken={setHumanToken} />
+      <Button
+        type="submit"
+        size="lg"
+        block
+        isLoading={isSubmitting}
+        disabled={Boolean(TURNSTILE_SITE_KEY) && !humanToken}
+      >
         {t("web.common.continue")}
       </Button>
     </form>

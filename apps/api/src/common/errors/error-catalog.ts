@@ -60,6 +60,22 @@ export const ERROR_CATALOG: Record<ApiErrorCode, ErrorDefinition> = {
     status: HttpStatus.FORBIDDEN,
     messageKey: "users.errors.interactionBlocked",
   },
+  [ApiErrorCode.EMAIL_NOT_VERIFIED]: {
+    status: HttpStatus.FORBIDDEN,
+    messageKey: "auth.errors.emailNotVerified",
+  },
+  [ApiErrorCode.HUMAN_CHECK_FAILED]: {
+    status: HttpStatus.BAD_REQUEST,
+    messageKey: "auth.errors.humanCheckFailed",
+  },
+  [ApiErrorCode.TWO_FACTOR_REQUIRED]: {
+    status: HttpStatus.FORBIDDEN,
+    messageKey: "auth.errors.twoFactorRequired",
+  },
+  [ApiErrorCode.INVALID_TWO_FACTOR_CODE]: {
+    status: HttpStatus.UNAUTHORIZED,
+    messageKey: "auth.errors.invalidTwoFactorCode",
+  },
   [ApiErrorCode.INVALID_TOKEN]: {
     status: HttpStatus.BAD_REQUEST,
     messageKey: "auth.errors.invalidToken",

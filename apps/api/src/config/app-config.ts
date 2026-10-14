@@ -59,6 +59,12 @@ export interface AppConfig {
   backgroundJobs: {
     enabled: boolean
   }
+  writeLimits: {
+    multiplier: number
+  }
+  humanCheck: {
+    turnstileSecretKey: string | undefined
+  }
   push: {
     enabled: boolean
     expoAccessToken: string | undefined
@@ -132,6 +138,12 @@ export function loadAppConfig(source: EnvSource): AppConfig {
     },
     backgroundJobs: {
       enabled: env.BACKGROUND_JOBS_ENABLED,
+    },
+    writeLimits: {
+      multiplier: env.WRITE_LIMIT_MULTIPLIER,
+    },
+    humanCheck: {
+      turnstileSecretKey: env.TURNSTILE_SECRET_KEY,
     },
     push: {
       enabled: env.PUSH_ENABLED,

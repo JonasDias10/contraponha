@@ -13,6 +13,7 @@ import type { AuthContext } from "#src/common/auth/auth-context.js"
 import { AppError } from "#src/common/errors/app-error.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
+import { HumanVerifier } from "#src/infrastructure/human-check/human-verifier.js"
 import { PasswordHasher } from "#src/modules/auth/infrastructure/password-hasher.js"
 import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
 import { toPrivateProfile, type User } from "#src/modules/users/domain/user.js"
@@ -26,6 +27,7 @@ import { SessionsService } from "./sessions.service.js"
 export interface ClientInfo {
   userAgent: string | undefined
   acceptLanguage: string | undefined
+  ip?: string
 }
 
 interface StartSessionParams {
@@ -64,9 +66,17 @@ export class AuthService {
     private readonly sessionsService: SessionsService,
     private readonly accountVerification: AccountVerificationService,
     private readonly verificationTokens: VerificationTokensRepository,
+    private readonly humanVerifier: HumanVerifier,
   ) {}
 
   async register({ input, client }: RegisterParams): Promise<AuthResponse> {
+    const isHuman = await this.humanVerifier.verify({
+      token: input.humanCheckToken,
+      remoteIp: client.ip,
+    })
+
+    if (!isHuman) throw new AppError(ApiErrorCode.HUMAN_CHECK_FAILED)
+
     const passwordHash = await this.passwordHasher.hash(input.password)
 
     const locale =

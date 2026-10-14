@@ -5,6 +5,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Ip,
   Param,
   Post,
   Put,
@@ -68,8 +69,9 @@ export class AuthController {
     @Body(new ZodValidationPipe(registerInputSchema)) body: z.output<typeof registerInputSchema>,
     @Headers("user-agent") userAgent: string | undefined,
     @Headers("accept-language") acceptLanguage: string | undefined,
+    @Ip() ip: string | undefined,
   ): Promise<AuthResponse> {
-    return this.authService.register({ input: body, client: { userAgent, acceptLanguage } })
+    return this.authService.register({ input: body, client: { userAgent, acceptLanguage, ip } })
   }
 
   @Public()

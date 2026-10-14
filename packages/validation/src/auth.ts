@@ -43,6 +43,8 @@ export const registerInputSchema = z.object({
   birthDate: birthDateSchema,
   acceptedTerms: z.literal(true),
   locale: localeSchema.optional(),
+  // Cloudflare Turnstile response; required when the API has a Turnstile secret.
+  humanCheckToken: z.string().max(2048).optional(),
 })
 
 export const loginInputSchema = z.object({
