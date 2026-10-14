@@ -1,0 +1,42 @@
+name: Relatar um problema
+description: Algo não funciona como deveria.
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Onde
+      options:
+        - Web
+        - Mobile (iOS)
+        - Mobile (Android)
+        - Hub
+        - API
+        - Desenvolvimento local
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: O que aconteceu
+      description: E o que você esperava que acontecesse.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. Entre com uma conta nova
+        2. Abra ...
+        3. Toque em ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Ambiente
+      description: Navegador ou aparelho, sistema e versão, commit (se for local).
+  - type: markdown
+    attributes:
+      value: Não inclua senhas, tokens, e-mails ou outros dados pessoais. Em capturas de tela, esconda o que não for seu.

@@ -4,7 +4,14 @@ O Contraponha é uma plataforma social brasileira feita para conversas que valem
 
 Este repositório contém a fundação técnica do produto: a API, o app web, o app mobile (iOS e Android), os pacotes compartilhados e a infraestrutura de desenvolvimento.
 
-> **Estado atual:** fundação arquitetural. A API tem contas e autenticação completas (cadastro, login, sessões revogáveis, verificação de e-mail, redefinição e troca de senha, perfil), além de padrão de erros, logs, i18n e testes. O núcleo social também está pronto na API: posts (com janela de edição de 30 minutos e histórico), comentários com respostas, reações de qualidade e de concordância, e follows. Web e mobile consomem a API pelo cliente tipado e exibem uma tela inicial traduzida com o status da API; as telas de conta e de conteúdo vêm a seguir. Feed, moderação, busca e notificações são as próximas etapas.
+## O que já existe
+
+- **Contas:** cadastro com verificação humana (Cloudflare Turnstile), confirmação de e-mail, sessões revogáveis, troca e redefinição de senha, verificação em duas etapas (TOTP com códigos de recuperação) e exclusão de conta com prazo de 30 dias.
+- **Conversa:** posts com fontes, imagens e tópicos, edição por 30 minutos com histórico, contribuições com respostas, reações de qualidade, reposts e citações, pré-visualização de links e menções.
+- **Descoberta:** feed cronológico de quem você segue, Descobrir ordenado por bons argumentos, discussões em andamento, busca, tópicos e sugestões de pessoas.
+- **Segurança da comunidade:** denúncias, fila de moderação, contexto em posts, suspensões, bloquear e silenciar, limites de escrita por conta e selo de verificação concedido pela administração.
+- **Clientes:** web (Next.js), app iOS e Android (Expo) com push e links universais, e o hub de moderação e administração.
+- **Dados pessoais (LGPD):** consentimentos registrados, exportação dos seus dados e exclusão.
 
 ## Filosofia
 
@@ -69,6 +76,7 @@ pnpm install
 # 2. Configuração local (API, web e mobile)
 cp .env.example .env
 cp apps/web/.env.example apps/web/.env
+cp apps/hub/.env.example apps/hub/.env
 cp apps/mobile/.env.example apps/mobile/.env
 
 # 3. PostgreSQL, Redis, Mailpit e RustFS
@@ -77,7 +85,7 @@ docker compose up -d
 # 4. Migrations
 pnpm db:migrate
 
-# 5. API e web em modo desenvolvimento
+# 5. API, web e hub em modo desenvolvimento
 pnpm dev
 
 # 6. Mobile (em outro terminal; abre o Expo CLI interativo)
@@ -87,6 +95,7 @@ pnpm dev:mobile
 Com tudo no ar:
 
 - Web: <http://localhost:3001>
+- Hub (moderação e administração): <http://localhost:3002>
 - Liveness: <http://localhost:3000/api/v1/health/live>
 - Readiness (PostgreSQL + Redis): <http://localhost:3000/api/v1/health/ready>
 - Documentação OpenAPI: <http://localhost:3000/api/docs>
@@ -120,6 +129,7 @@ Todos os comandos rodam a partir da raiz.
 | `pnpm build`                 | Compila pacotes e apps (o mobile gera os bundles JS iOS/Android)                          |
 | `pnpm test`                  | Testes unitários (não precisam de Docker)                                                 |
 | `pnpm test:e2e`              | Testes de integração da API contra PostgreSQL, Redis e storage reais (`contraponha_test`) |
+| `pnpm test:browser`          | Testes de navegador do web e do hub (Playwright) e auditoria de acessibilidade (axe)      |
 | `pnpm lint`                  | ESLint com regras que usam informação de tipos                                            |
 | `pnpm lint:fix`              | ESLint corrigindo automaticamente o que for possível                                      |
 | `pnpm typecheck`             | Verificação de tipos em todo o monorepo                                                   |
@@ -138,6 +148,7 @@ Todos os comandos rodam a partir da raiz.
 contraponha/
 ├── apps/
 │   ├── api/                  API NestJS
+│   ├── browser-tests/        Testes de navegador do web e do hub (Playwright e axe)
 │   ├── hub/                  Moderação e administração (Next.js)
 │   ├── mobile/               App iOS/Android (Expo)
 │   └── web/                  App web (Next.js)
@@ -155,7 +166,8 @@ contraponha/
 │   └── web-ui/               Componentes e tokens visuais compartilhados por web e hub
 ├── docs/
 │   ├── architecture/         Visão geral, backend, domínios e i18n
-│   └── development/          Setup e fluxo de desenvolvimento
+│   ├── development/          Setup e fluxo de desenvolvimento
+│   └── operations/           Checklist de produção
 ├── .github/workflows/        CI
 └── docker-compose.yml        PostgreSQL, Redis, Mailpit e RustFS para desenvolvimento
 ```
@@ -174,9 +186,17 @@ contraponha/
 - [Moderação](docs/architecture/moderation.md): papéis, denúncias, suspensões, hub de administração e auditoria.
 - [Internacionalização](docs/architecture/i18n.md): como mensagens e idiomas funcionam.
 - [Frontends](docs/architecture/frontends.md): web, hub e mobile, e como usam os pacotes compartilhados.
+- [Acessibilidade](docs/architecture/accessibility.md): alvo WCAG 2.2 AA, auditoria automática e regras para componentes.
+- [Checklist de produção](docs/operations/production-checklist.md): variáveis, mídia, EAS e o primeiro admin.
 - [Setup de desenvolvimento](docs/development/setup.md): ambiente local, testes e banco de dados.
 - [Como contribuir](CONTRIBUTING.md).
 
 ## Contribuindo
 
-Leia o [CONTRIBUTING.md](CONTRIBUTING.md). Em resumo: branches curtas, commits convencionais, código em inglês, documentação em pt-BR e `pnpm lint && pnpm typecheck && pnpm test` passando antes de abrir um PR.
+Contribuições são bem-vindas. Leia o [CONTRIBUTING.md](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Em resumo: branches curtas, commits convencionais, código em inglês, documentação em pt-BR, textos de interface nos três idiomas e `pnpm lint && pnpm typecheck && pnpm test` passando antes de abrir um PR.
+
+Encontrou uma falha de segurança? Não abra uma issue: siga a [política de segurança](SECURITY.md).
+
+## Licença
+
+[GNU Affero General Public License v3.0](LICENSE). Você pode usar, estudar, modificar e redistribuir o código; se oferecer uma versão modificada como serviço pela rede, precisa disponibilizar o código-fonte dessa versão para quem a usa.
