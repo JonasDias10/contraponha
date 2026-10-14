@@ -1,8 +1,10 @@
-import { Injectable, Logger } from "@nestjs/common"
+import { Inject, Injectable, Logger } from "@nestjs/common"
 import { createTranslator } from "@contraponha/i18n"
 import type { PushPlatform } from "@contraponha/types"
 
+import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { PushSender, type PushMessage } from "#src/infrastructure/push/push-sender.js"
+import { RealtimeBus } from "#src/infrastructure/realtime/realtime-bus.js"
 import {
   NotificationsService,
   type DuePush,
@@ -27,6 +29,13 @@ export interface UnregisterPushTokenParams {
 interface BuildMessagesParams {
   due: DuePush[]
   tokensByUser: Map<string, string[]>
+  unreadByUser: Map<string, number>
+}
+
+interface PushToDevicesParams {
+  due: DuePush[]
+  recipientIds: string[]
+  unreadByUser: Map<string, number>
 }
 
 @Injectable()
@@ -37,6 +46,8 @@ export class PushService {
     private readonly pushTokens: PushTokensRepository,
     private readonly notifications: NotificationsService,
     private readonly sender: PushSender,
+    private readonly realtime: RealtimeBus,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
   register(params: RegisterPushTokenParams): Promise<void> {
@@ -53,14 +64,30 @@ export class PushService {
     return this.pushTokens.deleteForUser(userId)
   }
 
-  // Sends one batch and reports whether there may be more. A notification is claimed
-  // before sending, so a failed send is logged and not retried (no duplicate pushes).
+  // Delivers one batch of notifications that just became visible and reports whether there
+  // may be more: open apps hear about it over the realtime stream, phones get a push. A
+  // notification is claimed before sending, so a failed send is logged and not retried.
   async dispatchDue(): Promise<boolean> {
     const due = await this.notifications.claimDuePushes(DISPATCH_BATCH_SIZE)
 
     if (due.length === 0) return false
 
     const recipientIds = [...new Set(due.map(({ recipient }) => recipient.id))]
+    const unreadByUser = await this.unreadCounts(recipientIds)
+
+    for (const userId of recipientIds)
+      this.realtime.publishToUser({ userId, unreadCount: unreadByUser.get(userId) ?? 0 })
+
+    if (this.config.push.enabled) await this.pushToDevices({ due, recipientIds, unreadByUser })
+
+    return due.length === DISPATCH_BATCH_SIZE
+  }
+
+  private async pushToDevices({
+    due,
+    recipientIds,
+    unreadByUser,
+  }: PushToDevicesParams): Promise<void> {
     const tokens = await this.pushTokens.listForUsers(recipientIds)
 
     const tokensByUser = tokens.reduce((byUser, { userId, token }) => {
@@ -69,30 +96,29 @@ export class PushService {
       return byUser
     }, new Map<string, string[]>())
 
-    const messages = await this.buildMessages({ due, tokensByUser })
+    const messages = this.buildMessages({ due, tokensByUser, unreadByUser })
 
     if (messages.length > 0) await this.deliver(messages)
-
-    return due.length === DISPATCH_BATCH_SIZE
   }
 
-  private async buildMessages({ due, tokensByUser }: BuildMessagesParams): Promise<PushMessage[]> {
-    const withDevices = due.filter(({ recipient }) => tokensByUser.has(recipient.id))
-    const recipientIds = [...new Set(withDevices.map(({ recipient }) => recipient.id))]
-
-    const unreadCounts = await Promise.all(
-      recipientIds.map(async (id) => {
+  private async unreadCounts(userIds: readonly string[]): Promise<Map<string, number>> {
+    const counts = await Promise.all(
+      userIds.map(async (id) => {
         const { count } = await this.notifications.countUnread(id)
 
         return [id, count] as const
       }),
     )
 
-    const badgeByUser = new Map(unreadCounts)
+    return new Map(counts)
+  }
+
+  private buildMessages({ due, tokensByUser, unreadByUser }: BuildMessagesParams): PushMessage[] {
+    const withDevices = due.filter(({ recipient }) => tokensByUser.has(recipient.id))
 
     return withDevices.flatMap(({ recipient, notification }) => {
       const t = createTranslator({ locale: userLocale(recipient) })
-      const badge = badgeByUser.get(recipient.id) ?? 0
+      const badge = unreadByUser.get(recipient.id) ?? 0
 
       return (tokensByUser.get(recipient.id) ?? []).map((token) =>
         toPushMessage({ token, notification, badge, t }),

@@ -17,14 +17,21 @@ import {
   detectImageType,
   IMAGE_SIGNATURE_BYTES,
 } from "#src/modules/media/domain/image-signature.js"
+import { renderVariants } from "#src/modules/media/domain/image-variants.js"
 import { toMediaView, type MediaAsset } from "#src/modules/media/domain/media.js"
-import { MediaRepository } from "#src/modules/media/repositories/media.repository.js"
+import {
+  MediaRepository,
+  type ProcessedMediaData,
+} from "#src/modules/media/repositories/media.repository.js"
 
 const EXTENSION_BY_TYPE: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
 }
+
+// Variant keys are never reused, so CDNs and browsers can keep them forever.
+const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable"
 
 const PREFIX_BY_PURPOSE: Record<MediaPurpose, string> = {
   [MediaPurpose.POST]: "posts/",
@@ -71,9 +78,17 @@ export interface VerifyUploadsParams {
 }
 
 export interface AttachToPostParams {
-  mediaIds: readonly string[]
+  media: readonly ProcessedMedia[]
   postId: string
   executor?: DatabaseExecutor
+}
+
+export interface ProcessedMedia extends ProcessedMediaData {
+  originalKey: string
+}
+
+interface ProcessAssetParams {
+  asset: MediaAsset
 }
 
 export interface DetachFromPostParams {
@@ -124,7 +139,7 @@ export class MediaService {
 
   // Checks every upload before a post references it: owned by the author, still pending,
   // present in storage with the declared size, and really an image of the declared type.
-  async verifyUploads({ ownerId, mediaIds }: VerifyUploadsParams): Promise<void> {
+  private async verifyUploads({ ownerId, mediaIds }: VerifyUploadsParams): Promise<void> {
     if (mediaIds.length === 0) return
 
     const assets = await this.mediaRepository.findByIds(mediaIds)
@@ -170,8 +185,25 @@ export class MediaService {
     return this.mediaRepository.deleteProfilePhotos({ ownerId, executor })
   }
 
-  attachToPost({ mediaIds, postId, executor }: AttachToPostParams): Promise<void> {
-    return this.mediaRepository.attach({ mediaIds, postId, executor })
+  // Verifies the uploads and renders their variants before the post is written, so a post
+  // never shows an unprocessed image. Order follows mediaIds.
+  async prepareForPost({ ownerId, mediaIds }: VerifyUploadsParams): Promise<ProcessedMedia[]> {
+    await this.verifyUploads({ ownerId, mediaIds })
+
+    const assets = await this.mediaRepository.findByIds(mediaIds)
+    const byId = new Map(assets.map((asset) => [asset.id, asset]))
+    const ordered = mediaIds.flatMap((id) => byId.get(id) ?? [])
+
+    return Promise.all(ordered.map((asset) => this.processAsset({ asset })))
+  }
+
+  attachToPost({ media, postId, executor }: AttachToPostParams): Promise<void> {
+    return this.mediaRepository.attach({ media, postId, executor })
+  }
+
+  // After the post is committed: the originals still carry the camera's metadata.
+  async discardOriginals(media: readonly ProcessedMedia[]): Promise<void> {
+    await this.deleteStoredObjects(media.map(({ originalKey }) => originalKey))
   }
 
   async viewsForPosts(postIds: readonly string[]): Promise<Map<string, MediaView[]>> {
@@ -183,7 +215,7 @@ export class MediaService {
 
       const views = viewsByPost.get(asset.postId) ?? []
 
-      views.push(toMediaView({ asset, url: this.storage.publicUrl(asset.storageKey) }))
+      views.push(toMediaView({ asset, publicUrl: (key) => this.storage.publicUrl(key) }))
 
       viewsByPost.set(asset.postId, views)
     }
@@ -217,6 +249,39 @@ export class MediaService {
       asset.status === "pending" &&
       asset.storageKey.startsWith(PREFIX_BY_PURPOSE[purpose])
     )
+  }
+
+  private async processAsset({ asset }: ProcessAssetParams): Promise<ProcessedMedia> {
+    const original = await this.storage.read(asset.storageKey)
+
+    const image = await renderVariants(original).catch((error: unknown) => {
+      throw new AppError(ApiErrorCode.MEDIA_INVALID, { cause: error })
+    })
+
+    const base = asset.storageKey.replace(/\.[a-z]+$/, "")
+
+    const variants = await Promise.all(
+      image.variants.map(async ({ width, height, body }) => {
+        const key = `${base}-w${width}.webp`
+
+        await this.storage.put({
+          key,
+          body,
+          contentType: "image/webp",
+          cacheControl: IMMUTABLE_CACHE_CONTROL,
+        })
+
+        return { key, width, height }
+      }),
+    )
+
+    return {
+      id: asset.id,
+      width: image.width,
+      height: image.height,
+      variants,
+      originalKey: asset.storageKey,
+    }
   }
 
   private async isStoredImage(asset: MediaAsset): Promise<boolean> {

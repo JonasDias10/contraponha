@@ -6,6 +6,11 @@ export const MEDIA_MAX_PER_POST = 4
 export const MEDIA_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"] as const
 
 export const AVATAR_MAX_BYTES = 1024 * 1024
+
+// Post images are re-encoded to WebP at these widths (never enlarged); the largest one is
+// what opens full screen.
+export const MEDIA_VARIANT_WIDTHS = [640, 1600] as const
+export const MEDIA_VARIANT_QUALITY = 80
 export const AVATAR_SIZE_PX = 512
 
 export const REPORT_DETAILS_MAX_LENGTH = 1_000

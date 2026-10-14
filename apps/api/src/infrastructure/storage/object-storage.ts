@@ -24,6 +24,7 @@ export interface PutObjectParams {
   key: string
   body: string | Uint8Array
   contentType: string
+  cacheControl?: string
 }
 
 export interface CreateDownloadUrlParams {
@@ -44,6 +45,7 @@ export abstract class ObjectStorage {
   abstract createDownloadUrl(params: CreateDownloadUrlParams): Promise<string>
   abstract head(key: string): Promise<StoredObject | undefined>
   abstract readPrefix(params: ReadObjectPrefixParams): Promise<Uint8Array>
+  abstract read(key: string): Promise<Uint8Array>
   abstract delete(keys: readonly string[]): Promise<void>
   abstract publicUrl(key: string): string
 }

@@ -1,13 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common"
 import {
   comments,
-  reactions,
-  REACTION_COUNT_FIELDS,
   type CommunityRuleValue,
   type ContentSourceValue,
   type Database,
   type DatabaseExecutor,
+  isVisibleAuthor,
+  REACTION_COUNT_FIELDS,
   type ReactionKindValue,
+  reactions,
 } from "@contraponha/database"
 import type { ContentRemoval } from "@contraponha/types"
 import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm"
@@ -29,18 +30,21 @@ export interface CreateCommentParams {
 }
 
 export interface ListTopLevelByRecencyParams {
+  viewerId: string | undefined
   postId: string
   beforeId: string | undefined
   limit: number
 }
 
 export interface ListTopLevelByRelevanceParams {
+  viewerId: string | undefined
   postId: string
   offset: number
   limit: number
 }
 
 export interface ListRepliesParams {
+  viewerId: string | undefined
   parentId: string
   afterId: string | undefined
   limit: number
@@ -132,6 +136,7 @@ export class CommentsRepository {
 
   listTopLevelByRecency({
     postId,
+    viewerId,
     beforeId,
     limit,
   }: ListTopLevelByRecencyParams): Promise<Comment[]> {
@@ -143,6 +148,7 @@ export class CommentsRepository {
           eq(comments.postId, postId),
           isNull(comments.parentId),
           isListedTopLevel,
+          isVisibleAuthor({ column: comments.authorId, viewerId }),
           beforeId ? lt(comments.id, beforeId) : undefined,
         ),
       )
@@ -153,13 +159,21 @@ export class CommentsRepository {
   // Highlighted contributions first, then the ones that moved the conversation the most.
   listTopLevelByRelevance({
     postId,
+    viewerId,
     offset,
     limit,
   }: ListTopLevelByRelevanceParams): Promise<Comment[]> {
     return this.db
       .select()
       .from(comments)
-      .where(and(eq(comments.postId, postId), isNull(comments.parentId), isListedTopLevel))
+      .where(
+        and(
+          eq(comments.postId, postId),
+          isNull(comments.parentId),
+          isListedTopLevel,
+          isVisibleAuthor({ column: comments.authorId, viewerId }),
+        ),
+      )
       .orderBy(
         sql`${comments.highlightedAt} desc nulls last`,
         desc(relevanceScore),
@@ -169,7 +183,7 @@ export class CommentsRepository {
       .limit(limit)
   }
 
-  listReplies({ parentId, afterId, limit }: ListRepliesParams): Promise<Comment[]> {
+  listReplies({ parentId, viewerId, afterId, limit }: ListRepliesParams): Promise<Comment[]> {
     return this.db
       .select()
       .from(comments)
@@ -177,6 +191,7 @@ export class CommentsRepository {
         and(
           eq(comments.parentId, parentId),
           isNull(comments.deletedAt),
+          isVisibleAuthor({ column: comments.authorId, viewerId }),
           afterId ? gt(comments.id, afterId) : undefined,
         ),
       )

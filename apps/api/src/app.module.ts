@@ -1,6 +1,7 @@
 import { Module, type DynamicModule } from "@nestjs/common"
 import { APP_FILTER, APP_GUARD } from "@nestjs/core"
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler"
+import { SentryModule } from "@sentry/nestjs/setup"
 import { LoggerModule } from "nestjs-pino"
 
 import { AllExceptionsFilter } from "#src/common/errors/all-exceptions.filter.js"
@@ -10,7 +11,9 @@ import type { AppConfig } from "#src/config/app-config.js"
 import { ConfigModule } from "#src/config/config.module.js"
 import { DatabaseModule } from "#src/infrastructure/database/database.module.js"
 import { EmailModule } from "#src/infrastructure/email/email.module.js"
+import { HttpInfrastructureModule } from "#src/infrastructure/http/http.module.js"
 import { PushModule as PushInfrastructureModule } from "#src/infrastructure/push/push.module.js"
+import { RealtimeInfrastructureModule } from "#src/infrastructure/realtime/realtime.module.js"
 import { RedisModule } from "#src/infrastructure/redis/redis.module.js"
 import { StorageModule } from "#src/infrastructure/storage/storage.module.js"
 import { AccountsModule } from "#src/modules/accounts/accounts.module.js"
@@ -29,6 +32,8 @@ import { PeopleModule } from "#src/modules/people/people.module.js"
 import { PostsModule } from "#src/modules/posts/posts.module.js"
 import { PushModule } from "#src/modules/push/push.module.js"
 import { ReactionsModule } from "#src/modules/reactions/reactions.module.js"
+import { RealtimeModule } from "#src/modules/realtime/realtime.module.js"
+import { RelationsModule } from "#src/modules/relations/relations.module.js"
 import { SearchModule } from "#src/modules/search/search.module.js"
 import { TopicsModule } from "#src/modules/topics/topics.module.js"
 import { UsersModule } from "#src/modules/users/users.module.js"
@@ -39,12 +44,15 @@ export class AppModule {
     return {
       module: AppModule,
       imports: [
+        SentryModule.forRoot(),
         ConfigModule.forRoot(config),
         LoggerModule.forRoot(buildLoggerParams(config)),
         ThrottlerModule.forRoot(buildThrottlers(config)),
         DatabaseModule,
         RedisModule,
+        RealtimeInfrastructureModule,
         EmailModule,
+        HttpInfrastructureModule,
         PushInfrastructureModule,
         StorageModule,
         HealthModule,
@@ -55,6 +63,8 @@ export class AppModule {
         CommentsModule,
         ReactionsModule,
         FollowsModule,
+        RelationsModule,
+        RealtimeModule,
         MediaModule,
         NotificationsModule,
         PushModule,

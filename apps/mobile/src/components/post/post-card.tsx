@@ -1,13 +1,15 @@
 import { readingMinutes, topicLabel } from "@contraponha/client-core"
 import { useReactions } from "@contraponha/client-core/react"
-import type { FeedReason, PostView } from "@contraponha/types"
+import type { FeedReason, PostView, PublicProfile } from "@contraponha/types"
 import { router } from "expo-router"
-import { History, Info, Pin } from "lucide-react-native"
+import { History, Info, Pin, Repeat2 } from "lucide-react-native"
 import { Pressable, StyleSheet, View } from "react-native"
 
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
+import { LinkPreviewCard } from "@/components/post/link-preview-card"
 import { MediaGrid } from "@/components/post/media-grid"
+import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import { PostActions } from "@/components/post/post-actions"
 import { PostMenu } from "@/components/post/post-menu"
 import { ReactionSummary } from "@/components/post/reaction-bar"
@@ -27,6 +29,7 @@ const CARD_LINES = 8
 export interface PostCardProps {
   post: PostView
   reason?: FeedReason | null
+  repostedBy?: PublicProfile | null
   highlight?: string | null
 }
 
@@ -47,7 +50,12 @@ function MetaLine({ icon, text }: MetaLineProps): React.JSX.Element {
 }
 
 // The feed reads like a magazine: a flat card where the text takes most of the space.
-export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.Element {
+export function PostCard({
+  post,
+  reason,
+  repostedBy,
+  highlight,
+}: PostCardProps): React.JSX.Element {
   const { t } = useI18n()
   const palette = usePalette()
 
@@ -74,6 +82,12 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
 
   return (
     <Card style={styles.card}>
+      {repostedBy ? (
+        <MetaLine
+          icon={<Repeat2 size={14} color={palette.subtle} />}
+          text={t("web.repost.repostedBy", { name: repostedBy.displayName })}
+        />
+      ) : null}
       {reason ? (
         <MetaLine
           icon={<Info size={14} color={palette.subtle} />}
@@ -121,7 +135,11 @@ export function PostCard({ post, reason, highlight }: PostCardProps): React.JSX.
         ) : null}
       </Pressable>
       <MediaGrid media={post.media} />
-      {firstSource ? <SourceCard source={firstSource} /> : null}
+      {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
+      {post.linkPreview ? <LinkPreviewCard preview={post.linkPreview} /> : null}
+      {firstSource && firstSource.url !== post.linkPreview?.url ? (
+        <SourceCard source={firstSource} />
+      ) : null}
       <ReactionSummary counts={reactions.counts} commentCount={post.commentCount} />
       <PostActions post={post} reactions={reactions} />
     </Card>

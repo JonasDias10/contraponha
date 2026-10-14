@@ -15,6 +15,7 @@ import {
   type Page,
   type PostSummary,
   type PostView,
+  type QuotedPostView,
   type PostViewerState,
   type ReactionKind,
 } from "@contraponha/types"
@@ -27,6 +28,9 @@ import {
   type SourceInput,
 } from "#src/common/content/sources.js"
 import { AppError } from "#src/common/errors/app-error.js"
+import { RealtimeBus } from "#src/infrastructure/realtime/realtime-bus.js"
+import { previewUrlOf } from "#src/modules/link-previews/domain/preview-url.js"
+import { LinkPreviewsService } from "#src/modules/link-previews/services/link-previews.service.js"
 import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { MediaService } from "#src/modules/media/services/media.service.js"
@@ -36,6 +40,7 @@ import {
   isActivePost,
   toContentRevision,
   toPostSummary,
+  toQuotedPostView,
   toPostView,
   type ActivePost,
   type Post,
@@ -43,7 +48,9 @@ import {
 import { PostContextRepository } from "#src/modules/posts/repositories/post-context.repository.js"
 import { PostRevisionsRepository } from "#src/modules/posts/repositories/post-revisions.repository.js"
 import { PostsRepository } from "#src/modules/posts/repositories/posts.repository.js"
+import { RepostsRepository } from "#src/modules/posts/repositories/reposts.repository.js"
 import { TopicsService } from "#src/modules/topics/services/topics.service.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const postCursorSchema = z.object({ id: z.uuid() })
@@ -56,6 +63,26 @@ export interface CreatePostParams {
   topics: readonly string[]
   replyPolicy: ReplyPolicy
   mediaIds: readonly string[]
+  quotedPostId: string | null
+}
+
+interface RecordQuoteParams {
+  quoted: Post
+  quoteId: string
+  authorId: string
+  executor: DatabaseExecutor
+}
+
+interface HiddenAuthorsParams {
+  rows: readonly Post[]
+  viewerId: string | undefined
+}
+
+export interface ListQuotesRequest {
+  postId: string
+  viewerId: string | undefined
+  cursor?: string
+  limit: number
 }
 
 export interface PostViewParams {
@@ -171,12 +198,21 @@ export class PostsService {
     private readonly mediaService: MediaService,
     private readonly topicsService: TopicsService,
     private readonly notificationsService: NotificationsService,
+    private readonly relations: UserRelationsService,
+    private readonly realtime: RealtimeBus,
+    private readonly repostsRepository: RepostsRepository,
+    private readonly linkPreviews: LinkPreviewsService,
   ) {}
 
   async create(params: CreatePostParams): Promise<PostView> {
     const { authorId, mediaIds } = params
 
-    await this.mediaService.verifyUploads({ ownerId: authorId, mediaIds })
+    const quoted = params.quotedPostId ? await this.getActivePost(params.quotedPostId) : undefined
+
+    if (quoted)
+      await this.relations.assertCanInteract({ actorId: authorId, targetId: quoted.authorId })
+
+    const media = await this.mediaService.prepareForPost({ ownerId: authorId, mediaIds })
 
     const post = await runTransaction({
       db: this.db,
@@ -188,11 +224,14 @@ export class PostsService {
             body: params.body,
             sources: toSourceValues(params.sources),
             replyPolicy: params.replyPolicy,
+            quotedPostId: quoted?.id ?? null,
           },
           executor: tx,
         })
 
-        await this.mediaService.attachToPost({ mediaIds, postId: created.id, executor: tx })
+        if (quoted) await this.recordQuote({ quoted, quoteId: created.id, authorId, executor: tx })
+
+        await this.mediaService.attachToPost({ media, postId: created.id, executor: tx })
 
         const topics = await this.topicsService.resolveForPost({
           names: params.topics,
@@ -215,6 +254,12 @@ export class PostsService {
       },
     })
 
+    await this.mediaService.discardOriginals(media)
+
+    this.realtime.publishPost({ postId: post.id, authorId })
+
+    this.linkPreviews.refreshInBackground(previewUrlOf(post))
+
     return this.requireView({ post, viewerId: authorId })
   }
 
@@ -234,6 +279,11 @@ export class PostsService {
     viewerId,
   }: ListPostsByHandleParams): Promise<Page<PostView>> {
     const author = await this.usersService.getByHandle(handle)
+
+    const isBlocked = await this.relations.isBlockedBetween({ viewerId, userId: author.id })
+
+    if (isBlocked) return { items: [], nextCursor: null }
+
     const position = decodeCursor({ cursor, schema: postCursorSchema })
     const pinned = await this.postsRepository.findPinnedByAuthor(author.id)
 
@@ -264,6 +314,12 @@ export class PostsService {
     const topics = await this.topicsService.summariesForPosts(postIds)
     const revisionCounts = await this.revisionsRepository.countByPosts(postIds)
     const contextNotes = await this.contextNotesFor(postIds)
+    const quotedPosts = await this.quotedPostsFor(rows)
+    const previewUrls = new Map(rows.map((post) => [post.id, previewUrlOf(post)]))
+
+    const previews = await this.linkPreviews.viewsFor(
+      [...previewUrls.values()].filter((url): url is string => url !== null),
+    )
 
     const viewerStates = viewerId
       ? await this.viewerStates({ rows, viewerId })
@@ -277,9 +333,33 @@ export class PostsService {
         topics: topics.get(post.id) ?? [],
         contextNote: contextNotes.get(post.id) ?? null,
         revisionCount: revisionCounts.get(post.id) ?? 0,
+        quotedPost: post.quotedPostId ? (quotedPosts.get(post.quotedPostId) ?? null) : null,
+        linkPreview: previews.get(previewUrls.get(post.id) ?? "") ?? null,
         viewer: viewerStates.get(post.id) ?? null,
       }),
     )
+  }
+
+  async listQuotes({
+    postId,
+    viewerId,
+    cursor,
+    limit,
+  }: ListQuotesRequest): Promise<Page<PostView>> {
+    await this.assertExists(postId)
+
+    const position = decodeCursor({ cursor, schema: postCursorSchema })
+
+    const rows = await this.postsRepository.listQuotes({
+      postId,
+      beforeId: position?.id,
+      limit: limit + 1,
+    })
+
+    const visible = await this.withoutHiddenAuthors({ rows, viewerId })
+    const views = await this.buildViews({ rows: visible, viewerId })
+
+    return buildPage({ rows: views, limit, toItem: (view) => view, toCursor: ({ id }) => ({ id }) })
   }
 
   findByIds(postIds: readonly string[]): Promise<Post[]> {
@@ -329,6 +409,8 @@ export class PostsService {
     })
 
     if (!updated) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
+
+    this.linkPreviews.refreshInBackground(previewUrlOf(updated))
 
     return this.requireView({ post: updated, viewerId: userId })
   }
@@ -505,6 +587,7 @@ export class PostsService {
     const postIds = rows.map(({ id }) => id)
     const reactionRows = await this.contextRepository.listViewerReactions({ viewerId, postIds })
     const bookmarked = await this.contextRepository.listViewerBookmarks({ viewerId, postIds })
+    const reposted = await this.repostsRepository.repostedAmong({ userId: viewerId, postIds })
 
     const authorsFollowingViewer = await this.contextRepository.listAuthorsFollowingViewer({
       viewerId,
@@ -522,6 +605,7 @@ export class PostsService {
         {
           reactions: reactionsByPost.get(post.id) ?? [],
           isBookmarked: bookmarked.has(post.id),
+          hasReposted: reposted.has(post.id),
           canReply:
             isActivePost(post) &&
             (post.replyPolicy === ReplyPolicy.EVERYONE ||
@@ -553,6 +637,15 @@ export class PostsService {
 
     await this.usersService.adjustPostCount({ id: post.authorId, delta: -1, executor })
 
+    if (post.quotedPostId) {
+      await this.postsRepository.incrementShareCount({
+        id: post.quotedPostId,
+        counter: "quoteCount",
+        delta: -1,
+        executor,
+      })
+    }
+
     const storageKeysToDelete = await this.mediaService.detachFromPost({
       postId: post.id,
       executor,
@@ -567,5 +660,57 @@ export class PostsService {
     if (post.authorId !== userId) throw new AppError(ApiErrorCode.FORBIDDEN)
 
     return post
+  }
+
+  private async recordQuote({
+    quoted,
+    quoteId,
+    authorId,
+    executor,
+  }: RecordQuoteParams): Promise<void> {
+    await this.postsRepository.incrementShareCount({
+      id: quoted.id,
+      counter: "quoteCount",
+      delta: 1,
+      executor,
+    })
+
+    await this.notificationsService.notify({
+      recipientId: quoted.authorId,
+      actorId: authorId,
+      type: "post_quoted",
+      postId: quoteId,
+      executor,
+    })
+  }
+
+  private async quotedPostsFor(rows: readonly Post[]): Promise<Map<string, QuotedPostView>> {
+    const quotedIds = [
+      ...new Set(rows.flatMap(({ quotedPostId }) => (quotedPostId ? [quotedPostId] : []))),
+    ]
+
+    if (quotedIds.length === 0) return new Map()
+
+    const quoted = await this.postsRepository.findByIds(quotedIds)
+    const authors = await this.usersService.findByIds(quoted.map(({ authorId }) => authorId))
+
+    return new Map(
+      quoted.map((post) => [
+        post.id,
+        toQuotedPostView({ post, author: authors.get(post.authorId) }),
+      ]),
+    )
+  }
+
+  private async withoutHiddenAuthors({ rows, viewerId }: HiddenAuthorsParams): Promise<Post[]> {
+    if (!viewerId) return [...rows]
+
+    const checks = await Promise.all(
+      rows.map((post) =>
+        this.relations.isNotificationAllowed({ recipientId: viewerId, actorId: post.authorId }),
+      ),
+    )
+
+    return rows.filter((_post, index) => checks[index] === true)
   }
 }

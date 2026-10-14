@@ -33,6 +33,7 @@ import {
   type SavePreferencesParams,
 } from "#src/modules/notifications/repositories/notifications.repository.js"
 import type { User } from "#src/modules/users/domain/user.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const notificationCursorSchema = z.object({ visibleAt: z.iso.datetime(), id: z.uuid() })
@@ -94,15 +95,27 @@ export class NotificationsService {
     @Inject(DATABASE) private readonly db: Database,
     private readonly notificationsRepository: NotificationsRepository,
     private readonly usersService: UsersService,
+    private readonly relations: UserRelationsService,
   ) {}
 
   // Called inside the transaction of the action being notified, so a rolled-back comment,
   // reaction or follow never leaves a notification behind. Nobody is notified of their own
   // actions, switched-off types are skipped and digest hours set when it becomes visible.
+  // Blocks (either way) and the recipient's mutes silence the actor.
   async notify(params: NotifyParams): Promise<void> {
     const { recipientId, actorId, type, executor } = params
 
     if (recipientId === actorId) return
+
+    if (actorId) {
+      const isAllowed = await this.relations.isNotificationAllowed({
+        recipientId,
+        actorId,
+        executor,
+      })
+
+      if (!isAllowed) return
+    }
 
     // Read through the caller's transaction: a second pooled connection per transaction
     // would exhaust the pool under load.

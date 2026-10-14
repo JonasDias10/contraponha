@@ -17,6 +17,7 @@ import {
   ReactionsRepository,
   type ReactionTarget,
 } from "#src/modules/reactions/repositories/reactions.repository.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 
 export interface ReactParams {
   target: ReactionTarget
@@ -64,10 +65,13 @@ export class ReactionsService {
     private readonly postsService: PostsService,
     private readonly commentsService: CommentsService,
     private readonly notificationsService: NotificationsService,
+    private readonly relations: UserRelationsService,
   ) {}
 
   async react({ target, userId, kind }: ReactParams): Promise<void> {
     const authorId = await this.ensureTargetIsActive(target)
+
+    await this.relations.assertCanInteract({ actorId: userId, targetId: authorId })
 
     await runTransaction({
       db: this.db,

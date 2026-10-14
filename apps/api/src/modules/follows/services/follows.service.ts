@@ -19,6 +19,7 @@ import {
 } from "#src/modules/follows/repositories/follows.repository.js"
 import { NotificationsService } from "#src/modules/notifications/services/notifications.service.js"
 import { toPublicProfile, type User } from "#src/modules/users/domain/user.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const followCursorSchema = z.object({ createdAt: z.iso.datetime(), userId: z.uuid() })
@@ -37,6 +38,12 @@ export interface ListConnectionsByHandleParams {
 export interface FollowedAmongRequest {
   followerId: string
   userIds: readonly string[]
+}
+
+export interface SeverFollowsParams {
+  userId: string
+  otherId: string
+  executor: DatabaseExecutor
 }
 
 export interface PurgeFollowsParams {
@@ -60,6 +67,7 @@ export class FollowsService {
     private readonly followsRepository: FollowsRepository,
     private readonly usersService: UsersService,
     private readonly notificationsService: NotificationsService,
+    private readonly relations: UserRelationsService,
   ) {}
 
   // Account deletion: removes every follow in both directions and keeps the other
@@ -78,6 +86,8 @@ export class FollowsService {
     const followee = await this.usersService.getByHandle(handle)
 
     if (followee.id === followerId) throw new AppError(ApiErrorCode.SELF_FOLLOW_NOT_ALLOWED)
+
+    await this.relations.assertCanInteract({ actorId: followerId, targetId: followee.id })
 
     await runTransaction({
       db: this.db,
@@ -107,6 +117,20 @@ export class FollowsService {
     })
   }
 
+  // Blocking: removes the follow in both directions, keeping both people's counters exact.
+  async severBetween({ userId, otherId, executor }: SeverFollowsParams): Promise<void> {
+    const pairs = [
+      { followerId: userId, followeeId: otherId },
+      { followerId: otherId, followeeId: userId },
+    ]
+
+    for (const pair of pairs) {
+      const isRemoved = await this.followsRepository.remove({ ...pair, executor })
+
+      if (isRemoved) await this.usersService.adjustFollowCounts({ ...pair, delta: -1, executor })
+    }
+  }
+
   async unfollow({ followerId, handle }: FollowByHandleParams): Promise<void> {
     const followee = await this.usersService.getByHandle(handle)
 
@@ -129,6 +153,10 @@ export class FollowsService {
         }
       },
     })
+  }
+
+  listFolloweeIds(followerId: string): Promise<string[]> {
+    return this.followsRepository.listFolloweeIds(followerId)
   }
 
   async followedAmong({ followerId, userIds }: FollowedAmongRequest): Promise<FollowedAmong> {

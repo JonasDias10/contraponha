@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common"
+import { UsersModule } from "#src/modules/users/users.module.js"
 
 import { CommentsModule } from "#src/modules/comments/comments.module.js"
 import { NotificationsModule } from "#src/modules/notifications/notifications.module.js"
@@ -8,7 +9,7 @@ import { ReactionsRepository } from "#src/modules/reactions/repositories/reactio
 import { ReactionsService } from "#src/modules/reactions/services/reactions.service.js"
 
 @Module({
-  imports: [PostsModule, CommentsModule, NotificationsModule],
+  imports: [PostsModule, CommentsModule, NotificationsModule, UsersModule],
   controllers: [ReactionsController],
   providers: [ReactionsRepository, ReactionsService],
   exports: [ReactionsService],

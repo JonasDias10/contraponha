@@ -28,6 +28,15 @@ export const mediaViewSchema = z.object({
   url: z.url(),
   mimeType: z.string(),
   sizeBytes: z.number().int().positive(),
+  width: z.number().int().positive().nullable(),
+  height: z.number().int().positive().nullable(),
+  variants: z.array(
+    z.object({
+      url: z.url(),
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+    }),
+  ),
 }) satisfies z.ZodType<MediaView>
 
 export const mediaUploadTicketSchema = z.object({

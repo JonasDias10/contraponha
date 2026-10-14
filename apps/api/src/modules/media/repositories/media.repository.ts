@@ -1,5 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { mediaAssets, type Database, type DatabaseExecutor } from "@contraponha/database"
+import {
+  mediaAssets,
+  type Database,
+  type DatabaseExecutor,
+  type MediaVariantValue,
+} from "@contraponha/database"
 import { and, asc, eq, inArray } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -12,8 +17,15 @@ export interface CreateMediaAssetData {
   sizeBytes: number
 }
 
+export interface ProcessedMediaData {
+  id: string
+  width: number
+  height: number
+  variants: MediaVariantValue[]
+}
+
 export interface AttachMediaParams {
-  mediaIds: readonly string[]
+  media: readonly ProcessedMediaData[]
   postId: string
   executor?: DatabaseExecutor
 }
@@ -38,6 +50,17 @@ export interface MarkAsProfilePhotoParams {
   executor: DatabaseExecutor
 }
 
+interface StoredKeysRow {
+  storageKey: string
+  variants: MediaVariantValue[] | null
+}
+
+// Every object an asset may have in storage: the original (already gone once processed,
+// deleting it again is harmless) and its variants.
+function storedKeys({ storageKey, variants }: StoredKeysRow): string[] {
+  return [storageKey, ...(variants ?? []).map(({ key }) => key)]
+}
+
 @Injectable()
 export class MediaRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
@@ -59,11 +82,19 @@ export class MediaRepository {
       .where(inArray(mediaAssets.id, [...ids]))
   }
 
-  async attach({ mediaIds, postId, executor = this.db }: AttachMediaParams): Promise<void> {
-    for (const [position, id] of mediaIds.entries()) {
+  async attach({ media, postId, executor = this.db }: AttachMediaParams): Promise<void> {
+    for (const [position, { id, width, height, variants }] of media.entries()) {
       await executor
         .update(mediaAssets)
-        .set({ postId, position, status: "attached", attachedAt: new Date() })
+        .set({
+          postId,
+          position,
+          status: "attached",
+          attachedAt: new Date(),
+          width,
+          height,
+          variants,
+        })
         .where(and(eq(mediaAssets.id, id), eq(mediaAssets.status, "pending")))
     }
   }
@@ -82,27 +113,27 @@ export class MediaRepository {
     const deleted = await executor
       .delete(mediaAssets)
       .where(eq(mediaAssets.postId, postId))
-      .returning({ storageKey: mediaAssets.storageKey })
+      .returning({ storageKey: mediaAssets.storageKey, variants: mediaAssets.variants })
 
-    return deleted.map(({ storageKey }) => storageKey)
+    return deleted.flatMap(storedKeys)
   }
 
   async deleteForOwner({ ownerId, executor }: DeleteMediaForOwnerParams): Promise<string[]> {
     const removed = await executor
       .delete(mediaAssets)
       .where(eq(mediaAssets.ownerId, ownerId))
-      .returning({ storageKey: mediaAssets.storageKey })
+      .returning({ storageKey: mediaAssets.storageKey, variants: mediaAssets.variants })
 
-    return removed.map(({ storageKey }) => storageKey)
+    return removed.flatMap(storedKeys)
   }
 
   async deleteProfilePhotos({ ownerId, executor }: DeleteProfilePhotosParams): Promise<string[]> {
     const removed = await executor
       .delete(mediaAssets)
       .where(and(eq(mediaAssets.ownerId, ownerId), eq(mediaAssets.status, "profile")))
-      .returning({ storageKey: mediaAssets.storageKey })
+      .returning({ storageKey: mediaAssets.storageKey, variants: mediaAssets.variants })
 
-    return removed.map(({ storageKey }) => storageKey)
+    return removed.flatMap(storedKeys)
   }
 
   async markAsProfilePhoto({

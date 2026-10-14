@@ -1,5 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common"
-import { comments, follows, posts, users, type Database, type UserRow } from "@contraponha/database"
+import {
+  comments,
+  type Database,
+  follows,
+  isVisibleAuthor,
+  posts,
+  type UserRow,
+  users,
+} from "@contraponha/database"
 import { SearchSort } from "@contraponha/types"
 import {
   and,
@@ -26,6 +34,7 @@ import {
 
 export interface SearchParams {
   query: string
+  viewerId: string | undefined
   offset: number
   limit: number
 }
@@ -73,7 +82,7 @@ function authoredByFollowed({ authorColumn, userId }: AuthoredByFollowedParams):
 export class SearchRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
-  searchUsers({ query, offset, limit }: SearchParams): Promise<UserRow[]> {
+  searchUsers({ query, viewerId, offset, limit }: SearchParams): Promise<UserRow[]> {
     const pattern = escapeLikePattern(query)
     const similarity = sql`greatest(similarity(${users.handle}, ${query}), similarity(${users.displayName}, ${query}))`
 
@@ -83,6 +92,7 @@ export class SearchRepository {
       .where(
         and(
           isNull(users.deletedAt),
+          isVisibleAuthor({ column: users.id, viewerId }),
           or(
             sql`${users.handle} % ${query}`,
             sql`${users.displayName} % ${query}`,
@@ -99,7 +109,13 @@ export class SearchRepository {
 
   // "Relevant" weighs text match by the quality reactions the post received; popularity
   // and follower counts play no part.
-  searchPosts({ query, offset, limit, filters }: ContentSearchParams): Promise<PostSearchRow[]> {
+  searchPosts({
+    query,
+    viewerId,
+    offset,
+    limit,
+    filters,
+  }: ContentSearchParams): Promise<PostSearchRow[]> {
     const tsQuery = tsQueryFor(query)
     const quality = sql`ln(2 + 3 * ${posts.goodArgumentCount} + 3 * ${posts.changedMyMindCount} + 2 * ${posts.insightfulCount})`
     const document = sql`coalesce(${posts.title}, '') || ' — ' || coalesce(${posts.body}, '')`
@@ -115,6 +131,7 @@ export class SearchRepository {
       .where(
         and(
           isNull(posts.deletedAt),
+          isVisibleAuthor({ column: posts.authorId, viewerId }),
           sql`${posts.searchVector} @@ ${tsQuery}`,
           filters.since ? gt(posts.createdAt, filters.since) : undefined,
           filters.hasSource ? sql`jsonb_array_length(${posts.sources}) > 0` : undefined,
@@ -135,6 +152,7 @@ export class SearchRepository {
 
   searchComments({
     query,
+    viewerId,
     offset,
     limit,
     filters,
@@ -155,6 +173,7 @@ export class SearchRepository {
         and(
           isNull(comments.deletedAt),
           isNull(posts.deletedAt),
+          isVisibleAuthor({ column: comments.authorId, viewerId }),
           sql`${comments.searchVector} @@ ${tsQuery}`,
           filters.since ? gt(comments.createdAt, filters.since) : undefined,
           filters.hasSource ? sql`jsonb_array_length(${comments.sources}) > 0` : undefined,

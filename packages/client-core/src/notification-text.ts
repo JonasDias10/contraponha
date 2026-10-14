@@ -7,6 +7,7 @@ const GROUPED_TYPES = new Set([
   "comment_reacted",
   "user_followed",
   "source_requested",
+  "post_reposted",
 ])
 
 export interface NotificationTextParams {
@@ -77,6 +78,12 @@ export function notificationText({ notification, t }: NotificationTextParams): s
       return t("web.notifications.mentioned", { actors })
     case "comment_highlighted":
       return t("web.notifications.comment_highlighted", { actors })
+    case "post_reposted":
+      return isMany
+        ? t("web.notifications.post_reposted_many", { actors })
+        : t("web.notifications.post_reposted", { actors })
+    case "post_quoted":
+      return t("web.notifications.post_quoted", { actors })
   }
 }
 

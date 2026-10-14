@@ -81,7 +81,9 @@ async function fixPostCounts({ tx, ids }: FixBatchParams): Promise<number> {
       good_argument_count = c.good_argument,
       insightful_count = c.insightful,
       changed_my_mind_count = c.changed_my_mind,
-      needs_source_count = c.needs_source
+      needs_source_count = c.needs_source,
+      repost_count = c.reposts,
+      quote_count = c.quotes
     from (
       select
         target.id,
@@ -90,7 +92,9 @@ async function fixPostCounts({ tx, ids }: FixBatchParams): Promise<number> {
         count(r.id) filter (where r.kind = 'good_argument')::int as good_argument,
         count(r.id) filter (where r.kind = 'insightful')::int as insightful,
         count(r.id) filter (where r.kind = 'changed_my_mind')::int as changed_my_mind,
-        count(r.id) filter (where r.kind = 'needs_source')::int as needs_source
+        count(r.id) filter (where r.kind = 'needs_source')::int as needs_source,
+        (select count(*) from reposts rp where rp.post_id = target.id)::int as reposts,
+        (select count(*) from posts q where q.quoted_post_id = target.id and q.deleted_at is null)::int as quotes
       from unnest(${idArray(ids)}) as target(id)
       left join reactions r on r.post_id = target.id
       group by target.id
@@ -103,6 +107,8 @@ async function fixPostCounts({ tx, ids }: FixBatchParams): Promise<number> {
         or p.changed_my_mind_count <> c.changed_my_mind
         or p.needs_source_count <> c.needs_source
         or p.highlighted_comment_count <> c.highlighted
+        or p.repost_count <> c.reposts
+        or p.quote_count <> c.quotes
       )
   `)
 

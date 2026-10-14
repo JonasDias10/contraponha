@@ -22,7 +22,7 @@ export function SavedPosts(): React.JSX.Element {
         load={async (cursor) => {
           const page = await api.posts.listBookmarks({ cursor })
           return {
-            items: page.items.map((post) => ({ post, reason: null })),
+            items: page.items.map((post) => ({ post, reason: null, repostedBy: null })),
             nextCursor: page.nextCursor,
           }
         }}

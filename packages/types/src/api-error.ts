@@ -21,6 +21,7 @@ export const ApiErrorCode = {
   REPLIES_RESTRICTED: "REPLIES_RESTRICTED",
   DATA_EXPORT_IN_PROGRESS: "DATA_EXPORT_IN_PROGRESS",
   ACCOUNT_SUSPENDED: "ACCOUNT_SUSPENDED",
+  INTERACTION_BLOCKED: "INTERACTION_BLOCKED",
 } as const
 
 export type ApiErrorCode = (typeof ApiErrorCode)[keyof typeof ApiErrorCode]

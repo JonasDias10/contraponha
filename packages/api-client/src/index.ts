@@ -24,12 +24,18 @@ export type {
   ResolveReportRequest,
 } from "./resources/moderation.js"
 export type { NotificationsResource } from "./resources/notifications.js"
-export type { ListUserPostsRequest, PostsResource, UpdatePostRequest } from "./resources/posts.js"
+export type {
+  ListQuotesRequest,
+  ListUserPostsRequest,
+  PostsResource,
+  UpdatePostRequest,
+} from "./resources/posts.js"
 export type {
   ListMyReactionsRequest,
   ReactionRequest,
   ReactionsResource,
 } from "./resources/reactions.js"
+export type { RelationsResource } from "./resources/relations.js"
 export type { SearchResource } from "./resources/search.js"
 export type { TopicsResource } from "./resources/topics.js"
 export type { UsersResource } from "./resources/users.js"

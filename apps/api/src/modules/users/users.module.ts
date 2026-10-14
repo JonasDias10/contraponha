@@ -6,6 +6,8 @@ import { ConsentsRepository } from "#src/modules/users/repositories/consents.rep
 import { UsersRepository } from "#src/modules/users/repositories/users.repository.js"
 import { RoleGuard } from "#src/modules/users/guards/role.guard.js"
 import { SuspensionsRepository } from "#src/modules/users/repositories/suspensions.repository.js"
+import { UserRelationsRepository } from "#src/modules/users/repositories/user-relations.repository.js"
+import { UserRelationsService } from "#src/modules/users/services/user-relations.service.js"
 import { ProfilePhotoService } from "#src/modules/users/services/profile-photo.service.js"
 import { UsersService } from "#src/modules/users/services/users.service.js"
 
@@ -16,10 +18,19 @@ import { UsersService } from "#src/modules/users/services/users.service.js"
     UsersRepository,
     ConsentsRepository,
     SuspensionsRepository,
+    UserRelationsRepository,
+    UserRelationsService,
     UsersService,
     ProfilePhotoService,
     RoleGuard,
   ],
-  exports: [UsersService, ProfilePhotoService, SuspensionsRepository, RoleGuard],
+  exports: [
+    UsersService,
+    ProfilePhotoService,
+    SuspensionsRepository,
+    UserRelationsRepository,
+    UserRelationsService,
+    RoleGuard,
+  ],
 })
 export class UsersModule {}

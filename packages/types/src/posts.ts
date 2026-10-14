@@ -16,6 +16,28 @@ export interface PostViewerState {
   reactions: ReactionKind[]
   isBookmarked: boolean
   canReply: boolean
+  hasReposted: boolean
+}
+
+// Open Graph card for the post's first link, read and stored by the server.
+export interface LinkPreviewView {
+  url: string
+  title: string | null
+  description: string | null
+  siteName: string | null
+  imageUrl: string | null
+  imageWidth: number | null
+  imageHeight: number | null
+}
+
+// The post embedded in a quote. Removed originals keep only their id and the flag.
+export interface QuotedPostView {
+  id: string
+  title: string | null
+  excerpt: string | null
+  author: PublicProfile | null
+  createdAt: string
+  isDeleted: boolean
 }
 
 export interface PostView {
@@ -34,6 +56,10 @@ export interface PostView {
   media: MediaView[]
   commentCount: number
   highlightedCommentCount: number
+  repostCount: number
+  quoteCount: number
+  quotedPost: QuotedPostView | null
+  linkPreview: LinkPreviewView | null
   reactionCounts: ReactionCounts
   createdAt: string
   editedAt: string | null

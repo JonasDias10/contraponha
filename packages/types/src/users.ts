@@ -43,6 +43,9 @@ export interface Recognition {
 export interface ProfileViewerState {
   isFollowing: boolean
   isFollowedBy: boolean
+  isBlocking: boolean
+  isBlockedBy: boolean
+  isMuting: boolean
 }
 
 export interface ProfileView extends PublicProfile {

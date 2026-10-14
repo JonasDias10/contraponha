@@ -1,13 +1,14 @@
 import type { ReactionsState } from "@contraponha/client-core/react"
-import { useBookmarkMutation } from "@contraponha/client-core/react"
+import { useBookmarkMutation, useRepostMutation } from "@contraponha/client-core/react"
+import { formatCount } from "@contraponha/client-core"
 import type { PostView } from "@contraponha/types"
 import { router } from "expo-router"
-import { Bookmark, CircleCheck, MessageSquare, Share2 } from "lucide-react-native"
+import { Bookmark, CircleCheck, MessageSquare, PenLine, Repeat2, Share2 } from "lucide-react-native"
 import { useState } from "react"
 import { Pressable, Share, StyleSheet, View } from "react-native"
 
 import { ReactionBar } from "@/components/post/reaction-bar"
-import { BottomSheet } from "@/components/ui/action-sheet"
+import { ActionSheet, BottomSheet } from "@/components/ui/action-sheet"
 import { AppText } from "@/components/ui/text"
 import { usePalette } from "@/hooks/use-palette"
 import { useI18n } from "@/providers/i18n-provider"
@@ -66,9 +67,15 @@ export function PostActions({
   onContribute,
 }: PostActionsProps): React.JSX.Element {
   const palette = usePalette()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const bookmark = useBookmarkMutation()
+  const repost = useRepostMutation()
   const [isPicking, setIsPicking] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
+
+  const hasReposted = repost.isPending
+    ? repost.variables.isReposting
+    : (post.viewer?.hasReposted ?? false)
 
   const isBookmarked = bookmark.isPending
     ? bookmark.variables.isSaving
@@ -100,6 +107,13 @@ export function PostActions({
         accessibilityLabel={t("web.post.contribute")}
         onPress={onContribute ?? (() => router.push(paths.post(post.id)))}
       />
+      <Action
+        icon={<Repeat2 size={20} color={hasReposted ? palette.success : palette.muted} />}
+        label={post.repostCount > 0 ? formatCount({ value: post.repostCount, locale }) : undefined}
+        accessibilityLabel={t("web.repost.repost")}
+        isActive={hasReposted}
+        onPress={() => setIsSharing(true)}
+      />
       <View style={styles.spacer} />
       <Action
         icon={
@@ -117,6 +131,24 @@ export function PostActions({
         icon={<Share2 size={20} color={palette.muted} />}
         accessibilityLabel={t("web.post.share")}
         onPress={share}
+      />
+      <ActionSheet
+        isOpen={isSharing}
+        onClose={() => setIsSharing(false)}
+        items={[
+          {
+            key: "repost",
+            label: hasReposted ? t("web.repost.undo") : t("web.repost.repost"),
+            icon: Repeat2,
+            onPress: () => repost.mutate({ postId: post.id, isReposting: !hasReposted }),
+          },
+          {
+            key: "quote",
+            label: t("web.repost.quote"),
+            icon: PenLine,
+            onPress: () => router.push({ pathname: "/compose", params: { quote: post.id } }),
+          },
+        ]}
       />
       <BottomSheet
         isOpen={isPicking}
