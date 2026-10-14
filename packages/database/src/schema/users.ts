@@ -14,6 +14,13 @@ import {
 
 export const userRole = pgEnum("user_role", ["member", "moderator", "admin"])
 
+export const verificationCategory = pgEnum("verification_category", [
+  "public_figure",
+  "journalist",
+  "expert",
+  "institution",
+])
+
 export const USERS_EMAIL_UNIQUE = "users_email_unique"
 export const USERS_HANDLE_UNIQUE = "users_handle_unique"
 
@@ -40,6 +47,9 @@ export const users = pgTable(
     // Mirrors two_factor_secrets.enabled_at so profiles and role checks need no join.
     twoFactorEnabledAt: timestamp({ withTimezone: true }),
     role: userRole().notNull().default("member"),
+    // Granted by an admin after checking who the person is; unrelated to email confirmation.
+    verificationCategory: verificationCategory(),
+    verifiedAt: timestamp({ withTimezone: true }),
     followerCount: integer().notNull().default(0),
     followingCount: integer().notNull().default(0),
     postCount: integer().notNull().default(0),
@@ -60,6 +70,10 @@ export const users = pgTable(
     check(
       "users_follow_counts_nonnegative",
       sql`${table.followerCount} >= 0 and ${table.followingCount} >= 0 and ${table.postCount} >= 0`,
+    ),
+    check(
+      "users_verification_complete",
+      sql`(${table.verificationCategory} is null) = (${table.verifiedAt} is null)`,
     ),
     index("users_deletion_scheduled_at_idx")
       .on(table.deletionScheduledAt)

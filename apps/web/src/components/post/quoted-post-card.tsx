@@ -1,5 +1,5 @@
 import type { QuotedPostView } from "@contraponha/types"
-import { Avatar, useI18n } from "@contraponha/web-ui"
+import { Avatar, useI18n, VerifiedBadge } from "@contraponha/web-ui"
 import Link from "next/link"
 
 import { paths } from "@/lib/paths"
@@ -30,6 +30,7 @@ export function QuotedPostCard({ quoted }: QuotedPostCardProps): React.JSX.Eleme
       <span className="flex items-center gap-2 text-sm">
         <Avatar id={author.id} name={author.displayName} src={author.avatarUrl} size="xs" />
         <span className="font-semibold">{author.displayName}</span>
+        <VerifiedBadge verification={author.verification} />
         <span className="text-subtle">@{author.handle}</span>
       </span>
       {quoted.title ? (

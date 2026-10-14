@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native"
 
 import { RelativeTime } from "@/components/post/relative-time"
 import { Avatar, type AvatarSize } from "@/components/ui/avatar"
+import { personLabel, VerifiedBadge } from "@/components/profile/verified-badge"
 import { Chip } from "@/components/ui/chip"
 import { AppText } from "@/components/ui/text"
 import { usePalette } from "@/hooks/use-palette"
@@ -40,7 +41,9 @@ export function AuthorLine({
     <View style={styles.row}>
       <Pressable
         accessibilityRole="link"
-        accessibilityLabel={isDeleted ? t("web.common.deletedAccount") : author.displayName}
+        accessibilityLabel={
+          isDeleted ? t("web.common.deletedAccount") : personLabel({ person: author, t })
+        }
         disabled={isDeleted}
         onPress={openProfile}
         style={styles.main}
@@ -60,6 +63,7 @@ export function AuthorLine({
             >
               {isDeleted ? t("web.common.deletedAccount") : author.displayName}
             </AppText>
+            {isDeleted ? null : <VerifiedBadge verification={author.verification} />}
             {isPostAuthor ? <Chip label={t("web.common.author")} /> : null}
           </View>
           <View style={styles.meta}>

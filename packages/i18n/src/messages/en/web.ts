@@ -569,6 +569,14 @@ export const web: Messages["web"] = {
     digestHint: "Choose up to 4 times, in the {timezone} time zone.",
     saved: "Preferences saved.",
   },
+  verification: {
+    badge: "Verified account",
+    label: "Verified: {category}",
+    public_figure: "Public figure",
+    journalist: "Journalist",
+    expert: "Expert",
+    institution: "Institution",
+  },
   saved: {
     title: "Saved",
     count: "{count} saved posts",
@@ -744,6 +752,8 @@ export const web: Messages["web"] = {
     action_suspension_lifted: "Suspension lifted",
     action_avatar_removed: "Profile photo removed",
     action_topic_updated: "Topic changed",
+    action_verification_granted: "Verified badge granted",
+    action_verification_revoked: "Verified badge removed",
     systemActor: "System",
     addContext: "Add context",
     contextTitle: "Context for this post",

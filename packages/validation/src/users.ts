@@ -2,6 +2,7 @@ import { SUPPORTED_LOCALES } from "@contraponha/i18n"
 import {
   RecognitionKind,
   UserRole,
+  VerificationCategory,
   type FollowedByPreview,
   type PrivateProfile,
   type ProfileView,
@@ -80,6 +81,13 @@ export const updateProfileInputSchema = z
 
 export type UpdateProfileInput = z.input<typeof updateProfileInputSchema>
 
+export const verificationCategorySchema = z.enum(VerificationCategory)
+
+export const verificationSchema = z.object({
+  category: verificationCategorySchema,
+  verifiedAt: z.iso.datetime(),
+})
+
 export const publicProfileSchema = z.object({
   id: z.uuid(),
   handle: z.string(),
@@ -90,6 +98,7 @@ export const publicProfileSchema = z.object({
   website: z.string().nullable(),
   pronouns: z.string().nullable(),
   avatarUrl: z.url().nullable(),
+  verification: verificationSchema.nullable(),
   followerCount: z.number().int().nonnegative(),
   followingCount: z.number().int().nonnegative(),
   postCount: z.number().int().nonnegative(),

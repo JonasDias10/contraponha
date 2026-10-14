@@ -4,7 +4,7 @@ import type { PublicProfile } from "@contraponha/types"
 import Link from "next/link"
 
 import { FollowButton } from "@/components/profile/follow-button"
-import { Avatar, useViewer } from "@contraponha/web-ui"
+import { Avatar, useViewer, VerifiedBadge } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface PersonRowProps {
@@ -22,12 +22,15 @@ export function PersonRow({ person, isFollowing }: PersonRowProps): React.JSX.El
         <Avatar id={person.id} name={person.displayName} src={person.avatarUrl} />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <Link
-          href={paths.profile(person.handle)}
-          className="truncate font-semibold text-ink no-underline hover:underline"
-        >
-          {person.displayName}
-        </Link>
+        <span className="flex min-w-0 items-center gap-1.5">
+          <Link
+            href={paths.profile(person.handle)}
+            className="truncate font-semibold text-ink no-underline hover:underline"
+          >
+            {person.displayName}
+          </Link>
+          <VerifiedBadge verification={person.verification} />
+        </span>
         <span className="truncate text-[13px] text-subtle">
           @{person.handle}
           {person.headline ? ` · ${person.headline}` : ""}

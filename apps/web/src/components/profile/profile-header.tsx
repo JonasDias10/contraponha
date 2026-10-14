@@ -32,6 +32,7 @@ import {
   useApi,
   useI18n,
   useViewer,
+  VerifiedBadge,
 } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
@@ -100,8 +101,9 @@ function ProfileHeaderContent({ profile }: ProfileHeaderContentProps): React.JSX
         <div className="flex min-w-65 flex-1 flex-col gap-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
-              <h1 className="font-serif text-[34px] leading-tight font-semibold">
+              <h1 className="flex items-center gap-2 font-serif text-[34px] leading-tight font-semibold">
                 {profile.displayName}
+                <VerifiedBadge verification={profile.verification} className="size-6" />
               </h1>
               <p className="flex flex-wrap items-center gap-1.5 text-subtle">
                 @{profile.handle}

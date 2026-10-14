@@ -3,7 +3,7 @@
 import type { PublicProfile } from "@contraponha/types"
 import Link from "next/link"
 
-import { Avatar, Chip, RelativeTime, useI18n } from "@contraponha/web-ui"
+import { Avatar, Chip, RelativeTime, useI18n, VerifiedBadge } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface AuthorLineProps {
@@ -64,6 +64,7 @@ export function AuthorLine({
               {author.displayName}
             </Link>
           )}
+          <VerifiedBadge verification={author?.verification ?? null} />
           {isPostAuthor ? <Chip>{t("web.common.author")}</Chip> : null}
         </span>
         <span className="flex flex-wrap items-center text-[13px] leading-snug text-subtle">

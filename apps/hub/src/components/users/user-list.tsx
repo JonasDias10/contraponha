@@ -12,6 +12,7 @@ import {
   inputClasses,
   useApi,
   useI18n,
+  VerifiedBadge,
 } from "@contraponha/web-ui"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { Search, Users } from "lucide-react"
@@ -148,7 +149,10 @@ function UserRow({ summary }: UserRowProps): React.JSX.Element {
       >
         <Avatar id={user.id} name={user.displayName} src={user.avatarUrl} />
         <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-semibold">{user.displayName}</span>
+          <span className="flex min-w-0 items-center gap-1.5 font-semibold">
+            <span className="truncate">{user.displayName}</span>
+            <VerifiedBadge verification={user.verification} />
+          </span>
           <span className="truncate text-sm text-muted">
             @{user.handle} · {user.email}
           </span>

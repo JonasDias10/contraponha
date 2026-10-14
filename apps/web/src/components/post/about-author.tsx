@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { queryKeys, recognitionText } from "@contraponha/client-core"
 
-import { Avatar, Card, useApi, useI18n } from "@contraponha/web-ui"
+import { Avatar, Card, useApi, useI18n, VerifiedBadge } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface AboutAuthorProps {
@@ -33,7 +33,10 @@ export function AboutAuthor({ handle }: AboutAuthorProps): React.JSX.Element | n
       >
         <Avatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} />
         <span className="flex flex-col">
-          <span className="font-semibold">{profile.displayName}</span>
+          <span className="flex items-center gap-1.5 font-semibold">
+            {profile.displayName}
+            <VerifiedBadge verification={profile.verification} />
+          </span>
           <span className="text-[13px] text-subtle">@{profile.handle}</span>
         </span>
       </Link>

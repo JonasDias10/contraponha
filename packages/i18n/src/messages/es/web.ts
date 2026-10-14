@@ -572,6 +572,14 @@ export const web: Messages["web"] = {
     digestHint: "Elige hasta 4 horarios, en la zona horaria {timezone}.",
     saved: "Preferencias guardadas.",
   },
+  verification: {
+    badge: "Cuenta verificada",
+    label: "Verificada: {category}",
+    public_figure: "Figura pública",
+    journalist: "Periodista",
+    expert: "Especialista",
+    institution: "Institución",
+  },
   saved: {
     title: "Guardados",
     count: "{count} publicaciones guardadas",
@@ -750,6 +758,8 @@ export const web: Messages["web"] = {
     action_suspension_lifted: "Suspensión levantada",
     action_avatar_removed: "Foto de perfil eliminada",
     action_topic_updated: "Tema modificado",
+    action_verification_granted: "Insignia de verificación otorgada",
+    action_verification_revoked: "Insignia de verificación retirada",
     systemActor: "Sistema",
     addContext: "Añadir contexto",
     contextTitle: "Contexto para este post",

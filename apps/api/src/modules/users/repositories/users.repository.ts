@@ -24,6 +24,8 @@ export type UpdateUserData = Partial<
     | "onboardedAt"
     | "avatarUrl"
     | "twoFactorEnabledAt"
+    | "verificationCategory"
+    | "verifiedAt"
   >
 >
 

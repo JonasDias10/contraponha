@@ -63,17 +63,23 @@ Só se age sobre quem tem papel menor (`canActOn`): moderadores suspendem membro
 
 O app `apps/hub` concentra a fila de denúncias, o registro de ações e as rotas `/admin/*`. Como as outras rotas privilegiadas, todas usam `RoleGuard`.
 
-| Rota                                     | Papel     | Descrição                                                                       |
-| ---------------------------------------- | --------- | ------------------------------------------------------------------------------- |
-| `GET /admin/users?q=&role=&status=`      | moderator | Busca por nome, @ ou e-mail; filtros de papel e situação                        |
-| `GET /admin/users/:handle`               | moderator | Conta, situação, histórico de suspensões, denúncias, último acesso              |
-| `POST /admin/users/:handle/suspensions`  | moderator | `{ rule, note?, endsAt? }`; sem `endsAt` é banimento                            |
-| `DELETE /admin/users/:handle/suspension` | moderator | Encerra a suspensão em vigor                                                    |
-| `DELETE /admin/users/:handle/avatar`     | moderator | Remove a foto de perfil                                                         |
-| `GET /admin/metrics?days=`               | moderator | Totais e contagens diárias (UTC) de cadastros, posts, contribuições e denúncias |
-| `GET /admin/topics?q=&curated=`          | admin     | Todos os tópicos                                                                |
-| `POST /admin/topics`                     | admin     | Cria um tópico (`name`, `slug`, `isCurated`)                                    |
-| `PATCH /admin/topics/:slug`              | admin     | Renomeia ou muda a curadoria                                                    |
+| Rota                                       | Papel     | Descrição                                                                       |
+| ------------------------------------------ | --------- | ------------------------------------------------------------------------------- |
+| `GET /admin/users?q=&role=&status=`        | moderator | Busca por nome, @ ou e-mail; filtros de papel e situação                        |
+| `GET /admin/users/:handle`                 | moderator | Conta, situação, histórico de suspensões, denúncias, último acesso              |
+| `POST /admin/users/:handle/suspensions`    | moderator | `{ rule, note?, endsAt? }`; sem `endsAt` é banimento                            |
+| `DELETE /admin/users/:handle/suspension`   | moderator | Encerra a suspensão em vigor                                                    |
+| `DELETE /admin/users/:handle/avatar`       | moderator | Remove a foto de perfil                                                         |
+| `PUT /admin/users/:handle/verification`    | admin     | `{ category, note }`; concede ou muda o selo de verificação                     |
+| `DELETE /admin/users/:handle/verification` | admin     | Retira o selo                                                                   |
+| `GET /admin/metrics?days=`                 | moderator | Totais e contagens diárias (UTC) de cadastros, posts, contribuições e denúncias |
+| `GET /admin/topics?q=&curated=`            | admin     | Todos os tópicos                                                                |
+| `POST /admin/topics`                       | admin     | Cria um tópico (`name`, `slug`, `isCurated`)                                    |
+| `PATCH /admin/topics/:slug`                | admin     | Renomeia ou muda a curadoria                                                    |
+
+## Selo de verificação
+
+O selo diz que um admin confirmou quem é a pessoa ou a instituição por trás da conta; não tem relação com a confirmação de e-mail (`emailVerifiedAt`). Fica em `users.verification_category` (`public_figure`, `journalist`, `expert`, `institution`) e `users.verified_at`, que uma constraint obriga a andarem juntos. Só admins concedem ou retiram, sempre com uma nota dizendo como a identidade foi conferida; a nota vai para o registro de ações (`verification_granted`, `verification_revoked`), nunca documentos. O perfil público expõe `verification: { category, verifiedAt } | null`, e web, hub e mobile mostram o ícone ao lado do nome com o rótulo da categoria para leitores de tela.
 
 O módulo `admin` da API tem repositórios de leitura que cruzam tabelas de outros módulos (`users`, `suspensions`, `reports`, `sessions`, `posts`). É uma exceção deliberada à regra de fronteiras: são consultas de relatório, sem escrita, e passar por cada serviço só somaria idas ao banco. Toda escrita continua nos serviços donos.
 
@@ -83,4 +89,4 @@ Posts e comentários têm `removed_by` (`author` ou `moderation`), preenchido ju
 
 ## Auditoria
 
-`moderation_actions` é **append-only**: o repositório só insere e lista. Tipos: `content_removed`, `report_resolved`, `report_dismissed`, `role_changed`, `context_added`, `context_removed`, `user_suspended`, `suspension_lifted`, `avatar_removed`, `topic_updated`. Cada linha guarda moderador, denúncia, alvo e nota. As chaves estrangeiras usam `ON DELETE SET NULL`, para que a trilha sobreviva à exclusão de contas e conteúdos (requisito de LGPD: o registro da ação permanece, os dados pessoais saem).
+`moderation_actions` é **append-only**: o repositório só insere e lista. Tipos: `content_removed`, `report_resolved`, `report_dismissed`, `role_changed`, `context_added`, `context_removed`, `user_suspended`, `suspension_lifted`, `avatar_removed`, `topic_updated`, `verification_granted`, `verification_revoked`. Cada linha guarda moderador, denúncia, alvo e nota. As chaves estrangeiras usam `ON DELETE SET NULL`, para que a trilha sobreviva à exclusão de contas e conteúdos (requisito de LGPD: o registro da ação permanece, os dados pessoais saem).

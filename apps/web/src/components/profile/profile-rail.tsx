@@ -5,7 +5,15 @@ import Link from "next/link"
 import { queryKeys, topicLabel } from "@contraponha/client-core"
 
 import { FollowButton } from "@/components/profile/follow-button"
-import { Avatar, Card, tagVariants, useApi, useI18n, useViewer } from "@contraponha/web-ui"
+import {
+  Avatar,
+  Card,
+  tagVariants,
+  useApi,
+  useI18n,
+  useViewer,
+  VerifiedBadge,
+} from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
 
 export interface ProfileRailProps {
@@ -67,7 +75,10 @@ export function ProfileRail({ handle }: ProfileRailProps): React.JSX.Element {
                 href={paths.profile(person.handle)}
                 className="flex min-w-0 flex-1 flex-col text-ink no-underline"
               >
-                <span className="truncate text-sm font-semibold">{person.displayName}</span>
+                <span className="flex min-w-0 items-center gap-1.5 text-sm font-semibold">
+                  <span className="truncate">{person.displayName}</span>
+                  <VerifiedBadge verification={person.verification} />
+                </span>
                 <span className="truncate text-[13px] text-subtle">
                   {person.headline ?? `@${person.handle}`}
                 </span>

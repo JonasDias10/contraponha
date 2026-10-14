@@ -567,6 +567,14 @@ export const web = {
     digestHint: "Escolha até 4 horários, no fuso {timezone}.",
     saved: "Preferências salvas.",
   },
+  verification: {
+    badge: "Conta verificada",
+    label: "Verificada: {category}",
+    public_figure: "Figura pública",
+    journalist: "Jornalista",
+    expert: "Especialista",
+    institution: "Instituição",
+  },
   saved: {
     title: "Salvos",
     count: "{count} posts salvos",
@@ -744,6 +752,8 @@ export const web = {
     action_suspension_lifted: "Suspensão encerrada",
     action_avatar_removed: "Foto de perfil removida",
     action_topic_updated: "Tópico alterado",
+    action_verification_granted: "Selo de verificação concedido",
+    action_verification_revoked: "Selo de verificação retirado",
     systemActor: "Sistema",
     addContext: "Adicionar contexto",
     contextTitle: "Contexto para este post",

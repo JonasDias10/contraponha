@@ -2,6 +2,7 @@ import type { QuotedPostView } from "@contraponha/types"
 import { router } from "expo-router"
 import { Pressable, StyleSheet, View } from "react-native"
 
+import { VerifiedBadge } from "@/components/profile/verified-badge"
 import { Avatar } from "@/components/ui/avatar"
 import { AppText } from "@/components/ui/text"
 import { usePalette } from "@/hooks/use-palette"
@@ -46,6 +47,7 @@ export function QuotedPostCard({ quoted }: QuotedPostCardProps): React.JSX.Eleme
         <AppText variant="smallStrong" numberOfLines={1}>
           {author.displayName}
         </AppText>
+        <VerifiedBadge verification={author.verification} size={14} />
         <AppText variant="small" tone="subtle" numberOfLines={1} style={styles.flex}>
           @{author.handle}
         </AppText>

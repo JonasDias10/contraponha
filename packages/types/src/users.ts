@@ -10,6 +10,21 @@ export const UserRole = {
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
+export const VerificationCategory = {
+  PUBLIC_FIGURE: "public_figure",
+  JOURNALIST: "journalist",
+  EXPERT: "expert",
+  INSTITUTION: "institution",
+} as const
+
+export type VerificationCategory = (typeof VerificationCategory)[keyof typeof VerificationCategory]
+
+// The verified badge: an admin confirmed who the account belongs to.
+export interface Verification {
+  category: VerificationCategory
+  verifiedAt: string
+}
+
 export interface PublicProfile {
   id: string
   handle: string
@@ -20,6 +35,7 @@ export interface PublicProfile {
   website: string | null
   pronouns: string | null
   avatarUrl: string | null
+  verification: Verification | null
   followerCount: number
   followingCount: number
   postCount: number

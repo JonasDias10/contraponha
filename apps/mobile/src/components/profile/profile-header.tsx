@@ -21,6 +21,7 @@ import { Alert, Pressable, Share, StyleSheet, View } from "react-native"
 
 import { ReportSheet } from "@/components/post/report-sheet"
 import { FollowButton } from "@/components/profile/follow-button"
+import { VerifiedBadge } from "@/components/profile/verified-badge"
 import { ActionSheet, type ActionSheetItem } from "@/components/ui/action-sheet"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -184,9 +185,12 @@ export function ProfileHeader({ profile }: ProfileHeaderProps): React.JSX.Elemen
         </View>
       </View>
       <View style={styles.names}>
-        <AppText variant="heading1" accessibilityRole="header">
-          {profile.displayName}
-        </AppText>
+        <View style={styles.nameRow}>
+          <AppText variant="heading1" accessibilityRole="header" style={styles.name}>
+            {profile.displayName}
+          </AppText>
+          <VerifiedBadge verification={profile.verification} size={22} />
+        </View>
         <View style={styles.handleRow}>
           <AppText tone="subtle">
             @{profile.handle}
@@ -300,6 +304,8 @@ const styles = StyleSheet.create({
   top: { flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },
   actions: { flexDirection: "row", alignItems: "center", gap: space.xs },
   names: { gap: 2 },
+  nameRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  name: { flexShrink: 1 },
   handleRow: { flexDirection: "row", alignItems: "center", gap: space.sm, flexWrap: "wrap" },
   details: { flexDirection: "row", flexWrap: "wrap", columnGap: space.xl, rowGap: space.xs },
   detail: { flexDirection: "row", alignItems: "center", gap: 4 },

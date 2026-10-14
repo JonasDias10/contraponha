@@ -1,7 +1,12 @@
 export { createApiClient, type ApiClient, type ApiClientOptions } from "./client.js"
 export { ApiError, ApiResponseFormatError } from "./errors.js"
 export type { AccountResource } from "./resources/account.js"
-export type { AdminResource, SuspendUserRequest, UpdateTopicRequest } from "./resources/admin.js"
+export type {
+  AdminResource,
+  GrantVerificationRequest,
+  SuspendUserRequest,
+  UpdateTopicRequest,
+} from "./resources/admin.js"
 export type { AuthResource } from "./resources/auth.js"
 export type {
   CommentsResource,
