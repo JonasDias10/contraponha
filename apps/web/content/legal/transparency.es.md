@@ -30,4 +30,4 @@ Solo entregamos datos de personas usuarias mediante orden judicial o requerimien
 
 ## Habla con nosotros
 
-Para cuestionar una decisión de moderación o sugerir mejoras en estos procesos: **[correo de transparencia]**.
+Para cuestionar una decisión de moderación o sugerir mejoras en estos procesos: {{transparencyEmail}}.

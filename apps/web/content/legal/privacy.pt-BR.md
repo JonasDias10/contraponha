@@ -4,7 +4,7 @@ Esta é a política de privacidade do Contraponha, escrita para ser lida. Ela ex
 
 ## Quem somos
 
-O Contraponha é uma rede social brasileira. Para os fins da LGPD, somos o controlador dos dados pessoais tratados no serviço. Para falar com a pessoa encarregada pelo tratamento de dados, escreva para **[e-mail do encarregado de dados]**.
+O Contraponha é uma rede social brasileira. Para os fins da LGPD, somos o controlador dos dados pessoais tratados no serviço. Para falar com a pessoa encarregada pelo tratamento de dados, escreva para {{dpoEmail}}.
 
 ## O que coletamos
 
@@ -48,7 +48,7 @@ Você pode, sem precisar mandar e-mail, em **Configurações › Seus dados**:
 - **Apagar** (art. 18, VI): exclua a conta. Tudo é apagado em 30 dias; até lá, basta entrar de novo para desistir. Contribuições em discussões de outras pessoas viram "conta excluída", a menos que você peça para apagá-las também.
 - **Revogar consentimentos e zerar recomendações** (art. 18, IX).
 
-Para qualquer outro pedido, inclusive informação sobre compartilhamento (art. 18, VII), escreva para **[e-mail do encarregado de dados]**. Respondemos em até 15 dias.
+Para qualquer outro pedido, inclusive informação sobre compartilhamento (art. 18, VII), escreva para {{dpoEmail}}. Respondemos em até 15 dias.
 
 ## Segurança
 

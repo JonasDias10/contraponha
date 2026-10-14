@@ -43,4 +43,4 @@ Estes termos seguem as leis brasileiras. Fica eleito o foro do domicílio do usu
 
 ## 10. Contato
 
-Dúvidas sobre estes termos: **[e-mail de contato]**.
+Dúvidas sobre estes termos: {{contactEmail}}.

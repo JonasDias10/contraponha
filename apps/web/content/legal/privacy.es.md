@@ -6,7 +6,7 @@ Esta es una traducción. Si hay alguna diferencia, prevalece la versión en port
 
 ## Quiénes somos
 
-Contraponha es una red social brasileña. A efectos de la LGPD, somos el responsable de los datos personales tratados en el servicio. Para hablar con la persona encargada del tratamiento de datos, escribe a **[correo del encargado de datos]**.
+Contraponha es una red social brasileña. A efectos de la LGPD, somos el responsable de los datos personales tratados en el servicio. Para hablar con la persona encargada del tratamiento de datos, escribe a {{dpoEmail}}.
 
 ## Qué recopilamos
 
@@ -50,7 +50,7 @@ Sin necesidad de enviar un correo, puedes, en **Configuración › Tus datos**:
 - **Borrar** (art. 18, VI): elimina la cuenta. Todo se borra en 30 días; hasta entonces, basta con entrar de nuevo para arrepentirte. Las contribuciones en discusiones de otras personas pasan a "cuenta eliminada", a menos que pidas borrarlas también.
 - **Revocar consentimientos y reiniciar recomendaciones** (art. 18, IX).
 
-Para cualquier otro pedido, incluida información sobre el uso compartido (art. 18, VII), escribe a **[correo del encargado de datos]**. Respondemos en un plazo de 15 días.
+Para cualquier otro pedido, incluida información sobre el uso compartido (art. 18, VII), escribe a {{dpoEmail}}. Respondemos en un plazo de 15 días.
 
 ## Seguridad
 
