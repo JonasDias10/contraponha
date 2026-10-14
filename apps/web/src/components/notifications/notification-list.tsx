@@ -76,11 +76,7 @@ export function NotificationList(): React.JSX.Element {
             </Button>
           ) : null}
         </div>
-        <Segmented
-          value={filter}
-          onValueChange={(value) => isFilter(value) && setFilter(value)}
-          className="w-full sm:w-auto"
-        >
+        <Segmented value={filter} onValueChange={(value) => isFilter(value) && setFilter(value)}>
           <SegmentedList className="w-full sm:w-90">
             <SegmentedItem value={NotificationFilter.ALL}>
               {t("web.notifications.all")}

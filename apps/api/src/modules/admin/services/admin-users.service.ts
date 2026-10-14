@@ -7,6 +7,7 @@ import {
   type AdminUserDetail,
   type AdminUserSummary,
   type Page,
+  type VerificationCategory,
 } from "@contraponha/types"
 import { z } from "zod"
 
@@ -53,6 +54,13 @@ export interface SuspendUserRequest {
 export interface ActOnUserRequest {
   handle: string
   actorId: string
+}
+
+export interface GrantVerificationRequest {
+  handle: string
+  actorId: string
+  category: VerificationCategory
+  note: string
 }
 
 interface ToSummaryParams {
@@ -227,6 +235,69 @@ export class AdminUsersService {
         moderatorId: actorId,
         type: ModerationActionType.AVATAR_REMOVED,
         targetUserId: target.id,
+      },
+    })
+
+    return this.detail(handle)
+  }
+
+  // Granting again changes the category; the audit entry keeps how the identity was checked.
+  async grantVerification({
+    handle,
+    actorId,
+    category,
+    note,
+  }: GrantVerificationRequest): Promise<AdminUserDetail> {
+    const target = await this.usersService.getByHandle(handle)
+
+    if (target.deletedAt) throw new AppError(ApiErrorCode.RESOURCE_NOT_FOUND)
+
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        await this.usersService.updateProfile({
+          id: target.id,
+          data: { verificationCategory: category, verifiedAt: target.verifiedAt ?? new Date() },
+          executor: tx,
+        })
+
+        await this.actions.record({
+          data: {
+            moderatorId: actorId,
+            type: ModerationActionType.VERIFICATION_GRANTED,
+            targetUserId: target.id,
+            note: `${category}: ${note}`,
+          },
+          executor: tx,
+        })
+      },
+    })
+
+    return this.detail(handle)
+  }
+
+  async revokeVerification({ handle, actorId }: ActOnUserRequest): Promise<AdminUserDetail> {
+    const target = await this.usersService.getByHandle(handle)
+
+    if (!target.verifiedAt) return this.detail(handle)
+
+    await runTransaction({
+      db: this.db,
+      work: async (tx) => {
+        await this.usersService.updateProfile({
+          id: target.id,
+          data: { verificationCategory: null, verifiedAt: null },
+          executor: tx,
+        })
+
+        await this.actions.record({
+          data: {
+            moderatorId: actorId,
+            type: ModerationActionType.VERIFICATION_REVOKED,
+            targetUserId: target.id,
+          },
+          executor: tx,
+        })
       },
     })
 

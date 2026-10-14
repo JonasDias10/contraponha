@@ -1,6 +1,12 @@
 # Como contribuir com o Contraponha
 
-Obrigado por contribuir. Este guia resume as convenções do projeto. Para configurar o ambiente, veja [docs/development/setup.md](docs/development/setup.md).
+Obrigado por contribuir. Este guia resume as convenções do projeto. Para configurar o ambiente, veja [docs/development/setup.md](docs/development/setup.md). Ao participar, você concorda com o [código de conduta](CODE_OF_CONDUCT.md).
+
+## Antes de começar
+
+- Para mudanças pequenas (correções, textos, documentação), abra o PR direto.
+- Para funcionalidades novas ou mudanças de arquitetura, abra uma issue antes e combine a abordagem. Isso evita trabalho que não vai entrar.
+- Falhas de segurança não viram issue pública: siga o [SECURITY.md](SECURITY.md).
 
 ## Idiomas
 
@@ -24,12 +30,14 @@ Use `User`, `Post`, `getUserById()`. Nunca `Usuario`, `Publicacao`, `buscarUsuar
    pnpm format && pnpm lint && pnpm typecheck && pnpm test && pnpm test:e2e
    ```
 
+   Mudanças de interface também rodam `pnpm test:browser` (fluxos do web e do hub e auditoria de acessibilidade).
+
 4. Abra o PR explicando **por que** a mudança existe, não apenas o que mudou. Mudanças de arquitetura atualizam `docs/architecture/` no mesmo PR.
 
 ## Convenções de código
 
 - **TypeScript estrito.** Sem `any` (use `unknown` e refine), sem `!` de non-null assertion, tipos de retorno explícitos em funções exportadas, `import type` para imports só de tipo.
-- **Nomes.** Arquivos em `kebab-case` (`health-report.ts`, `use-api-readiness.ts`), exceto componentes React, que usam `PascalCase` (`ApiStatusBadge.tsx`). Arquivos de rota do Next.js e do Expo Router seguem a convenção do framework (`page.tsx`, `_layout.tsx`). Classes, componentes e tipos em `PascalCase`, funções e variáveis em `camelCase`, hooks começando com `use`, constantes reais em `SCREAMING_SNAKE_CASE`, booleanos com `is`/`has`/`can`.
+- **Nomes.** Todo arquivo e pasta em `kebab-case`, componentes React inclusive (`health-report.ts`, `use-api-readiness.ts`, `verified-badge.tsx`). Arquivos de rota do Next.js e do Expo Router seguem a convenção do framework (`page.tsx`, `_layout.tsx`). Classes, componentes e tipos em `PascalCase`, funções e variáveis em `camelCase`, hooks começando com `use`, constantes reais em `SCREAMING_SNAKE_CASE`, booleanos com `is`/`has`/`can`.
 - **Durações sempre com unidade no nome** (`SESSION_LAST_USED_WRITE_INTERVAL_MS`, `PASSWORD_RESET_TTL_MINUTES`) e definidas em `packages/config/src/time.ts` ou `apps/api/src/config/durations.ts`, usando as conversões (`minutesToMs(5)`, não `5 * 60 * 1000`).
 - **Imports na API:** `./arquivo.js` só para a mesma pasta; o resto usa `#src/...`. Web e mobile usam `@/...`.
 - **Funções com dois ou mais parâmetros recebem um único objeto** (`revoke({ userId, sessionId })`). Exceções e detalhes em [backend.md](docs/architecture/backend.md#estilo-de-código).
@@ -56,7 +64,9 @@ Leia [docs/architecture/backend.md](docs/architecture/backend.md). Os pontos mai
 
 ## Web e mobile
 
-Leia [docs/architecture/frontends.md](docs/architecture/frontends.md). Nenhum texto de interface fica escrito direto no JSX: tudo passa por `t()` com chaves de `@contraponha/i18n`. Lógica usada pelos dois apps vai para um pacote compartilhado.
+Leia [docs/architecture/frontends.md](docs/architecture/frontends.md). Nenhum texto de interface fica escrito direto no JSX: tudo passa por `t()` com chaves de `@contraponha/i18n`, nos três catálogos (`pt-BR`, `en` e `es`). Lógica usada pelos dois apps vai para um pacote compartilhado.
+
+Acessibilidade faz parte da definição de pronto: siga as regras de [accessibility.md](docs/architecture/accessibility.md) e mantenha a auditoria do `pnpm test:browser` sem violações.
 
 ## Banco de dados
 
@@ -77,3 +87,7 @@ Leia [docs/architecture/frontends.md](docs/architecture/frontends.md). Nenhum te
 - Nunca versione segredos. Se um segredo vazar no histórico, avise o time e rotacione imediatamente.
 - Rotas novas passam pelo rate limiting global; endpoints sensíveis (login, cadastro) devem ter limites próprios.
 - Uploads (quando existirem) validam tipo MIME e tamanho antes de chegar ao storage.
+
+## Licença das contribuições
+
+O Contraponha é distribuído sob a [AGPL-3.0](LICENSE). Ao enviar uma contribuição, você concorda que ela seja distribuída sob a mesma licença.

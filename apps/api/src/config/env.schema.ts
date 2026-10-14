@@ -27,6 +27,15 @@ export const envSchema = z
     SESSION_TTL_DAYS: z.coerce.number().int().positive().max(365).default(30),
     AUTH_RATE_LIMIT_TTL_SECONDS: z.coerce.number().int().positive().default(900),
     AUTH_RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(10),
+    WRITE_LIMIT_MULTIPLIER: z.coerce.number().positive().default(1),
+    TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
+    // 32 random bytes in base64 (openssl rand -base64 32); required in production.
+    TWO_FACTOR_ENCRYPTION_KEY: z
+      .string()
+      .refine((value) => Buffer.from(value, "base64").length === 32, {
+        message: "Must be 32 bytes encoded in base64",
+      })
+      .optional(),
 
     SMTP_HOST: z.string().min(1),
     SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),

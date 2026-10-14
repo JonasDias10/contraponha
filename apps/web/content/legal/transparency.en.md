@@ -30,4 +30,4 @@ We only hand over user data upon a court order or valid request, under the Civil
 
 ## Talk to us
 
-To question a moderation decision or suggest improvements to these processes: **[transparency email]**.
+To question a moderation decision or suggest improvements to these processes: {{transparencyEmail}}.

@@ -4,14 +4,21 @@ import { canModerate } from "@contraponha/client-core"
 import { createTranslator } from "@contraponha/i18n"
 import {
   createServerApiClient as createClient,
+  endSession,
   getRequestLocale,
   storeLocale,
   storeSession,
-  endSession,
   toActionFailure,
   type ActionFailure,
 } from "@contraponha/next-server"
-import { loginInputSchema, type LoginInput } from "@contraponha/validation"
+import type { AuthResponse } from "@contraponha/types"
+import {
+  isTwoFactorChallenge,
+  loginInputSchema,
+  loginTwoFactorInputSchema,
+  type LoginInput,
+  type LoginTwoFactorInput,
+} from "@contraponha/validation"
 import { redirect } from "next/navigation"
 
 import { createServerApiClient } from "@/lib/api"
@@ -21,30 +28,60 @@ export interface SignInSuccess {
   ok: true
 }
 
+export interface TwoFactorStep {
+  ok: true
+  challengeToken: string
+}
+
 // Members can sign in to the app but not here: their new session is ended right away so
 // the hub never holds a session it cannot use.
-export async function signIn(input: LoginInput): Promise<SignInSuccess | ActionFailure> {
+async function keepStaffSession(auth: AuthResponse): Promise<SignInSuccess | ActionFailure> {
+  const locale = await getRequestLocale()
+
+  if (!canModerate(auth.user)) {
+    const apiUrl = getHubEnv().API_URL
+
+    await createClient({ apiUrl, locale, sessionToken: auth.session.token }).auth.logout()
+
+    const t = createTranslator({ locale })
+
+    return { ok: false, code: "FORBIDDEN", message: t("hub.login.notStaff"), issues: [] }
+  }
+
+  await storeSession({ token: auth.session.token, expiresAt: auth.session.expiresAt })
+
+  await storeLocale(auth.user.locale)
+
+  return { ok: true }
+}
+
+export async function signIn(
+  input: LoginInput,
+): Promise<SignInSuccess | TwoFactorStep | ActionFailure> {
   const parsed = loginInputSchema.parse(input)
   const locale = await getRequestLocale()
 
   try {
-    const auth = await createServerApiClient(locale).auth.login(parsed)
+    const result = await createServerApiClient(locale).auth.login(parsed)
 
-    if (!canModerate(auth.user)) {
-      const apiUrl = getHubEnv().API_URL
+    if (isTwoFactorChallenge(result)) return { ok: true, challengeToken: result.challengeToken }
 
-      await createClient({ apiUrl, locale, sessionToken: auth.session.token }).auth.logout()
+    return await keepStaffSession(result)
+  } catch (error) {
+    return toActionFailure(error)
+  }
+}
 
-      const t = createTranslator({ locale })
+export async function completeTwoFactorSignIn(
+  input: LoginTwoFactorInput,
+): Promise<SignInSuccess | ActionFailure> {
+  const parsed = loginTwoFactorInputSchema.parse(input)
+  const locale = await getRequestLocale()
 
-      return { ok: false, code: "FORBIDDEN", message: t("hub.login.notStaff"), issues: [] }
-    }
+  try {
+    const auth = await createServerApiClient(locale).auth.loginTwoFactor(parsed)
 
-    await storeSession({ token: auth.session.token, expiresAt: auth.session.expiresAt })
-
-    await storeLocale(auth.user.locale)
-
-    return { ok: true }
+    return await keepStaffSession(auth)
   } catch (error) {
     return toActionFailure(error)
   }

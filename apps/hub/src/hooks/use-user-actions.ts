@@ -3,7 +3,7 @@
 import { errorMessage } from "@contraponha/client-core"
 import type { MessageKey } from "@contraponha/i18n"
 import type { AdminUserDetail, UserRole } from "@contraponha/types"
-import type { SuspendUserInput } from "@contraponha/validation"
+import type { GrantVerificationInput, SuspendUserInput } from "@contraponha/validation"
 import { useApi, useI18n } from "@contraponha/web-ui"
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -15,6 +15,8 @@ export interface UserActions {
   lift: UseMutationResult<AdminUserDetail, Error, void>
   removePhoto: UseMutationResult<AdminUserDetail, Error, void>
   changeRole: UseMutationResult<void, Error, UserRole>
+  grantVerification: UseMutationResult<AdminUserDetail, Error, GrantVerificationInput>
+  revokeVerification: UseMutationResult<AdminUserDetail, Error, void>
 }
 
 // Every action answers with the updated account, which replaces the cached detail; lists
@@ -50,6 +52,16 @@ export function useUserActions(handle: string): UserActions {
     removePhoto: useMutation({
       mutationFn: () => api.admin.removeAvatar(handle),
       onSuccess: handleUpdated("hub.user.photoRemoved"),
+      onError: handleError,
+    }),
+    grantVerification: useMutation({
+      mutationFn: (input: GrantVerificationInput) => api.admin.grantVerification({ handle, input }),
+      onSuccess: handleUpdated("hub.user.verificationGranted"),
+      onError: handleError,
+    }),
+    revokeVerification: useMutation({
+      mutationFn: () => api.admin.revokeVerification(handle),
+      onSuccess: handleUpdated("hub.user.verificationRevoked"),
       onError: handleError,
     }),
     changeRole: useMutation({

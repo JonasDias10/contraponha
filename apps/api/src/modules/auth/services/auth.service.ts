@@ -1,10 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { runTransaction, type Database, type DatabaseExecutor } from "@contraponha/database"
 import { negotiateLocale } from "@contraponha/i18n"
-import { ApiErrorCode, type AuthResponse } from "@contraponha/types"
+import { ApiErrorCode, type AuthResponse, type LoginResult } from "@contraponha/types"
 import type {
   changePasswordInputSchema,
   loginInputSchema,
+  loginTwoFactorInputSchema,
   registerInputSchema,
 } from "@contraponha/validation"
 import type { z } from "zod"
@@ -13,6 +14,9 @@ import type { AuthContext } from "#src/common/auth/auth-context.js"
 import { AppError } from "#src/common/errors/app-error.js"
 import { APP_CONFIG, type AppConfig } from "#src/config/app-config.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
+import { HumanVerifier } from "#src/infrastructure/human-check/human-verifier.js"
+import { TwoFactorChallenges } from "#src/modules/auth/infrastructure/two-factor-challenges.js"
+import { TwoFactorService } from "#src/modules/auth/services/two-factor.service.js"
 import { PasswordHasher } from "#src/modules/auth/infrastructure/password-hasher.js"
 import { CredentialsRepository } from "#src/modules/auth/repositories/credentials.repository.js"
 import { toPrivateProfile, type User } from "#src/modules/users/domain/user.js"
@@ -26,6 +30,7 @@ import { SessionsService } from "./sessions.service.js"
 export interface ClientInfo {
   userAgent: string | undefined
   acceptLanguage: string | undefined
+  ip?: string
 }
 
 interface StartSessionParams {
@@ -48,6 +53,10 @@ export interface ForgetCredentialsParams {
   executor: DatabaseExecutor
 }
 
+export interface LoginTwoFactorParams {
+  input: z.output<typeof loginTwoFactorInputSchema>
+}
+
 export interface RegisterParams {
   input: z.output<typeof registerInputSchema>
   client: ClientInfo
@@ -64,9 +73,19 @@ export class AuthService {
     private readonly sessionsService: SessionsService,
     private readonly accountVerification: AccountVerificationService,
     private readonly verificationTokens: VerificationTokensRepository,
+    private readonly humanVerifier: HumanVerifier,
+    private readonly twoFactor: TwoFactorService,
+    private readonly twoFactorChallenges: TwoFactorChallenges,
   ) {}
 
   async register({ input, client }: RegisterParams): Promise<AuthResponse> {
+    const isHuman = await this.humanVerifier.verify({
+      token: input.humanCheckToken,
+      remoteIp: client.ip,
+    })
+
+    if (!isHuman) throw new AppError(ApiErrorCode.HUMAN_CHECK_FAILED)
+
     const passwordHash = await this.passwordHasher.hash(input.password)
 
     const locale =
@@ -108,7 +127,7 @@ export class AuthService {
     return this.startSession({ user, userAgent: client.userAgent })
   }
 
-  async login({ input, userAgent }: LoginParams): Promise<AuthResponse> {
+  async login({ input, userAgent }: LoginParams): Promise<LoginResult> {
     const user = await this.usersService.findByEmail(input.email)
     const passwordHash = user ? await this.credentials.findPasswordHash(user.id) : undefined
 
@@ -128,7 +147,28 @@ export class AuthService {
       })
     }
 
+    if (user.twoFactorEnabledAt) {
+      const challenge = await this.twoFactorChallenges.issue({ userId: user.id, userAgent })
+
+      return { challengeToken: challenge.token, expiresAt: challenge.expiresAt.toISOString() }
+    }
+
     return this.startSession({ user, userAgent })
+  }
+
+  // Second step of a login with two-step verification.
+  async loginTwoFactor({ input }: LoginTwoFactorParams): Promise<AuthResponse> {
+    const pending = await this.twoFactorChallenges.attempt(input.challengeToken)
+
+    if (!pending) throw new AppError(ApiErrorCode.INVALID_TOKEN)
+
+    await this.twoFactor.assertCode({ userId: pending.userId, code: input.code })
+
+    await this.twoFactorChallenges.consume(input.challengeToken)
+
+    const user = await this.usersService.getById(pending.userId)
+
+    return this.startSession({ user, userAgent: pending.userAgent })
   }
 
   // Account deletion: ends every session and erases the password and pending tokens.
@@ -167,15 +207,20 @@ export class AuthService {
 
   // Signing in during the 30-day grace period cancels a scheduled account deletion.
   private async startSession({ user, userAgent }: StartSessionParams): Promise<AuthResponse> {
-    const active = user.deletionScheduledAt
-      ? await this.usersService.scheduleDeletion({
-          id: user.id,
-          scheduledFor: null,
-          deleteContributions: false,
-        })
-      : user
-
+    const active = user.deletionScheduledAt ? await this.cancelDeletion(user) : user
     const session = await this.sessionsService.issue({ userId: active.id, userAgent })
     return { user: toPrivateProfile(active), session }
+  }
+
+  private async cancelDeletion(user: User): Promise<User> {
+    const restored = await this.usersService.scheduleDeletion({
+      id: user.id,
+      scheduledFor: null,
+      deleteContributions: false,
+    })
+
+    this.accountVerification.sendDeletionCancelled(restored)
+
+    return restored
   }
 }

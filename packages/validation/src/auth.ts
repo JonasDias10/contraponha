@@ -1,5 +1,10 @@
 import type {
   AuthResponse,
+  LoginResult,
+  RecoveryCodes,
+  TwoFactorChallenge,
+  TwoFactorSetup,
+  TwoFactorStatus,
   HandleAvailability,
   SessionListResponse,
   SessionSummary,
@@ -43,6 +48,8 @@ export const registerInputSchema = z.object({
   birthDate: birthDateSchema,
   acceptedTerms: z.literal(true),
   locale: localeSchema.optional(),
+  // Cloudflare Turnstile response; required when the API has a Turnstile secret.
+  humanCheckToken: z.string().max(2048).optional(),
 })
 
 export const loginInputSchema = z.object({
@@ -100,3 +107,53 @@ export const sessionSummarySchema = z.object({
 export const sessionListSchema = z.object({
   sessions: z.array(sessionSummarySchema),
 }) satisfies z.ZodType<SessionListResponse>
+
+// Six digits from the authenticator, or a recovery code (xxxx-xxxx-xxxx, any case).
+export const twoFactorCodeSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .pipe(
+    z.union([
+      z.string().regex(/^\d{6}$/),
+      z.string().regex(/^[a-z2-7]{4}-[a-z2-7]{4}-[a-z2-7]{4}$/),
+    ]),
+  )
+
+export const twoFactorCodeInputSchema = z.object({ code: twoFactorCodeSchema })
+
+export const loginTwoFactorInputSchema = z.object({
+  challengeToken: opaqueTokenSchema,
+  code: twoFactorCodeSchema,
+})
+
+export type TwoFactorCodeInput = z.input<typeof twoFactorCodeInputSchema>
+export type LoginTwoFactorInput = z.input<typeof loginTwoFactorInputSchema>
+
+export const twoFactorChallengeSchema = z.object({
+  challengeToken: opaqueTokenSchema,
+  expiresAt: z.iso.datetime(),
+}) satisfies z.ZodType<TwoFactorChallenge>
+
+export const loginResultSchema = z.union([
+  authResponseSchema,
+  twoFactorChallengeSchema,
+]) satisfies z.ZodType<LoginResult>
+
+export const twoFactorStatusSchema = z.object({
+  isEnabled: z.boolean(),
+  recoveryCodesLeft: z.number().int().nonnegative(),
+}) satisfies z.ZodType<TwoFactorStatus>
+
+export const twoFactorSetupSchema = z.object({
+  secret: z.string(),
+  otpauthUrl: z.string().startsWith("otpauth://"),
+}) satisfies z.ZodType<TwoFactorSetup>
+
+export const recoveryCodesSchema = z.object({
+  codes: z.array(z.string()),
+}) satisfies z.ZodType<RecoveryCodes>
+
+export function isTwoFactorChallenge(result: LoginResult): result is TwoFactorChallenge {
+  return "challengeToken" in result
+}

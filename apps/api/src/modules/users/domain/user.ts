@@ -1,6 +1,6 @@
 import { isLocale, DEFAULT_LOCALE, type Locale } from "@contraponha/i18n"
 import type { UserRow } from "@contraponha/database"
-import type { PrivateProfile, PublicProfile } from "@contraponha/types"
+import type { PrivateProfile, PublicProfile, Verification } from "@contraponha/types"
 
 export type User = UserRow
 
@@ -36,6 +36,12 @@ export function isDeletedUser(user: User): boolean {
   return user.deletedAt !== null
 }
 
+function toVerification(user: User): Verification | null {
+  if (!user.verificationCategory || !user.verifiedAt) return null
+
+  return { category: user.verificationCategory, verifiedAt: user.verifiedAt.toISOString() }
+}
+
 // Deleted accounts stay as anonymous tombstones so the discussions they took part in
 // still make sense; nothing about the person is exposed.
 export function toPublicProfile(user: User): PublicProfile {
@@ -51,6 +57,7 @@ export function toPublicProfile(user: User): PublicProfile {
     website: isDeleted ? null : user.website,
     pronouns: isDeleted ? null : user.pronouns,
     avatarUrl: isDeleted ? null : user.avatarUrl,
+    verification: isDeleted ? null : toVerification(user),
     followerCount: user.followerCount,
     followingCount: user.followingCount,
     postCount: user.postCount,
@@ -69,6 +76,7 @@ export function toPrivateProfile(user: User): PrivateProfile {
     role: user.role,
     birthDate: user.birthDate,
     isOnboarded: user.onboardedAt !== null,
+    isTwoFactorEnabled: user.twoFactorEnabledAt !== null,
     deletionScheduledAt: user.deletionScheduledAt?.toISOString() ?? null,
   }
 }

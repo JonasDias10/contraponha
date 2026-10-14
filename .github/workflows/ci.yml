@@ -123,3 +123,92 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  browser:
+    name: Browser tests (web and hub)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: contraponha
+          POSTGRES_PASSWORD: contraponha
+          POSTGRES_DB: contraponha
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U contraponha -d contraponha"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      storage:
+        image: rustfs/rustfs:1.0.1
+        env:
+          RUSTFS_ACCESS_KEY: contraponha
+          RUSTFS_SECRET_KEY: contraponha-ci-secret
+        ports:
+          - 9000:9000
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      mailpit:
+        image: axllent/mailpit:v1.31
+        ports:
+          - 1025:1025
+          - 8025:8025
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgres://contraponha:contraponha@localhost:5432/contraponha
+      REDIS_URL: redis://localhost:6379
+      WEB_APP_URL: http://localhost:3001
+      CORS_ORIGINS: http://localhost:3001,http://localhost:3002
+      SMTP_HOST: localhost
+      SMTP_PORT: "1025"
+      EMAIL_FROM: Contraponha <no-reply@contraponha.test>
+      STORAGE_ENDPOINT: http://localhost:9000
+      STORAGE_BUCKET: contraponha-media
+      STORAGE_ACCESS_KEY_ID: contraponha
+      STORAGE_SECRET_ACCESS_KEY: contraponha-ci-secret
+      STORAGE_FORCE_PATH_STYLE: "true"
+      STORAGE_AUTO_CREATE_BUCKET: "true"
+      MEDIA_PUBLIC_BASE_URL: http://localhost:9000/contraponha-media
+      API_URL: http://localhost:3000
+      SITE_URL: http://localhost:3001
+      NEXT_PUBLIC_HUB_URL: http://localhost:3002
+      NEXT_PUBLIC_WEB_URL: http://localhost:3001
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+        with:
+          cache-scope: browser
+
+      - name: Build
+        run: pnpm build
+
+      - name: Migrations
+        run: pnpm db:migrate
+
+      - name: Install Chromium
+        run: pnpm --filter @contraponha/browser-tests exec playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: pnpm --filter @contraponha/browser-tests test:browser
+
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/browser-tests/playwright-report
+          retention-days: 7

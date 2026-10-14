@@ -41,6 +41,8 @@ export const moderationActionType = pgEnum("moderation_action_type", [
   "suspension_lifted",
   "avatar_removed",
   "topic_updated",
+  "verification_granted",
+  "verification_revoked",
 ])
 
 export const reportSubject = pgEnum("report_subject", ["me", "someone_else", "group"])

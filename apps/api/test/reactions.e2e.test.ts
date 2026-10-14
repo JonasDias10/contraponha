@@ -1,5 +1,4 @@
 import type { NestExpressApplication } from "@nestjs/platform-express"
-import { viewerReactionsResponseSchema } from "@contraponha/validation"
 import request from "supertest"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
@@ -150,41 +149,5 @@ describe("reactions", () => {
       .expect(404)
 
     await request(server).put(`/api/v1/posts/${post.id}/reactions/changed_my_mind`).expect(401)
-  })
-
-  it("lists the viewer's reactions for a batch of targets", async () => {
-    const { auth } = await registerAccount({ server })
-    const token = auth.session.token
-    const reacted = await createPost({ server, token })
-    const untouched = await createPost({ server, token })
-
-    await request(server)
-      .put(`/api/v1/posts/${reacted.id}/reactions/changed_my_mind`)
-      .set(bearer(token))
-      .expect(204)
-
-    await request(server)
-      .put(`/api/v1/posts/${reacted.id}/reactions/good_argument`)
-      .set(bearer(token))
-      .expect(204)
-
-    const response = await request(server)
-      .get("/api/v1/reactions/mine")
-      .query({ targetType: "post", targetIds: `${reacted.id},${untouched.id}` })
-      .set(bearer(token))
-      .expect(200)
-
-    const { reactions } = viewerReactionsResponseSchema.parse(response.body)
-    const byTarget = new Map(reactions.map(({ targetId, kinds }) => [targetId, kinds.toSorted()]))
-
-    expect(byTarget.get(reacted.id)).toEqual(["changed_my_mind", "good_argument"])
-
-    expect(byTarget.get(untouched.id)).toEqual([])
-
-    await request(server)
-      .get("/api/v1/reactions/mine")
-      .query({ targetType: "post", targetIds: "not-a-uuid" })
-      .set(bearer(token))
-      .expect(400)
   })
 })

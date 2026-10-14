@@ -13,6 +13,7 @@ import {
   useApi,
   useI18n,
   useViewer,
+  VerifiedBadge,
 } from "@contraponha/web-ui"
 import { useQuery } from "@tanstack/react-query"
 import { ArrowLeft, ExternalLink } from "lucide-react"
@@ -22,6 +23,7 @@ import { useState } from "react"
 import { StatusChip } from "@/components/users/status-chip"
 import { SuspendDialog } from "@/components/users/suspend-dialog"
 import { SuspensionHistory } from "@/components/users/suspension-history"
+import { VerificationDialog } from "@/components/users/verification-dialog"
 import { useUserActions } from "@/hooks/use-user-actions"
 import { hubQueryKeys } from "@/lib/query-keys"
 import { webLinks } from "@/lib/web-links"
@@ -69,6 +71,7 @@ function AccountView({ detail }: AccountViewProps): React.JSX.Element {
             <h1 className="font-serif text-[28px] leading-tight font-semibold">
               {user.displayName}
             </h1>
+            <VerifiedBadge verification={user.verification} className="size-5" />
             <StatusChip status={status} />
           </div>
           <p className="text-muted">
@@ -125,6 +128,12 @@ function AccountFacts({ detail }: AccountViewProps): React.JSX.Element {
         ? formatDateTime({ value: detail.lastActiveAt, locale })
         : t("hub.user.never"),
     },
+    {
+      label: t("hub.user.verification"),
+      value: user.verification
+        ? `${t(`web.verification.${user.verification.category}`)} · ${formatDate({ value: user.verification.verifiedAt, locale })}`
+        : t("hub.user.notVerified"),
+    },
     { label: t("hub.user.reportsAgainst"), value: String(detail.reportsAgainst) },
     { label: t("hub.user.reportsFiled"), value: String(detail.reportsFiled) },
   ]
@@ -143,7 +152,7 @@ function AccountFacts({ detail }: AccountViewProps): React.JSX.Element {
   )
 }
 
-type OpenDialog = "suspend" | "lift" | "photo" | null
+type OpenDialog = "suspend" | "lift" | "photo" | "verify" | "unverify" | null
 
 function AccountActions({ detail }: AccountViewProps): React.JSX.Element | null {
   const { t } = useI18n()
@@ -156,8 +165,9 @@ function AccountActions({ detail }: AccountViewProps): React.JSX.Element | null 
 
   const canAct = canActOn({ actor: viewer, target: user }) && !user.isDeleted
   const canChangeRole = isAdmin(viewer) && viewer.id !== user.id && !user.isDeleted
+  const canVerify = isAdmin(viewer) && !user.isDeleted
 
-  if (!canAct && !canChangeRole) return null
+  if (!canAct && !canChangeRole && !canVerify) return null
 
   const close = (): void => setDialog(null)
 
@@ -177,6 +187,16 @@ function AccountActions({ detail }: AccountViewProps): React.JSX.Element | null 
       {canAct && user.avatarUrl ? (
         <Button variant="secondary" onClick={() => setDialog("photo")}>
           {t("hub.user.removePhoto")}
+        </Button>
+      ) : null}
+      {canVerify ? (
+        <Button variant="secondary" onClick={() => setDialog("verify")}>
+          {user.verification ? t("hub.user.changeVerification") : t("hub.user.grantVerification")}
+        </Button>
+      ) : null}
+      {canVerify && user.verification ? (
+        <Button variant="dangerOutline" onClick={() => setDialog("unverify")}>
+          {t("hub.user.revokeVerification")}
         </Button>
       ) : null}
       {canChangeRole ? (
@@ -229,6 +249,27 @@ function AccountActions({ detail }: AccountViewProps): React.JSX.Element | null 
         closeLabel={t("web.common.close")}
         isPending={actions.removePhoto.isPending}
         onConfirm={() => actions.removePhoto.mutate(undefined, { onSuccess: close })}
+      />
+      {dialog === "verify" ? (
+        <VerificationDialog
+          handle={user.handle}
+          current={user.verification}
+          open
+          onOpenChange={(open) => setDialog(open ? "verify" : null)}
+          isPending={actions.grantVerification.isPending}
+          onConfirm={(input) => actions.grantVerification.mutate(input, { onSuccess: close })}
+        />
+      ) : null}
+      <ConfirmDialog
+        open={dialog === "unverify"}
+        onOpenChange={(open) => setDialog(open ? "unverify" : null)}
+        title={t("hub.user.revokeVerificationTitle", { handle: user.handle })}
+        description={t("hub.user.revokeVerificationLead")}
+        confirmLabel={t("hub.user.revokeVerification")}
+        cancelLabel={t("web.common.cancel")}
+        closeLabel={t("web.common.close")}
+        isPending={actions.revokeVerification.isPending}
+        onConfirm={() => actions.revokeVerification.mutate(undefined, { onSuccess: close })}
       />
     </Card>
   )

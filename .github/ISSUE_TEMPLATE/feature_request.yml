@@ -1,0 +1,22 @@
+name: Sugerir uma melhoria
+description: Uma ideia para o produto ou para o código.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema isso resolve
+      description: Comece pelo problema, não pela solução. Quem é afetado e quando?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+      description: Como você imagina a solução. Lembre que o Contraponha favorece qualidade das discussões, não engajamento.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas

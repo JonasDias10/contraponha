@@ -20,6 +20,9 @@ export async function requireStaff(): Promise<PrivateProfile> {
 
   if (!viewer || !canModerate(viewer)) redirect("/login")
 
+  // The API refuses staff routes without two-step verification; say so before that happens.
+  if (!viewer.isTwoFactorEnabled) redirect("/two-factor-required")
+
   return viewer
 }
 

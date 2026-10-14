@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common"
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -15,6 +15,7 @@ import {
 } from "@contraponha/validation"
 import type { z } from "zod"
 
+import { Write } from "#src/common/auth/write-action.decorator.js"
 import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"
 import {
@@ -26,6 +27,8 @@ import {
 import { UuidParam } from "#src/common/validation/uuid-param.decorator.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { CommentsService } from "#src/modules/comments/services/comments.service.js"
+import { WriteAction } from "#src/modules/users/domain/write-limits.js"
+import { WriteGuard } from "#src/modules/users/guards/write.guard.js"
 
 @ApiTags("comments")
 @ApiStandardErrors()
@@ -34,6 +37,8 @@ export class PostCommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Post()
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.COMMENT)
   @ApiBearerAuth(SESSION_SECURITY_SCHEME)
   @ApiOperation({ summary: "Contribute to a post, or reply to a contribution with parentId" })
   @ApiZodBody(createCommentInputSchema)

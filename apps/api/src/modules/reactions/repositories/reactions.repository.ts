@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { reactions, type Database, type DatabaseExecutor } from "@contraponha/database"
 import { ReactionTargetType, type ReactionKind } from "@contraponha/types"
-import { and, count, eq, inArray, sql, type SQL } from "drizzle-orm"
+import { and, count, eq, sql, type SQL } from "drizzle-orm"
 
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
 
@@ -15,12 +15,6 @@ export interface ReactionWriteParams {
   userId: string
   kind: ReactionKind
   executor?: DatabaseExecutor
-}
-
-export interface ListUserReactionsParams {
-  userId: string
-  targetType: ReactionTargetType
-  targetIds: readonly string[]
 }
 
 export interface UserTargetParams {
@@ -37,11 +31,6 @@ export interface DeleteAllByUserParams {
 export interface ReactionByUserRow {
   postId: string | null
   commentId: string | null
-  kind: ReactionKind
-}
-
-export interface UserReactionRow {
-  targetId: string | null
   kind: ReactionKind
 }
 
@@ -90,19 +79,6 @@ export class ReactionsRepository {
       .returning({ id: reactions.id })
 
     return removed.length > 0
-  }
-
-  listByUser({
-    userId,
-    targetType,
-    targetIds,
-  }: ListUserReactionsParams): Promise<UserReactionRow[]> {
-    const column = targetColumn(targetType)
-
-    return this.db
-      .select({ targetId: column, kind: reactions.kind })
-      .from(reactions)
-      .where(and(eq(reactions.userId, userId), inArray(column, [...targetIds])))
   }
 
   // Serializes reactions of one person on one target, so the per-target limit holds even

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Put } from "@nestjs/common"
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Put } from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -80,18 +80,12 @@ export class AccountController {
     return this.dataExports.download({ userId: auth.userId, exportId })
   }
 
-  @Get("deletion")
-  @ApiOperation({ summary: "Whether your account is scheduled for deletion" })
-  @ApiOkResponse({ schema: toOpenApiSchema(accountDeletionStatusSchema) })
-  deletionStatus(@CurrentAuth() auth: AuthContext): Promise<AccountDeletionStatus> {
-    return this.accountDeletion.status(auth.userId)
-  }
-
   @SensitiveRateLimit()
   @Put("deletion")
   @ApiOperation({
     summary: "Schedule account deletion in 30 days and sign out everywhere",
-    description: "Signing in again before the date cancels the deletion.",
+    description:
+      "Signing in again before the date cancels the deletion, and the account owner gets an email saying so.",
   })
   @ApiZodBody(scheduleAccountDeletionInputSchema)
   @ApiOkResponse({ schema: toOpenApiSchema(accountDeletionStatusSchema) })
@@ -101,13 +95,6 @@ export class AccountController {
     body: z.output<typeof scheduleAccountDeletionInputSchema>,
   ): Promise<AccountDeletionStatus> {
     return this.accountDeletion.schedule({ userId: auth.userId, ...body })
-  }
-
-  @Delete("deletion")
-  @ApiOperation({ summary: "Cancel a scheduled account deletion" })
-  @ApiOkResponse({ schema: toOpenApiSchema(accountDeletionStatusSchema) })
-  cancelDeletion(@CurrentAuth() auth: AuthContext): Promise<AccountDeletionStatus> {
-    return this.accountDeletion.cancel(auth.userId)
   }
 
   @Post("recommendations/reset")

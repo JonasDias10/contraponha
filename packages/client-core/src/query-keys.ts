@@ -33,6 +33,7 @@ export interface ConnectionsKeyParams {
 // One place for every cache key, so invalidations after mutations stay consistent.
 export const queryKeys = {
   me: ["me"] as const,
+  twoFactor: ["me", "two-factor"] as const,
   realtime: {
     pendingFeedPosts: ["realtime", "feed"] as const,
     pendingComments: (postId: string) => ["realtime", "comments", postId] as const,

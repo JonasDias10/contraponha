@@ -47,6 +47,8 @@ export const ModerationActionType = {
   SUSPENSION_LIFTED: "suspension_lifted",
   AVATAR_REMOVED: "avatar_removed",
   TOPIC_UPDATED: "topic_updated",
+  VERIFICATION_GRANTED: "verification_granted",
+  VERIFICATION_REVOKED: "verification_revoked",
 } as const
 
 export type ModerationActionType = (typeof ModerationActionType)[keyof typeof ModerationActionType]

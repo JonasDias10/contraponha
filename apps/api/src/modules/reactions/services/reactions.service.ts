@@ -1,12 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { REACTIONS_PER_TARGET_MAX } from "@contraponha/config"
 import { runTransaction, type Database, type DatabaseExecutor } from "@contraponha/database"
-import {
-  ApiErrorCode,
-  ReactionKind,
-  ReactionTargetType,
-  type ViewerReactionsResponse,
-} from "@contraponha/types"
+import { ApiErrorCode, ReactionKind, ReactionTargetType } from "@contraponha/types"
 
 import { AppError } from "#src/common/errors/app-error.js"
 import { DATABASE } from "#src/infrastructure/database/database.module.js"
@@ -23,12 +18,6 @@ export interface ReactParams {
   target: ReactionTarget
   userId: string
   kind: ReactionKind
-}
-
-export interface ListViewerReactionsParams {
-  userId: string
-  targetType: ReactionTargetType
-  targetIds: readonly string[]
 }
 
 export interface PurgeReactionsParams {
@@ -118,21 +107,6 @@ export class ReactionsService {
         if (isRemoved) await this.adjustTargetCount({ target, kind, delta: -1, executor: tx })
       },
     })
-  }
-
-  async listViewerReactions({
-    userId,
-    targetType,
-    targetIds,
-  }: ListViewerReactionsParams): Promise<ViewerReactionsResponse> {
-    const rows = await this.reactionsRepository.listByUser({ userId, targetType, targetIds })
-    const kindsByTarget = new Map<string, ReactionKind[]>(targetIds.map((id) => [id, []]))
-
-    for (const { targetId, kind } of rows) if (targetId) kindsByTarget.get(targetId)?.push(kind)
-
-    return {
-      reactions: [...kindsByTarget].map(([targetId, kinds]) => ({ targetId, kinds })),
-    }
   }
 
   // Account deletion: takes back every reaction the person gave, keeping counters exact.

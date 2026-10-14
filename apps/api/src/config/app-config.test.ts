@@ -43,6 +43,7 @@ describe("loadAppConfig", () => {
       ...requiredEnv,
       NODE_ENV: "production",
       STORAGE_AUTO_CREATE_BUCKET: "true",
+      TWO_FACTOR_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString("base64"),
     })
 
     expect(config.storage.autoCreateBucket).toBe(false)
@@ -50,6 +51,12 @@ describe("loadAppConfig", () => {
     expect(config.swagger.enabled).toBe(false)
 
     expect(config.log.pretty).toBe(false)
+  })
+
+  it("requires the two-factor encryption key in production", () => {
+    expect(() => loadAppConfig({ ...requiredEnv, NODE_ENV: "production" })).toThrow(
+      "TWO_FACTOR_ENCRYPTION_KEY",
+    )
   })
 
   it("fails fast when required variables are missing", () => {

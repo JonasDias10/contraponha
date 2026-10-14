@@ -6,7 +6,7 @@ This is a translation. If there is any difference, the Portuguese version prevai
 
 ## Who we are
 
-Contraponha is a Brazilian social network. For the purposes of the LGPD, we are the controller of the personal data processed in the service. To reach the person in charge of data processing (data protection officer), write to **[data protection officer email]**.
+Contraponha is a Brazilian social network. For the purposes of the LGPD, we are the controller of the personal data processed in the service. To reach the person in charge of data processing (data protection officer), write to {{dpoEmail}}.
 
 ## What we collect
 
@@ -50,7 +50,7 @@ Without sending an email, you can, in **Settings › Your data**:
 - **Delete** (art. 18, VI): delete the account. Everything is deleted in 30 days; until then, just sign in again to change your mind. Contributions to other people's discussions become "deleted account", unless you ask to delete them too.
 - **Revoke consents and reset recommendations** (art. 18, IX).
 
-For any other request, including information about sharing (art. 18, VII), write to **[data protection officer email]**. We reply within 15 days.
+For any other request, including information about sharing (art. 18, VII), write to {{dpoEmail}}. We reply within 15 days.
 
 ## Security
 

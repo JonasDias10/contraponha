@@ -7,13 +7,22 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 
-import { signIn } from "@/actions/auth"
-import { Button, Field, FormBanner, Input, PasswordInput, useI18n } from "@contraponha/web-ui"
+import { completeTwoFactorSignIn, signIn } from "@/actions/auth"
+import {
+  Button,
+  Field,
+  FormBanner,
+  Input,
+  PasswordInput,
+  TwoFactorCodeForm,
+  useI18n,
+} from "@contraponha/web-ui"
 
 export function SignInForm(): React.JSX.Element {
   const { t } = useI18n()
   const router = useRouter()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [challengeToken, setChallengeToken] = useState<string | null>(null)
 
   const {
     register,
@@ -35,9 +44,35 @@ export function SignInForm(): React.JSX.Element {
       return
     }
 
-    router.push(result.isOnboarded ? "/home" : "/onboarding")
+    if ("challengeToken" in result) {
+      setChallengeToken(result.challengeToken)
+
+      return
+    }
+
+    enterApp(result.isOnboarded)
+  }
+
+  const enterApp = (isOnboarded: boolean): void => {
+    router.push(isOnboarded ? "/home" : "/onboarding")
 
     router.refresh()
+  }
+
+  if (challengeToken) {
+    return (
+      <TwoFactorCodeForm
+        onSubmit={async (code) => {
+          const result = await completeTwoFactorSignIn({ challengeToken, code })
+
+          if (!result.ok) return result.message
+
+          enterApp(result.isOnboarded)
+
+          return null
+        }}
+      />
+    )
   }
 
   return (

@@ -2,17 +2,26 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginInputSchema, type LoginInput } from "@contraponha/validation"
-import { Button, Field, FormBanner, Input, PasswordInput, useI18n } from "@contraponha/web-ui"
+import {
+  Button,
+  Field,
+  FormBanner,
+  Input,
+  PasswordInput,
+  TwoFactorCodeForm,
+  useI18n,
+} from "@contraponha/web-ui"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 
-import { signIn } from "@/actions/auth"
+import { completeTwoFactorSignIn, signIn } from "@/actions/auth"
 
 export function LoginForm(): React.JSX.Element {
   const { t } = useI18n()
   const router = useRouter()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [challengeToken, setChallengeToken] = useState<string | null>(null)
 
   const {
     register,
@@ -34,9 +43,35 @@ export function LoginForm(): React.JSX.Element {
       return
     }
 
+    if ("challengeToken" in result) {
+      setChallengeToken(result.challengeToken)
+
+      return
+    }
+
+    enterHub()
+  }
+
+  const enterHub = (): void => {
     router.push("/")
 
     router.refresh()
+  }
+
+  if (challengeToken) {
+    return (
+      <TwoFactorCodeForm
+        onSubmit={async (code) => {
+          const result = await completeTwoFactorSignIn({ challengeToken, code })
+
+          if (!result.ok) return result.message
+
+          enterHub()
+
+          return null
+        }}
+      />
+    )
   }
 
   return (

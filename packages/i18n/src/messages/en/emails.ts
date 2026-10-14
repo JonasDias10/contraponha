@@ -31,4 +31,13 @@ export const emails: Messages["emails"] = {
     ignore:
       "If you did not ask for this export, change your password and sign out of other sessions in Settings.",
   },
+  deletionCancelled: {
+    subject: "Your Contraponha account deletion was cancelled",
+    title: "Your account will no longer be deleted",
+    body: "Someone signed in to your account during the 30-day period, so the scheduled deletion was cancelled.",
+    action: "Open Account",
+    expiry: "If you still want to delete your account, ask again in Settings, under Your data.",
+    ignore:
+      "If it was not you who signed in, change your password and sign out of other sessions in Settings.",
+  },
 }

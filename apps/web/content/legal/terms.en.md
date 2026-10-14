@@ -45,4 +45,4 @@ These terms follow Brazilian law. The courts of the user's place of residence ar
 
 ## 10. Contact
 
-Questions about these terms: **[contact email]**.
+Questions about these terms: {{contactEmail}}.

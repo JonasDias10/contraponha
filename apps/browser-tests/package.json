@@ -1,0 +1,24 @@
+{
+  "name": "@contraponha/browser-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:browser": "playwright test",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf test-results playwright-report .turbo"
+  },
+  "dependencies": {
+    "@contraponha/database": "workspace:*",
+    "drizzle-orm": "^0.45.3",
+    "otplib": "^13.5.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@contraponha/tsconfig": "workspace:*",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^22.20.5",
+    "typescript": "~6.0.3"
+  }
+}

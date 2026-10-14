@@ -45,4 +45,4 @@ Estos términos se rigen por las leyes brasileñas. Se elige el fuero del domici
 
 ## 10. Contacto
 
-Dudas sobre estos términos: **[correo de contacto]**.
+Dudas sobre estos términos: {{contactEmail}}.

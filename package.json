@@ -1,6 +1,7 @@
 {
   "name": "contraponha",
   "private": true,
+  "license": "AGPL-3.0-only",
   "type": "module",
   "packageManager": "pnpm@12.9.1",
   "engines": {
@@ -15,6 +16,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
+    "test:browser": "turbo run build --filter=@contraponha/browser-tests^... && pnpm --filter @contraponha/browser-tests test:browser",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
     "typecheck": "turbo run typecheck",

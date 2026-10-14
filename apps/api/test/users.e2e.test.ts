@@ -92,6 +92,7 @@ describe("users", () => {
         website: null,
         pronouns: null,
         avatarUrl: null,
+        verification: null,
         followerCount: 0,
         followingCount: 0,
         postCount: 0,

@@ -33,6 +33,10 @@ export class RoleGuard implements CanActivate {
 
     if (!hasRole({ role: user.role, required })) throw new AppError(ApiErrorCode.FORBIDDEN)
 
+    // Moderation and admin powers need two-step verification: a stolen password alone must
+    // not be enough to remove content or suspend people.
+    if (!user.twoFactorEnabledAt) throw new AppError(ApiErrorCode.TWO_FACTOR_REQUIRED)
+
     return true
   }
 }

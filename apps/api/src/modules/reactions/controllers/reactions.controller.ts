@@ -1,32 +1,16 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Put, Query } from "@nestjs/common"
-import {
-  ApiBearerAuth,
-  ApiNoContentResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from "@nestjs/swagger"
-import {
-  ReactionTargetType,
-  type ReactionKind,
-  type ViewerReactionsResponse,
-} from "@contraponha/types"
-import {
-  reactionKindSchema,
-  viewerReactionsQuerySchema,
-  viewerReactionsResponseSchema,
-} from "@contraponha/validation"
-import type { z } from "zod"
+import { Controller, Delete, HttpCode, HttpStatus, Param, Put, UseGuards } from "@nestjs/common"
+import { ApiBearerAuth, ApiNoContentResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
+import { ReactionTargetType, type ReactionKind } from "@contraponha/types"
+import { reactionKindSchema } from "@contraponha/validation"
 
+import { Write } from "#src/common/auth/write-action.decorator.js"
 import { CurrentAuth, type AuthContext } from "#src/common/auth/auth-context.js"
-import {
-  ApiStandardErrors,
-  SESSION_SECURITY_SCHEME,
-  toOpenApiSchema,
-} from "#src/common/openapi/swagger.js"
+import { ApiStandardErrors, SESSION_SECURITY_SCHEME } from "#src/common/openapi/swagger.js"
 import { UuidParam } from "#src/common/validation/uuid-param.decorator.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { ReactionsService } from "#src/modules/reactions/services/reactions.service.js"
+import { WriteAction } from "#src/modules/users/domain/write-limits.js"
+import { WriteGuard } from "#src/modules/users/guards/write.guard.js"
 
 const kindPipe = new ZodValidationPipe(reactionKindSchema)
 
@@ -38,6 +22,8 @@ export class ReactionsController {
   constructor(private readonly reactionsService: ReactionsService) {}
 
   @Put("posts/:postId/reactions/:kind")
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.REACTION)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "React to a post (idempotent; at most 2 reactions per person)" })
   @ApiNoContentResponse()
@@ -70,6 +56,8 @@ export class ReactionsController {
   }
 
   @Put("comments/:commentId/reactions/:kind")
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.REACTION)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "React to a comment (idempotent; at most 2 reactions per person)" })
   @ApiNoContentResponse()
@@ -98,24 +86,6 @@ export class ReactionsController {
       target: { type: ReactionTargetType.COMMENT, id: commentId },
       userId: auth.userId,
       kind,
-    })
-  }
-
-  @Get("reactions/mine")
-  @ApiOperation({
-    summary: "The authenticated user's reactions on a batch of posts or comments",
-    description: "targetIds is a comma-separated list of up to 100 ids.",
-  })
-  @ApiOkResponse({ schema: toOpenApiSchema(viewerReactionsResponseSchema) })
-  listMine(
-    @CurrentAuth() auth: AuthContext,
-    @Query(new ZodValidationPipe(viewerReactionsQuerySchema))
-    query: z.output<typeof viewerReactionsQuerySchema>,
-  ): Promise<ViewerReactionsResponse> {
-    return this.reactionsService.listViewerReactions({
-      userId: auth.userId,
-      targetType: query.targetType,
-      targetIds: query.targetIds,
     })
   }
 }

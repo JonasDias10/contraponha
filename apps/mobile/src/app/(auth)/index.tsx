@@ -52,6 +52,7 @@ export default function WelcomeScreen(): React.JSX.Element {
           />
           <Button
             size="lg"
+            testID="welcome-sign-in"
             variant="secondary"
             isBlock
             label={t("web.auth.signIn")}

@@ -14,11 +14,13 @@ import { DATABASE } from "#src/infrastructure/database/database.module.js"
 import { EmailSender, type EmailMessage } from "#src/infrastructure/email/email-sender.js"
 import {
   buildDataExportReadyEmail,
+  buildDeletionCancelledEmail,
   buildEmailVerificationEmail,
   buildPasswordResetEmail,
   type AccountEmailRecipient,
 } from "#src/modules/auth/domain/account-emails.js"
 import {
+  ACCOUNT_SETTINGS_PATH,
   DATA_SETTINGS_PATH,
   EMAIL_VERIFICATION_PATH,
   PASSWORD_RESET_PATH,
@@ -135,6 +137,12 @@ export class AccountVerificationService {
         retentionDays: DATA_EXPORT_RETENTION_DAYS,
       }),
     )
+  }
+
+  sendDeletionCancelled(user: User): void {
+    const link = new URL(ACCOUNT_SETTINGS_PATH, this.config.webAppUrl).toString()
+
+    this.deliver(buildDeletionCancelledEmail(this.toRecipient({ user, link })))
   }
 
   async resetPassword({ token, newPassword }: ResetPasswordParams): Promise<void> {

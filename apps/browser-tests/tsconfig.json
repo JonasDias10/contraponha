@@ -1,0 +1,11 @@
+{
+  "extends": "@contraponha/tsconfig/node.json",
+  "compilerOptions": {
+    "lib": ["es2023", "dom"],
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": ["playwright.config.ts", "support", "tests"]
+}

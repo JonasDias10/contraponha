@@ -1,28 +1,18 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useEmailConfirmation } from "@contraponha/client-core/react"
 import { CircleCheck, Loader2 } from "lucide-react"
 import Link from "next/link"
 
-import { Button, FormBanner, useApi, useI18n } from "@contraponha/web-ui"
+import { Button, FormBanner, useI18n } from "@contraponha/web-ui"
 
 export interface EmailVerificationProps {
   token: string
 }
 
-// Tokens are single-use: a query keyed by the token runs exactly once, even when React
-// mounts the component twice in development.
 export function EmailVerification({ token }: EmailVerificationProps): React.JSX.Element {
   const { t } = useI18n()
-  const api = useApi()
-
-  const query = useQuery({
-    queryKey: ["email-verification", token],
-    queryFn: () => api.auth.confirmEmail({ token }),
-    retry: false,
-    staleTime: Number.POSITIVE_INFINITY,
-    gcTime: Number.POSITIVE_INFINITY,
-  })
+  const query = useEmailConfirmation(token)
 
   if (query.isPending) {
     return (

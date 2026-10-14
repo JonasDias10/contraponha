@@ -161,6 +161,20 @@ pnpm --filter @contraponha/i18n exec vitest
 
 Testes ficam ao lado do código (`foo.ts` e `foo.test.ts`). Os e2e da API ficam em `apps/api/test/`.
 
+### Testes de navegador (web e hub)
+
+`apps/browser-tests` usa Playwright para os fluxos de ponta a ponta (cadastro com o e-mail de confirmação lido do Mailpit, publicação, selo concedido no hub com verificação em duas etapas) e o axe para a auditoria de acessibilidade (WCAG 2.2 AA) das páginas principais, nos temas claro e escuro e numa tela de celular.
+
+```bash
+docker compose up -d
+pnpm --filter @contraponha/browser-tests exec playwright install chromium   # uma vez
+pnpm test:browser
+```
+
+O Playwright sobe API, web e hub em modo dev, com limites de requisição altos. Se eles já estiverem rodando, são reaproveitados com os limites do seu `.env`, e uma bateria seguida de testes pode esbarrar no limite de login; pare os servidores antes ou aumente `AUTH_RATE_LIMIT_MAX_REQUESTS` e `RATE_LIMIT_MAX_REQUESTS`. Os testes usam o banco de desenvolvimento e criam contas novas a cada execução.
+
+Os fluxos do app mobile ficam em `apps/mobile/.maestro` (veja o README de lá).
+
 ## 7. Qualidade
 
 ```bash
@@ -170,13 +184,14 @@ pnpm format        # Prettier (aspas duplas, sem ponto e vírgula)
 pnpm format:check  # o que o CI executa
 ```
 
-O CI (`.github/workflows/ci.yml`) roda três jobs em paralelo, e qualquer falha reprova o pipeline:
+O CI (`.github/workflows/ci.yml`) roda quatro jobs em paralelo, e qualquer falha reprova o pipeline:
 
 | Job       | O que faz                                                             |
 | --------- | --------------------------------------------------------------------- |
 | `quality` | `format:check`, `lint` e `typecheck`                                  |
 | `test`    | testes unitários, migrations e e2e (único job com PostgreSQL e Redis) |
 | `build`   | build de pacotes, API, web e bundles do mobile                        |
+| `browser` | build, migrations e testes de navegador com Playwright e axe          |
 
 A preparação comum (pnpm, Node, install e cache) fica na ação `.github/actions/setup`. Cada job guarda o cache do Turborepo (`.turbo/cache`) via `actions/cache`, então pacotes que não mudaram não são reprocessados nas execuções seguintes. Arquivos que afetam todos os pacotes (configs de TypeScript e ESLint) estão em `globalDependencies` no `turbo.json` e invalidam o cache inteiro quando mudam.
 

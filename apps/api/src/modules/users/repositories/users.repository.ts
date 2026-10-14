@@ -23,6 +23,9 @@ export type UpdateUserData = Partial<
     | "timezone"
     | "onboardedAt"
     | "avatarUrl"
+    | "twoFactorEnabledAt"
+    | "verificationCategory"
+    | "verifiedAt"
   >
 >
 

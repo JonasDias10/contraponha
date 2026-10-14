@@ -225,6 +225,60 @@ describe("admin", () => {
     })
   })
 
+  describe("verified badge", () => {
+    it("lets admins grant and revoke it, shows it on the profile and audits the reason", async () => {
+      const member = await registerAccount({ server })
+      const handle = member.input.handle
+
+      await request(server)
+        .put(`/api/v1/admin/users/${handle}/verification`)
+        .set(bearer(moderator.token))
+        .send({ category: "journalist", note: "Press card checked" })
+        .expect(403)
+
+      await request(server)
+        .put(`/api/v1/admin/users/${handle}/verification`)
+        .set(bearer(admin.token))
+        .send({ category: "journalist", note: "" })
+        .expect(400)
+
+      const granted = await request(server)
+        .put(`/api/v1/admin/users/${handle}/verification`)
+        .set(bearer(admin.token))
+        .send({ category: "journalist", note: "Press card checked" })
+        .expect(200)
+
+      const profile = await request(server).get(`/api/v1/users/${handle}`).expect(200)
+
+      const revoked = await request(server)
+        .delete(`/api/v1/admin/users/${handle}/verification`)
+        .set(bearer(admin.token))
+        .expect(200)
+
+      const actions = await request(server)
+        .get("/api/v1/moderation/actions")
+        .set(bearer(admin.token))
+        .expect(200)
+
+      const audited = (actions.body.items as { type: string; targetUserId: string; note: string }[])
+        .filter(({ targetUserId }) => targetUserId === member.auth.user.id)
+        .map(({ type, note }) => ({ type, note }))
+
+      expect(adminUserDetailSchema.parse(granted.body).user.verification?.category).toBe(
+        "journalist",
+      )
+
+      expect(profile.body.verification).toMatchObject({ category: "journalist" })
+
+      expect(adminUserDetailSchema.parse(revoked.body).user.verification).toBeNull()
+
+      expect(audited).toEqual([
+        { type: "verification_revoked", note: null },
+        { type: "verification_granted", note: "journalist: Press card checked" },
+      ])
+    })
+  })
+
   describe("metrics", () => {
     it("returns totals and one entry per day", async () => {
       const response = await request(server)

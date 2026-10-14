@@ -101,20 +101,43 @@ Todas sob `/api/v1`. Documentação completa em `/api/docs`.
 - No login, a API aceita qualquer senha não vazia até 128 caracteres; a regra de tamanho mínimo só vale para senhas novas.
 - Próximos passos possíveis: checar senhas vazadas (Have I Been Pwned, modelo k-anonymity) e 2FA (TOTP).
 
+## Anti-spam
+
+- **Cadastro com Turnstile.** Com `TURNSTILE_SECRET_KEY` na API, `POST /auth/register` exige `humanCheckToken`, conferido no Cloudflare antes de criar a conta (`HUMAN_CHECK_FAILED`). Se o Cloudflare não responde, o cadastro é recusado (falha fechada). O web mostra o widget com `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; o mobile abre a página `/human-check` do web numa WebView quando `EXPO_PUBLIC_TURNSTILE_ENABLED=true`. Sem chave, a checagem fica desligada (desenvolvimento e testes).
+- **E-mail confirmado para publicar.** Postar, comentar, reagir, republicar e seguir passam pelo `WriteGuard`, que responde `EMAIL_NOT_VERIFIED` (403) a contas sem e-mail confirmado.
+- **Limites por conta.** O mesmo guard conta, no Redis, as ações de cada conta por hora e responde `RATE_LIMIT_EXCEEDED` (429, com `Retry-After`) acima do limite. Contas com menos de 24 h têm limites mais baixos, porque ondas de spam usam contas recém-criadas. Os valores ficam em `modules/users/domain/write-limits.ts` e podem ser multiplicados por `WRITE_LIMIT_MULTIPLIER`.
+
+## Verificação em duas etapas (TOTP)
+
+| Rota                                   | O que faz                                                        |
+| -------------------------------------- | ---------------------------------------------------------------- |
+| `GET /auth/two-factor`                 | Se está ativa e quantos códigos de recuperação restam            |
+| `POST /auth/two-factor/setup`          | Novo segredo e URL `otpauth://`; nada muda até confirmar         |
+| `POST /auth/two-factor/enable`         | Confirma um código e devolve 10 códigos de recuperação (uma vez) |
+| `POST /auth/two-factor/disable`        | Desativa com um código do app ou de recuperação                  |
+| `POST /auth/two-factor/recovery-codes` | Gera novos códigos; os antigos deixam de valer                   |
+| `POST /auth/login/two-factor`          | Segunda etapa do login                                           |
+
+- **Login em duas etapas.** Com 2FA ativa, `POST /auth/login` devolve `{ challengeToken, expiresAt }` em vez de sessão. O desafio fica no Redis por 5 minutos, só com o hash do token, e aceita 5 tentativas.
+- **Segredo cifrado.** O segredo TOTP fica em `two_factor_secrets` cifrado com AES-256-GCM (`TWO_FACTOR_ENCRYPTION_KEY`, obrigatória em produção). `last_used_step` impede reusar o mesmo código. Códigos de recuperação ficam só como SHA-256 e valem uma vez.
+- **Equipe.** Moderadores e admins precisam de 2FA ativa: o `RoleGuard` responde `TWO_FACTOR_REQUIRED` (403) nas rotas de moderação e administração, e o hub manda para uma página explicando como ativar. `users.two_factor_enabled_at` espelha o estado para essas checagens não precisarem de join.
+- Web, hub e mobile têm a segunda etapa do login; web e mobile têm a configuração (QR code no web, link `otpauth://` direto no celular).
+
 ## Códigos de erro
 
-| Código                 | HTTP | Quando                                                         |
-| ---------------------- | ---- | -------------------------------------------------------------- |
-| `UNAUTHORIZED`         | 401  | Sem sessão, token inválido, expirado ou revogado               |
-| `INVALID_CREDENTIALS`  | 401  | E-mail ou senha incorretos; senha atual incorreta              |
-| `INVALID_TOKEN`        | 400  | Link de verificação ou redefinição inválido, usado ou expirado |
-| `EMAIL_ALREADY_IN_USE` | 409  | Cadastro com e-mail existente                                  |
-| `HANDLE_UNAVAILABLE`   | 409  | Handle já usado ou reservado                                   |
+| Código                    | HTTP | Quando                                                         |
+| ------------------------- | ---- | -------------------------------------------------------------- |
+| `UNAUTHORIZED`            | 401  | Sem sessão, token inválido, expirado ou revogado               |
+| `INVALID_CREDENTIALS`     | 401  | E-mail ou senha incorretos; senha atual incorreta              |
+| `INVALID_TOKEN`           | 400  | Link de verificação ou redefinição inválido, usado ou expirado |
+| `EMAIL_ALREADY_IN_USE`    | 409  | Cadastro com e-mail existente                                  |
+| `HANDLE_UNAVAILABLE`      | 409  | Handle já usado ou reservado                                   |
+| `HUMAN_CHECK_FAILED`      | 400  | Cadastro sem verificação do Turnstile válida                   |
+| `EMAIL_NOT_VERIFIED`      | 403  | Publicar sem e-mail confirmado                                 |
+| `TWO_FACTOR_REQUIRED`     | 403  | Rota de moderação ou administração sem 2FA ativa               |
+| `INVALID_TWO_FACTOR_CODE` | 401  | Código do app ou de recuperação inválido ou já usado           |
 
 ## O que ainda não existe
 
 - Login social (Google, Apple).
-- Exclusão e exportação de conta (LGPD). O cascade do banco já cobre a parte de dados de auth; o fluxo completo depende dos módulos de conteúdo.
-- Registro de aceite dos termos de uso e da política de privacidade.
-- 2FA e checagem de senhas vazadas.
-- Telas de login, cadastro, verificação e redefinição no web e no mobile.
+- Checagem de senhas vazadas e passkeys.

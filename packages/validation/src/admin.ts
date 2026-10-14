@@ -12,10 +12,11 @@ import { z } from "zod"
 import { communityRuleSchema } from "./moderation.js"
 import { pageSchema, paginationQuerySchema } from "./pagination.js"
 import { topicSlugSchema } from "./topics.js"
-import { privateProfileSchema, publicProfileSchema } from "./users.js"
+import { privateProfileSchema, publicProfileSchema, verificationCategorySchema } from "./users.js"
 
 export const SUSPENSION_NOTE_MAX_LENGTH = 500
 export const METRICS_DAYS_MAX = 90
+export const VERIFICATION_NOTE_MAX_LENGTH = 500
 export const TOPIC_NAME_MAX_LENGTH = 40
 
 export const suspensionViewSchema = z.object({
@@ -134,3 +135,11 @@ export const updateTopicInputSchema = z
   })
 
 export type UpdateTopicInput = z.input<typeof updateTopicInputSchema>
+
+// The note says how the identity was checked; it goes to the audit log.
+export const grantVerificationInputSchema = z.object({
+  category: verificationCategorySchema,
+  note: z.string().trim().min(1).max(VERIFICATION_NOTE_MAX_LENGTH),
+})
+
+export type GrantVerificationInput = z.input<typeof grantVerificationInputSchema>

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common"
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common"
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -16,6 +16,7 @@ import {
   adminUserDetailSchema,
   adminUserListQuerySchema,
   adminUserPageSchema,
+  grantVerificationInputSchema,
   handleSchema,
   suspendUserInputSchema,
 } from "@contraponha/validation"
@@ -95,5 +96,34 @@ export class AdminUsersController {
     @Param("handle", handlePipe) handle: string,
   ): Promise<AdminUserDetail> {
     return this.adminUsers.removeAvatar({ handle, actorId: auth.userId })
+  }
+
+  @Put(":handle/verification")
+  @RequireRole(UserRole.ADMIN)
+  @ApiOperation({
+    summary: "Grant the verified badge, or change its category",
+    description:
+      "Admins only. The note says how the identity was checked and goes to the audit log.",
+  })
+  @ApiZodBody(grantVerificationInputSchema)
+  @ApiOkResponse({ schema: toOpenApiSchema(adminUserDetailSchema) })
+  grantVerification(
+    @CurrentAuth() auth: AuthContext,
+    @Param("handle", handlePipe) handle: string,
+    @Body(new ZodValidationPipe(grantVerificationInputSchema))
+    body: z.output<typeof grantVerificationInputSchema>,
+  ): Promise<AdminUserDetail> {
+    return this.adminUsers.grantVerification({ handle, actorId: auth.userId, ...body })
+  }
+
+  @Delete(":handle/verification")
+  @RequireRole(UserRole.ADMIN)
+  @ApiOperation({ summary: "Remove the verified badge. Admins only." })
+  @ApiOkResponse({ schema: toOpenApiSchema(adminUserDetailSchema) })
+  revokeVerification(
+    @CurrentAuth() auth: AuthContext,
+    @Param("handle", handlePipe) handle: string,
+  ): Promise<AdminUserDetail> {
+    return this.adminUsers.revokeVerification({ handle, actorId: auth.userId })
   }
 }

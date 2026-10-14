@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common"
 import {
   ApiBearerAuth,
@@ -29,6 +30,7 @@ import {
 } from "@contraponha/validation"
 import type { z } from "zod"
 
+import { Write } from "#src/common/auth/write-action.decorator.js"
 import { CurrentAuth, CurrentViewer, type AuthContext } from "#src/common/auth/auth-context.js"
 import { Public } from "#src/common/auth/public.decorator.js"
 import {
@@ -41,6 +43,8 @@ import { UuidParam } from "#src/common/validation/uuid-param.decorator.js"
 import { ZodValidationPipe } from "#src/common/validation/zod-validation.pipe.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
 import { RepostsService } from "#src/modules/posts/services/reposts.service.js"
+import { WriteAction } from "#src/modules/users/domain/write-limits.js"
+import { WriteGuard } from "#src/modules/users/guards/write.guard.js"
 
 @ApiTags("posts")
 @ApiStandardErrors()
@@ -52,6 +56,8 @@ export class PostsController {
   ) {}
 
   @Post()
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.POST)
   @ApiBearerAuth(SESSION_SECURITY_SCHEME)
   @ApiOperation({ summary: "Publish a post" })
   @ApiZodBody(createPostInputSchema)
@@ -128,6 +134,8 @@ export class PostsController {
   }
 
   @Put(":postId/repost")
+  @UseGuards(WriteGuard)
+  @Write(WriteAction.REPOST)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth(SESSION_SECURITY_SCHEME)
   @ApiOperation({ summary: "Repost to your followers (idempotent)" })

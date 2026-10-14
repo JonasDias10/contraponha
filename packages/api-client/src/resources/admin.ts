@@ -15,6 +15,7 @@ import {
   type AdminTopicListQuery,
   type AdminUserListQuery,
   type CreateTopicInput,
+  type GrantVerificationInput,
   type SuspendUserInput,
   type UpdateTopicInput,
 } from "@contraponha/validation"
@@ -24,6 +25,11 @@ import { withQuery, type HttpClient } from "../http.js"
 export interface SuspendUserRequest {
   handle: string
   input: SuspendUserInput
+}
+
+export interface GrantVerificationRequest {
+  handle: string
+  input: GrantVerificationInput
 }
 
 export interface UpdateTopicRequest {
@@ -37,6 +43,8 @@ export interface AdminResource {
   suspendUser(request: SuspendUserRequest): Promise<AdminUserDetail>
   liftSuspension(handle: string): Promise<AdminUserDetail>
   removeAvatar(handle: string): Promise<AdminUserDetail>
+  grantVerification(request: GrantVerificationRequest): Promise<AdminUserDetail>
+  revokeVerification(handle: string): Promise<AdminUserDetail>
   metrics(query?: AdminMetricsQuery): Promise<AdminMetrics>
   listTopics(query?: AdminTopicListQuery): Promise<Page<AdminTopic>>
   createTopic(input: CreateTopicInput): Promise<AdminTopic>
@@ -75,6 +83,19 @@ export function createAdminResource(request: HttpClient): AdminResource {
       request({
         method: "DELETE",
         path: `${userPath(handle)}/avatar`,
+        schema: adminUserDetailSchema,
+      }),
+    grantVerification: ({ handle, input }) =>
+      request({
+        method: "PUT",
+        path: `${userPath(handle)}/verification`,
+        body: input,
+        schema: adminUserDetailSchema,
+      }),
+    revokeVerification: (handle) =>
+      request({
+        method: "DELETE",
+        path: `${userPath(handle)}/verification`,
         schema: adminUserDetailSchema,
       }),
     metrics: (query = {}) =>

@@ -8,6 +8,7 @@ import { StyleSheet, View, type ListRenderItem } from "react-native"
 
 import { InfiniteList } from "@/components/feed/infinite-list"
 import { NewItemsPill } from "@/components/feed/new-items-pill"
+import { OngoingDiscussions } from "@/components/feed/ongoing-discussions"
 import { PostCard } from "@/components/post/post-card"
 import { Button } from "@/components/ui/button"
 import { Screen } from "@/components/ui/screen"
@@ -44,6 +45,7 @@ export default function HomeScreen(): React.JSX.Element {
       <AppText variant="caption" tone="subtle">
         {tab === "following" ? t("web.feed.chronological") : t("web.feed.discoverNote")}
       </AppText>
+      {tab === "discover" ? <OngoingDiscussions /> : null}
     </View>
   )
 

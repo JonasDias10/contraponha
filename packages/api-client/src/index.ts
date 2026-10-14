@@ -1,7 +1,12 @@
 export { createApiClient, type ApiClient, type ApiClientOptions } from "./client.js"
 export { ApiError, ApiResponseFormatError } from "./errors.js"
 export type { AccountResource } from "./resources/account.js"
-export type { AdminResource, SuspendUserRequest, UpdateTopicRequest } from "./resources/admin.js"
+export type {
+  AdminResource,
+  GrantVerificationRequest,
+  SuspendUserRequest,
+  UpdateTopicRequest,
+} from "./resources/admin.js"
 export type { AuthResource } from "./resources/auth.js"
 export type {
   CommentsResource,
@@ -30,11 +35,7 @@ export type {
   PostsResource,
   UpdatePostRequest,
 } from "./resources/posts.js"
-export type {
-  ListMyReactionsRequest,
-  ReactionRequest,
-  ReactionsResource,
-} from "./resources/reactions.js"
+export type { ReactionRequest, ReactionsResource } from "./resources/reactions.js"
 export type { RelationsResource } from "./resources/relations.js"
 export type { SearchResource } from "./resources/search.js"
 export type { TopicsResource } from "./resources/topics.js"

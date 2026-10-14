@@ -273,10 +273,13 @@ describe("moderation", () => {
 
     expect(privateProfileSchema.parse(me.body).role).toBe("moderator")
 
-    await request(server)
+    // The new moderator still needs two-step verification before the tools open.
+    const withoutTwoFactor = await request(server)
       .get("/api/v1/moderation/reports")
       .set(bearer(member.auth.session.token))
-      .expect(200)
+      .expect(403)
+
+    expect(withoutTwoFactor.body.error.code).toBe("TWO_FACTOR_REQUIRED")
 
     await request(server)
       .put(`/api/v1/moderation/users/${admin.auth.user.handle}/role`)

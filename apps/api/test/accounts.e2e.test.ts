@@ -124,14 +124,15 @@ describe("account and personal data", () => {
     await request(server).get("/api/v1/users/me").set(bearer(token)).expect(401)
 
     const newToken = await login({ server, email: input.email, password: input.password })
-    const status = await request(server).get("/api/v1/me/deletion").set(bearer(newToken))
+    const me = await request(server).get("/api/v1/users/me").set(bearer(newToken)).expect(200)
 
     expect(accountDeletionStatusSchema.parse(scheduled.body).scheduledFor).not.toBeNull()
 
-    expect(accountDeletionStatusSchema.parse(status.body)).toEqual({
-      scheduledFor: null,
-      deleteContributions: false,
-    })
+    expect(me.body.deletionScheduledAt).toBeNull()
+
+    expect(emails.lastTo(input.email)?.subject).toBe(
+      "A exclusão da sua conta do Contraponha foi cancelada",
+    )
   })
 
   it("erases the account after the grace period and keeps others' discussions readable", async () => {

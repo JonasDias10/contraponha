@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+name: Save a post
+---
+- runFlow: subflows/sign-in.yaml
+- tapOn: "Escrever"
+- tapOn: "Título (opcional)"
+- inputText: "Tarifa zero funciona?"
+- tapOn: "Escreva com calma. Um bom post traz contexto, dados e uma pergunta."
+- inputText: "Quero ler com calma depois."
+- hideKeyboard
+- tapOn: "Publicar"
+- extendedWaitUntil:
+    visible: "Tarifa zero funciona?"
+    timeout: 15000
+- tapOn: "Salvar"
+- assertVisible: "Remover dos salvos"

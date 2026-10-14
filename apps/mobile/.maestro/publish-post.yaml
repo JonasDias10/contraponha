@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+name: Publish a post
+tags:
+  - smoke
+---
+- runFlow: subflows/sign-in.yaml
+- tapOn: "Escrever"
+- tapOn: "Título (opcional)"
+- inputText: "Ciclovias reduzem acidentes?"
+- tapOn: "Escreva com calma. Um bom post traz contexto, dados e uma pergunta."
+- inputText: "Os dados de Fortaleza sugerem que sim. O que mostram as outras cidades?"
+- hideKeyboard
+- tapOn: "Publicar"
+- extendedWaitUntil:
+    visible: "Ciclovias reduzem acidentes?"
+    timeout: 15000

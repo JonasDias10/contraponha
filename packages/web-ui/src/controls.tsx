@@ -3,8 +3,8 @@
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 import * as SwitchPrimitive from "@radix-ui/react-switch"
-import * as TabsPrimitive from "@radix-ui/react-tabs"
 import { Check } from "lucide-react"
+import { createContext, use } from "react"
 
 import { cn } from "./cn.js"
 
@@ -63,15 +63,40 @@ export function RadioItem({
   )
 }
 
-// Two or three mutually exclusive views, as in "Following | Discover".
-export const Segmented = TabsPrimitive.Root
+interface SegmentedState {
+  value: string | undefined
+  onValueChange: ((value: string) => void) | undefined
+}
+
+const SegmentedContext = createContext<SegmentedState>({
+  value: undefined,
+  onValueChange: undefined,
+})
+
+export interface SegmentedProps extends SegmentedState {
+  children: React.ReactNode
+}
+
+// Two or three mutually exclusive views, as in "Following | Discover". A radio group, not
+// tabs: the choice filters the content below instead of switching between tab panels.
+export function Segmented({ value, onValueChange, children }: SegmentedProps): React.JSX.Element {
+  return <SegmentedContext value={{ value, onValueChange }}>{children}</SegmentedContext>
+}
 
 export function SegmentedList({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>): React.JSX.Element {
+}: Omit<
+  React.ComponentProps<typeof RadioGroupPrimitive.Root>,
+  "value" | "onValueChange"
+>): React.JSX.Element {
+  const { value, onValueChange } = use(SegmentedContext)
+
   return (
-    <TabsPrimitive.List
+    <RadioGroupPrimitive.Root
+      value={value}
+      onValueChange={onValueChange}
+      orientation="horizontal"
       className={cn("flex gap-1 rounded-[12px] bg-surface-sunken p-1", className)}
       {...props}
     />
@@ -81,16 +106,14 @@ export function SegmentedList({
 export function SegmentedItem({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger>): React.JSX.Element {
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item>): React.JSX.Element {
   return (
-    <TabsPrimitive.Trigger
+    <RadioGroupPrimitive.Item
       className={cn(
-        "grid h-9 flex-1 place-items-center rounded-[9px] px-3 text-sm font-medium whitespace-nowrap text-muted data-[state=active]:bg-surface-raised data-[state=active]:font-semibold data-[state=active]:text-ink data-[state=active]:shadow-e1",
+        "grid h-9 flex-1 place-items-center rounded-[9px] px-3 text-sm font-medium whitespace-nowrap text-muted data-[state=checked]:bg-surface-raised data-[state=checked]:font-semibold data-[state=checked]:text-ink data-[state=checked]:shadow-e1",
         className,
       )}
       {...props}
     />
   )
 }
-
-export const SegmentedContent = TabsPrimitive.Content

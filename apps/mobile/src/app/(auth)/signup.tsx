@@ -10,6 +10,7 @@ import { StyleSheet, View } from "react-native"
 import { z } from "zod"
 
 import { AuthScreen } from "@/components/auth/auth-screen"
+import { HumanCheck, isHumanCheckEnabled } from "@/components/auth/human-check"
 import { openLegalPage } from "@/components/auth/legal-links"
 import { PasswordStrengthMeter } from "@/components/auth/password-strength-meter"
 import { Button } from "@/components/ui/button"
@@ -62,6 +63,8 @@ export default function SignUpScreen(): React.JSX.Element {
   const api = useApi()
   const { signIn } = useSession()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [humanToken, setHumanToken] = useState<string | null>(null)
+  const [humanCheckRound, setHumanCheckRound] = useState(0)
 
   const {
     control,
@@ -102,10 +105,20 @@ export default function SignUpScreen(): React.JSX.Element {
     }
 
     try {
-      const auth = await api.auth.register({ ...values, acceptedTerms: true, locale })
+      const auth = await api.auth.register({
+        ...values,
+        acceptedTerms: true,
+        locale,
+        humanCheckToken: humanToken ?? undefined,
+      })
 
       await signIn(auth)
     } catch (error) {
+      // A Turnstile token works once; a new check starts for the next attempt.
+      setHumanToken(null)
+
+      setHumanCheckRound((round) => round + 1)
+
       const issues = validationIssues(error)
 
       for (const { path } of issues) if (isFieldName(path)) setError(path, { type: "server" })
@@ -249,11 +262,13 @@ export default function SignUpScreen(): React.JSX.Element {
             </View>
           )}
         />
+        <HumanCheck key={humanCheckRound} onToken={setHumanToken} />
         <Button
           size="lg"
           isBlock
           label={t("web.common.continue")}
           isLoading={isSubmitting}
+          disabled={isHumanCheckEnabled && !humanToken}
           onPress={() => void handleSubmit(onSubmit)()}
         />
       </View>
