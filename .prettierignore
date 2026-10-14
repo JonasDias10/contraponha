@@ -3,6 +3,8 @@ build
 .expo
 next-env.d.ts
 coverage
+test-results
+playwright-report
 .turbo
 pnpm-lock.yaml
 packages/database/migrations/meta
