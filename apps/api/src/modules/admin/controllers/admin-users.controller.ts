@@ -102,7 +102,8 @@ export class AdminUsersController {
   @RequireRole(UserRole.ADMIN)
   @ApiOperation({
     summary: "Grant the verified badge, or change its category",
-    description: "Admins only. The note says how the identity was checked and goes to the audit log.",
+    description:
+      "Admins only. The note says how the identity was checked and goes to the audit log.",
   })
   @ApiZodBody(grantVerificationInputSchema)
   @ApiOkResponse({ schema: toOpenApiSchema(adminUserDetailSchema) })
