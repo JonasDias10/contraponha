@@ -108,7 +108,7 @@ export const hub: Messages["hub"] = {
     removePhotoLead: "The photo is deleted and the initials show again. It is recorded in the log.",
     photoRemoved: "Photo removed.",
     history: "Suspension history",
-    noHistory: "No suspensions so far.",
+    noHistory: "This account has never been suspended.",
     until: "Until {date}",
     forever: "No end date",
     liftedOn: "Lifted on {date}",

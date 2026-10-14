@@ -368,7 +368,7 @@ export const web = {
     reposts: "{count} republicações",
     reposts_one: "{count} republicação",
     quotesTitle: "Citações",
-    noQuotes: "Ninguém citou este post ainda.",
+    noQuotes: "Quando alguém citar este post, a citação aparece aqui.",
     quoting: "Citando",
     removed: "Este post foi removido.",
     removeQuote: "Remover citação",

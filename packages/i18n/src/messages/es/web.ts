@@ -374,7 +374,7 @@ export const web: Messages["web"] = {
     reposts: "{count} republicaciones",
     reposts_one: "{count} republicación",
     quotesTitle: "Citas",
-    noQuotes: "Nadie ha citado este post todavía.",
+    noQuotes: "Cuando alguien cite este post, la cita aparece aquí.",
     quoting: "Citando",
     removed: "Este post fue eliminado.",
     removeQuote: "Quitar cita",

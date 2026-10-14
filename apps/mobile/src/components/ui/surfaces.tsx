@@ -53,7 +53,7 @@ export function EmptyState({
           {description}
         </AppText>
       ) : null}
-      {action}
+      {action ? <View style={styles.emptyAction}>{action}</View> : null}
     </View>
   )
 }
@@ -119,7 +119,7 @@ export function ErrorView({ onRetry }: ErrorViewProps): React.JSX.Element {
         title={t("web.common.somethingWentWrong")}
         action={
           onRetry ? (
-            <Button variant="secondary" label={t("web.common.retry")} onPress={onRetry} />
+            <Button variant="secondary" isBlock label={t("web.common.retry")} onPress={onRetry} />
           ) : null
         }
       />
@@ -138,6 +138,7 @@ export function Skeleton({ style }: Pick<ViewProps, "style">): React.JSX.Element
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, padding: space.lg },
   empty: { alignItems: "center", gap: space.md, paddingVertical: 48, paddingHorizontal: space.xxl },
+  emptyAction: { alignSelf: "stretch", marginTop: space.sm },
   center: { textAlign: "center" },
   banner: {
     flexDirection: "row",
