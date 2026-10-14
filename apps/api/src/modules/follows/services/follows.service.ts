@@ -155,6 +155,10 @@ export class FollowsService {
     })
   }
 
+  listFolloweeIds(followerId: string): Promise<string[]> {
+    return this.followsRepository.listFolloweeIds(followerId)
+  }
+
   async followedAmong({ followerId, userIds }: FollowedAmongRequest): Promise<FollowedAmong> {
     const followed = await this.followsRepository.listFollowedAmong({
       followerId,

@@ -20,6 +20,20 @@ export interface CreatePostData {
   body: string
   sources: ContentSourceValue[]
   replyPolicy: ReplyPolicy
+  quotedPostId: string | null
+}
+
+export interface IncrementShareCountParams {
+  id: string
+  counter: "repostCount" | "quoteCount"
+  delta: 1 | -1
+  executor?: DatabaseExecutor
+}
+
+export interface ListQuotesParams {
+  postId: string
+  beforeId: string | undefined
+  limit: number
 }
 
 export interface UpdatePostData {
@@ -184,6 +198,33 @@ export class PostsRepository {
       .returning({ id: posts.id })
 
     return deleted.length > 0
+  }
+
+  async incrementShareCount({
+    id,
+    counter,
+    delta,
+    executor = this.db,
+  }: IncrementShareCountParams): Promise<void> {
+    await executor
+      .update(posts)
+      .set({ [counter]: sql`${posts[counter]} + ${delta}` })
+      .where(eq(posts.id, id))
+  }
+
+  listQuotes({ postId, beforeId, limit }: ListQuotesParams): Promise<Post[]> {
+    return this.db
+      .select()
+      .from(posts)
+      .where(
+        and(
+          eq(posts.quotedPostId, postId),
+          isNull(posts.deletedAt),
+          beforeId ? lt(posts.id, beforeId) : undefined,
+        ),
+      )
+      .orderBy(desc(posts.id))
+      .limit(limit)
   }
 
   async incrementCommentCount({

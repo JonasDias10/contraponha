@@ -14,6 +14,7 @@ import {
   Literata_700Bold,
 } from "@expo-google-fonts/literata"
 import * as Sentry from "@sentry/react-native"
+import { useRealtimeStream } from "@contraponha/client-core/react"
 import { focusManager } from "@tanstack/react-query"
 import { useFonts } from "expo-font"
 import { SplashScreen, Stack } from "expo-router"
@@ -44,7 +45,11 @@ function RootNavigator(): React.JSX.Element | null {
   const isReady = preferences.isLoaded && !isRestoring && !isLoading
   const needsOnboarding = viewer !== null && !viewer.isOnboarded
 
-  usePushNotifications(isReady && isSignedIn && viewer !== null && !needsOnboarding)
+  const isInApp = isReady && isSignedIn && viewer !== null && !needsOnboarding
+
+  usePushNotifications(isInApp)
+
+  useRealtimeStream(isInApp)
 
   useEffect(() => {
     void SystemUI.setBackgroundColorAsync(palette.surface)

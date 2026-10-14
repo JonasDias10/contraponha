@@ -21,6 +21,11 @@ export interface ListUserPostsRequest {
   query?: PaginationQuery
 }
 
+export interface ListQuotesRequest {
+  postId: string
+  query?: PaginationQuery
+}
+
 export interface PostsResource {
   create(input: CreatePostInput): Promise<PostView>
   get(postId: string): Promise<PostView>
@@ -34,12 +39,15 @@ export interface PostsResource {
   removeBookmark(postId: string): Promise<void>
   listBookmarks(query?: PaginationQuery): Promise<Page<PostView>>
   countBookmarks(): Promise<BookmarkCount>
+  repost(postId: string): Promise<void>
+  unrepost(postId: string): Promise<void>
+  listQuotes(request: ListQuotesRequest): Promise<Page<PostView>>
 }
 
 interface PostActionParams {
   method: "PUT" | "DELETE"
   postId: string
-  action: "pin" | "bookmark"
+  action: "pin" | "bookmark" | "repost"
 }
 
 export function createPostsResource(request: HttpClient): PostsResource {
@@ -98,5 +106,13 @@ export function createPostsResource(request: HttpClient): PostsResource {
       }),
     countBookmarks: () =>
       request({ method: "GET", path: "/bookmarks/count", schema: bookmarkCountSchema }),
+    repost: (postId) => act({ method: "PUT", postId, action: "repost" }),
+    unrepost: (postId) => act({ method: "DELETE", postId, action: "repost" }),
+    listQuotes: ({ postId, query = {} }) =>
+      request({
+        method: "GET",
+        path: withQuery({ path: `/posts/${encodeURIComponent(postId)}/quotes`, query }),
+        schema: postPageSchema,
+      }),
   }
 }

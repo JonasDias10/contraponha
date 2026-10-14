@@ -133,4 +133,13 @@ export class FollowsRepository {
 
     return rows.map((row) => ({ userId: String(row.userId), createdAt: row.createdAt }))
   }
+
+  async listFolloweeIds(followerId: string): Promise<string[]> {
+    const rows = await this.db
+      .select({ id: follows.followeeId })
+      .from(follows)
+      .where(eq(follows.followerId, followerId))
+
+    return rows.map(({ id }) => id)
+  }
 }

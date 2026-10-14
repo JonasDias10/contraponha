@@ -9,7 +9,7 @@ import {
 } from "@contraponha/types"
 import { z } from "zod"
 
-import { buildPage, decodeCursor } from "#src/common/pagination/cursor.js"
+import { buildPage, decodeCursor, encodeCursor } from "#src/common/pagination/cursor.js"
 import {
   mergeCandidates,
   NO_EXCLUSIONS,
@@ -24,8 +24,12 @@ import {
 import { FeedRepository } from "#src/modules/feed/repositories/feed.repository.js"
 import { PostsService } from "#src/modules/posts/services/posts.service.js"
 import { TopicsService } from "#src/modules/topics/services/topics.service.js"
+import { toPublicProfile } from "#src/modules/users/domain/user.js"
+import { UsersService } from "#src/modules/users/services/users.service.js"
 
 const idCursorSchema = z.object({ id: z.uuid() })
+
+const activityCursorSchema = z.object({ at: z.iso.datetime(), id: z.uuid() })
 
 const offsetCursorSchema = z.object({
   offset: z.coerce.number().int().min(0).max(FEATURED_MAX_OFFSET),
@@ -74,19 +78,52 @@ export class FeedService {
     private readonly feedRepository: FeedRepository,
     private readonly postsService: PostsService,
     private readonly topicsService: TopicsService,
+    private readonly usersService: UsersService,
   ) {}
 
+  // Pages by activity (when a post was published or reposted). A post shared by several
+  // people shows once per page, at its most recent activity.
   async following({ userId, cursor, limit }: FollowingFeedParams): Promise<Page<FeedItem>> {
-    const position = decodeCursor({ cursor, schema: idCursorSchema })
+    const position = decodeCursor({ cursor, schema: activityCursorSchema })
 
-    const rows = await this.feedRepository.listFollowing({
+    const activities = await this.feedRepository.listFollowing({
       userId,
-      beforeId: position?.id,
+      before: position ? { at: new Date(position.at), id: position.id } : undefined,
       limit: limit + 1,
     })
 
+    const page = activities.slice(0, limit)
+    const last = page.at(-1)
+
+    const unique = page.filter(
+      (activity, index) => page.findIndex(({ postId }) => postId === activity.postId) === index,
+    )
+
+    const posts = await this.postsService.findByIds(unique.map(({ postId }) => postId))
+    const postsById = new Map(posts.map((post) => [post.id, post]))
+    const rows = unique.flatMap(({ postId }) => postsById.get(postId) ?? [])
     const views = await this.postsService.buildViews({ rows, viewerId: userId })
-    return this.chronologicalPage({ views, limit })
+    const viewsById = new Map(views.map((view) => [view.id, view]))
+
+    const reposters = await this.usersService.findByIds(
+      unique.flatMap(({ reposterId }) => (reposterId ? [reposterId] : [])),
+    )
+
+    const items = unique.flatMap(({ postId, reposterId }): FeedItem[] => {
+      const post = viewsById.get(postId)
+      const reposter = reposterId ? reposters.get(reposterId) : undefined
+
+      return post
+        ? [{ post, reason: null, repostedBy: reposter ? toPublicProfile(reposter) : null }]
+        : []
+    })
+
+    const hasMore = activities.length > limit && last !== undefined
+
+    return {
+      items,
+      nextCursor: hasMore ? encodeCursor({ at: last.at.toISOString(), id: last.activityId }) : null,
+    }
   }
 
   // Scores change between requests, so this feed pages by offset and stops at a cap.
@@ -112,6 +149,7 @@ export class FeedService {
     const items = views.map((post): FeedItem => ({
       post,
       reason: discoverReason({ post, matchedTopicSlug: matchedTopics.get(post.id) ?? null }),
+      repostedBy: null,
     }))
 
     const nextOffset = offset + limit
@@ -178,7 +216,7 @@ export class FeedService {
     return buildPage({
       rows: views,
       limit,
-      toItem: (post): FeedItem => ({ post, reason: null }),
+      toItem: (post): FeedItem => ({ post, reason: null, repostedBy: null }),
       toCursor: (post) => ({ id: post.id }),
     })
   }

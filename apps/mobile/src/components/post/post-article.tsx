@@ -7,7 +7,9 @@ import { Pressable, Share, StyleSheet, View } from "react-native"
 
 import { AuthorLine } from "@/components/post/author-line"
 import { Markdown } from "@/components/post/markdown"
+import { LinkPreviewCard } from "@/components/post/link-preview-card"
 import { MediaGrid } from "@/components/post/media-grid"
+import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import { PostMenu } from "@/components/post/post-menu"
 import { ReactionBar } from "@/components/post/reaction-bar"
 import { RemovedNotice } from "@/components/post/removed-notice"
@@ -109,6 +111,8 @@ export function PostArticle({ post }: PostArticleProps): React.JSX.Element {
       </View>
       <Markdown text={post.body ?? ""} fontSize={18} />
       <MediaGrid media={post.media} />
+      {post.quotedPost ? <QuotedPostCard quoted={post.quotedPost} /> : null}
+      {post.linkPreview ? <LinkPreviewCard preview={post.linkPreview} /> : null}
       {post.sources.length > 0 ? (
         <View style={styles.sources} accessibilityLabel={t("web.post.sourcesLabel")}>
           {post.sources.map((source) => (
@@ -117,6 +121,20 @@ export function PostArticle({ post }: PostArticleProps): React.JSX.Element {
         </View>
       ) : null}
       <TopicTags topics={post.topics} />
+      {post.repostCount > 0 || post.quoteCount > 0 ? (
+        <View style={styles.shares}>
+          {post.repostCount > 0 ? (
+            <AppText variant="small" tone="muted">
+              {t("web.repost.reposts", { count: post.repostCount })}
+            </AppText>
+          ) : null}
+          {post.quoteCount > 0 ? (
+            <TextLink href={{ pathname: "/posts/[postId]/quotes", params: { postId: post.id } }}>
+              {t("web.repost.quotes", { count: post.quoteCount })}
+            </TextLink>
+          ) : null}
+        </View>
+      ) : null}
       <ReactionBar
         reactions={reactions.reactions}
         counts={reactions.counts}
@@ -146,6 +164,7 @@ export function PostArticle({ post }: PostArticleProps): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  shares: { flexDirection: "row", flexWrap: "wrap", gap: space.lg },
   article: { gap: space.xl },
   context: { gap: space.xs },
   trailing: { flexDirection: "row", alignItems: "center", gap: space.xs },

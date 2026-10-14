@@ -11,6 +11,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core"
 
 import {
@@ -39,6 +40,10 @@ export const posts = pgTable(
     pinnedAt: timestamp({ withTimezone: true }),
     commentCount: integer().notNull().default(0),
     highlightedCommentCount: integer().notNull().default(0),
+    // A quote is a post that embeds another one; the quote stays if the original goes away.
+    quotedPostId: uuid().references((): AnyPgColumn => posts.id, { onDelete: "set null" }),
+    repostCount: integer().notNull().default(0),
+    quoteCount: integer().notNull().default(0),
     ...contentColumns,
     searchVector: tsvector().generatedAlwaysAs(
       (): SQL =>
@@ -71,6 +76,13 @@ export const posts = pgTable(
       "posts_counts_nonnegative",
       sql`${table.commentCount} >= 0 and ${table.highlightedCommentCount} >= 0`,
     ),
+    check(
+      "posts_share_counts_nonnegative",
+      sql`${table.repostCount} >= 0 and ${table.quoteCount} >= 0`,
+    ),
+    index("posts_quoted_post_id_idx")
+      .on(table.quotedPostId)
+      .where(sql`${table.quotedPostId} is not null`),
     check("posts_reaction_counts_nonnegative", reactionCountsCheck(table)),
   ],
 )
@@ -95,3 +107,27 @@ export const postRevisions = pgTable(
 
 export type PostRow = typeof posts.$inferSelect
 export type PostRevisionRow = typeof postRevisions.$inferSelect
+
+// Sharing someone's post, as is, with the reposter's followers.
+export const reposts = pgTable(
+  "reposts",
+  {
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    postId: uuid()
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("reposts_user_post_unique").on(table.userId, table.postId),
+    index("reposts_user_id_id_idx").on(table.userId, table.id),
+    index("reposts_post_id_idx").on(table.postId),
+  ],
+)
+
+export type RepostRow = typeof reposts.$inferSelect

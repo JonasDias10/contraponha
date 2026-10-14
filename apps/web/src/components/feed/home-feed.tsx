@@ -4,8 +4,10 @@ import { Bookmark, Compass, Search, Sunrise } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { queryKeys } from "@contraponha/client-core"
+import { usePendingFeedPosts } from "@contraponha/client-core/react"
 
 import { FeedList } from "@/components/feed/feed-list"
+import { NewItemsPill } from "@/components/feed/new-items-pill"
 import {
   Button,
   Card,
@@ -26,6 +28,7 @@ export function HomeFeed(): React.JSX.Element {
   const viewer = useViewer()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const pending = usePendingFeedPosts()
   const tab: HomeTab = viewer && searchParams.get("tab") !== "discover" ? "following" : "discover"
 
   const changeTab = (next: string): void => {
@@ -48,6 +51,16 @@ export function HomeFeed(): React.JSX.Element {
       <p className="text-[13px] text-subtle">
         {tab === "following" ? t("web.feed.chronological") : t("web.feed.discoverNote")}
       </p>
+      {tab === "following" && pending.count > 0 ? (
+        <NewItemsPill
+          label={t("web.realtime.newPosts", { count: pending.count })}
+          onReveal={() => {
+            window.scrollTo({ top: 0, behavior: "smooth" })
+
+            void pending.reveal()
+          }}
+        />
+      ) : null}
       {tab === "following" ? (
         <FeedList
           key="following"

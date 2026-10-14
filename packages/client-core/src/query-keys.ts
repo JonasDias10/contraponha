@@ -33,6 +33,10 @@ export interface ConnectionsKeyParams {
 // One place for every cache key, so invalidations after mutations stay consistent.
 export const queryKeys = {
   me: ["me"] as const,
+  realtime: {
+    pendingFeedPosts: ["realtime", "feed"] as const,
+    pendingComments: (postId: string) => ["realtime", "comments", postId] as const,
+  },
   relations: {
     all: ["relations"] as const,
     blocks: ["relations", "blocks"] as const,
@@ -47,6 +51,7 @@ export const queryKeys = {
     discussions: ["feed", "discussions"] as const,
   },
   post: (postId: string) => ["post", postId] as const,
+  quotes: (postId: string) => ["post", postId, "quotes"] as const,
   postRevisions: (postId: string) => ["post", postId, "revisions"] as const,
   comments: ({ postId, sort }: CommentsKeyParams) => ["comments", postId, sort] as const,
   commentsOfPost: (postId: string) => ["comments", postId] as const,

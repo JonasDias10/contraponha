@@ -24,6 +24,8 @@ const PREFERENCE_BY_TYPE: Record<NotificationTypeValue, PreferenceKey | null> = 
   post_reacted: "reactions",
   comment_reacted: "reactions",
   user_followed: "follows",
+  post_reposted: "reactions",
+  post_quoted: "mentions",
   content_removed: null,
   report_resolved: null,
 }
@@ -35,6 +37,7 @@ const GROUPABLE_TYPES: ReadonlySet<NotificationTypeValue> = new Set([
   "comment_reacted",
   "source_requested",
   "user_followed",
+  "post_reposted",
 ])
 
 export const MODERATION_TYPES: readonly NotificationTypeValue[] = [

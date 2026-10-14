@@ -43,3 +43,19 @@ export async function renderVariants(input: Uint8Array): Promise<RenderedImage> 
 
   return { width, height, variants }
 }
+
+export interface RenderWebpParams {
+  input: Uint8Array
+  width: number
+}
+
+// One oriented, metadata-free WebP no wider than width (link preview images).
+export async function renderWebp({ input, width }: RenderWebpParams): Promise<RenderedVariant> {
+  const { data, info } = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS })
+    .rotate()
+    .resize({ width, withoutEnlargement: true })
+    .webp({ quality: MEDIA_VARIANT_QUALITY })
+    .toBuffer({ resolveWithObject: true })
+
+  return { width: info.width, height: info.height, body: new Uint8Array(data) }
+}

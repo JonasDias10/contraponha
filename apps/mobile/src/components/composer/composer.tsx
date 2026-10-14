@@ -8,9 +8,9 @@ import {
   type ComposerOutput,
   type ComposerValues,
 } from "@contraponha/client-core"
-import type { PostView } from "@contraponha/types"
+import type { PostView, QuotedPostView } from "@contraponha/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { router } from "expo-router"
 import { ImagePlus, X } from "lucide-react-native"
 import { useEffect, useState } from "react"
@@ -27,6 +27,7 @@ import {
 
 import { BodyField } from "@/components/composer/body-field"
 import { ImageStrip } from "@/components/composer/image-strip"
+import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import { PublishChecklist } from "@/components/composer/publish-checklist"
 import { SourcesField } from "@/components/composer/sources-field"
 import { TopicsField } from "@/components/composer/topics-field"
@@ -62,13 +63,39 @@ function valuesFrom(post: PostView): ComposerValues {
   }
 }
 
-export interface ComposerProps {
-  post?: PostView
+const QUOTE_EXCERPT_LENGTH = 280
+
+// The post being quoted, shown under the text; a missing or removed post is left out.
+function useQuotedPost(postId: string | undefined): QuotedPostView | undefined {
+  const api = useApi()
+
+  const { data } = useQuery({
+    queryKey: queryKeys.post(postId ?? ""),
+    queryFn: () => api.posts.get(postId ?? ""),
+    enabled: Boolean(postId),
+  })
+
+  if (!data || data.isDeleted) return undefined
+
+  return {
+    id: data.id,
+    title: data.title,
+    excerpt: data.body ? data.body.slice(0, QUOTE_EXCERPT_LENGTH) : null,
+    author: data.author,
+    createdAt: data.createdAt,
+    isDeleted: false,
+  }
 }
 
-export function Composer({ post }: ComposerProps): React.JSX.Element {
+export interface ComposerProps {
+  post?: PostView
+  quotedPostId?: string
+}
+
+export function Composer({ post, quotedPostId }: ComposerProps): React.JSX.Element {
   const { t } = useI18n()
   const api = useApi()
+  const quoted = useQuotedPost(quotedPostId)
   const viewer = useRequiredViewer()
   const toast = useToast()
   const palette = usePalette()
@@ -121,6 +148,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
         topics: parsed.topics,
         replyPolicy: parsed.replyPolicy,
         mediaIds: images.images.map(({ mediaId }) => mediaId),
+        quotedPostId: quoted?.id,
       })
     },
     onSuccess: async (saved) => {
@@ -247,6 +275,14 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
             isUploading={images.isUploading}
             onRemove={images.remove}
           />
+          {quoted ? (
+            <View style={styles.quote}>
+              <AppText variant="smallStrong" tone="muted">
+                {t("web.repost.quoting")}
+              </AppText>
+              <QuotedPostCard quoted={quoted} />
+            </View>
+          ) : null}
           <SourcesField control={control} errors={formState.errors} />
           {isEditing ? (
             <Controller
@@ -276,6 +312,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  quote: { gap: space.xs },
   flex: { flex: 1 },
   grabber: { alignSelf: "center", width: 36, height: 5, borderRadius: 3, marginTop: space.sm },
   header: {

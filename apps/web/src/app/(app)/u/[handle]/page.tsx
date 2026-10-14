@@ -14,9 +14,15 @@ export async function generateMetadata({ params }: PageProps<"/u/[handle]">): Pr
   const { handle } = await params
   const profile = await loadProfile(decodeURIComponent(handle))
 
+  const title = `${profile.displayName} (@${profile.handle})`
+  const description = profile.bio ?? profile.headline ?? undefined
+
   return {
-    title: `${profile.displayName} (@${profile.handle})`,
-    description: profile.bio ?? undefined,
+    title,
+    description,
+    openGraph: { title, description, type: "profile", url: `/u/${profile.handle}` },
+    twitter: { card: "summary_large_image", title, description },
+    alternates: { canonical: `/u/${profile.handle}` },
   }
 }
 

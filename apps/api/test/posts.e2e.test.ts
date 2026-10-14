@@ -50,7 +50,12 @@ describe("posts", () => {
 
       expect(fetched).toEqual({ ...post, viewer: null })
 
-      expect(post.viewer).toEqual({ reactions: [], isBookmarked: false, canReply: true })
+      expect(post.viewer).toEqual({
+        reactions: [],
+        isBookmarked: false,
+        canReply: true,
+        hasReposted: false,
+      })
     })
 
     it("requires a session and a body within the size limit", async () => {

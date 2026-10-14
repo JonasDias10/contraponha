@@ -10,6 +10,8 @@ import {
   type ContentRevisionList,
   type PostSummary,
   type PostView,
+  type LinkPreviewView,
+  type QuotedPostView,
 } from "@contraponha/types"
 import { z } from "zod"
 
@@ -49,6 +51,7 @@ export const createPostInputSchema = z.object({
   topics: topicNameListSchema.optional(),
   replyPolicy: replyPolicySchema.optional(),
   mediaIds: uniqueIds.optional(),
+  quotedPostId: z.uuid().optional(),
 })
 
 export const updatePostInputSchema = z.object({
@@ -61,6 +64,25 @@ export const updatePostInputSchema = z.object({
 
 export type CreatePostInput = z.input<typeof createPostInputSchema>
 export type UpdatePostInput = z.input<typeof updatePostInputSchema>
+
+export const quotedPostSchema = z.object({
+  id: z.uuid(),
+  title: z.string().nullable(),
+  excerpt: z.string().nullable(),
+  author: publicProfileSchema.nullable(),
+  createdAt: z.iso.datetime(),
+  isDeleted: z.boolean(),
+}) satisfies z.ZodType<QuotedPostView>
+
+export const linkPreviewSchema = z.object({
+  url: z.url(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  siteName: z.string().nullable(),
+  imageUrl: z.url().nullable(),
+  imageWidth: z.number().int().positive().nullable(),
+  imageHeight: z.number().int().positive().nullable(),
+}) satisfies z.ZodType<LinkPreviewView>
 
 export const postViewSchema = z.object({
   id: z.uuid(),
@@ -78,6 +100,10 @@ export const postViewSchema = z.object({
   media: z.array(mediaViewSchema),
   commentCount: z.number().int().nonnegative(),
   highlightedCommentCount: z.number().int().nonnegative(),
+  repostCount: z.number().int().nonnegative(),
+  quoteCount: z.number().int().nonnegative(),
+  quotedPost: quotedPostSchema.nullable(),
+  linkPreview: linkPreviewSchema.nullable(),
   reactionCounts: reactionCountsSchema,
   createdAt: z.iso.datetime(),
   editedAt: z.iso.datetime().nullable(),
@@ -87,6 +113,7 @@ export const postViewSchema = z.object({
       reactions: z.array(reactionKindSchema),
       isBookmarked: z.boolean(),
       canReply: z.boolean(),
+      hasReposted: z.boolean(),
     })
     .nullable(),
 }) satisfies z.ZodType<PostView>

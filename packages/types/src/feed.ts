@@ -1,5 +1,6 @@
 import type { PostView } from "./posts.js"
 import type { TopicSummary } from "./topics.js"
+import type { PublicProfile } from "./users.js"
 
 export const FeedReasonType = {
   FOLLOWED_TOPIC: "followed_topic",
@@ -17,6 +18,8 @@ export interface FeedReason {
 export interface FeedItem {
   post: PostView
   reason: FeedReason | null
+  // Set when the post is in the Following feed because someone you follow reposted it.
+  repostedBy: PublicProfile | null
 }
 
 export interface DiscussionSummary {

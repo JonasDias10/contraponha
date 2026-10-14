@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { PostView } from "@contraponha/types"
+import type { PostView, QuotedPostView } from "@contraponha/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ArrowLeft, ImagePlus } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -25,6 +25,7 @@ import { PublishChecklist } from "@/components/composer/publish-checklist"
 import { SourcesField } from "@/components/composer/sources-field"
 import { toolButtonClasses } from "@/components/composer/tool-button"
 import { TopicsField } from "@/components/composer/topics-field"
+import { QuotedPostCard } from "@/components/post/quoted-post-card"
 import {
   Avatar,
   Banner,
@@ -56,9 +57,10 @@ function valuesFrom(post: PostView): ComposerValues {
 
 export interface ComposerProps {
   post?: PostView
+  quoted?: QuotedPostView
 }
 
-export function Composer({ post }: ComposerProps): React.JSX.Element {
+export function Composer({ post, quoted }: ComposerProps): React.JSX.Element {
   const { t } = useI18n()
   const api = useApi()
   const viewer = useViewer()
@@ -119,6 +121,7 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
         topics: parsed.topics,
         replyPolicy: parsed.replyPolicy,
         mediaIds: images.images.map(({ mediaId }) => mediaId),
+        quotedPostId: quoted?.id,
       })
     },
     onSuccess: async (saved) => {
@@ -230,6 +233,12 @@ export function Composer({ post }: ComposerProps): React.JSX.Element {
             onRemove={images.remove}
             isUploading={images.isUploading}
           />
+          {quoted ? (
+            <section className="flex flex-col gap-2">
+              <h2 className="text-sm font-semibold text-muted">{t("web.repost.quoting")}</h2>
+              <QuotedPostCard quoted={quoted} />
+            </section>
+          ) : null}
           <SourcesField control={control} register={register} errors={formState.errors} />
           {isEditing ? (
             <Field label={t("web.composer.editReason", { optional: t("web.common.optional") })}>

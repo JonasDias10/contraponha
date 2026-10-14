@@ -10,6 +10,7 @@ import { useBookmarkMutation } from "@contraponha/client-core/react"
 import type { ReactionsState } from "@contraponha/client-core/react"
 
 import { ReactionBar } from "@/components/post/reaction-bar"
+import { RepostMenu } from "@/components/post/repost-menu"
 import { REACTION_ICONS } from "@/lib/reactions"
 import { cn, useI18n, useViewer } from "@contraponha/web-ui"
 import { paths } from "@/lib/paths"
@@ -94,6 +95,7 @@ export function PostActions({ post, reactions }: PostActionsProps): React.JSX.El
         <MessageSquare aria-hidden className="size-5" />
         {t("web.post.contribute")}
       </Link>
+      <RepostMenu post={post} className={actClasses} />
       <span className="flex-1" />
       <button
         type="button"

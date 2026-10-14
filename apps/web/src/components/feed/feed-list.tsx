@@ -75,8 +75,8 @@ export function FeedList({ queryKey, load, empty, end }: FeedListProps): React.J
 
   return (
     <div className="flex flex-col gap-4">
-      {items.map(({ post, reason }) => (
-        <PostCard key={post.id} post={post} reason={reason} />
+      {items.map(({ post, reason, repostedBy }) => (
+        <PostCard key={post.id} post={post} reason={reason} repostedBy={repostedBy} />
       ))}
       {query.hasNextPage ? (
         <Button

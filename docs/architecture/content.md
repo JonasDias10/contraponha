@@ -105,6 +105,33 @@ Todas as referências a `users` usam `ON DELETE CASCADE`, então excluir uma con
 - Comentários removidos só aparecem na listagem enquanto tiverem respostas; respostas removidas não aparecem.
 - Não é possível editar, reagir ou comentar em conteúdo removido (`RESOURCE_NOT_FOUND`).
 
+## Republicar e citar
+
+| Rota                                   | Efeito                                       |
+| -------------------------------------- | -------------------------------------------- |
+| `PUT` / `DELETE /posts/:postId/repost` | Republica ou desfaz (idempotente)            |
+| `POST /posts` com `quotedPostId`       | Cria um post que cita outro                  |
+| `GET /posts/:postId/quotes`            | Posts que citam este, mais recentes primeiro |
+
+- **Republicar** compartilha o post como está com quem segue a pessoa. O feed Seguindo junta posts e reposts de quem a pessoa segue (e os dela), ordenados pela hora da atividade, com cursor `(activityAt, id)`. Cada item traz `repostedBy`; um post compartilhado por várias pessoas aparece uma vez por página, na atividade mais recente.
+- **Citar** cria um post novo com `quoted_post_id`. O post citado vem embutido (`quotedPost`); se o original for removido, a citação continua e mostra só o aviso. `ON DELETE SET NULL` mantém a citação até se o original for apagado de vez.
+- `posts.repost_count` e `posts.quote_count` são contadores denormalizados, mantidos na mesma transação e incluídos no `db:reconcile-counters`. Remover uma citação baixa o `quote_count` do original; a exclusão de conta desfaz os reposts da pessoa.
+- Bloqueios valem aqui também: não dá para republicar nem citar quem está num bloqueio com você (`INTERACTION_BLOCKED`), e reposts de autores ou de pessoas ocultas não aparecem.
+- Notificações novas: `post_reposted` (agrupada, segue a preferência de reações) e `post_quoted` (segue a preferência de menções e aponta para a citação).
+
+## Prévia de links
+
+O primeiro link de um post (a primeira fonte citada ou, sem fontes, o primeiro link do texto) ganha um cartão com título, descrição, site e imagem, lidos do Open Graph da página.
+
+- **Fora do caminho da publicação.** Depois de salvar ou editar o post, a API busca a prévia em segundo plano; o cartão aparece na próxima leitura. Prévias ficam em `link_previews`, uma por URL, compartilhadas por todos os posts com o mesmo link, e são renovadas depois de 7 dias (1 dia para links que falharam).
+- **Proteção contra SSRF.** O `safeFetch` só aceita http(s), sem credenciais na URL, e só conecta a endereços públicos: a checagem roda no endereço efetivamente conectado (inclusive após cada um dos no máximo 3 redirecionamentos), o que fecha a brecha de DNS rebinding, e IPs literais privados são recusados antes. Páginas são lidas até 512 KB, imagens até 5 MB, com 5 s de limite.
+- **Imagem copiada, nunca hotlink.** A imagem do Open Graph é baixada, reorientada, sem metadados e reduzida para WebP de 600 px em `posts/previews/`. Quem lê o post não carrega nada do site de origem, e uma imagem quebrada ou enorme lá não quebra o cartão.
+- Nos testes, `RemoteFetcher` é trocado por um falso com respostas prontas.
+
+## Compartilhar fora do Contraponha
+
+Posts e perfis têm Open Graph e Twitter Card completos (`summary_large_image`), com a URL canônica, e uma imagem 1200×630 gerada na hora (`opengraph-image.tsx`, com `ImageResponse`): a marca, o título (ou o começo do texto) e o autor. `SITE_URL` no web define a base das URLs absolutas.
+
 ## Bloquear e silenciar
 
 | Rota                                  | Efeito                                        |
