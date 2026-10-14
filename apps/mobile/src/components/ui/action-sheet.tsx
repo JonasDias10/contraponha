@@ -27,6 +27,7 @@ export function BottomSheet({
   return (
     <Modal visible={isOpen} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable
+        accessibilityRole="button"
         accessibilityLabel={t("web.common.close")}
         style={[styles.scrim, { backgroundColor: palette.scrim }]}
         onPress={onClose}

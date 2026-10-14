@@ -1,0 +1,29 @@
+# Signs in with a fresh account. The sign-in screen follows the device language, so it is
+# driven by test ids; after sign-in the app follows the account language (pt-BR).
+appId: ${APP_ID}
+---
+- runScript:
+    file: ../scripts/create-account.js
+    env:
+      API_URL: ${API_URL}
+      MAILPIT_URL: ${MAILPIT_URL}
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      true: ${EXPO_GO == "true"}
+    file: open-in-expo-go.yaml
+- tapOn:
+    id: welcome-sign-in
+- tapOn:
+    id: login-email
+- inputText: ${output.email}
+- tapOn:
+    id: login-password
+- inputText: ${output.password}
+- hideKeyboard
+- tapOn:
+    id: login-submit
+- extendedWaitUntil:
+    visible: "Início"
+    timeout: 20000

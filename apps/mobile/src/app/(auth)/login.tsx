@@ -89,6 +89,7 @@ export default function LoginScreen(): React.JSX.Element {
           name="email"
           render={({ field }) => (
             <TextField
+              testID="login-email"
               label={t("web.auth.email")}
               value={field.value}
               onChangeText={field.onChange}
@@ -107,6 +108,7 @@ export default function LoginScreen(): React.JSX.Element {
           name="password"
           render={({ field }) => (
             <TextField
+              testID="login-password"
               label={t("web.auth.password")}
               value={field.value}
               onChangeText={field.onChange}
@@ -124,6 +126,7 @@ export default function LoginScreen(): React.JSX.Element {
           {t("web.auth.forgotPassword")}
         </TextLink>
         <Button
+          testID="login-submit"
           size="lg"
           isBlock
           label={t("web.auth.signIn")}

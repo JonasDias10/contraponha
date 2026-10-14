@@ -101,6 +101,7 @@ export function DateField({
           onRequestClose={() => setIsOpen(false)}
         >
           <Pressable
+            accessibilityRole="button"
             accessibilityLabel={t("web.common.close")}
             style={[styles.scrim, { backgroundColor: palette.scrim }]}
             onPress={() => setIsOpen(false)}

@@ -1,0 +1,8 @@
+# Without a development build, the flows run inside Expo Go: open the project from Metro.
+appId: ${APP_ID}
+---
+- openLink: ${EXPO_URL}
+- extendedWaitUntil:
+    visible:
+      id: welcome-sign-in
+    timeout: 120000
