@@ -79,6 +79,7 @@ export default function HomeScreen(): React.JSX.Element {
                 action={
                   <Button
                     variant="secondary"
+                    isBlock
                     label={t("web.feed.discover")}
                     onPress={() => setTab("discover")}
                   />
@@ -96,11 +97,13 @@ export default function HomeScreen(): React.JSX.Element {
                   <View style={styles.endActions}>
                     <Button
                       variant="secondary"
+                      isBlock
                       label={t("web.feed.exploreDiscussions")}
                       onPress={() => setTab("discover")}
                     />
                     <Button
                       icon={Bookmark}
+                      isBlock
                       label={t("web.nav.saved")}
                       onPress={() => router.push("/saved")}
                     />
@@ -137,5 +140,5 @@ export default function HomeScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   header: { gap: space.md, marginBottom: space.lg },
   end: { marginTop: space.lg },
-  endActions: { gap: space.sm, alignItems: "center" },
+  endActions: { gap: space.sm },
 })

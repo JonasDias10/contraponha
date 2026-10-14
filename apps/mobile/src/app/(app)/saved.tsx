@@ -50,6 +50,7 @@ export default function SavedScreen(): React.JSX.Element {
               action={
                 <Button
                   variant="secondary"
+                  isBlock
                   label={t("web.saved.explore")}
                   onPress={() => router.navigate("/home")}
                 />
