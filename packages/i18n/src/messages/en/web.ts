@@ -371,7 +371,7 @@ export const web: Messages["web"] = {
     reposts: "{count} reposts",
     reposts_one: "{count} repost",
     quotesTitle: "Quotes",
-    noQuotes: "Nobody has quoted this post yet.",
+    noQuotes: "When someone quotes this post, the quote shows up here.",
     quoting: "Quoting",
     removed: "This post was removed.",
     removeQuote: "Remove quote",

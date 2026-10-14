@@ -106,7 +106,7 @@ export const hub = {
       "A foto é apagada e as iniciais voltam a aparecer. Fica registrado no histórico.",
     photoRemoved: "Foto removida.",
     history: "Histórico de suspensões",
-    noHistory: "Nenhuma suspensão até agora.",
+    noHistory: "Esta conta nunca foi suspensa.",
     until: "Até {date}",
     forever: "Sem prazo",
     liftedOn: "Encerrada em {date}",
