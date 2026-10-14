@@ -97,13 +97,22 @@ export function bearer(token: string): AuthorizationHeader {
 export interface SetRoleParams {
   userId: string
   role: UserRole
+  isTwoFactorEnabled?: boolean
 }
 
-export async function setRole({ userId, role }: SetRoleParams): Promise<void> {
+export async function setRole({
+  userId,
+  role,
+  isTwoFactorEnabled = role !== "member",
+}: SetRoleParams): Promise<void> {
   const connection = createDatabaseConnection({ url: inject("testDatabaseUrl") })
 
   try {
-    await connection.db.update(users).set({ role }).where(eq(users.id, userId))
+    // Staff routes require two-step verification; tests grant the role with it on.
+    await connection.db
+      .update(users)
+      .set({ role, twoFactorEnabledAt: isTwoFactorEnabled ? new Date() : null })
+      .where(eq(users.id, userId))
   } finally {
     await connection.close()
   }

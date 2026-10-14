@@ -9,6 +9,7 @@ import { Alert, StyleSheet, View } from "react-native"
 import { RelativeTime } from "@/components/post/relative-time"
 import { SettingsScreen } from "@/components/settings/settings-screen"
 import { SettingsSection } from "@/components/settings/settings-section"
+import { TwoFactorSection } from "@/components/settings/two-factor-section"
 import { Button } from "@/components/ui/button"
 import { Chip } from "@/components/ui/chip"
 import { Divider } from "@/components/ui/surfaces"
@@ -224,6 +225,7 @@ export default function AccountSettingsScreen(): React.JSX.Element {
     <SettingsScreen title={t("web.settings.account")}>
       <EmailSection />
       <PasswordSection />
+      <TwoFactorSection />
       <SessionsSection />
       <SignOutSection />
     </SettingsScreen>

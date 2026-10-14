@@ -69,6 +69,7 @@ export function toPrivateProfile(user: User): PrivateProfile {
     role: user.role,
     birthDate: user.birthDate,
     isOnboarded: user.onboardedAt !== null,
+    isTwoFactorEnabled: user.twoFactorEnabledAt !== null,
     deletionScheduledAt: user.deletionScheduledAt?.toISOString() ?? null,
   }
 }

@@ -76,5 +76,6 @@ export interface PrivateProfile extends PublicProfile {
   role: UserRole
   birthDate: string | null
   isOnboarded: boolean
+  isTwoFactorEnabled: boolean
   deletionScheduledAt: string | null
 }

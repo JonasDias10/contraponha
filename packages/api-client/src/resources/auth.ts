@@ -1,7 +1,21 @@
-import type { AuthResponse, HandleAvailability, SessionSummary } from "@contraponha/types"
+import type {
+  AuthResponse,
+  HandleAvailability,
+  LoginResult,
+  RecoveryCodes,
+  SessionSummary,
+  TwoFactorSetup,
+  TwoFactorStatus,
+} from "@contraponha/types"
 import {
   authResponseSchema,
   handleAvailabilitySchema,
+  loginResultSchema,
+  recoveryCodesSchema,
+  twoFactorSetupSchema,
+  twoFactorStatusSchema,
+  type LoginTwoFactorInput,
+  type TwoFactorCodeInput,
   sessionListSchema,
   type ChangePasswordInput,
   type ConfirmEmailInput,
@@ -16,7 +30,13 @@ import { emptyResponseSchema, type HttpClient } from "../http.js"
 export interface AuthResource {
   register(input: RegisterInput): Promise<AuthResponse>
   handleAvailability(handle: string): Promise<HandleAvailability>
-  login(input: LoginInput): Promise<AuthResponse>
+  login(input: LoginInput): Promise<LoginResult>
+  loginTwoFactor(input: LoginTwoFactorInput): Promise<AuthResponse>
+  twoFactorStatus(): Promise<TwoFactorStatus>
+  startTwoFactorSetup(): Promise<TwoFactorSetup>
+  enableTwoFactor(input: TwoFactorCodeInput): Promise<RecoveryCodes>
+  disableTwoFactor(input: TwoFactorCodeInput): Promise<void>
+  regenerateRecoveryCodes(input: TwoFactorCodeInput): Promise<RecoveryCodes>
   logout(): Promise<void>
   changePassword(input: ChangePasswordInput): Promise<void>
   listSessions(): Promise<SessionSummary[]>
@@ -49,7 +69,34 @@ export function createAuthResource(request: HttpClient): AuthResource {
         schema: handleAvailabilitySchema,
       }),
     login: (input) =>
-      request({ method: "POST", path: "/auth/login", body: input, schema: authResponseSchema }),
+      request({ method: "POST", path: "/auth/login", body: input, schema: loginResultSchema }),
+    loginTwoFactor: (input) =>
+      request({
+        method: "POST",
+        path: "/auth/login/two-factor",
+        body: input,
+        schema: authResponseSchema,
+      }),
+    twoFactorStatus: () =>
+      request({ method: "GET", path: "/auth/two-factor", schema: twoFactorStatusSchema }),
+    startTwoFactorSetup: () =>
+      request({ method: "POST", path: "/auth/two-factor/setup", schema: twoFactorSetupSchema }),
+    enableTwoFactor: (input) =>
+      request({
+        method: "POST",
+        path: "/auth/two-factor/enable",
+        body: input,
+        schema: recoveryCodesSchema,
+      }),
+    disableTwoFactor: (input) =>
+      send({ method: "POST", path: "/auth/two-factor/disable", body: input }),
+    regenerateRecoveryCodes: (input) =>
+      request({
+        method: "POST",
+        path: "/auth/two-factor/recovery-codes",
+        body: input,
+        schema: recoveryCodesSchema,
+      }),
     logout: () => send({ method: "POST", path: "/auth/logout" }),
     changePassword: (input) => send({ method: "PUT", path: "/auth/password", body: input }),
     listSessions: async () => {

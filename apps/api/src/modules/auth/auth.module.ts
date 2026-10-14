@@ -12,10 +12,14 @@ import { SessionsController } from "#src/modules/auth/controllers/sessions.contr
 import { SessionsRepository } from "#src/modules/auth/repositories/sessions.repository.js"
 import { SessionsService } from "#src/modules/auth/services/sessions.service.js"
 import { VerificationTokensRepository } from "#src/modules/auth/repositories/verification-tokens.repository.js"
+import { TwoFactorRepository } from "#src/modules/auth/repositories/two-factor.repository.js"
+import { TwoFactorChallenges } from "#src/modules/auth/infrastructure/two-factor-challenges.js"
+import { TwoFactorService } from "#src/modules/auth/services/two-factor.service.js"
+import { TwoFactorController } from "#src/modules/auth/controllers/two-factor.controller.js"
 
 @Module({
   imports: [UsersModule],
-  controllers: [AuthController, SessionsController],
+  controllers: [AuthController, SessionsController, TwoFactorController],
   providers: [
     AccountVerificationService,
     AuthService,
@@ -26,7 +30,16 @@ import { VerificationTokensRepository } from "#src/modules/auth/repositories/ver
     SessionsRepository,
     SessionsService,
     VerificationTokensRepository,
+    TwoFactorRepository,
+    TwoFactorChallenges,
+    TwoFactorService,
   ],
-  exports: [SessionAuthGuard, AuthService, AccountVerificationService, SessionsService],
+  exports: [
+    SessionAuthGuard,
+    AuthService,
+    AccountVerificationService,
+    SessionsService,
+    TwoFactorService,
+  ],
 })
 export class AuthModule {}

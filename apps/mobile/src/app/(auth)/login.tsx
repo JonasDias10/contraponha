@@ -1,11 +1,12 @@
 import { errorMessage } from "@contraponha/client-core"
-import { loginInputSchema, type LoginInput } from "@contraponha/validation"
+import { isTwoFactorChallenge, loginInputSchema, type LoginInput } from "@contraponha/validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { StyleSheet, View } from "react-native"
 
 import { AuthScreen } from "@/components/auth/auth-screen"
+import { TwoFactorCodeForm } from "@/components/auth/two-factor-code-form"
 import { Button } from "@/components/ui/button"
 import { Banner } from "@/components/ui/surfaces"
 import { AppText } from "@/components/ui/text"
@@ -20,6 +21,7 @@ export default function LoginScreen(): React.JSX.Element {
   const api = useApi()
   const { signIn } = useSession()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [challengeToken, setChallengeToken] = useState<string | null>(null)
 
   const {
     control,
@@ -34,12 +36,38 @@ export default function LoginScreen(): React.JSX.Element {
     setServerError(null)
 
     try {
-      const auth = await api.auth.login(values)
+      const result = await api.auth.login(values)
 
-      await signIn(auth)
+      if (isTwoFactorChallenge(result)) {
+        setChallengeToken(result.challengeToken)
+
+        return
+      }
+
+      await signIn(result)
     } catch (error) {
       setServerError(errorMessage({ error, t }))
     }
+  }
+
+  if (challengeToken) {
+    return (
+      <AuthScreen title={t("web.auth.signInTitle")}>
+        <TwoFactorCodeForm
+          onSubmit={async (code) => {
+            try {
+              const auth = await api.auth.loginTwoFactor({ challengeToken, code })
+
+              await signIn(auth)
+
+              return null
+            } catch (error) {
+              return errorMessage({ error, t })
+            }
+          }}
+        />
+      </AuthScreen>
+    )
   }
 
   return (

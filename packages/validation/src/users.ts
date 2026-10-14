@@ -135,5 +135,6 @@ export const privateProfileSchema = publicProfileSchema.extend({
   role: z.enum(UserRole),
   birthDate: z.iso.date().nullable(),
   isOnboarded: z.boolean(),
+  isTwoFactorEnabled: z.boolean(),
   deletionScheduledAt: z.iso.datetime().nullable(),
 }) satisfies z.ZodType<PrivateProfile>

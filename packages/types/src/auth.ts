@@ -27,3 +27,26 @@ export interface SessionSummary {
   expiresAt: string
   isCurrent: boolean
 }
+
+// Returned by login instead of a session when the account has two-step verification.
+export interface TwoFactorChallenge {
+  challengeToken: string
+  expiresAt: string
+}
+
+export type LoginResult = AuthResponse | TwoFactorChallenge
+
+export interface TwoFactorStatus {
+  isEnabled: boolean
+  recoveryCodesLeft: number
+}
+
+export interface TwoFactorSetup {
+  secret: string
+  otpauthUrl: string
+}
+
+// Shown once; only hashes are kept.
+export interface RecoveryCodes {
+  codes: string[]
+}

@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto"
+
 import { daysToMs, parseEnv, secondsToMs, type EnvSource } from "@contraponha/config"
 import type { Locale } from "@contraponha/i18n"
 
@@ -65,6 +67,9 @@ export interface AppConfig {
   humanCheck: {
     turnstileSecretKey: string | undefined
   }
+  twoFactor: {
+    encryptionKey: Buffer
+  }
   push: {
     enabled: boolean
     expoAccessToken: string | undefined
@@ -79,6 +84,20 @@ export interface AppConfig {
       password: string | undefined
     }
   }
+}
+
+interface TwoFactorKeyParams {
+  value: string | undefined
+  isProduction: boolean
+}
+
+// Development and tests get a fixed key so no setup is needed; production must set its own.
+function twoFactorKey({ value, isProduction }: TwoFactorKeyParams): Buffer {
+  if (value) return Buffer.from(value, "base64")
+
+  if (isProduction) throw new Error("TWO_FACTOR_ENCRYPTION_KEY is required in production")
+
+  return createHash("sha256").update("contraponha-development-two-factor-key").digest()
 }
 
 export function loadAppConfig(source: EnvSource): AppConfig {
@@ -144,6 +163,9 @@ export function loadAppConfig(source: EnvSource): AppConfig {
     },
     humanCheck: {
       turnstileSecretKey: env.TURNSTILE_SECRET_KEY,
+    },
+    twoFactor: {
+      encryptionKey: twoFactorKey({ value: env.TWO_FACTOR_ENCRYPTION_KEY, isProduction }),
     },
     push: {
       enabled: env.PUSH_ENABLED,

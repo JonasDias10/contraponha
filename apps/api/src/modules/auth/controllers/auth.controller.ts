@@ -19,7 +19,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import type { AuthResponse, HandleAvailability } from "@contraponha/types"
+import type { AuthResponse, HandleAvailability, LoginResult } from "@contraponha/types"
 import {
   authResponseSchema,
   changePasswordInputSchema,
@@ -27,6 +27,8 @@ import {
   handleAvailabilitySchema,
   handleSchema,
   loginInputSchema,
+  loginResultSchema,
+  loginTwoFactorInputSchema,
   registerInputSchema,
   requestPasswordResetInputSchema,
   resetPasswordInputSchema,
@@ -90,14 +92,34 @@ export class AuthController {
   @SensitiveRateLimit()
   @Post("login")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Start a session with email and password" })
+  @ApiOperation({
+    summary: "Start a session with email and password",
+    description:
+      "Accounts with two-step verification get a challengeToken instead of a session; finish with POST /auth/login/two-factor.",
+  })
   @ApiZodBody(loginInputSchema)
-  @ApiOkResponse({ schema: toOpenApiSchema(authResponseSchema) })
+  @ApiOkResponse({ schema: toOpenApiSchema(loginResultSchema) })
   login(
     @Body(new ZodValidationPipe(loginInputSchema)) body: z.output<typeof loginInputSchema>,
     @Headers("user-agent") userAgent: string | undefined,
-  ): Promise<AuthResponse> {
+  ): Promise<LoginResult> {
     return this.authService.login({ input: body, userAgent })
+  }
+
+  @Public()
+  @SensitiveRateLimit()
+  @Post("login/two-factor")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Finish a login with the code from the authenticator or a recovery code",
+  })
+  @ApiZodBody(loginTwoFactorInputSchema)
+  @ApiOkResponse({ schema: toOpenApiSchema(authResponseSchema) })
+  loginTwoFactor(
+    @Body(new ZodValidationPipe(loginTwoFactorInputSchema))
+    body: z.output<typeof loginTwoFactorInputSchema>,
+  ): Promise<AuthResponse> {
+    return this.authService.loginTwoFactor({ input: body })
   }
 
   @Post("logout")

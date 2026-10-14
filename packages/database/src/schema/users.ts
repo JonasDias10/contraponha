@@ -37,6 +37,8 @@ export const users = pgTable(
     locale: text().notNull().default("pt-BR"),
     timezone: text().notNull().default("America/Sao_Paulo"),
     onboardedAt: timestamp({ withTimezone: true }),
+    // Mirrors two_factor_secrets.enabled_at so profiles and role checks need no join.
+    twoFactorEnabledAt: timestamp({ withTimezone: true }),
     role: userRole().notNull().default("member"),
     followerCount: integer().notNull().default(0),
     followingCount: integer().notNull().default(0),

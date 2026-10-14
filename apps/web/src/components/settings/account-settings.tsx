@@ -21,12 +21,14 @@ import {
   useViewer,
 } from "@contraponha/web-ui"
 import { SettingsSection } from "@/components/settings/settings-section"
+import { TwoFactorSettings } from "@/components/settings/two-factor-settings"
 
 export function AccountSettings(): React.JSX.Element {
   return (
     <>
       <EmailSection />
       <PasswordSection />
+      <TwoFactorSettings />
       <SessionsSection />
       <SignOutSection />
     </>
